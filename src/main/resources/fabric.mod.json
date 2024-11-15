@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "better_hud",
+  "version": "${version}",
+  "name": "Better HUD",
+  "description": "Add a bunch of hud things",
+  "authors": ["Azz_9"],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/better_hud/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "me.Azz_9.better_hud.client.Better_hudClient"
+    ],
+    "main": [
+      "me.Azz_9.better_hud.Better_hud"
+    ],
+    "modmenu": [
+      "me.Azz_9.better_hud.ModMenu.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "better_hud.mixins.json",
+    {
+      "config": "better_hud.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "fabric-key-binding-api-v1": "*",
+    "minecraft": "${minecraft_version}",
+    "cloth-config": "*",
+    "modmenu": "*"
+  }
+}
