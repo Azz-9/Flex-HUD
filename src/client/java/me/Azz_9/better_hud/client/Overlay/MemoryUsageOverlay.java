@@ -6,6 +6,10 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryUsage;
+
 public class MemoryUsageOverlay implements HudRenderCallback {
 
     @Override
@@ -28,13 +32,18 @@ public class MemoryUsageOverlay implements HudRenderCallback {
     }
 
     private int getMemoryUsagePercentage() {
-        Runtime runtime = Runtime.getRuntime();
+        // Accéder au gestionnaire de mémoire de la JVM
+        MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
 
-        long totalMemory = runtime.totalMemory();
-        long usedMemory = totalMemory - runtime.freeMemory(); // Memory used is allocated memory minus free memory
+        // Obtenir les informations sur la mémoire heap
+        MemoryUsage heapMemoryUsage = memoryBean.getHeapMemoryUsage();
 
-        return (int) ((usedMemory * 100) / totalMemory);
+        // Mémoire utilisée et maximum allouée
+        long usedMemory = heapMemoryUsage.getUsed();
+        long maxMemory = heapMemoryUsage.getMax();
+
+        // Calculer le pourcentage
+        return (int) ((double) usedMemory / maxMemory * 100);
     }
 
 }
-// TODO ça marche pas bien

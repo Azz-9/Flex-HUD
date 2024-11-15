@@ -109,6 +109,7 @@ public class Better_hudClient implements ClientModInitializer {
             }
         });
 
+        //speedometer
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (!ModConfig.getInstance().isEnabled || !ModConfig.getInstance().showSpeedometer || client.player == null) {
                 return;

@@ -53,4 +53,3 @@ public class DurabilityPing {
     }
 
 }
-//FIXME ça ping pas aled

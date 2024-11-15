@@ -7,28 +7,31 @@ import java.time.LocalTime;
 
 public class TimeChanger {
 
+    private static long lastUpdateTime = 0;
+
     public static void init() {
 
         ModConfig modConfigInstance = ModConfig.getInstance();
 
-        if (modConfigInstance.isEnabled && modConfigInstance.enableTimeChanger) {
-            ClientTickEvents.END_CLIENT_TICK.register(client -> {
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if (modConfigInstance.isEnabled && modConfigInstance.enableTimeChanger) {
                 if (client.world != null) {
+                    long currentTime = client.world.getTime();
+                    long desiredTime;
+
                     if (modConfigInstance.useRealTime) {
-                        long minecraftTime = convertRealTimeToMinecraftTime(LocalTime.now());
-                        //client.world.setTimeOfDay(minecraftTime);
-                        client.world.setTime(client.world.getTime(), minecraftTime, false);
+                        desiredTime = convertRealTimeToMinecraftTime(LocalTime.now());
                     } else {
-                        //client.world.setTimeOfDay(modConfigInstance.selectedTime);
-                        client.world.setTime(client.world.getTime(), modConfigInstance.selectedTime, false);
-                        System.out.println("bonjour");
+                        desiredTime = modConfigInstance.selectedTime;
+                    }
+
+                    // Update time only if it has changed
+                    if (currentTime != desiredTime) {
+                        client.world.setTime(currentTime, desiredTime, false);
                     }
                 }
-
-            });
-
-        }
-
+            }
+        });
     }
 
     private static long convertRealTimeToMinecraftTime(LocalTime realTime) {
@@ -43,4 +46,4 @@ public class TimeChanger {
 
         return minecraftTime;
     }
-}//FIXME aled réparer ça
+}
