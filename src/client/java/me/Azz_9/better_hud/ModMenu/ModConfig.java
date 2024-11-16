@@ -115,6 +115,19 @@ public class ModConfig {
     public boolean useKnotInBoat = false;
     public int speedometerHudX = 2;
     public int speedometerHudY = 70;
+    //reach
+    public boolean showReach = true;
+    public int reachColor = 0xFFFFFF;
+    public boolean reachShadow = true;
+    public int reachDigits = 2;
+    public int reachHudX = 2;
+    public int reachHudY = 100;
+    //combo counter
+    public boolean showComboCounter = true;
+    public int comboCounterColor = 0xFFFFFF;
+    public boolean comboCounterShadow = true;
+    public int comboCounterHudX = 2;
+    public int comboCounterHudY = 120;
 
 
     // hud editor

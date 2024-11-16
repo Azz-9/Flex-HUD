@@ -14,7 +14,7 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-import static me.Azz_9.better_hud.Better_hud.MOD_ID;
+import static me.Azz_9.better_hud.client.Better_hudClient.MOD_ID;
 
 @Environment(EnvType.CLIENT)
 public class OptionsScreen extends Screen {

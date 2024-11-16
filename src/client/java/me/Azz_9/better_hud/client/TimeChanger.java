@@ -7,8 +7,6 @@ import java.time.LocalTime;
 
 public class TimeChanger {
 
-    private static long lastUpdateTime = 0;
-
     public static void init() {
 
         ModConfig modConfigInstance = ModConfig.getInstance();
@@ -47,3 +45,5 @@ public class TimeChanger {
         return minecraftTime;
     }
 }
+
+//FIXME ça me clc

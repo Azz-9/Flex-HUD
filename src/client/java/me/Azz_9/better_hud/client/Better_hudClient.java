@@ -7,6 +7,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
@@ -22,19 +23,31 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import org.lwjgl.glfw.GLFW;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static me.Azz_9.better_hud.client.DurabilityPing.isDurabilityUnderThreshold;
 import static me.Azz_9.better_hud.client.DurabilityPing.pingPlayer;
+import static me.Azz_9.better_hud.client.Overlay.ComboCounterOverlay.calculteCombo;
+import static me.Azz_9.better_hud.client.Overlay.ComboCounterOverlay.resetCombo;
+import static me.Azz_9.better_hud.client.Overlay.ReachDisplayOverlay.calculateReach;
 
 public class Better_hudClient implements ClientModInitializer {
+
+    public static final String MOD_ID = "better_hud";
+    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+
     //biome colors for coordinates overlay
     public static Map<RegistryKey<Biome>, Integer> biomeColors = new HashMap<>();
 
     @Override
     public void onInitializeClient() {
+
+        LOGGER.info("Better HUD has started up.");
+
         // initialize modules
         TimeChanger.init();
 
@@ -53,6 +66,8 @@ public class Better_hudClient implements ClientModInitializer {
         HudRenderCallback.EVENT.register(new MemoryUsageOverlay());
         HudRenderCallback.EVENT.register(new CPSOverlay());
         HudRenderCallback.EVENT.register(new SpeedometerOverlay());
+        HudRenderCallback.EVENT.register(new ReachDisplayOverlay());
+        HudRenderCallback.EVENT.register(new ComboCounterOverlay());
         ModConfig.getInstance();
 
         // durability ping
@@ -115,6 +130,29 @@ public class Better_hudClient implements ClientModInitializer {
                 return;
             }
             SpeedometerOverlay.calculateSpeed(client.player);
+        });
+
+        //reach display
+        AttackEntityCallback.EVENT.register((player, world, hand, pos, face) -> {
+            if (ModConfig.getInstance().isEnabled && ModConfig.getInstance().showReach) {
+                calculateReach(player, pos);
+            }
+            return ActionResult.PASS;
+        });
+
+        //combo counter
+        AttackEntityCallback.EVENT.register((player, world, hand, pos, face) -> {
+            if (ModConfig.getInstance().isEnabled && ModConfig.getInstance().showComboCounter) {
+                calculteCombo(player, pos);
+            }
+            return ActionResult.PASS;
+        });
+
+        ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, damageSource, baseDamageTaken, damageTaken, blocked) -> {
+            MinecraftClient client = MinecraftClient.getInstance();
+            if (ModConfig.getInstance().isEnabled && ModConfig.getInstance().showComboCounter && entity == client.player && !blocked) {
+                resetCombo();
+            }
         });
 
 

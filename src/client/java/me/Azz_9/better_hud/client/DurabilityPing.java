@@ -24,11 +24,7 @@ public class DurabilityPing {
         double durabilityLeft = item.getMaxDamage() - item.getDamage();
         double percentageLeft = (durabilityLeft / item.getMaxDamage()) * 100.0f;
 
-        if (percentageLeft < ModConfig.getInstance().durabilityPingThreshold) {
-            return true;
-        }
-
-        return false;
+        return percentageLeft < ModConfig.getInstance().durabilityPingThreshold;
     }
 
     public static void pingPlayer(PlayerEntity player, ItemStack item) {

@@ -895,6 +895,115 @@ public class ModMenuIntegration implements ModMenuApi {
                     .build());
 
 
+            //reach category
+            SubCategoryBuilder reachSubCategory = builder.entryBuilder().startSubCategory(Text.of("Reach"));
+            //toggle
+            reachSubCategory.add(builder.entryBuilder()
+                    .startBooleanToggle(Text.of("Show reach"), ModConfig.getInstance().showReach)
+                    .setDefaultValue(true)
+                    .setSaveConsumer(newValue -> {
+                        ModConfig.getInstance().showReach = newValue;
+                        ModConfig.saveConfig();
+                    })
+                    .build());
+            //text color
+            reachSubCategory.add(builder.entryBuilder()
+                    .startColorField(Text.of("Text color"), ModConfig.getInstance().reachColor)
+                    .setDefaultValue(0xFFFFFF) // Used when user click "Reset"
+                    .setSaveConsumer(newValue -> {
+                        ModConfig.getInstance().reachColor = newValue;
+                        ModConfig.saveConfig();
+                    }) // Called when user save the config
+                    .build());
+            //text shadow
+            reachSubCategory.add(builder.entryBuilder()
+                    .startBooleanToggle(Text.of("Text shadow"), ModConfig.getInstance().reachShadow)
+                    .setDefaultValue(true) // Used when user click "Reset"
+                    .setSaveConsumer(newValue -> {
+                        ModConfig.getInstance().reachShadow = newValue;
+                        ModConfig.saveConfig();
+                    }) // Called when user save the config
+                    .build());
+            //number of digits
+            reachSubCategory.add(builder.entryBuilder()
+                    .startIntField(Text.of("Number of digits"), ModConfig.getInstance().reachDigits)
+                    .setDefaultValue(2)
+                    .setMin(0)
+                    .setMax(16)
+                    .setSaveConsumer(newValue -> {
+                        ModConfig.getInstance().reachDigits = newValue;
+                        ModConfig.saveConfig();
+                    })
+                    .build());
+            //display X
+            reachSubCategory.add(builder.entryBuilder()
+                    .startIntField(Text.of("display X"), ModConfig.getInstance().reachHudX)
+                    .setDefaultValue(2)
+                    .setSaveConsumer(newValue -> {
+                        ModConfig.getInstance().reachHudX = newValue;
+                        ModConfig.saveConfig();
+                    })
+                    .build());
+            //display Y
+            reachSubCategory.add(builder.entryBuilder()
+                    .startIntField(Text.of("display Y"), ModConfig.getInstance().reachHudY)
+                    .setDefaultValue(100)
+                    .setSaveConsumer(newValue -> {
+                        ModConfig.getInstance().reachHudY = newValue;
+                        ModConfig.saveConfig();
+                    })
+                    .build());
+
+
+            //combo counter category
+            SubCategoryBuilder comboCounterSubCategory = builder.entryBuilder().startSubCategory(Text.of("Combo Counter"));
+            //toggle
+            comboCounterSubCategory.add(builder.entryBuilder()
+                    .startBooleanToggle(Text.of("Show combo counter"), ModConfig.getInstance().showComboCounter)
+                    .setDefaultValue(true)
+                    .setSaveConsumer(newValue -> {
+                        ModConfig.getInstance().showComboCounter = newValue;
+                        ModConfig.saveConfig();
+                    })
+                    .build());
+            //text color
+            comboCounterSubCategory.add(builder.entryBuilder()
+                    .startColorField(Text.of("Text color"), ModConfig.getInstance().comboCounterColor)
+                    .setDefaultValue(0xFFFFFF) // Used when user click "Reset"
+                    .setSaveConsumer(newValue -> {
+                        ModConfig.getInstance().comboCounterColor = newValue;
+                        ModConfig.saveConfig();
+                    }) // Called when user save the config
+                    .build());
+            //text shadow
+            comboCounterSubCategory.add(builder.entryBuilder()
+                    .startBooleanToggle(Text.of("Text shadow"), ModConfig.getInstance().comboCounterShadow)
+                    .setDefaultValue(true) // Used when user click "Reset"
+                    .setSaveConsumer(newValue -> {
+                        ModConfig.getInstance().comboCounterShadow = newValue;
+                        ModConfig.saveConfig();
+                    }) // Called when user save the config
+                    .build());
+            //display X
+            comboCounterSubCategory.add(builder.entryBuilder()
+                    .startIntField(Text.of("display X"), ModConfig.getInstance().comboCounterHudX)
+                    .setDefaultValue(2)
+                    .setSaveConsumer(newValue -> {
+                        ModConfig.getInstance().comboCounterHudX = newValue;
+                        ModConfig.saveConfig();
+                    })
+                    .build());
+            //display Y
+            comboCounterSubCategory.add(builder.entryBuilder()
+                    .startIntField(Text.of("display Y"), ModConfig.getInstance().comboCounterHudY)
+                    .setDefaultValue(120)
+                    .setSaveConsumer(newValue -> {
+                        ModConfig.getInstance().comboCounterHudY = newValue;
+                        ModConfig.saveConfig();
+                    })
+                    .build());
+
+
 
             generalCategory.addEntry(coordinatesSubCategory.build());
             generalCategory.addEntry(FPSSubCategory.build());
@@ -909,6 +1018,8 @@ public class ModMenuIntegration implements ModMenuApi {
             generalCategory.addEntry(timeChangerSubCategory.build());
             generalCategory.addEntry(durabilityPingSubCategory.build());
             generalCategory.addEntry(speedometerSubCategory.build());
+            generalCategory.addEntry(reachSubCategory.build());
+            generalCategory.addEntry(comboCounterSubCategory.build());
 
             return builder.build();
         };
