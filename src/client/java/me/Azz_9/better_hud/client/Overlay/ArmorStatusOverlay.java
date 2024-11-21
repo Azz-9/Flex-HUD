@@ -10,6 +10,7 @@ import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 
 public class ArmorStatusOverlay implements HudRenderCallback {
 
@@ -39,7 +40,13 @@ public class ArmorStatusOverlay implements HudRenderCallback {
 
         if (modConfigInstance.showHelmet) {
             renderItemStack(helmet, x, y, modConfigInstance.showDurability, matrices, drawContext, client);
-
+            if (modConfigInstance.displayModeArmorStatus == DisplayModeEnum.Horizontal) {
+                if (modConfigInstance.showDurability == DurabilityTypeEnum.Percentage) {
+                    x += client.textRenderer.getWidth((int) (((float) (helmet.getMaxDamage() - helmet.getDamage()) / helmet.getMaxDamage()) * 100) + "%");
+                } else {
+                    x += client.textRenderer.getWidth(String.valueOf(helmet.getMaxDamage() - helmet.getDamage()));
+                }
+            }
         }
 
         if (modConfigInstance.showChestplate) {
@@ -47,12 +54,13 @@ public class ArmorStatusOverlay implements HudRenderCallback {
                 y += 16;
                 renderItemStack(chestplate, x, y, modConfigInstance.showDurability, matrices, drawContext, client);
             } else {
+                x += 18;
                 if (modConfigInstance.showDurability == DurabilityTypeEnum.Percentage) {
-                    x = x + 18 + client.textRenderer.getWidth((int) (((float) (helmet.getMaxDamage() - helmet.getDamage()) / helmet.getMaxDamage()) * 100) + "%");
                     renderItemStack(chestplate, x, y, modConfigInstance.showDurability, matrices, drawContext, client);
+                    x += client.textRenderer.getWidth((int) (((float) (chestplate.getMaxDamage() - chestplate.getDamage()) / chestplate.getMaxDamage()) * 100) + "%");
                 } else {
-                    x = x + 18 + client.textRenderer.getWidth(String.valueOf(helmet.getMaxDamage() - helmet.getDamage()));
                     renderItemStack(chestplate, x, y, modConfigInstance.showDurability, matrices, drawContext, client);
+                    x += client.textRenderer.getWidth(String.valueOf(chestplate.getMaxDamage() - chestplate.getDamage()));
                 }
             }
 
@@ -63,12 +71,13 @@ public class ArmorStatusOverlay implements HudRenderCallback {
                 y += 16;
                 renderItemStack(leggings, x, y, modConfigInstance.showDurability, matrices, drawContext, client);
             } else {
+                x += 18;
                 if (modConfigInstance.showDurability == DurabilityTypeEnum.Percentage) {
-                    x = x + 18 + client.textRenderer.getWidth((int) (((float) (chestplate.getMaxDamage() - chestplate.getDamage()) / chestplate.getMaxDamage()) * 100) + "%");
                     renderItemStack(leggings, x, y, modConfigInstance.showDurability, matrices, drawContext, client);
+                    x += client.textRenderer.getWidth((int) (((float) (leggings.getMaxDamage() - leggings.getDamage()) / leggings.getMaxDamage()) * 100) + "%");
                 } else {
-                    x = x + 18 + client.textRenderer.getWidth(String.valueOf(chestplate.getMaxDamage() - chestplate.getDamage()));
                     renderItemStack(leggings, x, y, modConfigInstance.showDurability, matrices, drawContext, client);
+                    x += client.textRenderer.getWidth(String.valueOf(leggings.getMaxDamage() - leggings.getDamage()));
                 }
             }
 
@@ -78,12 +87,13 @@ public class ArmorStatusOverlay implements HudRenderCallback {
                 y += 16;
                 renderItemStack(boots, x, y, modConfigInstance.showDurability, matrices, drawContext, client);
             } else {
+                x += 18;
                 if (modConfigInstance.showDurability == DurabilityTypeEnum.Percentage) {
-                    x = x + 18 + client.textRenderer.getWidth((int) (((float) (leggings.getMaxDamage() - leggings.getDamage()) / leggings.getMaxDamage()) * 100) + "%");
                     renderItemStack(boots, x, y, modConfigInstance.showDurability, matrices, drawContext, client);
+                    x += client.textRenderer.getWidth((int) (((float) (boots.getMaxDamage() - boots.getDamage()) / boots.getMaxDamage()) * 100) + "%");
                 } else {
-                    x = x + 18 + client.textRenderer.getWidth(String.valueOf(leggings.getMaxDamage() - leggings.getDamage()));
                     renderItemStack(boots, x, y, modConfigInstance.showDurability, matrices, drawContext, client);
+                    x += client.textRenderer.getWidth(String.valueOf(boots.getMaxDamage() - boots.getDamage()));
                 }
             }
 
@@ -93,15 +103,80 @@ public class ArmorStatusOverlay implements HudRenderCallback {
                 y += 16;
                 renderItemStack(heldItem, x, y, modConfigInstance.showDurability, matrices, drawContext, client);
             } else {
+                x += 18;
                 if (modConfigInstance.showDurability == DurabilityTypeEnum.Percentage) {
-                    x = x + 18 + client.textRenderer.getWidth((int) (((float) (boots.getMaxDamage() - boots.getDamage()) / boots.getMaxDamage()) * 100) + "%");
                     renderItemStack(heldItem, x, y, modConfigInstance.showDurability, matrices, drawContext, client);
+                    x += client.textRenderer.getWidth((int) (((float) (heldItem.getMaxDamage() - heldItem.getDamage()) / heldItem.getMaxDamage()) * 100) + "%");
                 } else {
-                    x = x + 18 + client.textRenderer.getWidth(String.valueOf(boots.getMaxDamage() - boots.getDamage()));
                     renderItemStack(heldItem, x, y, modConfigInstance.showDurability, matrices, drawContext, client);
+                    x += client.textRenderer.getWidth(String.valueOf(heldItem.getMaxDamage() - heldItem.getDamage()));
                 }
             }
 
+        }
+        if (modConfigInstance.showArrowsWhenBowInHand && (heldItem.getItem() == Items.BOW || heldItem.getItem() == Items.CROSSBOW)) {
+            int arrowCount = 0;
+            int spectralArrowCount = 0;
+            int tippedArrowCount = 0;
+
+            for (ItemStack stack : p.getInventory().main) {
+                if (stack.getItem() == Items.ARROW) {
+                    arrowCount += stack.getCount();
+                } else if (stack.getItem() == Items.SPECTRAL_ARROW) {
+                    spectralArrowCount += stack.getCount();
+                } else if (stack.getItem() == Items.TIPPED_ARROW) {
+                    tippedArrowCount += stack.getCount();
+                }
+            }
+
+            if (modConfigInstance.displayModeArmorStatus == DisplayModeEnum.Vertical) {
+                y += 16;
+
+                ItemStack arrowStack = Items.ARROW.getDefaultStack();
+                arrowStack.setCount(arrowCount);
+                renderItemStack(arrowStack, x, y, modConfigInstance.showDurability, matrices, drawContext, client);
+                if (arrowCount == 0) {
+                    arrowStack.setCount(1);
+                    renderItemStack(arrowStack, x, y, DurabilityTypeEnum.No, matrices, drawContext, client);
+                    drawContext.drawText(client.textRenderer, "0", x + 17, y + 4, ModConfig.getInstance().armorStatusTextColor, ModConfig.getInstance().armorStatusTextShadow);
+                }
+                if (spectralArrowCount != 0) {
+                    y += 16;
+                    ItemStack spectralArrowStack = Items.SPECTRAL_ARROW.getDefaultStack();
+                    spectralArrowStack.setCount(spectralArrowCount);
+                    renderItemStack(spectralArrowStack, x, y, modConfigInstance.showDurability, matrices, drawContext, client);
+                }
+                if (tippedArrowCount != 0) {
+                    y += 16;
+                    ItemStack tippedArrowStack = Items.TIPPED_ARROW.getDefaultStack();
+                    tippedArrowStack.setCount(tippedArrowCount);
+                    renderItemStack(tippedArrowStack, x, y, modConfigInstance.showDurability, matrices, drawContext, client);
+                }
+            } else {
+                x += 18;
+                ItemStack arrowStack = Items.ARROW.getDefaultStack();
+                arrowStack.setCount(arrowCount);
+                renderItemStack(arrowStack, x, y, modConfigInstance.showDurability, matrices, drawContext, client);
+                if (arrowCount == 0) {
+                    arrowStack.setCount(1);
+                    renderItemStack(arrowStack, x, y, DurabilityTypeEnum.No, matrices, drawContext, client);
+                    drawContext.drawText(client.textRenderer, "0", x + 17, y + 4, ModConfig.getInstance().armorStatusTextColor, ModConfig.getInstance().armorStatusTextShadow);
+                }
+                x += client.textRenderer.getWidth(String.valueOf(arrowCount));
+                if (spectralArrowCount != 0) {
+                    x += 18;
+                    ItemStack spectralArrowStack = Items.SPECTRAL_ARROW.getDefaultStack();
+                    spectralArrowStack.setCount(spectralArrowCount);
+                    renderItemStack(spectralArrowStack, x, y, modConfigInstance.showDurability, matrices, drawContext, client);
+                    x += client.textRenderer.getWidth(String.valueOf(spectralArrowCount));
+                }
+                if (tippedArrowCount != 0) {
+                    x += 18;
+                    ItemStack tippedArrowStack = Items.TIPPED_ARROW.getDefaultStack();
+                    tippedArrowStack.setCount(tippedArrowCount);
+                    renderItemStack(tippedArrowStack, x, y, modConfigInstance.showDurability, matrices, drawContext, client);
+                }
+            }
         }
 
     }
@@ -139,7 +214,7 @@ public class ArmorStatusOverlay implements HudRenderCallback {
                 String strPercentage = String.valueOf((int) (percentage * 100));
 
                 drawContext.drawText(client.textRenderer, strPercentage, x, y, item.getItemBarColor(), ModConfig.getInstance().armorStatusTextShadow);
-                x = x + client.textRenderer.getWidth(strPercentage);
+                x += client.textRenderer.getWidth(strPercentage);
                 drawContext.drawText(client.textRenderer, "%", x, y, ModConfig.getInstance().armorStatusTextColor, ModConfig.getInstance().armorStatusTextShadow);
 
             } else if (displayType == DurabilityTypeEnum.Value) {
@@ -154,3 +229,4 @@ public class ArmorStatusOverlay implements HudRenderCallback {
     }
 
 }
+//TODO faire une liste les flèches tipped pour les afficher avec le bon effet

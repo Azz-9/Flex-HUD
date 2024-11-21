@@ -2,7 +2,6 @@ package me.Azz_9.better_hud.ConfigScreen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.terraformersmc.modmenu.ModMenu;
-import me.Azz_9.better_hud.ModMenu.ModConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
@@ -36,14 +35,13 @@ public class OptionsScreen extends Screen {
                 }
             }
         }).dimensions(width/2 - 60, height/2 - 10, 120, 20).build();
-        
-        this.addDrawableChild(modsButton);
-
 
         ButtonWidget moveButton = ButtonWidget.builder(Text.of("←↑→↓"), (btn) -> {
-            ModConfig.isEditing = !ModConfig.isEditing; // enable/disable editing
+            MinecraftClient.getInstance().setScreen(new ConfigurationScreen(Text.empty()));
         }).dimensions(width/2 - 10 + 80, height/2 - 10, 20, 20).build();
 
+
+        this.addDrawableChild(modsButton);
         this.addDrawableChild(moveButton);
 
     }

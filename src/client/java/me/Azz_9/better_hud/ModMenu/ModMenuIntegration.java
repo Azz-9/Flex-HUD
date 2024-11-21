@@ -341,6 +341,15 @@ public class ModMenuIntegration implements ModMenuApi {
                         ModConfig.saveConfig();
                     }) // Called when user save the config
                     .build());
+            //show number of arrows when held item is a bow
+            armorStatusSubCategory.add(builder.entryBuilder()
+                    .startBooleanToggle(Text.of("Show arrows when held item is a bow"), ModConfig.getInstance().showArrowsWhenBowInHand)
+                    .setDefaultValue(true) // Used when user click "Reset"
+                    .setSaveConsumer(newValue -> {
+                        ModConfig.getInstance().showArrowsWhenBowInHand = newValue;
+                        ModConfig.saveConfig();
+                    }) // Called when user save the config
+                    .build());
             //show durability
             armorStatusSubCategory.add(builder.entryBuilder()
                     .startEnumSelector(Text.of("Show durability"), DurabilityTypeEnum.class, ModConfig.getInstance().showDurability)

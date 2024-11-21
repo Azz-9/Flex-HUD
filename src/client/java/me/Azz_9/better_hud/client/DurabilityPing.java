@@ -17,6 +17,8 @@ public class DurabilityPing {
     public static Map<String, Long> lastPingTime = new HashMap<>();
 
     public static boolean isDurabilityUnderThreshold(ItemStack item, PlayerEntity player) {
+
+
         if (player == null || item == null || item.getMaxDamage() == 0 || !item.isDamageable()) {
             return false;
         }
@@ -27,7 +29,8 @@ public class DurabilityPing {
         return percentageLeft < ModConfig.getInstance().durabilityPingThreshold;
     }
 
-    public static void pingPlayer(PlayerEntity player, ItemStack item) {
+    //return true if player has been ping
+    public static boolean pingPlayer(PlayerEntity player, ItemStack item) {
         long currentTime = System.currentTimeMillis();
 
         // 1 minute has passed since the last ping
@@ -43,9 +46,11 @@ public class DurabilityPing {
             if (ModConfig.getInstance().durabilityPingType != DurabilityPingTypeEnum.Message) {
                 player.playSoundToPlayer(SoundEvents.BLOCK_ANVIL_LAND, SoundCategory.AMBIENT, 1.0f, 2.0f);
             }
-
+            return true;
         }
-
+        return false;
     }
 
 }
+
+//TODO faire un event custom : détéction quand un item perd 1 de dura

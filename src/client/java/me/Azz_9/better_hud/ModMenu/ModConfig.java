@@ -49,6 +49,7 @@ public class ModConfig {
     public boolean showLeggings = true;
     public boolean showBoots = true;
     public boolean showHeldItem = true;
+    public boolean showArrowsWhenBowInHand = true;
     public DurabilityTypeEnum showDurability = DurabilityTypeEnum.Percentage;
     public DisplayModeEnum displayModeArmorStatus = DisplayModeEnum.Vertical;
     public int armorStatusHudX = 2;

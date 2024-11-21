@@ -43,6 +43,9 @@ public class Better_hudClient implements ClientModInitializer {
     //biome colors for coordinates overlay
     public static Map<RegistryKey<Biome>, Integer> biomeColors = new HashMap<>();
 
+    private Map<String, Integer> lastDurability = new HashMap<>();
+
+
     @Override
     public void onInitializeClient() {
 
@@ -104,7 +107,7 @@ public class Better_hudClient implements ClientModInitializer {
         });
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (client.player == null || client.world == null
+            if (client.player == null || client.world == null || client.isPaused()
                     || !ModConfig.getInstance().isEnabled || !ModConfig.getInstance().enableDurabilityPing
                     || (!ModConfig.getInstance().checkArmorPieces && !ModConfig.getInstance().checkElytraOnly)) {
                 return;
@@ -112,13 +115,22 @@ public class Better_hudClient implements ClientModInitializer {
 
             if (ModConfig.getInstance().checkElytraOnly) {
                 ItemStack chestplateSlotItem = client.player.getInventory().getArmorStack(2);
-                if (chestplateSlotItem.getItem() == Items.ELYTRA && isDurabilityUnderThreshold(chestplateSlotItem, client.player)) {
-                    pingPlayer(client.player, chestplateSlotItem);
+                if (chestplateSlotItem.getItem() == Items.ELYTRA
+                        && (!lastDurability.containsKey(chestplateSlotItem.getItem().getTranslationKey())
+                        || lastDurability.get(chestplateSlotItem.getItem().getTranslationKey()) > (chestplateSlotItem.getMaxDamage() - chestplateSlotItem.getDamage()))
+                        && isDurabilityUnderThreshold(chestplateSlotItem, client.player)) {
+                    if (pingPlayer(client.player, chestplateSlotItem)) {
+                        lastDurability.put(chestplateSlotItem.getItem().getTranslationKey(), chestplateSlotItem.getMaxDamage() - chestplateSlotItem.getDamage());
+                    }
                 }
             } else if (ModConfig.getInstance().checkArmorPieces) {
                 for (ItemStack armorPiece : client.player.getInventory().player.getAllArmorItems()) {
-                    if (isDurabilityUnderThreshold(armorPiece, client.player)) {
-                        pingPlayer(client.player, armorPiece);
+                    if ((!lastDurability.containsKey(armorPiece.getItem().getTranslationKey())
+                            || lastDurability.get(armorPiece.getItem().getTranslationKey()) > (armorPiece.getMaxDamage() - armorPiece.getDamage()))
+                            && isDurabilityUnderThreshold(armorPiece, client.player)) {
+                        if (pingPlayer(client.player, armorPiece)) {
+                            lastDurability.put(armorPiece.getItem().getTranslationKey(), armorPiece.getMaxDamage() - armorPiece.getDamage());
+                        }
                     }
                 }
             }
@@ -157,7 +169,7 @@ public class Better_hudClient implements ClientModInitializer {
 
 
         //keybinds
-        KeyBinding rightShift = KeyBindingHelper.registerKeyBinding(new KeyBinding("key.fabric-key-binding-api-v1-testmod.test_keybinding_1", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_RIGHT_SHIFT, "key.category.first.test"));
+        KeyBinding rightShift = KeyBindingHelper.registerKeyBinding(new KeyBinding("Open menu", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_RIGHT_SHIFT, "Better HUD"));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (rightShift.wasPressed()) {
