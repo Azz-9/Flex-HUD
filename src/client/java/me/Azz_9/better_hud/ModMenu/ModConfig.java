@@ -2,12 +2,18 @@ package me.Azz_9.better_hud.ModMenu;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import me.Azz_9.better_hud.ModMenu.Enum.*;
+import me.Azz_9.better_hud.Screens.ModsConfigScreen.DisplayMode;
+import me.Azz_9.better_hud.Screens.ModsConfigScreen.Mods.ArmorStatus;
+import me.Azz_9.better_hud.Screens.ModsConfigScreen.Mods.DurabilityPing;
+import me.Azz_9.better_hud.Screens.ModsConfigScreen.Mods.Speedometer;
+import me.Azz_9.better_hud.Screens.ModsConfigScreen.Mods.WeatherChanger;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ModConfig {
 
@@ -25,13 +31,14 @@ public class ModConfig {
     public boolean showBiome = true;
     public boolean showCoordinatesDirection = true;
     public boolean coordinatesDirectionAbreviation = true;
-    public DisplayModeEnum displayModeCoordinates = DisplayModeEnum.Vertical;
+    public DisplayMode displayModeCoordinates = DisplayMode.Vertical;
     //fps
     public boolean showFPS = true;
     public int FPSColor = 0xFFFFFF;
     public boolean FPSShadow = true;
     public int FPSHudX = 2;
     public int FPSHudY = 2;
+    public float FPSscale = 1.0f;
     //clock
     public boolean showClock = true;
     public int clockColor = 0xFFFFFF;
@@ -50,8 +57,8 @@ public class ModConfig {
     public boolean showBoots = true;
     public boolean showHeldItem = true;
     public boolean showArrowsWhenBowInHand = true;
-    public DurabilityTypeEnum showDurability = DurabilityTypeEnum.Percentage;
-    public DisplayModeEnum displayModeArmorStatus = DisplayModeEnum.Vertical;
+    public ArmorStatus.DurabilityType showDurability = ArmorStatus.DurabilityType.Percentage;
+    public DisplayMode displayModeArmorStatus = DisplayMode.Vertical;
     public int armorStatusHudX = 2;
     public int armorStatusHudY = 200;
     //direction
@@ -60,6 +67,9 @@ public class ModConfig {
     public boolean directionShadow = true;
     public boolean showDirectionMarker = true;
     public boolean showIntermediateDirectionPoint = true;
+    public boolean showXaerosMapWaypoints = true;
+    public int directionHudX = 200;
+	public int directionHudY = 0;
     //day counter
     public boolean showDayCounter = true;
     public int dayCounterColor = 0xFFFFFF;
@@ -78,11 +88,11 @@ public class ModConfig {
     public int serverAddressColor = 0xFFFFFF;
     public boolean serverAddressShadow = true;
     public boolean hideServerAddressWhenOffline = true;
-    public int serverAddressHudX = 150;
+    public int serverAddressHudX = 200;
     public int serverAddressHudY = 2;
     //weather changer
-    public boolean enableWeatherChanger = true;
-    public WeatherEnum selectedWeather = WeatherEnum.Clear;
+    public boolean enableWeatherChanger = false;
+    public WeatherChanger.Weather selectedWeather = WeatherChanger.Weather.Clear;
     //memory usage
     public boolean showMemoryUsage = true;
     public int memoryUsageColor = 0xFFFFFF;
@@ -104,7 +114,7 @@ public class ModConfig {
     //durability ping
     public boolean enableDurabilityPing = true;
     public int durabilityPingThreshold = 10; // percentage
-    public DurabilityPingTypeEnum durabilityPingType = DurabilityPingTypeEnum.Both;
+    public DurabilityPing.DurabilityPingType durabilityPingType = DurabilityPing.DurabilityPingType.Both;
     public boolean checkArmorPieces = true;
     public boolean checkElytraOnly = false;
     //speedometer
@@ -112,7 +122,7 @@ public class ModConfig {
     public int speedometerColor = 0xFFFFFF;
     public boolean speedometerShadow = true;
     public int speedometerDigits = 1;
-    public SpeedometerUnitsEnum speedometerUnits = SpeedometerUnitsEnum.MPS;
+    public Speedometer.SpeedometerUnits speedometerUnits = Speedometer.SpeedometerUnits.MPS;
     public boolean useKnotInBoat = false;
     public int speedometerHudX = 2;
     public int speedometerHudY = 70;
@@ -129,10 +139,32 @@ public class ModConfig {
     public boolean comboCounterShadow = true;
     public int comboCounterHudX = 2;
     public int comboCounterHudY = 120;
+    //playtime
+    public boolean showPlaytime = true;
+    public int playtimeColor = 0xFFFFFF;
+    public boolean playtimeShadow = true;
+    public int playtimeHudX = 2;
+    public int playtimeHudY = 120;
+    //stopwatch
+    public boolean showStopwatch = true;
+    public int stopwatchColor = 0xFFFFFF;
+    public boolean stopwatchShadow = true;
+    public int stopwatchHudX = 2;
+    public int stopwatchHudY = 120;
+    //shrieker warning level
+    public boolean showShriekerWarningLevel = true;
+    public int shriekerWarningLevelColor = 0xFFFFFF;
+    public boolean shriekerWarningLevelShadow = true;
+    public boolean showWhenInDeepDark = true;
+    public int shriekerWarningLevelHudX = 2;
+    public int shriekerWarningLevelHudY = 120;
+    //blocks searching
+    public boolean enableBlocksSearch = true;
+    public List<String> selectedBlocks = new ArrayList<>(); // Liste des identifiants des blocs
 
 
-    // hud editor
-    public static boolean isEditing = false;
+    //number of columns
+    public int numberOfColumns = 2;
 
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();

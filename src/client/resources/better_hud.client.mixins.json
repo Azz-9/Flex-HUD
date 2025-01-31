@@ -4,6 +4,14 @@
   "package": "me.Azz_9.better_hud.mixin.client",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "BlockRenderManagerMixin",
+    "ClientWorldMixin",
+    "ClientWorldPropertiesMixin",
+    "KeyboardMixin",
+    "MouseMixin"
+  ],
+  "mixins": [
+    "ItemStackMixin"
   ],
   "injectors": {
     "defaultRequire": 1

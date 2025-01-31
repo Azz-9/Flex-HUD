@@ -1,9 +1,8 @@
 package me.Azz_9.better_hud.client.Overlay;
 
-import me.Azz_9.better_hud.ModMenu.Enum.DisplayModeEnum;
 import me.Azz_9.better_hud.ModMenu.ModConfig;
+import me.Azz_9.better_hud.Screens.ModsConfigScreen.DisplayMode;
 import me.Azz_9.better_hud.client.Better_hudClient;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
@@ -11,100 +10,112 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
-public class CoordinatesOverlay implements HudRenderCallback {
+public class CoordinatesOverlay extends HudElement {
 
     @Override
     public void onHudRender(DrawContext drawContext, RenderTickCounter tickCounter) {
+        super.onHudRender(drawContext, tickCounter);
 
-        ModConfig modConfigInstance = ModConfig.getInstance();
+        ModConfig INSTANCE = ModConfig.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
 
-        if(modConfigInstance.isEnabled && modConfigInstance.showCoordinates) {
+        if(!INSTANCE.isEnabled || !INSTANCE.showCoordinates || client == null || client.options.hudHidden || client.player == null) {
+            return;
+        }
 
-            MinecraftClient client = MinecraftClient.getInstance();
+        PlayerEntity p = client.player;
 
-            if (client != null && !client.options.hudHidden) {
+        // Get the truncated coordinates with the correct amount of digits
+        String xCoords = BigDecimal.valueOf(p.getX()).setScale(INSTANCE.coordinatesDigits, RoundingMode.DOWN).toString();
+        String yCoords = BigDecimal.valueOf(p.getY()).setScale(INSTANCE.coordinatesDigits, RoundingMode.DOWN).toString();
+        String zCoords = BigDecimal.valueOf(p.getZ()).setScale(INSTANCE.coordinatesDigits, RoundingMode.DOWN).toString();
 
-                PlayerEntity p = client.player;
+        xCoords = "X: " + xCoords;
+        yCoords = "Y: " + yCoords;
+        zCoords = "Z: " + zCoords;
 
-                if (p != null) {
+        this.x = INSTANCE.coordinatesHudX;
+        this.y = INSTANCE.coordinatesHudY;
 
-                    String format = "%." + modConfigInstance.coordinatesDigits + "f";
-                    String xCoords = String.format("X: " + format, p.getX());
-                    String yCoords = String.format("Y: " + format, p.getY());
-                    String zCoords = String.format("Z: " + format, p.getZ());
+        if (INSTANCE.displayModeCoordinates == DisplayMode.Vertical) {
 
-                    if (modConfigInstance.displayModeCoordinates == DisplayModeEnum.Vertical) {
+            int hudX = this.x;
+            int hudY = this.y;
 
-                        int hudX = modConfigInstance.coordinatesHudX;
-                        int hudY = modConfigInstance.coordinatesHudY;
+            drawContext.drawText(client.textRenderer, xCoords, hudX, hudY, INSTANCE.coordinatesColor, INSTANCE.coordinatesShadow);
+            updateWidth(xCoords);
+            if (INSTANCE.showYCoordinates) {
+                hudY += 10;
+                drawContext.drawText(client.textRenderer, yCoords, hudX, hudY, INSTANCE.coordinatesColor, INSTANCE.coordinatesShadow);
+                updateWidth(yCoords);
+            }
+            hudY += 10;
+            drawContext.drawText(client.textRenderer, zCoords, hudX, hudY, INSTANCE.coordinatesColor, INSTANCE.coordinatesShadow);
+            updateWidth(zCoords);
 
-                        drawContext.drawText(client.textRenderer, xCoords, hudX, hudY, modConfigInstance.coordinatesColor, modConfigInstance.coordinatesShadow);
-                        if (modConfigInstance.showYCoordinates) {
-                            hudY += 10;
-                            drawContext.drawText(client.textRenderer, yCoords, hudX, hudY, modConfigInstance.coordinatesColor, modConfigInstance.coordinatesShadow);
-                        }
-                        hudY += 10;
-                        drawContext.drawText(client.textRenderer, zCoords, hudX, hudY, modConfigInstance.coordinatesColor, modConfigInstance.coordinatesShadow);
+            if (INSTANCE.showBiome) {
+                hudY += 10;
+                renderBiome(drawContext, hudX, hudY);
+            }
+            this.height = hudY - this.y + 10;
+            if (INSTANCE.showCoordinatesDirection) {
+                hudX = this.x;
+                hudY = this.y;
+                List<String> direction = getDirection(p);
+                String facing;
+                String axisX = direction.get(2);
+                String axisZ = direction.get(3);
 
-                        if (modConfigInstance.showBiome) {
-                            hudY += 10;
-                            renderBiome(drawContext, hudX, hudY);
-                        }
-                        if (modConfigInstance.showCoordinatesDirection) {
-                            hudX = modConfigInstance.coordinatesHudX;
-                            hudY = modConfigInstance.coordinatesHudY;
-                            List<String> direction = getDirection(p);
-                            String facing;
-                            String axisX = direction.get(2);
-                            String axisZ = direction.get(3);
-
-                            if (modConfigInstance.coordinatesDirectionAbreviation) {
-                                facing = direction.get(1);
-                            } else {
-                                facing = direction.getFirst();
-                            }
-
-
-                            int longestCoords = Math.max(Math.max(xCoords.length(), yCoords.length()), zCoords.length());
-                            hudX = hudX + 24 + 6 * (longestCoords - 1);
-                            drawContext.drawText(client.textRenderer, axisX, hudX, hudY, modConfigInstance.coordinatesColor, modConfigInstance.coordinatesShadow);
-                            if (modConfigInstance.showYCoordinates) {
-                                hudY += 10;
-                                drawContext.drawText(client.textRenderer, facing, hudX, hudY, modConfigInstance.coordinatesColor, modConfigInstance.coordinatesShadow);
-                            } else {
-                                drawContext.drawText(client.textRenderer, facing, hudX + 8, hudY + 5, modConfigInstance.coordinatesColor, modConfigInstance.coordinatesShadow);
-                            }
-                            hudY += 10;
-                            drawContext.drawText(client.textRenderer, axisZ, hudX, hudY, modConfigInstance.coordinatesColor, modConfigInstance.coordinatesShadow);
-                        }
-
-                    } else {
-                        StringBuilder text = new StringBuilder();
-                        text.append(xCoords);
-                        if (modConfigInstance.showYCoordinates) {
-                            text.append("; ").append(yCoords);
-                        }
-                        text.append("; ").append(zCoords);
-                        text.insert(0, "(");
-                        text.append(") ");
-                        if (modConfigInstance.showCoordinatesDirection) {
-                            if (modConfigInstance.coordinatesDirectionAbreviation) {
-                                text.append(getDirection(p).get(1));
-                            } else {
-                                text.append(getDirection(p).getFirst());
-                            }
-                        }
-                        drawContext.drawText(client.textRenderer, text.toString(), modConfigInstance.coordinatesHudX, modConfigInstance.coordinatesHudY, modConfigInstance.coordinatesColor, modConfigInstance.coordinatesShadow);
-                        if (modConfigInstance.showBiome) {
-                            renderBiome(drawContext, modConfigInstance.coordinatesHudX, modConfigInstance.coordinatesHudY + 10);
-                        }
-
-                    }
-
+                if (INSTANCE.coordinatesDirectionAbreviation) {
+                    facing = direction.get(1);
+                } else {
+                    facing = direction.getFirst();
                 }
 
+                int longestCoords = Math.max(Math.max(xCoords.length(), yCoords.length()), zCoords.length());
+                hudX = hudX + 24 + 6 * (longestCoords - 1);
+                drawContext.drawText(client.textRenderer, axisX, hudX, hudY, INSTANCE.coordinatesColor, INSTANCE.coordinatesShadow);
+                updateWidth(axisX, hudX - this.x);
+                if (INSTANCE.showYCoordinates) {
+                    hudY += 10;
+                    drawContext.drawText(client.textRenderer, facing, hudX, hudY, INSTANCE.coordinatesColor, INSTANCE.coordinatesShadow);
+                    updateWidth(facing, hudX - this.x);
+                } else {
+                    drawContext.drawText(client.textRenderer, facing, hudX + 8, hudY + 5, INSTANCE.coordinatesColor, INSTANCE.coordinatesShadow);
+                    updateWidth(facing, hudX + 8 - this.x);
+                }
+                hudY += 10;
+                drawContext.drawText(client.textRenderer, axisZ, hudX, hudY, INSTANCE.coordinatesColor, INSTANCE.coordinatesShadow);
+                updateWidth(axisZ, hudX - this.x);
+            }
+
+        } else {
+            StringBuilder text = new StringBuilder();
+            text.append(xCoords);
+            if (INSTANCE.showYCoordinates) {
+                text.append("; ").append(yCoords);
+            }
+            text.append("; ").append(zCoords);
+            text.insert(0, "(");
+            text.append(")");
+            if (INSTANCE.showCoordinatesDirection) {
+                text.append(" ");
+                if (INSTANCE.coordinatesDirectionAbreviation) {
+                    text.append(getDirection(p).get(1));
+                } else {
+                    text.append(getDirection(p).getFirst());
+                }
+            }
+            drawContext.drawText(client.textRenderer, text.toString(), this.x, this.y, INSTANCE.coordinatesColor, INSTANCE.coordinatesShadow);
+            updateWidth(text.toString());
+            this.height = 10;
+            if (INSTANCE.showBiome) {
+                renderBiome(drawContext, this.x, this.y + 10);
+                this.height += 10;
             }
 
         }
@@ -136,14 +147,26 @@ public class CoordinatesOverlay implements HudRenderCallback {
 
     private void renderBiome(DrawContext drawContext, int hudX, int hudY) {
         MinecraftClient client = MinecraftClient.getInstance();
-        ModConfig modConfigInstance = ModConfig.getInstance();
+        ModConfig INSTANCE = ModConfig.getInstance();
         PlayerEntity p = client.player;
 
         RegistryKey<Biome> biomeKey = client.world.getBiome(p.getBlockPos()).getKey().orElse(null);
         String biomeName = client.world.getBiome(p.getBlockPos()).getIdAsString().replace("minecraft:", "");
-        drawContext.drawText(client.textRenderer, "Biome: ", hudX, hudY, modConfigInstance.coordinatesColor, modConfigInstance.coordinatesShadow);
+        drawContext.drawText(client.textRenderer, "Biome: ", hudX, hudY, INSTANCE.coordinatesColor, INSTANCE.coordinatesShadow);
         hudX += client.textRenderer.getWidth("Biome: ");
-        drawContext.drawText(client.textRenderer, biomeName, hudX, hudY, Better_hudClient.biomeColors.getOrDefault(biomeKey, 0xFFFFFF), modConfigInstance.coordinatesShadow);
+        drawContext.drawText(client.textRenderer, biomeName, hudX, hudY, Better_hudClient.biomeColors.getOrDefault(biomeKey, 0xFFFFFF), INSTANCE.coordinatesShadow);
+        updateWidth("Biome: " + biomeName);
     }
 
+    @Override
+    public void setPos(int x, int y) {
+        ModConfig INSTANCE = ModConfig.getInstance();
+        INSTANCE.coordinatesHudX = x;
+        INSTANCE.coordinatesHudY = y;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return ModConfig.getInstance().showCoordinates;
+    }
 }

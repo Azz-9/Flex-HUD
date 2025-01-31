@@ -1,22 +1,21 @@
 package me.Azz_9.better_hud.client;
 
-import me.Azz_9.better_hud.ConfigScreen.OptionsScreen;
 import me.Azz_9.better_hud.ModMenu.ModConfig;
+import me.Azz_9.better_hud.Screens.OptionsScreen;
+import me.Azz_9.better_hud.client.Interface.ItemDurabilityLostCallback;
 import me.Azz_9.better_hud.client.Overlay.*;
+import me.Azz_9.better_hud.client.utils.CalculateSpeed;
+import me.Azz_9.better_hud.client.utils.DurabilityPing;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
-import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
-import net.fabricmc.fabric.api.event.player.UseBlockCallback;
-import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -27,10 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import static me.Azz_9.better_hud.client.DurabilityPing.isDurabilityUnderThreshold;
-import static me.Azz_9.better_hud.client.DurabilityPing.pingPlayer;
 import static me.Azz_9.better_hud.client.Overlay.ComboCounterOverlay.calculteCombo;
 import static me.Azz_9.better_hud.client.Overlay.ComboCounterOverlay.resetCombo;
 import static me.Azz_9.better_hud.client.Overlay.ReachDisplayOverlay.calculateReach;
@@ -39,114 +37,54 @@ public class Better_hudClient implements ClientModInitializer {
 
     public static final String MOD_ID = "better_hud";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+    private final ModConfig INSTANCE = ModConfig.getInstance();
+
+    public static List<HudRenderCallback> hudElements;
+    public static boolean isEditing = false;
 
     //biome colors for coordinates overlay
     public static Map<RegistryKey<Biome>, Integer> biomeColors = new HashMap<>();
-
-    private Map<String, Integer> lastDurability = new HashMap<>();
+    //launch time
+    private static long launchTime;
+    //is mod Xaero's Minimap loaded
+    public static boolean isXaerosMinimapLoaded = FabricLoader.getInstance().isModLoaded("xaerominimap");
 
 
     @Override
     public void onInitializeClient() {
 
-        LOGGER.info("Better HUD has started up.");
+        launchTime = System.currentTimeMillis();
 
-        // initialize modules
-        TimeChanger.init();
+        LOGGER.info("Better HUD has started up.");
 
         //initialize variable
         initializeBiomeColors();
 
         // HUD elements
-        HudRenderCallback.EVENT.register(new CoordinatesOverlay());
-        HudRenderCallback.EVENT.register(new FPSOverlay());
-        HudRenderCallback.EVENT.register(new ClockOverlay());
-        HudRenderCallback.EVENT.register(new ArmorStatusOverlay());
-        HudRenderCallback.EVENT.register(new DirectionOverlay());
-        HudRenderCallback.EVENT.register(new DayCounterOverlay());
-        HudRenderCallback.EVENT.register(new PingOverlay());
-        HudRenderCallback.EVENT.register(new ServerAddressOverlay());
-        HudRenderCallback.EVENT.register(new MemoryUsageOverlay());
-        HudRenderCallback.EVENT.register(new CPSOverlay());
-        HudRenderCallback.EVENT.register(new SpeedometerOverlay());
-        HudRenderCallback.EVENT.register(new ReachDisplayOverlay());
-        HudRenderCallback.EVENT.register(new ComboCounterOverlay());
-        ModConfig.getInstance();
+        initializeHudElements();
+        for (HudRenderCallback element : hudElements) {
+            HudRenderCallback.EVENT.register(element);
+        }
 
         // durability ping
-        AttackBlockCallback.EVENT.register((player, world, hand, pos, face) -> {
-            if (ModConfig.getInstance().isEnabled && ModConfig.getInstance().enableDurabilityPing && !player.isCreative() && !player.isSpectator() && isDurabilityUnderThreshold(player.getStackInHand(hand), player)) {
-                pingPlayer(player, player.getStackInHand(hand));
-            }
-
-            return ActionResult.PASS;
-        });
-
-        AttackEntityCallback.EVENT.register((player, world, hand, pos, face) -> {
-            if (ModConfig.getInstance().isEnabled && ModConfig.getInstance().enableDurabilityPing && !player.isCreative() && !player.isSpectator() && isDurabilityUnderThreshold(player.getStackInHand(hand), player)) {
-                pingPlayer(player, player.getStackInHand(hand));
-            }
-
-            return ActionResult.PASS;
-        });
-
-        UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
-            if (ModConfig.getInstance().isEnabled && ModConfig.getInstance().enableDurabilityPing && !player.isCreative() && !player.isSpectator() && isDurabilityUnderThreshold(player.getStackInHand(hand), player)) {
-                pingPlayer(player, player.getStackInHand(hand));
-            }
-
-            return ActionResult.PASS;
-        });
-
-        UseItemCallback.EVENT.register((player, world, hand) -> {
-            if (ModConfig.getInstance().isEnabled && ModConfig.getInstance().enableDurabilityPing && !player.isCreative() && !player.isSpectator() && isDurabilityUnderThreshold(player.getStackInHand(hand), player)) {
-                pingPlayer(player, player.getStackInHand(hand));
-            }
-
-            return ActionResult.PASS;
-        });
-
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (client.player == null || client.world == null || client.isPaused()
-                    || !ModConfig.getInstance().isEnabled || !ModConfig.getInstance().enableDurabilityPing
-                    || (!ModConfig.getInstance().checkArmorPieces && !ModConfig.getInstance().checkElytraOnly)) {
-                return;
-            }
-
-            if (ModConfig.getInstance().checkElytraOnly) {
-                ItemStack chestplateSlotItem = client.player.getInventory().getArmorStack(2);
-                if (chestplateSlotItem.getItem() == Items.ELYTRA
-                        && (!lastDurability.containsKey(chestplateSlotItem.getItem().getTranslationKey())
-                        || lastDurability.get(chestplateSlotItem.getItem().getTranslationKey()) > (chestplateSlotItem.getMaxDamage() - chestplateSlotItem.getDamage()))
-                        && isDurabilityUnderThreshold(chestplateSlotItem, client.player)) {
-                    if (pingPlayer(client.player, chestplateSlotItem)) {
-                        lastDurability.put(chestplateSlotItem.getItem().getTranslationKey(), chestplateSlotItem.getMaxDamage() - chestplateSlotItem.getDamage());
-                    }
-                }
-            } else if (ModConfig.getInstance().checkArmorPieces) {
-                for (ItemStack armorPiece : client.player.getInventory().player.getAllArmorItems()) {
-                    if ((!lastDurability.containsKey(armorPiece.getItem().getTranslationKey())
-                            || lastDurability.get(armorPiece.getItem().getTranslationKey()) > (armorPiece.getMaxDamage() - armorPiece.getDamage()))
-                            && isDurabilityUnderThreshold(armorPiece, client.player)) {
-                        if (pingPlayer(client.player, armorPiece)) {
-                            lastDurability.put(armorPiece.getItem().getTranslationKey(), armorPiece.getMaxDamage() - armorPiece.getDamage());
-                        }
-                    }
-                }
+        ItemDurabilityLostCallback.EVENT.register((player, stack, amount) -> {
+            MinecraftClient client = MinecraftClient.getInstance();
+            if (client.player != null && player.getUuid().equals(client.player.getUuid()) && DurabilityPing.isDurabilityUnderThreshold(stack)) {
+                DurabilityPing.pingPlayer(player, stack);
             }
         });
 
         //speedometer
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (!ModConfig.getInstance().isEnabled || !ModConfig.getInstance().showSpeedometer || client.player == null) {
+            if (!INSTANCE.isEnabled || !INSTANCE.showSpeedometer || client.player == null) {
                 return;
             }
-            SpeedometerOverlay.calculateSpeed(client.player);
+            CalculateSpeed.calculateSpeed(client.player);
         });
 
         //reach display
         AttackEntityCallback.EVENT.register((player, world, hand, pos, face) -> {
-            if (ModConfig.getInstance().isEnabled && ModConfig.getInstance().showReach) {
+            if (INSTANCE.isEnabled && INSTANCE.showReach) {
                 calculateReach(player, pos);
             }
             return ActionResult.PASS;
@@ -154,7 +92,7 @@ public class Better_hudClient implements ClientModInitializer {
 
         //combo counter
         AttackEntityCallback.EVENT.register((player, world, hand, pos, face) -> {
-            if (ModConfig.getInstance().isEnabled && ModConfig.getInstance().showComboCounter) {
+            if (INSTANCE.isEnabled && INSTANCE.showComboCounter) {
                 calculteCombo(player, pos);
             }
             return ActionResult.PASS;
@@ -162,7 +100,7 @@ public class Better_hudClient implements ClientModInitializer {
 
         ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, damageSource, baseDamageTaken, damageTaken, blocked) -> {
             MinecraftClient client = MinecraftClient.getInstance();
-            if (ModConfig.getInstance().isEnabled && ModConfig.getInstance().showComboCounter && entity == client.player && !blocked) {
+            if (INSTANCE.isEnabled && INSTANCE.showComboCounter && entity == client.player && !blocked) {
                 resetCombo();
             }
         });
@@ -178,6 +116,26 @@ public class Better_hudClient implements ClientModInitializer {
 
         });
 
+    }
+
+    private void initializeHudElements() {
+        hudElements = List.of(
+                new CoordinatesOverlay(),
+                new FPSOverlay(),
+                new ClockOverlay(),
+                new ArmorStatusOverlay(),
+                new DirectionOverlay(),
+                new DayCounterOverlay(),
+                new PingOverlay(),
+                new ServerAddressOverlay(),
+                new MemoryUsageOverlay(),
+                new CPSOverlay(),
+                new SpeedometerOverlay(),
+                new ReachDisplayOverlay(),
+                new ComboCounterOverlay(),
+                new PlaytimeOverlay(),
+                new ShriekerWarningLevelOverlay()
+        );
     }
 
     private void initializeBiomeColors() {
@@ -247,4 +205,11 @@ public class Better_hudClient implements ClientModInitializer {
         biomeColors.put(BiomeKeys.END_BARRENS, 0x6d00a3);
     }
 
+    public static long getLaunchTime() {
+        return launchTime;
+    }
+
 }
+
+//TODO faire les fichiers langues en_us, fr_fr
+//TODO faire des tooltip custom

@@ -2,18 +2,28 @@ package me.Azz_9.better_hud.ModMenu;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
-import me.Azz_9.better_hud.ModMenu.Enum.*;
+import me.Azz_9.better_hud.Screens.ModsConfigScreen.DisplayMode;
+import me.Azz_9.better_hud.Screens.ModsConfigScreen.Mods.ArmorStatus;
+import me.Azz_9.better_hud.Screens.ModsConfigScreen.Mods.DurabilityPing;
+import me.Azz_9.better_hud.Screens.ModsConfigScreen.Mods.Speedometer;
+import me.Azz_9.better_hud.Screens.ModsConfigScreen.Mods.WeatherChanger;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.impl.builders.SubCategoryBuilder;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 
 import java.time.DateTimeException;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
 
+@Environment(EnvType.CLIENT)
 public class ModMenuIntegration implements ModMenuApi {
 
     @Override
@@ -21,7 +31,7 @@ public class ModMenuIntegration implements ModMenuApi {
         return parent -> {
             ConfigBuilder builder = ConfigBuilder.create()
                     .setParentScreen(parent)
-                    .setTitle(Text.of("bonsoir config"));
+                    .setTitle(Text.of("Better HUD config"));
 
 
             ConfigCategory generalCategory = builder.getOrCreateCategory(Text.of("General"));
@@ -116,8 +126,8 @@ public class ModMenuIntegration implements ModMenuApi {
                     .build());
             //display mode
             coordinatesSubCategory.add(builder.entryBuilder()
-                    .startEnumSelector(Text.of("Orientation"), DisplayModeEnum.class, ModConfig.getInstance().displayModeCoordinates)
-                    .setDefaultValue(DisplayModeEnum.Vertical) // Used when user click "Reset"
+                    .startEnumSelector(Text.of("Orientation"), DisplayMode.class, ModConfig.getInstance().displayModeCoordinates)
+                    .setDefaultValue(DisplayMode.Vertical) // Used when user click "Reset"
                     .setSaveConsumer(newValue -> {
                         ModConfig.getInstance().displayModeCoordinates = newValue;
                         ModConfig.saveConfig();
@@ -230,7 +240,7 @@ public class ModMenuIntegration implements ModMenuApi {
                         if (isValidClockFormat(newValue)) {
                             return Optional.empty();
                         } else {
-                            return Optional.of(Text.of("Invalid format. Please enter a correct fomrat."));
+                            return Optional.of(Text.of("Invalid format. Please enter a correct format."));
                         }
                     })
                     .setSaveConsumer(newValue -> {
@@ -352,8 +362,8 @@ public class ModMenuIntegration implements ModMenuApi {
                     .build());
             //show durability
             armorStatusSubCategory.add(builder.entryBuilder()
-                    .startEnumSelector(Text.of("Show durability"), DurabilityTypeEnum.class, ModConfig.getInstance().showDurability)
-                    .setDefaultValue(DurabilityTypeEnum.Percentage) // Used when user click "Reset"
+                    .startEnumSelector(Text.of("Show durability"), ArmorStatus.DurabilityType.class, ModConfig.getInstance().showDurability)
+                    .setDefaultValue(ArmorStatus.DurabilityType.Percentage) // Used when user click "Reset"
                     .setSaveConsumer(newValue -> {
                         ModConfig.getInstance().showDurability = newValue;
                         ModConfig.saveConfig();
@@ -361,8 +371,8 @@ public class ModMenuIntegration implements ModMenuApi {
                     .build());
             //display mode
             armorStatusSubCategory.add(builder.entryBuilder()
-                    .startEnumSelector(Text.of("Orientation"), DisplayModeEnum.class, ModConfig.getInstance().displayModeArmorStatus)
-                    .setDefaultValue(DisplayModeEnum.Vertical) // Used when user click "Reset"
+                    .startEnumSelector(Text.of("Orientation"), DisplayMode.class, ModConfig.getInstance().displayModeArmorStatus)
+                    .setDefaultValue(DisplayMode.Vertical) // Used when user click "Reset"
                     .setSaveConsumer(newValue -> {
                         ModConfig.getInstance().displayModeArmorStatus = newValue;
                         ModConfig.saveConfig();
@@ -435,6 +445,33 @@ public class ModMenuIntegration implements ModMenuApi {
                         ModConfig.saveConfig();
                     }) // Called when user save the config
                     .build());
+            //show Xaero's map waypoints
+            directionSubCategory.add(builder.entryBuilder()
+                    .startBooleanToggle(Text.of("Show Xaero's map waypoints"), ModConfig.getInstance().showXaerosMapWaypoints)
+                    .setDefaultValue(true) // Used when user click "Reset"
+                    .setSaveConsumer(newValue -> {
+                        ModConfig.getInstance().showXaerosMapWaypoints = newValue;
+                        ModConfig.saveConfig();
+                    }) // Called when user save the config
+                    .build());
+            //display x
+            directionSubCategory.add(builder.entryBuilder()
+                    .startIntField(Text.of("display X"), ModConfig.getInstance().directionHudX)
+                    .setDefaultValue(200)
+                    .setSaveConsumer(newValue -> {
+                        ModConfig.getInstance().directionHudX = newValue;
+                        ModConfig.saveConfig();
+                    })
+                    .build());
+            //display y
+            directionSubCategory.add(builder.entryBuilder()
+                    .startIntField(Text.of("display Y"), ModConfig.getInstance().directionHudY)
+                    .setDefaultValue(0)
+                    .setSaveConsumer(newValue -> {
+                        ModConfig.getInstance().directionHudY = newValue;
+                        ModConfig.saveConfig();
+                    })
+                    .build());
 
 
             //Day counter category
@@ -443,6 +480,7 @@ public class ModMenuIntegration implements ModMenuApi {
             dayCounterSubCategory.add(builder.entryBuilder()
                     .startBooleanToggle(Text.of("Show day counter"), ModConfig.getInstance().showDayCounter)
                     .setDefaultValue(true)
+                    .setTooltip(Text.literal("This mod does not work with time changer").styled(style -> style.withColor(Formatting.RED)))
                     .setSaveConsumer(newValue -> {
                         ModConfig.getInstance().showDayCounter = newValue;
                         ModConfig.saveConfig();
@@ -603,11 +641,11 @@ public class ModMenuIntegration implements ModMenuApi {
 
 
             //Weather changer category
-            SubCategoryBuilder weatherChangerSubCategory = builder.entryBuilder().startSubCategory(Text.of("Server Address"));
+            SubCategoryBuilder weatherChangerSubCategory = builder.entryBuilder().startSubCategory(Text.of("Weather Changer"));
             //toggle
             weatherChangerSubCategory.add(builder.entryBuilder()
                     .startBooleanToggle(Text.of("Enable weather changer"), ModConfig.getInstance().enableWeatherChanger)
-                    .setDefaultValue(true)
+                    .setDefaultValue(false)
                     .setSaveConsumer(newValue -> {
                         ModConfig.getInstance().enableWeatherChanger = newValue;
                         ModConfig.saveConfig();
@@ -615,8 +653,8 @@ public class ModMenuIntegration implements ModMenuApi {
                     .build());
             //select weather
             weatherChangerSubCategory.add(builder.entryBuilder()
-                    .startEnumSelector(Text.of("Select weather"), WeatherEnum.class, ModConfig.getInstance().selectedWeather)
-                    .setDefaultValue(WeatherEnum.Clear)
+                    .startEnumSelector(Text.of("Select weather"), WeatherChanger.Weather.class, ModConfig.getInstance().selectedWeather)
+                    .setDefaultValue(WeatherChanger.Weather.Clear)
                     .setSaveConsumer(newValue -> {
                         ModConfig.getInstance().selectedWeather = newValue;
                         ModConfig.saveConfig();
@@ -746,6 +784,7 @@ public class ModMenuIntegration implements ModMenuApi {
             timeChangerSubCategory.add(builder.entryBuilder()
                     .startBooleanToggle(Text.of("Enable time changer"), ModConfig.getInstance().enableTimeChanger)
                     .setDefaultValue(false)
+                    .setTooltip(Text.literal("This mod does not work with day counter").styled(style -> style.withColor(Formatting.RED)))
                     .setSaveConsumer(newValue -> {
                         ModConfig.getInstance().enableTimeChanger = newValue;
                         ModConfig.saveConfig();
@@ -793,8 +832,8 @@ public class ModMenuIntegration implements ModMenuApi {
                     .build());
             //durability ping type
             durabilityPingSubCategory.add(builder.entryBuilder()
-                    .startEnumSelector(Text.of("Durability ping type"), DurabilityPingTypeEnum.class, ModConfig.getInstance().durabilityPingType)
-                    .setDefaultValue(DurabilityPingTypeEnum.Both)
+                    .startEnumSelector(Text.of("Durability ping type"), DurabilityPing.DurabilityPingType.class, ModConfig.getInstance().durabilityPingType)
+                    .setDefaultValue(DurabilityPing.DurabilityPingType.Both)
                     .setSaveConsumer(newValue -> {
                         ModConfig.getInstance().durabilityPingType = newValue;
                         ModConfig.saveConfig();
@@ -861,8 +900,8 @@ public class ModMenuIntegration implements ModMenuApi {
                     .build());
             //speed unit
             speedometerSubCategory.add(builder.entryBuilder()
-                    .startEnumSelector(Text.of("Speed unit"), SpeedometerUnitsEnum.class, ModConfig.getInstance().speedometerUnits)
-                    .setDefaultValue(SpeedometerUnitsEnum.MPS)
+                    .startEnumSelector(Text.of("Speed unit"), Speedometer.SpeedometerUnits.class, ModConfig.getInstance().speedometerUnits)
+                    .setDefaultValue(Speedometer.SpeedometerUnits.MPS)
                     .setTooltipSupplier(value ->
                         switch (value) {
                             case MPS -> Optional.of(new Text[]{Text.literal("Meters per second (m/s):")});
@@ -1013,6 +1052,142 @@ public class ModMenuIntegration implements ModMenuApi {
                     .build());
 
 
+            //playtime category
+            SubCategoryBuilder playtimeSubCategory = builder.entryBuilder().startSubCategory(Text.of("Playtime"));
+            //toggle
+            playtimeSubCategory.add(builder.entryBuilder()
+                    .startBooleanToggle(Text.of("Show playtime"), ModConfig.getInstance().showPlaytime)
+                    .setDefaultValue(true)
+                    .setSaveConsumer(newValue -> {
+                        ModConfig.getInstance().showPlaytime = newValue;
+                        ModConfig.saveConfig();
+                    })
+                    .build());
+            //text color
+            playtimeSubCategory.add(builder.entryBuilder()
+                    .startColorField(Text.of("Text color"), ModConfig.getInstance().playtimeColor)
+                    .setDefaultValue(0xFFFFFF) // Used when user click "Reset"
+                    .setSaveConsumer(newValue -> {
+                        ModConfig.getInstance().playtimeColor = newValue;
+                        ModConfig.saveConfig();
+                    }) // Called when user save the config
+                    .build());
+            //text shadow
+            playtimeSubCategory.add(builder.entryBuilder()
+                    .startBooleanToggle(Text.of("Text shadow"), ModConfig.getInstance().playtimeShadow)
+                    .setDefaultValue(true) // Used when user click "Reset"
+                    .setSaveConsumer(newValue -> {
+                        ModConfig.getInstance().playtimeShadow = newValue;
+                        ModConfig.saveConfig();
+                    }) // Called when user save the config
+                    .build());
+            //display X
+            playtimeSubCategory.add(builder.entryBuilder()
+                    .startIntField(Text.of("display X"), ModConfig.getInstance().playtimeHudX)
+                    .setDefaultValue(2)
+                    .setSaveConsumer(newValue -> {
+                        ModConfig.getInstance().playtimeHudX = newValue;
+                        ModConfig.saveConfig();
+                    })
+                    .build());
+            //display Y
+            playtimeSubCategory.add(builder.entryBuilder()
+                    .startIntField(Text.of("display Y"), ModConfig.getInstance().playtimeHudY)
+                    .setDefaultValue(120)
+                    .setSaveConsumer(newValue -> {
+                        ModConfig.getInstance().playtimeHudY = newValue;
+                        ModConfig.saveConfig();
+                    })
+                    .build());
+
+
+            //shrieker warning level category
+            SubCategoryBuilder shriekerWarningLevelSubCategory = builder.entryBuilder().startSubCategory(Text.of("Shrieker Warning Level"));
+            //toggle
+            shriekerWarningLevelSubCategory.add(builder.entryBuilder()
+                    .startBooleanToggle(Text.of("Show shrieker warning level"), ModConfig.getInstance().showShriekerWarningLevel)
+                    .setDefaultValue(true)
+                    .setSaveConsumer(newValue -> {
+                        ModConfig.getInstance().showShriekerWarningLevel = newValue;
+                        ModConfig.saveConfig();
+                    })
+                    .build());
+            //text color
+            shriekerWarningLevelSubCategory.add(builder.entryBuilder()
+                    .startColorField(Text.of("Text color"), ModConfig.getInstance().shriekerWarningLevelColor)
+                    .setDefaultValue(0xFFFFFF) // Used when user click "Reset"
+                    .setSaveConsumer(newValue -> {
+                        ModConfig.getInstance().shriekerWarningLevelColor = newValue;
+                        ModConfig.saveConfig();
+                    }) // Called when user save the config
+                    .build());
+            //text shadow
+            shriekerWarningLevelSubCategory.add(builder.entryBuilder()
+                    .startBooleanToggle(Text.of("Text shadow"), ModConfig.getInstance().shriekerWarningLevelShadow)
+                    .setDefaultValue(true) // Used when user click "Reset"
+                    .setSaveConsumer(newValue -> {
+                        ModConfig.getInstance().shriekerWarningLevelShadow = newValue;
+                        ModConfig.saveConfig();
+                    }) // Called when user save the config
+                    .build());
+            //show when player is in deep dark biome
+            shriekerWarningLevelSubCategory.add(builder.entryBuilder()
+                    .startBooleanToggle(Text.of("Only show when you are in deep dark biome"), ModConfig.getInstance().showWhenInDeepDark)
+                    .setDefaultValue(true)
+                    .setSaveConsumer(newValue -> {
+                        ModConfig.getInstance().showWhenInDeepDark = newValue;
+                        ModConfig.saveConfig();
+                    })
+                    .build());
+            //show when player is in nether
+            //display X
+            shriekerWarningLevelSubCategory.add(builder.entryBuilder()
+                    .startIntField(Text.of("display X"), ModConfig.getInstance().shriekerWarningLevelHudX)
+                    .setDefaultValue(2)
+                    .setSaveConsumer(newValue -> {
+                        ModConfig.getInstance().shriekerWarningLevelHudX = newValue;
+                        ModConfig.saveConfig();
+                    })
+                    .build());
+            //display Y
+            shriekerWarningLevelSubCategory.add(builder.entryBuilder()
+                    .startIntField(Text.of("display Y"), ModConfig.getInstance().shriekerWarningLevelHudY)
+                    .setDefaultValue(120)
+                    .setSaveConsumer(newValue -> {
+                        ModConfig.getInstance().shriekerWarningLevelHudY = newValue;
+                        ModConfig.saveConfig();
+                    })
+                    .build());
+
+
+            //block search
+            SubCategoryBuilder blockSearchSubCategory = builder.entryBuilder().startSubCategory(Text.of("Block Search"));
+            //toggle
+            blockSearchSubCategory.add(builder.entryBuilder()
+                    .startBooleanToggle(Text.of("Enable block search"), ModConfig.getInstance().enableBlocksSearch)
+                    .setDefaultValue(true)
+                    .setSaveConsumer(newValue -> {
+                        ModConfig.getInstance().enableBlocksSearch = newValue;
+                        ModConfig.saveConfig();
+                    })
+                    .build());
+            //select blocks
+            blockSearchSubCategory.add(builder.entryBuilder()
+                    .startStrList(Text.of("Selected blocks"), ModConfig.getInstance().selectedBlocks)
+                    .setDefaultValue(List.of())
+                    .setErrorSupplier(newValue -> {
+                        if (isValidBlocks(newValue)) {
+                            return Optional.empty();
+                        } else {
+                            return Optional.of(Text.of("Invalid selected blocks."));
+                        }
+                    })
+                    .setSaveConsumer(newValue -> {
+                        ModConfig.getInstance().selectedBlocks = newValue;
+                        ModConfig.saveConfig();
+                    })
+                    .build());
+
 
             generalCategory.addEntry(coordinatesSubCategory.build());
             generalCategory.addEntry(FPSSubCategory.build());
@@ -1022,6 +1197,7 @@ public class ModMenuIntegration implements ModMenuApi {
             generalCategory.addEntry(dayCounterSubCategory.build());
             generalCategory.addEntry(pingSubCategory.build());
             generalCategory.addEntry(serverAddressSubCategory.build());
+            generalCategory.addEntry(weatherChangerSubCategory.build());
             generalCategory.addEntry(memoryUsageSubCategory.build());
             generalCategory.addEntry(cpsSubCategory.build());
             generalCategory.addEntry(timeChangerSubCategory.build());
@@ -1029,6 +1205,9 @@ public class ModMenuIntegration implements ModMenuApi {
             generalCategory.addEntry(speedometerSubCategory.build());
             generalCategory.addEntry(reachSubCategory.build());
             generalCategory.addEntry(comboCounterSubCategory.build());
+            generalCategory.addEntry(playtimeSubCategory.build());
+            generalCategory.addEntry(shriekerWarningLevelSubCategory.build());
+            generalCategory.addEntry(blockSearchSubCategory.build());
 
             return builder.build();
         };
@@ -1050,4 +1229,17 @@ public class ModMenuIntegration implements ModMenuApi {
             return false;
         }
     }
+
+    private boolean isValidBlocks(List<String> selectedBlocks) {
+        for (String block : selectedBlocks) {
+            String[] parts = block.split(":", 2);
+            if (parts.length == 2 && !Registries.BLOCK.containsId(Identifier.of(parts[0], parts[1]))) {
+                return false;
+            } else if (!Registries.BLOCK.containsId(Identifier.of(parts[0]))){
+                return false;
+            }
+        }
+        return true;
+    }
+
 }

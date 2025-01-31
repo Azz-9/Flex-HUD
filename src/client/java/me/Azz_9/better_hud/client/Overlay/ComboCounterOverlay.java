@@ -19,7 +19,7 @@ public class ComboCounterOverlay implements HudRenderCallback {
 
         MinecraftClient client = MinecraftClient.getInstance();
 
-        if (!ModConfig.getInstance().isEnabled || !ModConfig.getInstance().showComboCounter || client == null) {
+        if (!ModConfig.getInstance().isEnabled || !ModConfig.getInstance().showComboCounter || client == null || client.options.hudHidden) {
             return;
         }
 

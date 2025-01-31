@@ -1,40 +1,63 @@
 package me.Azz_9.better_hud.client.Overlay;
 
 import me.Azz_9.better_hud.ModMenu.ModConfig;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import me.Azz_9.better_hud.client.Better_hudClient;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
 
-public class ServerAddressOverlay implements HudRenderCallback {
+public class ServerAddressOverlay extends HudElement {
 
     @Override
     public void onHudRender(DrawContext drawContext, RenderTickCounter tickCounter) {
+        super.onHudRender(drawContext, tickCounter);
 
-        ModConfig modConfigInstance = ModConfig.getInstance();
+        ModConfig INSTANCE = ModConfig.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
 
-        if (modConfigInstance.isEnabled && modConfigInstance.showServerAddress) {
-
-            MinecraftClient client = MinecraftClient.getInstance();
-
-            if (client != null && !client.options.hudHidden) {
-
-                if (client.getCurrentServerEntry() != null) {
-
-                    String address = client.getCurrentServerEntry().address;
-
-                    drawContext.drawText(client.textRenderer, address, modConfigInstance.serverAddressHudX, modConfigInstance.serverAddressHudY, modConfigInstance.serverAddressColor, modConfigInstance.serverAddressShadow);
-
-                } else if (!modConfigInstance.hideServerAddressWhenOffline) {
-
-                    drawContext.drawText(client.textRenderer, "Offline", modConfigInstance.serverAddressHudX, modConfigInstance.serverAddressHudY, modConfigInstance.serverAddressColor, modConfigInstance.serverAddressShadow);
-
-                }
-
-            }
-
+        if (!INSTANCE.isEnabled || !INSTANCE.showServerAddress || client == null || client.options.hudHidden) {
+            return;
         }
 
+        this.x = INSTANCE.serverAddressHudX;
+        this.y = INSTANCE.serverAddressHudY;
+
+        String text = "";
+
+        if (client.getCurrentServerEntry() != null) {
+
+            text = client.getCurrentServerEntry().address;
+
+            drawContext.drawText(client.textRenderer, text, INSTANCE.serverAddressHudX, INSTANCE.serverAddressHudY, INSTANCE.serverAddressColor, INSTANCE.serverAddressShadow);
+
+        } else if (!INSTANCE.hideServerAddressWhenOffline) {
+
+            text = "Offline";
+            drawContext.drawText(client.textRenderer, text, INSTANCE.serverAddressHudX, INSTANCE.serverAddressHudY, INSTANCE.serverAddressColor, INSTANCE.serverAddressShadow);
+
+        } else if (Better_hudClient.isEditing) {
+
+            text = "play.hypixel.net";
+            drawContext.drawText(client.textRenderer, text, INSTANCE.serverAddressHudX, INSTANCE.serverAddressHudY, INSTANCE.serverAddressColor, INSTANCE.serverAddressShadow);
+        }
+
+        if (!text.isEmpty()) {
+            setWidth(text);
+            this.height = client.textRenderer.fontHeight;
+        }
+
+    }
+
+    @Override
+    public void setPos(int x, int y) {
+        ModConfig INSTANCE = ModConfig.getInstance();
+        INSTANCE.serverAddressHudX = x;
+        INSTANCE.serverAddressHudY = y;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return ModConfig.getInstance().showServerAddress;
     }
 
 }

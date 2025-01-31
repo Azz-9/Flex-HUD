@@ -1,7 +1,6 @@
 package me.Azz_9.better_hud.client.Overlay;
 
 import me.Azz_9.better_hud.ModMenu.ModConfig;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
@@ -11,19 +10,24 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
 
-public class ReachDisplayOverlay implements HudRenderCallback {
+public class ReachDisplayOverlay extends HudElement {
 
     private static double reach = 0.0;
     private static long lastHitTime = -1;
 
     @Override
     public void onHudRender(DrawContext drawContext, RenderTickCounter tickCounter) {
+        super.onHudRender(drawContext, tickCounter);
 
+        ModConfig INSTANCE = ModConfig.getInstance();
         MinecraftClient client = MinecraftClient.getInstance();
 
-        if (!ModConfig.getInstance().isEnabled || !ModConfig.getInstance().showReach || client == null) {
+        if (!INSTANCE.isEnabled || !INSTANCE.showReach || client == null) {
             return;
         }
+
+        this.x = INSTANCE.reachHudX;
+        this.y = INSTANCE.reachHudY;
 
         if (lastHitTime == -1 || System.currentTimeMillis() - lastHitTime > 5000) {
             reach = 0.0; // reset reach 5s after last hit
@@ -32,14 +36,18 @@ public class ReachDisplayOverlay implements HudRenderCallback {
         MatrixStack matrices = drawContext.getMatrices();
 
         matrices.push();
-        matrices.translate(ModConfig.getInstance().reachHudX, ModConfig.getInstance().reachHudY, 0.0);
+        matrices.translate(INSTANCE.reachHudX, INSTANCE.reachHudY, 0.0);
 
-        String format = "%." + ModConfig.getInstance().reachDigits + "f";
+        String format = "%." + INSTANCE.reachDigits + "f";
         String formattedSpeed = String.format(format, reach);
+        String text = formattedSpeed + " blocks";
 
-        drawContext.drawText(client.textRenderer, Text.of(formattedSpeed + " blocks"), 0, 0, ModConfig.getInstance().reachColor, ModConfig.getInstance().reachShadow);
+        drawContext.drawText(client.textRenderer, Text.of(text), 0, 0, INSTANCE.reachColor, INSTANCE.reachShadow);
 
         matrices.pop();
+
+        setWidth(text);
+        this.height = client.textRenderer.fontHeight;
 
     }
 
@@ -54,4 +62,15 @@ public class ReachDisplayOverlay implements HudRenderCallback {
 
     }
 
+    @Override
+    public void setPos(int x, int y) {
+        ModConfig INSTANCE = ModConfig.getInstance();
+        INSTANCE.reachHudX = x;
+        INSTANCE.reachHudY = y;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return ModConfig.getInstance().showReach;
+    }
 }

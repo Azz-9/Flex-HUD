@@ -1,58 +1,57 @@
 package me.Azz_9.better_hud.client.Overlay;
 
 import me.Azz_9.better_hud.ModMenu.ModConfig;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import me.Azz_9.better_hud.client.utils.CalculateSpeed;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
 
-import static me.Azz_9.better_hud.ModMenu.Enum.SpeedometerUnitsEnum.*;
+import static me.Azz_9.better_hud.Screens.ModsConfigScreen.Mods.Speedometer.SpeedometerUnits.*;
 
-public class SpeedometerOverlay implements HudRenderCallback {
-
-    private static Vec3d previousPosition = null;
-    private static double speed = 0.0;
+public class SpeedometerOverlay extends HudElement {
 
     @Override
     public void onHudRender(DrawContext drawContext, RenderTickCounter tickCounter) {
-        ModConfig modConfigInstance = ModConfig.getInstance();
+        ModConfig INSTANCE = ModConfig.getInstance();
         MinecraftClient client = MinecraftClient.getInstance();
 
-        if (!modConfigInstance.isEnabled || !modConfigInstance.showSpeedometer || client == null || client.options.hudHidden || client.player == null || client.world == null) {
+        if (!INSTANCE.isEnabled || !INSTANCE.showSpeedometer || client == null || client.options.hudHidden || client.player == null || client.world == null) {
             return;
         }
+        
+        this.x = INSTANCE.speedometerHudX;
+        this.y = INSTANCE.speedometerHudY;
 
         PlayerEntity player = client.player;
 
         MatrixStack matrices = drawContext.getMatrices();
 
-        int x = modConfigInstance.speedometerHudX;
-        int y = modConfigInstance.speedometerHudY;
-
         matrices.push();
-        matrices.translate(x, y, 0);
+        matrices.translate(this.x, this.y, 0);
 
-        String formattedSpeed = getString(player);
+        String formattedSpeed = getString(player, INSTANCE);
 
-        drawContext.drawText(client.textRenderer, formattedSpeed, 0, 0, ModConfig.getInstance().speedometerColor, ModConfig.getInstance().speedometerShadow);
+        drawContext.drawText(client.textRenderer, formattedSpeed, 0, 0, INSTANCE.speedometerColor, INSTANCE.speedometerShadow);
 
         matrices.pop();
+
+        setWidth(formattedSpeed);
+        this.height = client.textRenderer.fontHeight;
     }
 
-    private static @NotNull String getString(PlayerEntity player) {
-        String format = "%." + ModConfig.getInstance().speedometerDigits + "f";
-        String formattedSpeed = String.format(format, speed);
+    private static @NotNull String getString(PlayerEntity player, ModConfig INSTANCE) {
+        String format = "%." + INSTANCE.speedometerDigits + "f";
+        String formattedSpeed = String.format(format, CalculateSpeed.getSpeed());
 
-        if (ModConfig.getInstance().speedometerUnits == KNOT || (ModConfig.getInstance().useKnotInBoat && player.getVehicle() instanceof BoatEntity)) {
+        if (INSTANCE.speedometerUnits == KNOT || (INSTANCE.useKnotInBoat && player.getVehicle() instanceof BoatEntity)) {
             formattedSpeed += " knots";
-        } else if (ModConfig.getInstance().speedometerUnits == KPH) {
+        } else if (INSTANCE.speedometerUnits == KPH) {
             formattedSpeed += " km/h";
-        } else if (ModConfig.getInstance().speedometerUnits == MPH) {
+        } else if (INSTANCE.speedometerUnits == MPH) {
             formattedSpeed += " mph";
         } else {
             formattedSpeed += " m/s";
@@ -60,26 +59,15 @@ public class SpeedometerOverlay implements HudRenderCallback {
         return formattedSpeed;
     }
 
-    public static void calculateSpeed(PlayerEntity player) {
-        Vec3d currentPosition = player.getPos();
-        if (previousPosition != null) {
-            Vec3d currentVector = new Vec3d(
-                    currentPosition.x - previousPosition.x,
-                    currentPosition.y - previousPosition.y,
-                    currentPosition.z - previousPosition.z
-            );
-            speed = Math.sqrt(Math.pow(currentVector.x, 2) + Math.pow(currentVector.y, 2) + Math.pow(currentVector.z, 2)) * 20; // speed in blocks per seconds
-
-            if (ModConfig.getInstance().speedometerUnits == KNOT || (ModConfig.getInstance().useKnotInBoat && player.getVehicle() instanceof BoatEntity)) {
-                speed = speed * 1.9438452492;
-            } else if (ModConfig.getInstance().speedometerUnits == KPH) {
-                speed = speed * 3.6;
-            } else if (ModConfig.getInstance().speedometerUnits == MPH) {
-                speed = speed * 2.2369362921;
-            } // no need MPS because speed is already in meters per seconds
-
-        }
-        previousPosition = currentPosition;
+    @Override
+    public void setPos(int x, int y) {
+        ModConfig INSTANCE = ModConfig.getInstance();
+        INSTANCE.speedometerHudX = x;
+        INSTANCE.speedometerHudY = y;
     }
 
+    @Override
+    public boolean isEnabled() {
+        return ModConfig.getInstance().showSpeedometer;
+    }
 }
