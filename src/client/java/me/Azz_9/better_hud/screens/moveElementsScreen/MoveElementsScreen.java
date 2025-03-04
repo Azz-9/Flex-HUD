@@ -70,7 +70,7 @@ public class MoveElementsScreen extends Screen {
 		}
 		for (HudRenderCallback element : hudElements) {
 			if (element instanceof HudElement hudElement && hudElement.isEnabled()) {
-				MovableWidget widget = new MovableWidget((int) hudElement.x, (int) hudElement.y, hudElement.getWidth(), hudElement.getHeight(), hudElement, this);
+				MovableWidget widget = new MovableWidget((int) hudElement.x, (int) hudElement.y, hudElement.scale, hudElement.getWidth(), hudElement.getHeight(), hudElement, this);
 				addChild(widget);
 			}
 		}
@@ -134,7 +134,6 @@ public class MoveElementsScreen extends Screen {
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		System.out.println(keyCode + " " + scanCode + " " + modifiers);
 		if (keyCode == 256 && this.shouldCloseOnEsc()) {
 			cancel();
 		} else if (keyCode == 87 && modifiers == 2 && !prevModifiedMovableWidgets.isEmpty()) {
@@ -149,6 +148,9 @@ public class MoveElementsScreen extends Screen {
 
 	public void addModifiedWidget(MovableWidget movableWidget) {
 		prevModifiedMovableWidgets.add(movableWidget);
+		if (prevModifiedMovableWidgets.size() > 100) {
+			prevModifiedMovableWidgets.removeFirst();
+		}
 		redoModifiedMovableWidgets.clear();
 	}
 

@@ -39,9 +39,12 @@ public class ArmorStatusOverlay extends HudElement {
         PlayerEntity player = CLIENT.player;
 
         MatrixStack matrices = drawContext.getMatrices();
+        matrices.push();
+        matrices.translate(this.x, this.y, 0);
+        matrices.scale(this.scale, this.scale, 1.0f);
 
-        int hudX = (int) this.x;
-        int hudY = (int) this.y;
+        int hudX = 0;
+        int hudY = 0;
         if (this.displayMode == DisplayMode.Vertical) {
             hudY -= 16;
         }
@@ -226,6 +229,8 @@ public class ArmorStatusOverlay extends HudElement {
                 }
             }
         }
+
+        matrices.pop();
 
     }
 

@@ -6,7 +6,6 @@ import me.Azz_9.better_hud.client.overlay.*;
 import me.Azz_9.better_hud.client.utils.DurabilityPing;
 import me.Azz_9.better_hud.client.utils.TimeChanger;
 import me.Azz_9.better_hud.client.utils.WeatherChangerConfig;
-import me.Azz_9.better_hud.screens.modsConfigScreen.mods.WeatherChanger;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 
 import java.io.File;
@@ -18,6 +17,7 @@ import java.util.List;
 public class ModConfig {
 
     public boolean isEnabled = true;
+    //hud
     public CoordinatesOverlay coordinates = new CoordinatesOverlay(2, 15);
     public FPSOverlay fps = new FPSOverlay(2, 2);
     public ClockOverlay clock = new ClockOverlay(650, 2);
@@ -33,7 +33,7 @@ public class ModConfig {
     public ComboCounterOverlay comboCounter = new ComboCounterOverlay(2, 120);
     public PlaytimeOverlay playtime = new PlaytimeOverlay(2, 140);
     public ShriekerWarningLevelOverlay shriekerWarningLevel = new ShriekerWarningLevelOverlay(2, 160);
-
+    //others
     public WeatherChangerConfig weatherChanger = new WeatherChangerConfig();
     public TimeChanger timeChanger = new TimeChanger();
     public DurabilityPing durabilityPing = new DurabilityPing();

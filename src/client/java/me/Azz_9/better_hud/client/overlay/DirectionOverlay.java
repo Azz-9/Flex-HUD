@@ -48,8 +48,11 @@ public class DirectionOverlay extends HudElement {
         float yaw = (player.getYaw() % 360 + 360) % 360;
 
         MatrixStack matrices = drawContext.getMatrices();
+        matrices.push();
+        matrices.translate(this.x, this.y, 0);
+        matrices.scale(this.scale, this.scale, 1.0f);
 
-        drawContext.enableScissor((int) this.x, (int) this.y, (int) this.x + this.width, (int) this.y + this.height);
+        drawContext.enableScissor(0, 0, this.width, this.height);
 
         // Affichage des points cardinaux
         drawCompassPoint(drawContext, matrices, "S", 0, yaw);
@@ -71,7 +74,6 @@ public class DirectionOverlay extends HudElement {
 
         // Affichage des waypoints Xaero's minimap
         if (this.showXaerosMapWaypoints && isXaerosMinimapLoaded) {
-
             drawXaerosMapWaypoints(drawContext, matrices, yaw);
         }
 
@@ -80,11 +82,13 @@ public class DirectionOverlay extends HudElement {
         // Affichage du marqueur de direction
         if (this.showMarker) {
             matrices.push();
-            matrices.translate((this.x + this.width / 2.0f) - (CLIENT.textRenderer.getWidth("▼") / 2.0f), this.y, 0.0f);
+            matrices.translate((this.width / 2.0f) - (CLIENT.textRenderer.getWidth("▼") / 2.0f), 0, 0.0f); // tODO test avec -0.5 pour center le marker avec l'ombre
             matrices.scale(1.0f, 0.5f, 1.0f);
             drawContext.drawText(CLIENT.textRenderer, "▼", 0, 0, this.color, this.shadow);
             matrices.pop();
         }
+
+        matrices.pop();
 
     }
 
@@ -96,12 +100,12 @@ public class DirectionOverlay extends HudElement {
 
         if (Math.abs(angleDifference) <= 120) {
             // Calculer la position X de chaque point cardinal en fonction de l'angle
-            float positionX = (float) ((this.x + this.width / 2.0f)  + (angleDifference * (screenWidth / 720.0f)));
+            float positionX = ((this.width / 2.0f)  + (angleDifference * (screenWidth / 720.0f)));
             positionX = positionX - (CLIENT.textRenderer.getWidth(label) / 1.6f);
 
             // Afficher le label des directions avec couleur et taille de texte ajustée
             matrices.push();
-            matrices.translate(positionX, this.y + 10, 0);
+            matrices.translate(positionX, 10, 0);
             matrices.scale(1.25f, 1.25f, 1.5f); // make the text 1.5 times bigger
             drawContext.drawText(CLIENT.textRenderer, label, 0, 0, this.color, this.shadow);
             matrices.pop();
@@ -117,17 +121,17 @@ public class DirectionOverlay extends HudElement {
 
         if (Math.abs(angleDifference) <= 120) {
             // Calculer la position X de chaque point cardinal en fonction de l'angle
-            float positionX = (float) ((this.x + this.width / 2.0f) + (angleDifference * (screenWidth / 720.0f)));
+            float positionX = (float) ((this.width / 2.0f) + (angleDifference * (screenWidth / 720.0f)));
 
             matrices.push();
-            matrices.translate(positionX - (CLIENT.textRenderer.getWidth("|") / 2.0f), this.y + 12, 0);
+            matrices.translate(positionX - (CLIENT.textRenderer.getWidth("|") / 2.0f), 12, 0);
             matrices.scale(1.0f, 0.75f, 1.0f);
             drawContext.drawText(CLIENT.textRenderer, "|", 0, 0, this.color, this.shadow);
             matrices.pop();
 
 
             matrices.push();
-            matrices.translate(positionX - (CLIENT.textRenderer.getWidth(String.valueOf(angle)) / 4.0f), this.y + 20, 0);
+            matrices.translate(positionX - (CLIENT.textRenderer.getWidth(String.valueOf(angle)) / 4.0f), 20, 0);
             matrices.scale(0.5f, 0.5f, 1.0f); // 2 times smaller
             drawContext.drawText(CLIENT.textRenderer, String.valueOf(angle), 0, 0, this.color, this.shadow);
             matrices.pop();
@@ -252,7 +256,7 @@ public class DirectionOverlay extends HudElement {
 
                 if (Math.abs(angleDifference) <= 120) {
                     // Calculer la position X de chaque point cardinal en fonction de l'angle
-                    float positionX = (float) ((this.x + this.width / 2.0f) + (angleDifference * (screenWidth / 720.0f)));
+                    float positionX = (float) ((this.width / 2.0f) + (angleDifference * (screenWidth / 720.0f)));
 
                     int backgroundColor;
                     try {
@@ -262,7 +266,7 @@ public class DirectionOverlay extends HudElement {
                     }
 
                     matrices.push();
-                    matrices.translate(positionX - (CLIENT.textRenderer.getWidth(waypoint.initials) / 2.0f), this.y + 2, 0);
+                    matrices.translate(positionX - (CLIENT.textRenderer.getWidth(waypoint.initials) / 2.0f), 2, 0);
                     matrices.scale(0.75f, 0.75f, 1);
                     renderTextWithBackground(drawContext, waypoint.initials, 0, 0, backgroundColor);
                     matrices.pop();

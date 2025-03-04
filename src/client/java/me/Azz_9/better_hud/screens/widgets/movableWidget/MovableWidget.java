@@ -82,7 +82,7 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 	private double offsetY;
 	private final int INITIAL_X;
 	private final int INITIAL_Y;
-	private final float INITIAL_SCALE = 1; // TODO temporaire
+	private final float INITIAL_SCALE;
 	private final HudElement HUD_ELEMENT;
 	private final MoveElementsScreen SCREEN;
 
@@ -103,10 +103,11 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 
 	private boolean isDraggingScalehandle = false;
 
-	public MovableWidget(int x, int y, int width, int height, HudElement hudElement, MoveElementsScreen screen) {
+	public MovableWidget(int x, int y, float scale, int width, int height, HudElement hudElement, MoveElementsScreen screen) {
 		super(x, y, width, height, Text.literal(""));
 		this.INITIAL_X = x;
 		this.INITIAL_Y = y;
+		this.INITIAL_SCALE = scale;
 		this.HUD_ELEMENT = hudElement;
 		this.SCREEN = screen;
 	}
@@ -147,6 +148,10 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 		}
 
 		context.fill(handleX, handleY, handleX + handleSize, handleY + handleSize, 0xffF8F8FC);
+	}
+
+	public float getScale() {
+		return HUD_ELEMENT.scale;
 	}
 
 	@Override
@@ -191,9 +196,7 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 	@Override
 	public void onRelease(double mouseX, double mouseY) {
 		if (!isDraggingScalehandle) { //TODO undo for scale
-			prevActions.add(new PreviousAction(Action.MOVE, getX(), getY()));
-			redoActions.clear();
-			SCREEN.addModifiedWidget(this);
+			addPrevAction(new PreviousAction(Action.MOVE, getX(), getY()));
 		}
 
 		isDraggingScalehandle = false;
@@ -234,12 +237,19 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 		pressedKeys.remove(keyCode);
 
 		if (keyCode >= 262 && keyCode <= 265) { // key released is one of the arrow keys
-			prevActions.add(new PreviousAction(Action.MOVE, getX(), getY()));
-			redoActions.clear();
-			SCREEN.addModifiedWidget(this);
+			addPrevAction(new PreviousAction(Action.MOVE, getX(), getY()));
 		}
 
 		return false;
+	}
+
+	private void addPrevAction(PreviousAction previousAction) {
+		prevActions.add(previousAction);
+		if (prevActions.size() > 100) {
+			prevActions.removeFirst();
+		}
+		redoActions.clear();
+		SCREEN.addModifiedWidget(this);
 	}
 
 	public void undo() {
@@ -249,11 +259,10 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 
 		PreviousAction lastAction = prevActions.removeLast(); // Récupérer et supprimer la dernière action
 		redoActions.addLast(lastAction);
-		Action actionType = lastAction.ACTION_TYPE;
 
 		PreviousAction previousAction = prevActions.isEmpty() ? null : prevActions.getLast();
 
-		if (actionType == Action.MOVE) {
+		if (lastAction.ACTION_TYPE == Action.MOVE) {
 			forceMove(previousAction != null ? previousAction.X : INITIAL_X,
 					previousAction != null ? previousAction.Y : INITIAL_Y);
 		} else {
@@ -261,18 +270,22 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 		}
 	}
 
-	public void redo() {
+	public void redo() { //FIXME quand je redo alors que y'a plus de redo possible ça crash :/
 		if (redoActions.isEmpty()) {
 			return;
 		}
 
 		PreviousAction nextAction = redoActions.removeLast();
 		prevActions.addLast(nextAction);
+
 		if (nextAction.ACTION_TYPE == Action.MOVE) {
 			move(nextAction.X, nextAction.Y);
 		} else {
 			setScale(nextAction.SCALE);
 		}
+
+		System.out.println("prevActions: " + prevActions);
+		System.out.println("redoActions: " + redoActions);
 	}
 
 	private void move(int x, int y) {
@@ -358,6 +371,6 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 	@Override
 	public void cancel() {
 		HUD_ELEMENT.setPos(INITIAL_X, INITIAL_Y);
-		HUD_ELEMENT.scale = 1.0f;
+		HUD_ELEMENT.scale = INITIAL_SCALE;
 	}
 }
