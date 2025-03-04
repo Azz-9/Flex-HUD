@@ -41,7 +41,7 @@ public class CoordinatesOverlay extends HudElement {
         MatrixStack matrices = drawContext.getMatrices();
         matrices.push();
         matrices.translate(this.x, this.y, 0);
-        //TODO ajouter scale
+        matrices.scale(this.scale, this.scale, 1.0f);
 
         // Get the truncated coordinates with the correct amount of digits
         String xCoords = "X: " + BigDecimal.valueOf(player.getX()).setScale(this.numberOfDigits, RoundingMode.DOWN);
