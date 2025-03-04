@@ -3,7 +3,9 @@ package me.Azz_9.better_hud.modMenu;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import me.Azz_9.better_hud.client.overlay.*;
-import me.Azz_9.better_hud.screens.modsConfigScreen.mods.DurabilityPing;
+import me.Azz_9.better_hud.client.utils.DurabilityPing;
+import me.Azz_9.better_hud.client.utils.TimeChanger;
+import me.Azz_9.better_hud.client.utils.WeatherChangerConfig;
 import me.Azz_9.better_hud.screens.modsConfigScreen.mods.WeatherChanger;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 
@@ -14,21 +16,6 @@ import java.io.IOException;
 import java.util.List;
 
 public class ModConfig {
-
-    //weather changer
-    public boolean enableWeatherChanger = false;
-    public WeatherChanger.Weather selectedWeather = WeatherChanger.Weather.Clear;
-    //time changer
-    public boolean enableTimeChanger = false;
-    public int selectedTime = 6000;
-    public boolean useRealTime = false;
-    //durability ping
-    public boolean enableDurabilityPing = true;
-    public int durabilityPingThreshold = 10; // percentage
-    public DurabilityPing.DurabilityPingType durabilityPingType = DurabilityPing.DurabilityPingType.Both;
-    public boolean checkArmorPieces = true;
-    public boolean checkElytraOnly = false;
-
 
     public boolean isEnabled = true;
     public CoordinatesOverlay coordinates = new CoordinatesOverlay(2, 15);
@@ -46,6 +33,10 @@ public class ModConfig {
     public ComboCounterOverlay comboCounter = new ComboCounterOverlay(2, 120);
     public PlaytimeOverlay playtime = new PlaytimeOverlay(2, 140);
     public ShriekerWarningLevelOverlay shriekerWarningLevel = new ShriekerWarningLevelOverlay(2, 160);
+
+    public WeatherChangerConfig weatherChanger = new WeatherChangerConfig();
+    public TimeChanger timeChanger = new TimeChanger();
+    public DurabilityPing durabilityPing = new DurabilityPing();
 
     //number of columns
     public int numberOfColumns = 2;

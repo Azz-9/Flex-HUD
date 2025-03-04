@@ -15,12 +15,12 @@ public class TimeChanger extends ModsConfigTemplate {
 
 		setButtonWidth(200);
 
-		addToggleButton(getCenterX(), startY, getButtonWidth(), getButtonHeight(), Text.of("Enable time changer"), INSTANCE.enableTimeChanger, false,
-				toggled -> INSTANCE.enableTimeChanger = toggled);
-		addToggleButton(getCenterX(), startY + 30, getButtonWidth(), getButtonHeight(), Text.of("Use real time"), INSTANCE.useRealTime, false,
-				toggled -> INSTANCE.useRealTime = toggled);
+		addToggleButton(getCenterX(), startY, getButtonWidth(), getButtonHeight(), Text.of("Enable time changer"), INSTANCE.timeChanger.enabled, false,
+				toggled -> INSTANCE.timeChanger.enabled = toggled);
+		addToggleButton(getCenterX(), startY + 30, getButtonWidth(), getButtonHeight(), Text.of("Use real time"), INSTANCE.timeChanger.useRealTime, false,
+				toggled -> INSTANCE.timeChanger.useRealTime = toggled);
 
-		addIntSlider(getCenterX(), startY + 60, getButtonWidth(), getButtonHeight(), 120, Text.of("Selected time"), INSTANCE.selectedTime, 6000, 0, 24000,
-				value -> INSTANCE.selectedTime = value, 1000);
+		addIntSlider(getCenterX(), startY + 60, getButtonWidth(), getButtonHeight(), 120, Text.of("Selected time"), INSTANCE.timeChanger.selectedTime, 6000, 0, 24000,
+				value -> INSTANCE.timeChanger.selectedTime = value, 1000);
 	}
 }

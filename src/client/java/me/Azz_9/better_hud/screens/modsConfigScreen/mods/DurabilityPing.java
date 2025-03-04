@@ -23,17 +23,17 @@ public class DurabilityPing extends ModsConfigTemplate {
 
 		setButtonWidth(220);
 
-		addToggleButton(getCenterX(), startY, getButtonWidth(), getButtonHeight(), Text.of("Enable durability ping"), INSTANCE.enableDurabilityPing, true,
-				toggled -> INSTANCE.enableDurabilityPing = toggled);
-		addIntSlider(getCenterX(), startY + 30, getButtonWidth(), getButtonHeight(), 80, Text.of("Durability ping threshold"), INSTANCE.durabilityPingThreshold, 10, 0, 100,
-				value -> INSTANCE.durabilityPingThreshold = value, 10);
+		addToggleButton(getCenterX(), startY, getButtonWidth(), getButtonHeight(), Text.of("Enable durability ping"), INSTANCE.durabilityPing.enabled, true,
+				toggled -> INSTANCE.durabilityPing.enabled = toggled);
+		addIntSlider(getCenterX(), startY + 30, getButtonWidth(), getButtonHeight(), 80, Text.of("Durability ping threshold"), INSTANCE.durabilityPing.threshold, 10, 0, 100,
+				value -> INSTANCE.durabilityPing.threshold = value, 10);
 
-		addCyclingStringButton(getCenterX(), startY + 60, getButtonWidth(), Text.of("Durability ping type"), DurabilityPingType.class, INSTANCE.durabilityPingType, DurabilityPingType.Both,
-				value -> INSTANCE.durabilityPingType = value);
+		addCyclingStringButton(getCenterX(), startY + 60, getButtonWidth(), Text.of("Durability ping type"), DurabilityPingType.class, INSTANCE.durabilityPing.pingType, DurabilityPingType.Both,
+				value -> INSTANCE.durabilityPing.pingType = value);
 
-		addToggleButton(getCenterX(), startY + 90, getButtonWidth(), getButtonHeight(), Text.of("Check armor pieces durability"), INSTANCE.checkArmorPieces, true,
-				toggled -> INSTANCE.checkArmorPieces = toggled);
-		addToggleButton(getCenterX(), startY + 120, getButtonWidth(), getButtonHeight(), Text.literal("Check elytra durability ").append(Text.literal("only").formatted(Formatting.UNDERLINE, Formatting.BOLD)), INSTANCE.checkElytraOnly, false,
-				toggled -> INSTANCE.checkElytraOnly = toggled);
+		addToggleButton(getCenterX(), startY + 90, getButtonWidth(), getButtonHeight(), Text.of("Check armor pieces durability"), INSTANCE.durabilityPing.checkArmorPieces, true,
+				toggled -> INSTANCE.durabilityPing.checkArmorPieces = toggled);
+		addToggleButton(getCenterX(), startY + 120, getButtonWidth(), getButtonHeight(), Text.literal("Check elytra durability ").append(Text.literal("only").formatted(Formatting.UNDERLINE, Formatting.BOLD)), INSTANCE.durabilityPing.checkElytraOnly, false,
+				toggled -> INSTANCE.durabilityPing.checkElytraOnly = toggled);
 	}
 }

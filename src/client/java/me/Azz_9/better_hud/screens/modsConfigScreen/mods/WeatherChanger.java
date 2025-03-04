@@ -22,9 +22,9 @@ public class WeatherChanger extends ModsConfigTemplate {
 
 		setButtonWidth(170);
 
-		addToggleButton(getCenterX(), startY, getButtonWidth(), getButtonHeight(), Text.of("Enable weather changer"), INSTANCE.enableWeatherChanger, true,
-				toggled -> INSTANCE.enableWeatherChanger = toggled);
-		addCyclingStringButton(getCenterX(), startY + 30, getButtonWidth(), Text.of("Selected weather"), Weather.class, INSTANCE.selectedWeather, Weather.Clear,
-				value -> INSTANCE.selectedWeather = value);
+		addToggleButton(getCenterX(), startY, getButtonWidth(), getButtonHeight(), Text.of("Enable weather changer"), INSTANCE.weatherChanger.enabled, true,
+				toggled -> INSTANCE.weatherChanger.enabled = toggled);
+		addCyclingStringButton(getCenterX(), startY + 30, getButtonWidth(), Text.of("Selected weather"), Weather.class, INSTANCE.weatherChanger.selectedWeather, Weather.Clear,
+				value -> INSTANCE.weatherChanger.selectedWeather = value);
 	}
 }

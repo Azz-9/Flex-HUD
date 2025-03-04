@@ -716,19 +716,19 @@ public class ModMenuIntegration implements ModMenuApi {
             SubCategoryBuilder weatherChangerSubCategory = builder.entryBuilder().startSubCategory(Text.of("Weather Changer"));
             //toggle
             weatherChangerSubCategory.add(builder.entryBuilder()
-                    .startBooleanToggle(Text.of("Enable weather changer"), ModConfig.getInstance().enableWeatherChanger)
+                    .startBooleanToggle(Text.of("Enable weather changer"), ModConfig.getInstance().weatherChanger.enabled)
                     .setDefaultValue(false)
                     .setSaveConsumer(newValue -> {
-                        ModConfig.getInstance().enableWeatherChanger = newValue;
+                        ModConfig.getInstance().weatherChanger.enabled = newValue;
                         ModConfig.saveConfig();
                     })
                     .build());
             //select weather
             weatherChangerSubCategory.add(builder.entryBuilder()
-                    .startEnumSelector(Text.of("Select weather"), WeatherChanger.Weather.class, ModConfig.getInstance().selectedWeather)
+                    .startEnumSelector(Text.of("Select weather"), WeatherChanger.Weather.class, ModConfig.getInstance().weatherChanger.selectedWeather)
                     .setDefaultValue(WeatherChanger.Weather.Clear)
                     .setSaveConsumer(newValue -> {
-                        ModConfig.getInstance().selectedWeather = newValue;
+                        ModConfig.getInstance().weatherChanger.selectedWeather = newValue;
                         ModConfig.saveConfig();
                     })
                     .build());
@@ -872,29 +872,29 @@ public class ModMenuIntegration implements ModMenuApi {
             SubCategoryBuilder timeChangerSubCategory = builder.entryBuilder().startSubCategory(Text.of("Time changer"));
             //toggle
             timeChangerSubCategory.add(builder.entryBuilder()
-                    .startBooleanToggle(Text.of("Enable time changer"), ModConfig.getInstance().enableTimeChanger)
+                    .startBooleanToggle(Text.of("Enable time changer"), ModConfig.getInstance().timeChanger.enabled)
                     .setDefaultValue(false)
                     .setTooltip(Text.literal("This mod does not work with day counter").styled(style -> style.withColor(Formatting.RED)))
                     .setSaveConsumer(newValue -> {
-                        ModConfig.getInstance().enableTimeChanger = newValue;
+                        ModConfig.getInstance().timeChanger.enabled = newValue;
                         ModConfig.saveConfig();
                     })
                     .build());
             //select time
             timeChangerSubCategory.add(builder.entryBuilder()
-                    .startIntSlider(Text.of("Select time"), ModConfig.getInstance().selectedTime, 0, 24000)
+                    .startIntSlider(Text.of("Select time"), ModConfig.getInstance().timeChanger.selectedTime, 0, 24000)
                     .setDefaultValue(6000)
                     .setSaveConsumer(newValue -> {
-                        ModConfig.getInstance().selectedTime = newValue;
+                        ModConfig.getInstance().timeChanger.selectedTime = newValue;
                         ModConfig.saveConfig();
                     })
                     .build());
             //use real current time
             timeChangerSubCategory.add(builder.entryBuilder()
-                    .startBooleanToggle(Text.of("Use real current time"), ModConfig.getInstance().useRealTime)
+                    .startBooleanToggle(Text.of("Use real current time"), ModConfig.getInstance().timeChanger.useRealTime)
                     .setDefaultValue(false)
                     .setSaveConsumer(newValue -> {
-                        ModConfig.getInstance().useRealTime = newValue;
+                        ModConfig.getInstance().timeChanger.useRealTime = newValue;
                         ModConfig.saveConfig();
                     })
                     .build());
@@ -904,46 +904,46 @@ public class ModMenuIntegration implements ModMenuApi {
             SubCategoryBuilder durabilityPingSubCategory = builder.entryBuilder().startSubCategory(Text.of("Durability ping"));
             //toggle
             durabilityPingSubCategory.add(builder.entryBuilder()
-                    .startBooleanToggle(Text.of("Enable durability ping"), ModConfig.getInstance().enableDurabilityPing)
+                    .startBooleanToggle(Text.of("Enable durability ping"), ModConfig.getInstance().durabilityPing.enabled)
                     .setDefaultValue(true)
                     .setSaveConsumer(newValue -> {
-                        ModConfig.getInstance().enableDurabilityPing = newValue;
+                        ModConfig.getInstance().durabilityPing.enabled = newValue;
                         ModConfig.saveConfig();
                     })
                     .build());
             //durability ping threshold
             durabilityPingSubCategory.add(builder.entryBuilder()
-                    .startIntSlider(Text.of("Durability ping threshold"), ModConfig.getInstance().durabilityPingThreshold, 0, 100)
+                    .startIntSlider(Text.of("Durability ping threshold"), ModConfig.getInstance().durabilityPing.threshold, 0, 100)
                     .setDefaultValue(10)
                     .setSaveConsumer(newValue -> {
-                        ModConfig.getInstance().durabilityPingThreshold = newValue;
+                        ModConfig.getInstance().durabilityPing.threshold = newValue;
                         ModConfig.saveConfig();
                     })
                     .build());
             //durability ping type
             durabilityPingSubCategory.add(builder.entryBuilder()
-                    .startEnumSelector(Text.of("Durability ping type"), DurabilityPing.DurabilityPingType.class, ModConfig.getInstance().durabilityPingType)
+                    .startEnumSelector(Text.of("Durability ping type"), DurabilityPing.DurabilityPingType.class, ModConfig.getInstance().durabilityPing.pingType)
                     .setDefaultValue(DurabilityPing.DurabilityPingType.Both)
                     .setSaveConsumer(newValue -> {
-                        ModConfig.getInstance().durabilityPingType = newValue;
+                        ModConfig.getInstance().durabilityPing.pingType = newValue;
                         ModConfig.saveConfig();
                     })
                     .build());
             //check armor pieces
             durabilityPingSubCategory.add(builder.entryBuilder()
-                    .startBooleanToggle(Text.of("Check armor pieces durability"), ModConfig.getInstance().checkArmorPieces)
+                    .startBooleanToggle(Text.of("Check armor pieces durability"), ModConfig.getInstance().durabilityPing.checkArmorPieces)
                     .setDefaultValue(true)
                     .setSaveConsumer(newValue -> {
-                        ModConfig.getInstance().checkArmorPieces = newValue;
+                        ModConfig.getInstance().durabilityPing.checkArmorPieces = newValue;
                         ModConfig.saveConfig();
                     })
                     .build());
             //check elytra
             durabilityPingSubCategory.add(builder.entryBuilder()
-                    .startBooleanToggle(Text.literal("Check elytra durability ").append(Text.literal("only").formatted(Formatting.UNDERLINE, Formatting.BOLD, Formatting.ITALIC)), ModConfig.getInstance().checkElytraOnly)
+                    .startBooleanToggle(Text.literal("Check elytra durability ").append(Text.literal("only").formatted(Formatting.UNDERLINE, Formatting.BOLD, Formatting.ITALIC)), ModConfig.getInstance().durabilityPing.checkElytraOnly)
                     .setDefaultValue(false)
                     .setSaveConsumer(newValue -> {
-                        ModConfig.getInstance().checkElytraOnly = newValue;
+                        ModConfig.getInstance().durabilityPing.checkElytraOnly = newValue;
                         ModConfig.saveConfig();
                     })
                     .build());

@@ -6,6 +6,7 @@ import me.Azz_9.better_hud.screens.modsConfigScreen.DisplayMode;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
@@ -37,6 +38,11 @@ public class CoordinatesOverlay extends HudElement {
 
         PlayerEntity player = CLIENT.player;
 
+        MatrixStack matrices = drawContext.getMatrices();
+        matrices.push();
+        matrices.translate(this.x, this.y, 0);
+        //TODO ajouter scale
+
         // Get the truncated coordinates with the correct amount of digits
         String xCoords = "X: " + BigDecimal.valueOf(player.getX()).setScale(this.numberOfDigits, RoundingMode.DOWN);
         String yCoords = "Y: " + BigDecimal.valueOf(player.getY()).setScale(this.numberOfDigits, RoundingMode.DOWN);
@@ -44,8 +50,8 @@ public class CoordinatesOverlay extends HudElement {
 
         if (this.displayMode == DisplayMode.Vertical) {
 
-            int hudX = (int) this.x;
-            int hudY = (int) this.y;
+            int hudX = 0;
+            int hudY = 0;
 
             drawContext.drawText(CLIENT.textRenderer, xCoords, hudX, hudY, this.color, this.shadow);
             updateWidth(xCoords);
@@ -62,11 +68,15 @@ public class CoordinatesOverlay extends HudElement {
                 hudY += 10;
                 renderBiome(drawContext, hudX, hudY);
             }
-            this.height = hudY - (int) this.y + 10;
+            this.height = hudY + 10;
 
             if (this.showDirection) {
-                hudX = (int) this.x;
-                hudY = (int) this.y;
+                int widestCoords = Math.max(CLIENT.textRenderer.getWidth(xCoords), CLIENT.textRenderer.getWidth(yCoords));
+                if (this.showY) {
+                    widestCoords = Math.max(widestCoords, CLIENT.textRenderer.getWidth(zCoords));
+                }
+                hudX = 24 + widestCoords;
+                hudY = 0;
                 String[] direction = getDirection(player);
                 String facing;
                 String axisX = direction[2];
@@ -78,21 +88,20 @@ public class CoordinatesOverlay extends HudElement {
                     facing = direction[0];
                 }
 
-                int longestCoords = Math.max(Math.max(xCoords.length(), yCoords.length()), zCoords.length());
-                hudX = hudX + 24 + 6 * (longestCoords - 1);
+
                 drawContext.drawText(CLIENT.textRenderer, axisX, hudX, hudY, this.color, this.shadow);
-                updateWidth(axisX, hudX - (int) this.x);
+                updateWidth(axisX, hudX);
                 if (this.showY) {
                     hudY += 10;
                     drawContext.drawText(CLIENT.textRenderer, facing, hudX, hudY, this.color, this.shadow);
-                    updateWidth(facing, hudX - (int) this.x);
+                    updateWidth(facing, hudX);
                 } else {
                     drawContext.drawText(CLIENT.textRenderer, facing, hudX + 8, hudY + 5, this.color, this.shadow);
-                    updateWidth(facing, hudX + 8 - (int) this.x);
+                    updateWidth(facing, hudX + 8);
                 }
                 hudY += 10;
                 drawContext.drawText(CLIENT.textRenderer, axisZ, hudX, hudY, this.color, this.shadow);
-                updateWidth(axisZ, hudX - (int) this.x);
+                updateWidth(axisZ, hudX);
             }
 
         } else {
@@ -112,15 +121,18 @@ public class CoordinatesOverlay extends HudElement {
                     text.append(getDirection(player)[0]);
                 }
             }
-            drawContext.drawText(CLIENT.textRenderer, text.toString(), (int) this.x, (int) this.y, this.color, this.shadow);
+
+            drawContext.drawText(CLIENT.textRenderer, text.toString(), 0, 0, this.color, this.shadow);
             updateWidth(text.toString());
-            this.height = 10;
+            this.height = CLIENT.textRenderer.fontHeight;
             if (this.showBiome) {
-                renderBiome(drawContext, (int) this.x, (int) this.y + 10);
+                renderBiome(drawContext, 0, 10);
                 this.height += 10;
             }
 
         }
+
+        matrices.pop();
 
     }
 

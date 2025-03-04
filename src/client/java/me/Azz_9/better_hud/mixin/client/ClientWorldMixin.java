@@ -20,8 +20,8 @@ public abstract class ClientWorldMixin extends World {
 
 	@Override
 	public float getRainGradient(float delta) {
-		if (ModConfig.getInstance().isEnabled && ModConfig.getInstance().enableWeatherChanger) {
-			if (ModConfig.getInstance().selectedWeather.equals(WeatherChanger.Weather.Clear)) {
+		if (ModConfig.getInstance().isEnabled && ModConfig.getInstance().weatherChanger.enabled) {
+			if (ModConfig.getInstance().weatherChanger.selectedWeather.equals(WeatherChanger.Weather.Clear)) {
 				return 0f;
 			} else return 1f;
 		}
@@ -30,8 +30,8 @@ public abstract class ClientWorldMixin extends World {
 
 	@Override
 	public float getThunderGradient(float delta) {
-		if (ModConfig.getInstance().isEnabled && ModConfig.getInstance().enableWeatherChanger) {
-			if (ModConfig.getInstance().selectedWeather.equals(WeatherChanger.Weather.Thunder)) {
+		if (ModConfig.getInstance().isEnabled && ModConfig.getInstance().weatherChanger.enabled) {
+			if (ModConfig.getInstance().weatherChanger.selectedWeather.equals(WeatherChanger.Weather.Thunder)) {
 				return 1f;
 			} else return 0f;
 		}

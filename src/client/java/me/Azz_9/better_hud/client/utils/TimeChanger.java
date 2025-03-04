@@ -3,6 +3,10 @@ package me.Azz_9.better_hud.client.utils;
 import java.time.LocalTime;
 
 public class TimeChanger {
+	public boolean enabled = false;
+	public int selectedTime = 6000;
+	public boolean useRealTime = false;
+
 	public static final TimeChanger INSTANCE = new TimeChanger();
 
 	public long getRealTimeAsMinecraftTime() {

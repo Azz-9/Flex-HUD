@@ -13,6 +13,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DurabilityPing {
+	public boolean enabled = true;
+	public int threshold = 10; // percentage
+	public DurabilityPingType pingType = DurabilityPingType.Both;
+	public boolean checkArmorPieces = true;
+	public boolean checkElytraOnly = false;
+
 	private static final DurabilityPing INSTANCE = new DurabilityPing();
 
 	private static final Map<String, Long> lastPingTime = new HashMap<>();
@@ -25,7 +31,7 @@ public class DurabilityPing {
 		double durabilityLeft = stack.getMaxDamage() - stack.getDamage();
 		double percentageLeft = (durabilityLeft / stack.getMaxDamage()) * 100.0f;
 
-		return percentageLeft < ModConfig.getInstance().durabilityPingThreshold;
+		return percentageLeft < INSTANCE.threshold;
 	}
 
 	public static void pingPlayer(PlayerEntity player, ItemStack stack) {
@@ -38,11 +44,11 @@ public class DurabilityPing {
 			lastPingTime.put(stack.getItem().getTranslationKey(), currentTime);
 
 			// play sound, display message or both based on the selected option in the config menu
-			if (ModConfig.getInstance().durabilityPingType != DurabilityPingType.Sound) {
+			if (INSTANCE.pingType != DurabilityPingType.Sound) {
 				Text message = Text.literal(stack.getItemName().getString().toLowerCase() + " durability low!").formatted(Formatting.RED);
 				player.sendMessage(message, true);
 			}
-			if (ModConfig.getInstance().durabilityPingType != DurabilityPingType.Message) {
+			if (INSTANCE.pingType != DurabilityPingType.Message) {
 				player.playSoundToPlayer(SoundEvents.BLOCK_ANVIL_LAND, SoundCategory.MASTER, 1.0f, 2.0f);
 			}
 		}
