@@ -11,8 +11,10 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.lwjgl.glfw.GLFW;
 
 import static me.Azz_9.better_hud.client.Better_hudClient.MOD_ID;
 
@@ -23,7 +25,7 @@ public class OptionsScreen extends Screen {
     }
 
     private float alpha = 0.0f;
-    private int yAnimation = 0; // y value used to make the animation on the icon
+    private double yAnimation = 0; // y value used to make the animation on the icon
 
     @Override
     protected void init() {
@@ -56,26 +58,41 @@ public class OptionsScreen extends Screen {
         if (alpha < 0.98f) { // check alpha < 0.985 to prevent alpha to be superior to 1 because of the imprecision of the floats
             alpha += 0.02f;
             float easedAlpha = 1 - (1 - alpha) * (1 - alpha); // Ease-out quadratique
-            yAnimation = (int) (16 * easedAlpha); // yAnimation never reach 16 because easedAlpha is at maximum 0.99
+            yAnimation = 16 * easedAlpha; // yAnimation never reach 16 because easedAlpha is at maximum 0.99
         }
 
         // set x and y value for the icon
-        int x = width/2 - iconWidth/2;
+        int x = width / 2 - iconWidth / 2;
         // subtract 35 to make it a bit higher
         // subtract yAnimation to make the icon moves smoothly
-        int y = height/2 - iconHeight/2 - 35 - yAnimation;
+        double y = height / 2.0 - iconHeight / 2.0 - 35 - yAnimation;
 
 
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc(); // Définit une fonction de mélange par défaut
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha); // Définit une opacité à 50% (alpha = 0.5)
 
+        MatrixStack matrices = context.getMatrices();
+        matrices.push();
+        matrices.translate(x, y, 0);
+
         // Draw the icon
-        context.drawTexture(RenderLayer::getGuiTexturedOverlay, modIcon, x, y, 0, 0, iconWidth, iconHeight, iconWidth, iconHeight);
-        context.drawText(textRenderer, ".", -9999, 0, 0xffffff, false); // i don't know why but i need to put this in order to the texture to be rendered with the correct opacity
+        context.drawTexture(RenderLayer::getGuiTexturedOverlay, modIcon, 0, 0, 0, 0, iconWidth, iconHeight, iconWidth, iconHeight);
+
+        matrices.pop();
+
+        context.drawText(textRenderer, ".", -10, 0, 0xffffff, false); // i don't know why but i need to put this in order to the texture to be rendered with the correct opacity
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F); // Opacité à 100%
         RenderSystem.disableBlend(); // Désactive le mélange pour éviter des effets indésirables
     }
 
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == GLFW.GLFW_KEY_RIGHT_SHIFT) {
+            this.close();
+            return true;
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
 }

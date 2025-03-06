@@ -8,6 +8,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
@@ -88,6 +89,7 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 
 	private boolean shouldDrawXCenteredLine = false;
 	private boolean shouldDrawYCenteredLine = false;
+	private boolean shouldDrawScaleValue = false;
 
 	private float scale = 1.0f;
 	private final int handleSize = 4;
@@ -95,6 +97,8 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 	private int handleY = getY() - handleSize / 2;
 	private double handleOffsetX;
 	private double handleOffsetY;
+	private int onClickRight;
+	private int onClickBottom;
 
 	private final Set<Integer> pressedKeys = new HashSet<>();
 
@@ -108,7 +112,7 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 		this.INITIAL_X = x;
 		this.INITIAL_Y = y;
 		this.INITIAL_SCALE = scale;
-		this.HUD_ELEMENT = hudElement;
+		HUD_ELEMENT = hudElement;
 		this.SCREEN = screen;
 	}
 
@@ -118,13 +122,24 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 			this.hovered = context.scissorContains(mouseX, mouseY) && mouseX >= handleX && mouseY >= handleY && mouseX < handleX + handleSize && mouseY < handleY + handleSize;
 		}
 
-		setDimensions(HUD_ELEMENT.getWidth(), HUD_ELEMENT.getHeight());
+		setDimensions(roundCustom(HUD_ELEMENT.getWidth() * getScale()), roundCustom(HUD_ELEMENT.getHeight() * getScale()));
 
-		context.fill(getX(), getY(), getRight(), getBottom(), 0x4F88888C);
+		context.fill(getX(), getY(), getWidth() + getX(), getHeight() + getY(), 0x4F88888C);
 		if (this.isHovered() || this.isFocused()) {
 			context.drawBorder(getX(), getY(), getWidth(), getHeight(), 0x7FF8F8FC);
 		} else {
 			context.drawBorder(getX(), getY(), getWidth(), getHeight(), 0x7FA8A8AC);
+		}
+
+		if (shouldDrawScaleValue) {
+			MatrixStack matrices = context.getMatrices();
+			matrices.push();
+			matrices.translate(handleX + handleSize + 1, handleY, 0);
+			matrices.scale(0.75f, 0.75f, 1.0f);
+
+			context.drawText(MinecraftClient.getInstance().textRenderer, "×" + getScale(), 0, 0, 0xffffff, true);
+
+			matrices.pop();
 		}
 
 		renderScalehandle(context);
@@ -150,6 +165,17 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 		context.fill(handleX, handleY, handleX + handleSize, handleY + handleSize, 0xffF8F8FC);
 	}
 
+	private int roundCustom(float value) {
+		int intPart = (int) value;
+		float decimalPart = value - intPart;
+
+		if (decimalPart > 0.16666666) {
+			return intPart + 1;
+		} else {
+			return intPart;
+		}
+	}
+
 	public float getScale() {
 		return HUD_ELEMENT.scale;
 	}
@@ -163,6 +189,8 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 	public void onClick(double mouseX, double mouseY) {
 		if (ishandleHovered(mouseX, mouseY)) {
 			isDraggingScalehandle = true;
+			onClickRight = (int) (getWidth() / getScale()) + getX();
+			onClickBottom = (int) (getHeight() / getScale()) + getY();
 		}
 		offsetX = mouseX - getX();
 		offsetY = mouseY - getY();
@@ -179,30 +207,39 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 			snapElement(x, y);
 		} else {
 			// Vecteur direction de la droite
-			double dx = getRight() - getX();
-			double dy = getBottom() - getY();
+			double dx = onClickRight - getX();
+			double dy = onClickBottom - getY();
 
-			// Projection scalaire de AP sur AB
 			double t = ((mouseX - getX()) * dx + (mouseY - getY()) * dy) / (dx * dx + dy * dy);
 
 			// Coordonnées du point projeté
 			double closestX = getX() + t * dx;
 			double closestY = getY() + t * dy;
 
-			setScale((float) ((Math.sqrt(Math.pow(closestX - getX(), 2) + Math.pow(closestY - getY(), 2)) / Math.sqrt(dx * dx + dy * dy))));
+			float newScale = (float) ((Math.sqrt(Math.pow(closestX - getX(), 2) + Math.pow(closestY - getY(), 2)) / Math.sqrt(dx * dx + dy * dy)));
+
+			if (isShiftKeyPressed()) {
+				newScale = Math.round(newScale * 4) / 4.0f; // round to the nearest quarter
+				shouldDrawScaleValue = true;
+			}
+			setScale(newScale);
 		}
 	}
 
 	@Override
 	public void onRelease(double mouseX, double mouseY) {
-		if (!isDraggingScalehandle) { //TODO undo for scale
+		if (!isDraggingScalehandle) {
 			addPrevAction(new PreviousAction(Action.MOVE, getX(), getY()));
+		} else {
+			addPrevAction(new PreviousAction(Action.SCALE, getScale()));
 		}
 
 		isDraggingScalehandle = false;
 
 		shouldDrawYCenteredLine = false;
 		shouldDrawXCenteredLine = false;
+
+		shouldDrawScaleValue = false;
 	}
 
 
@@ -238,6 +275,8 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 
 		if (keyCode >= 262 && keyCode <= 265) { // key released is one of the arrow keys
 			addPrevAction(new PreviousAction(Action.MOVE, getX(), getY()));
+		} else if (keyCode == GLFW.GLFW_KEY_LEFT_SHIFT) {
+			shouldDrawScaleValue = false;
 		}
 
 		return false;
@@ -270,7 +309,7 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 		}
 	}
 
-	public void redo() { //FIXME quand je redo alors que y'a plus de redo possible ça crash :/
+	public void redo() {
 		if (redoActions.isEmpty()) {
 			return;
 		}
@@ -283,9 +322,6 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 		} else {
 			setScale(nextAction.SCALE);
 		}
-
-		System.out.println("prevActions: " + prevActions);
-		System.out.println("redoActions: " + redoActions);
 	}
 
 	private void move(int x, int y) {
@@ -304,6 +340,7 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 	}
 
 	private void setScale(float scale) {
+		scale = Math.clamp(scale, 0.5F, 2.0F);
 		this.scale = scale;
 		HUD_ELEMENT.scale = scale;
 	}
@@ -365,7 +402,7 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 
 	@Override
 	public boolean hasChanged() {
-		return INITIAL_X != getX() || INITIAL_Y != getY();
+		return INITIAL_X != getX() || INITIAL_Y != getY() || INITIAL_SCALE != getScale();
 	}
 
 	@Override

@@ -22,9 +22,6 @@ import java.util.List;
 import static me.Azz_9.better_hud.client.Better_hudClient.hudElements;
 
 public class MoveElementsScreen extends Screen {
-
-
-
 	private final ModConfig INSTANCE = ModConfig.getInstance();
 	private final Screen parent;
 
@@ -139,7 +136,7 @@ public class MoveElementsScreen extends Screen {
 		} else if (keyCode == 87 && modifiers == 2 && !prevModifiedMovableWidgets.isEmpty()) {
 			redoModifiedMovableWidgets.add(prevModifiedMovableWidgets.removeLast());
 			redoModifiedMovableWidgets.getLast().undo();
-		} else if ((keyCode == 89 && modifiers == 2) || (keyCode == 87 && modifiers == 3) && !redoModifiedMovableWidgets.isEmpty()) {
+		} else if (((keyCode == 89 && modifiers == 2) || (keyCode == 87 && modifiers == 3)) && !redoModifiedMovableWidgets.isEmpty()) {
 			prevModifiedMovableWidgets.add(redoModifiedMovableWidgets.removeLast());
 			prevModifiedMovableWidgets.getLast().redo();
 		}

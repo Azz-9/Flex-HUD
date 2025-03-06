@@ -6,8 +6,10 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.joml.Quaternionf;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,12 @@ public class HelpWidget extends ClickableWidget {
 	private final Identifier texture = Identifier.of(MOD_ID, "widgets/buttons/help/help.png");
 	private boolean displayHelp = false;
 
+	private final int BACKGROUND_COLOR = 0x000000;
+	private final int TEXT_COLOR = 0xFFFFFF;
+	private int alpha = 0;
+	private final int TRANSITION_DURATION = 300; //ms
+	private long timestamp;
+
 	public HelpWidget(int x, int y, int width, int height) {
 		super(x, y, width, height, Text.of("Help button"));
 	}
@@ -27,16 +35,28 @@ public class HelpWidget extends ClickableWidget {
 		context.drawTexture(RenderLayer::getGuiTexturedOverlay, texture, getX(), getY(), 0, 0, getWidth(), getHeight(), 20, 20);
 
 		if (displayHelp) {
+			if (alpha < 255) {
+				long elapsedTime = System.currentTimeMillis() - timestamp;
+				float progress = Math.min(1.0f, (float) elapsedTime / TRANSITION_DURATION);
+
+				// Ease-Out
+				float easedProgress = 1 - (1 - progress) * (1 - progress);
+
+				alpha = (int) (251 * easedProgress) + 4; // with alpha < 4 the text is rendered without taking the alpha into account
+			}
+
 			TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 
 			List<String> helpLines = new ArrayList<>();
 			helpLines.add("CTRL + Z : undo");
 			helpLines.add("CTRL + Y / CTRL + SHIFT + Z : redo");
-			helpLines.add("Press SHIFT while dragging to");
-			helpLines.add("prevent snapping");
+			helpLines.add("Press SHIFT while moving an");
+			helpLines.add("element to prevent snapping");
+			helpLines.add("Press SHIFT while scaling an");
+			helpLines.add("element to snap");
 
 			int padding = 4;
-			int marginBottom = 2;
+			int marginBottom = 6;
 
 			int lineHeight = 12;
 
@@ -45,20 +65,41 @@ public class HelpWidget extends ClickableWidget {
 			int popupHeight = padding + lineHeight * helpLines.size();
 			int popupWidth = 0;
 			for (String line : helpLines) {
-				popupWidth = Math.max(popupWidth, textRenderer.getWidth(line)) + padding;
+				popupWidth = Math.max(popupWidth, textRenderer.getWidth(line) + padding * 2);
 			}
 
-			context.fill(popupX, popupY, popupX + popupWidth, popupY + popupHeight, 0x7F000000);
+			context.fill(popupX, popupY, popupX + popupWidth, popupY + popupHeight,  (alpha / 2 << 24) | BACKGROUND_COLOR);
+
+			renderArrow(context, marginBottom);
 
             for (int i = 0; i < helpLines.size(); i++) {
-				context.drawText(textRenderer, helpLines.get(i), popupX + padding, popupY + padding + lineHeight * i, 0xFFFFFFFF, false);
+				context.drawText(textRenderer, helpLines.get(i), popupX + padding, popupY + padding + lineHeight * i, (alpha << 24) | TEXT_COLOR, false);
 			}
 		}
+	}
+
+	private void renderArrow(DrawContext context, int marginBottom) {
+		int arrowSize = 6;
+
+		context.enableScissor(getX(), getY() - marginBottom, getRight(), getY() - marginBottom + arrowSize);
+
+		MatrixStack matrices = context.getMatrices();
+		matrices.push();
+		matrices.translate(getX() + getWidth() / 2.0, getY() - marginBottom - Math.sqrt(Math.pow(arrowSize, 2) * 2) / 2, 0);
+		matrices.multiply(new Quaternionf().rotationZ((float) Math.toRadians(45)));
+
+		context.fill(0, 0, arrowSize, arrowSize, (alpha / 2 << 24) | BACKGROUND_COLOR);
+
+		matrices.pop();
+
+		context.disableScissor();
 	}
 
 	@Override
 	public void onClick(double mouseX, double mouseY) {
 		displayHelp = !displayHelp;
+		timestamp = System.currentTimeMillis();
+		alpha = 0;
 	}
 
 	@Override
