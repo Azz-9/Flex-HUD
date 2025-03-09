@@ -1,6 +1,5 @@
 package me.Azz_9.better_hud.client.utils;
 
-import me.Azz_9.better_hud.modMenu.ModConfig;
 import me.Azz_9.better_hud.screens.modsConfigScreen.mods.DurabilityPing.DurabilityPingType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -45,7 +44,7 @@ public class DurabilityPing {
 
 			// play sound, display message or both based on the selected option in the config menu
 			if (INSTANCE.pingType != DurabilityPingType.Sound) {
-				Text message = Text.literal(stack.getItemName().getString().toLowerCase() + " durability low!").formatted(Formatting.RED);
+				Text message = Text.literal(stack.getItemName().getString().toLowerCase() + " ").append(Text.translatable("better_hud.durability_ping.message")).formatted(Formatting.RED); // TODO améliorer le message en fr parce que la bon
 				player.sendMessage(message, true);
 			}
 			if (INSTANCE.pingType != DurabilityPingType.Message) {

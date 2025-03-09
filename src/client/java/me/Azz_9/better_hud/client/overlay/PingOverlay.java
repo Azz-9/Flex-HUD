@@ -7,61 +7,62 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
 
 public class PingOverlay extends HudElement {
-    public boolean hideWhenOffline = true;
+	public boolean hideWhenOffline = true;
 
-    public PingOverlay(double defaultX, double defaultY) {
-        super(defaultX, defaultY);
-    }
+	public PingOverlay(double defaultX, double defaultY) {
+		super(defaultX, defaultY);
+	}
 
-    @Override
-    public void onHudRender(DrawContext drawContext, RenderTickCounter tickCounter) {
-        
-        final MinecraftClient CLIENT = MinecraftClient.getInstance();
+	@Override
+	public void onHudRender(DrawContext drawContext, RenderTickCounter tickCounter) {
 
-        if (!ModConfig.getInstance().isEnabled || !this.enabled || CLIENT == null || CLIENT.options.hudHidden || CLIENT.player == null) {
-            return;
-        }
+		final MinecraftClient CLIENT = MinecraftClient.getInstance();
 
-        String text = "";
+		if (!ModConfig.getInstance().isEnabled || !this.enabled || CLIENT == null || CLIENT.options.hudHidden || CLIENT.player == null) {
+			return;
+		}
 
-        if (CLIENT.getCurrentServerEntry() != null) {
+		String text = "";
 
-            if (CLIENT.getNetworkHandler() != null) {
-                PlayerListEntry entry = CLIENT.getNetworkHandler().getPlayerListEntry(CLIENT.player.getUuid());
+		if (CLIENT.getCurrentServerEntry() != null) {
 
-                if (entry != null) {
-                    int latency = entry.getLatency();
+			if (CLIENT.getNetworkHandler() != null) {
+				PlayerListEntry entry = CLIENT.getNetworkHandler().getPlayerListEntry(CLIENT.player.getUuid());
 
-                    text = latency + " ms";
-                }
-            }
+				if (entry != null) {
+					int latency = entry.getLatency();
 
-        } else if (!this.hideWhenOffline) {
+					text = latency + " ms";
+				}
+			}
 
-            text = "Offline";
+		} else if (!this.hideWhenOffline) {
 
-        } else if (Better_hudClient.isEditing) {
+			text = Text.translatable("better_hud.hud.ping.offline").getString();
 
-            text = "20 ms";
+		} else if (Better_hudClient.isEditing) {
 
-        }
+			text = "20 ms";
 
-        if (!text.isEmpty()) {
+		}
 
-            MatrixStack matrices = drawContext.getMatrices();
-            matrices.push();
-            matrices.translate(this.x, this.y, 0);
-            matrices.scale(this.scale, this.scale, 1.0f);
+		if (!text.isEmpty()) {
 
-            drawContext.drawText(CLIENT.textRenderer, text, 0, 0, this.color, this.shadow);
+			MatrixStack matrices = drawContext.getMatrices();
+			matrices.push();
+			matrices.translate(this.x, this.y, 0);
+			matrices.scale(this.scale, this.scale, 1.0f);
 
-            matrices.pop();
+			drawContext.drawText(CLIENT.textRenderer, text, 0, 0, this.color, this.shadow);
 
-            setWidth(text);
-            this.height = CLIENT.textRenderer.fontHeight;
-        }
-    }
+			matrices.pop();
+
+			setWidth(text);
+			this.height = CLIENT.textRenderer.fontHeight;
+		}
+	}
 
 }

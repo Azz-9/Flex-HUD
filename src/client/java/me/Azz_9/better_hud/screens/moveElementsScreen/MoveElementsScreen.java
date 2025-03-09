@@ -33,8 +33,8 @@ public class MoveElementsScreen extends Screen {
 
 	private final List<TrackableChange> trackableWidgets = new ArrayList<>();
 
-	private List<MovableWidget> prevModifiedMovableWidgets = new LinkedList<>();
-	private List<MovableWidget> redoModifiedMovableWidgets = new LinkedList<>();
+	private final List<MovableWidget> prevModifiedMovableWidgets = new LinkedList<>();
+	private final List<MovableWidget> redoModifiedMovableWidgets = new LinkedList<>();
 
 	public MoveElementsScreen(Screen parent) {
 		super(Text.literal("Move Elements"));

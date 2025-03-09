@@ -9,8 +9,8 @@ public class HudElement implements HudRenderCallback {
 	public boolean enabled = true;
 	public int color = 0xFFFFFF;
 	public boolean shadow = true;
-	public double x = 0.0F;
-	public double y = 0.0F;
+	public double x;
+	public double y;
 	public float scale = 1.0f;
 	transient protected int height;
 	transient protected int width;

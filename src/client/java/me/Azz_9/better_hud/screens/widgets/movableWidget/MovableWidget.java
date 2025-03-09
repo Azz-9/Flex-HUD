@@ -19,7 +19,14 @@ import java.util.Set;
 
 public class MovableWidget extends ClickableWidget implements MoveElementsScreen.SnapLines, TrackableChange {
 
-	public enum Action {
+	private enum HandlePosition {
+		TOP_LEFT,
+		TOP_RIGHT,
+		BOTTOM_LEFT,
+		BOTTOM_RIGHT
+	}
+
+	private enum Action {
 		MOVE,
 		SCALE
 	}
@@ -32,11 +39,11 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 		private final float SCALE;
 
 		public PreviousAction(Action actionType, int x, int y) {
-            this.ACTION_TYPE = actionType;
+			this.ACTION_TYPE = actionType;
 			this.SCALE = 1;
-            this.X = x;
-            this.Y = y;
-        }
+			this.X = x;
+			this.Y = y;
+		}
 
 		public PreviousAction(Action actionType, float scale) {
 			this.ACTION_TYPE = actionType;
@@ -92,18 +99,22 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 	private boolean shouldDrawScaleValue = false;
 
 	private float scale = 1.0f;
+	private final float MAX_SCALE = 2.0f;
+	private final float MIN_SCALE = 0.5f;
 	private final int handleSize = 4;
 	private int handleX = getX() - handleSize / 2;
 	private int handleY = getY() - handleSize / 2;
-	private double handleOffsetX;
-	private double handleOffsetY;
+	private HandlePosition handlePosition;
 	private int onClickRight;
 	private int onClickBottom;
+	private double onClickX;
+	private double onClickY;
+	private float onClickScale;
 
 	private final Set<Integer> pressedKeys = new HashSet<>();
 
-	private List<PreviousAction> prevActions = new LinkedList<>();
-	private LinkedList<PreviousAction> redoActions = new LinkedList<>();
+	private final List<PreviousAction> prevActions = new LinkedList<>();
+	private final LinkedList<PreviousAction> redoActions = new LinkedList<>();
 
 	private boolean isDraggingScalehandle = false;
 
@@ -151,15 +162,47 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 		double centerX = getX() + getWidth() / 2.0;
 		double centerY = getY() + getHeight() / 2.0;
 
-		if (centerX < screenCenterX) {
-			handleX = getRight() - handleSize / 2;
+		if (isDraggingScalehandle) {
+			switch (handlePosition) {
+				case TOP_LEFT -> {
+					handleX = getX() - handleSize / 2;
+					handleY = getY() - handleSize / 2;
+				}
+				case TOP_RIGHT -> {
+					handleX = getRight() - handleSize / 2;
+					handleY = getY() - handleSize / 2;
+				}
+				case BOTTOM_LEFT -> {
+					handleX = getX() - handleSize / 2;
+					handleY = getBottom() - handleSize / 2;
+				}
+				case BOTTOM_RIGHT -> {
+					handleX = getRight() - handleSize / 2;
+					handleY = getBottom() - handleSize / 2;
+				}
+			}
 		} else {
-			handleX = getX() - handleSize / 2;
-		}
-		if (centerY < screenCenterY) {
-			handleY = getBottom() - handleSize / 2;
-		} else {
-			handleY = getY() - handleSize / 2;
+			if (centerX < screenCenterX) {
+				if (centerY < screenCenterY) {
+					handlePosition = HandlePosition.BOTTOM_RIGHT;
+					handleX = getRight() - handleSize / 2;
+					handleY = getBottom() - handleSize / 2;
+				} else {
+					handlePosition = HandlePosition.TOP_RIGHT;
+					handleX = getRight() - handleSize / 2;
+					handleY = getY() - handleSize / 2;
+				}
+			} else {
+				if (centerY < screenCenterY) {
+					handlePosition = HandlePosition.BOTTOM_LEFT;
+					handleX = getX() - handleSize / 2;
+					handleY = getBottom() - handleSize / 2;
+				} else {
+					handlePosition = HandlePosition.TOP_LEFT;
+					handleX = getX() - handleSize / 2;
+					handleY = getY() - handleSize / 2;
+				}
+			}
 		}
 
 		context.fill(handleX, handleY, handleX + handleSize, handleY + handleSize, 0xffF8F8FC);
@@ -191,37 +234,77 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 			isDraggingScalehandle = true;
 			onClickRight = (int) (getWidth() / getScale()) + getX();
 			onClickBottom = (int) (getHeight() / getScale()) + getY();
+			onClickX = HUD_ELEMENT.x;
+			onClickY = HUD_ELEMENT.y;
+			onClickScale = getScale();
 		}
 		offsetX = mouseX - getX();
 		offsetY = mouseY - getY();
-		handleOffsetX = mouseX - handleX;
-		handleOffsetY = mouseY - handleY;
 
 	}
+
 
 	@Override
 	protected void onDrag(double mouseX, double mouseY, double deltaX, double deltaY) {
 		if (!isDraggingScalehandle) {
-			int x = (int) Math.clamp(mouseX - offsetX, 0, SCREEN.width - width);
-			int y = (int) Math.clamp(mouseY - offsetY, 0, SCREEN.height - height);
+			double x = Math.clamp(mouseX - offsetX, 0, SCREEN.width - width);
+			double y = Math.clamp(mouseY - offsetY, 0, SCREEN.height - height);
 			snapElement(x, y);
 		} else {
+			double oppositeCornerX;
+			double oppositeCornerY;
+
 			// Vecteur direction de la droite
-			double dx = onClickRight - getX();
-			double dy = onClickBottom - getY();
+			double dx;
+			double dy;
+			switch (handlePosition) {
+				case TOP_LEFT -> {
+					dx = onClickX - onClickRight;
+					dy = onClickY - onClickBottom;
+					oppositeCornerX = getX() + HUD_ELEMENT.getWidth() * getScale();
+					oppositeCornerY = getY() + HUD_ELEMENT.getHeight() * getScale();
+				}
+				case TOP_RIGHT -> {
+					dx = onClickRight - onClickX;
+					dy = onClickY - onClickBottom;
+					oppositeCornerX = onClickX;
+					oppositeCornerY = getY() + HUD_ELEMENT.getHeight() * getScale();
+				}
+				case BOTTOM_LEFT -> {
+					dx = onClickX - onClickRight;
+					dy = onClickBottom - onClickY;
+					oppositeCornerX = getX() + HUD_ELEMENT.getWidth() * getScale();
+					oppositeCornerY = onClickY;
+				}
+				default -> {
+					dx = onClickRight - onClickX;
+					dy = onClickBottom - onClickY;
+					oppositeCornerX = onClickX;
+					oppositeCornerY = onClickY;
+				}
+			}
 
-			double t = ((mouseX - getX()) * dx + (mouseY - getY()) * dy) / (dx * dx + dy * dy);
+			// Calcul du paramètre t (projection du point de la souris sur la droite)
+			double denom = dx * dx + dy * dy;
+			double t = (denom == 0) ? 0 : ((mouseX - oppositeCornerX) * dx + (mouseY - oppositeCornerY) * dy) / denom;
 
-			// Coordonnées du point projeté
-			double closestX = getX() + t * dx;
-			double closestY = getY() + t * dy;
+			// Clamping de t pour rester dans les limites du segment
+			t = Math.clamp(t, MIN_SCALE, MAX_SCALE);
 
-			float newScale = (float) ((Math.sqrt(Math.pow(closestX - getX(), 2) + Math.pow(closestY - getY(), 2)) / Math.sqrt(dx * dx + dy * dy)));
+			// Coordonnées du point projeté sur le segment
+			double closestX = oppositeCornerX + t * dx;
+			double closestY = oppositeCornerY + t * dy;
 
+			// Calcul de l'échelle en fonction de la distance projetée
+			float newScale = (float) (Math.sqrt(Math.pow((closestX - oppositeCornerX), 2) + Math.pow((closestY - oppositeCornerY), 2))
+					/ Math.sqrt(dx * dx + dy * dy));
+
+			// Arrondi à 0.25 près si Maj est enfoncé
 			if (isShiftKeyPressed()) {
-				newScale = Math.round(newScale * 4) / 4.0f; // round to the nearest quarter
+				newScale = Math.round(newScale * 4) / 4.0f;
 				shouldDrawScaleValue = true;
 			}
+
 			setScale(newScale);
 		}
 	}
@@ -245,6 +328,9 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (isDraggingScalehandle) {
+			return true; // so pressing a key won't do anything
+		}
 		if (this.isFocused()) {
 			boolean result = false;
 			pressedKeys.add(keyCode);
@@ -257,13 +343,13 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 				result = true;
 			}
 			if (pressedKeys.contains(GLFW.GLFW_KEY_LEFT)) {
-                move(getX() - 1, getY());
+				move(getX() - 1, getY());
 				result = true;
-            }
+			}
 			if (pressedKeys.contains(GLFW.GLFW_KEY_RIGHT)) {
-                move(getX() + 1, getY());
+				move(getX() + 1, getY());
 				result = true;
-            }
+			}
 			return result;
 		}
 		return false;
@@ -324,9 +410,9 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 		}
 	}
 
-	private void move(int x, int y) {
+	private void move(double x, double y) {
 		if (isNotOverflowing(x, y)) {
-			setPosition(x, y);
+			setPosition((int) x, (int) y);
 			HUD_ELEMENT.setPos(x, y);
 		}
 	}
@@ -334,31 +420,40 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 	/*
 	 * Doesn't check if, with the new coordinates, the element will be overflowing
 	 */
-	private void forceMove(int x, int y) {
-		setPosition(x, y);
+	private void forceMove(double x, double y) {
+		setPosition((int) x, (int) y);
 		HUD_ELEMENT.setPos(x, y);
 	}
 
 	private void setScale(float scale) {
-		scale = Math.clamp(scale, 0.5F, 2.0F);
+		scale = Math.clamp(scale, MIN_SCALE, MAX_SCALE);
+		switch (handlePosition) {
+			case TOP_RIGHT ->
+					forceMove(HUD_ELEMENT.x, onClickY - (HUD_ELEMENT.getHeight() * scale) + (HUD_ELEMENT.getHeight() * onClickScale));
+			case BOTTOM_LEFT ->
+					forceMove(onClickX - (HUD_ELEMENT.getWidth() * scale) + (HUD_ELEMENT.getWidth() * onClickScale), HUD_ELEMENT.y);
+			case TOP_LEFT ->
+					forceMove(onClickX - (HUD_ELEMENT.getWidth() * scale) + (HUD_ELEMENT.getWidth() * onClickScale),
+							onClickY - (HUD_ELEMENT.getHeight() * scale) + (HUD_ELEMENT.getHeight() * onClickScale));
+		}
 		this.scale = scale;
 		HUD_ELEMENT.scale = scale;
 	}
 
-	private void snapElement(int x, int y) {
+	private void snapElement(double x, double y) {
 		/*
 		 * snap the element if it is near the X centered line or the Y centered line
 		 * else move the element to the right location
 		 */
 		if (!isShiftKeyPressed()) {
 			if (Math.abs((x + (double) width / 2) - (SCREEN.width / 2.0)) < (SCREEN.width / 30.0)) {
-				x = (SCREEN.width - width) / 2;
+				x = (SCREEN.width - width) / 2.0F;
 				shouldDrawXCenteredLine = true;
 			} else {
 				shouldDrawXCenteredLine = false;
 			}
-			if (Math.abs((y + (double) height / 2) - (SCREEN.height / 2.0)) < (SCREEN.width / 30.0)) { // we want the same value after the < for the
-				y = (SCREEN.height - height) / 2;
+			if (Math.abs((y + (double) height / 2) - (SCREEN.height / 2.0)) < (SCREEN.width / 30.0)) { // we want the same value after the <
+				y = (SCREEN.height - height) / 2.0F;
 				shouldDrawYCenteredLine = true;
 			} else {
 				shouldDrawYCenteredLine = false;
@@ -377,7 +472,7 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 				InputUtil.isKeyPressed(client.getWindow().getHandle(), InputUtil.GLFW_KEY_RIGHT_SHIFT);
 	}
 
-	private boolean isNotOverflowing(int x, int y) {
+	private boolean isNotOverflowing(double x, double y) {
 		return x >= 0 && x <= SCREEN.width - width && y >= 0 && y <= SCREEN.height - height;
 	}
 

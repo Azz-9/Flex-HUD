@@ -9,165 +9,174 @@ import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.text.Text;
 import net.minecraft.world.biome.Biome;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 public class CoordinatesOverlay extends HudElement {
-    public boolean showY = true;
-    public int numberOfDigits = 0;
-    public boolean showBiome = true;
-    public boolean showDirection = true;
-    public boolean directionAbreviation = true;
-    public DisplayMode displayMode = DisplayMode.Vertical;
+	public boolean showY = true;
+	public int numberOfDigits = 0;
+	public boolean showBiome = true;
+	public boolean showDirection = true;
+	public boolean directionAbreviation = true;
+	public DisplayMode displayMode = DisplayMode.Vertical;
 
-    public CoordinatesOverlay(double defaultX, double defaultY) {
-        super(defaultX, defaultY);
-    }
+	public CoordinatesOverlay(double defaultX, double defaultY) {
+		super(defaultX, defaultY);
+	}
 
-    @Override
-    public void onHudRender(DrawContext drawContext, RenderTickCounter tickCounter) {
-        super.onHudRender(drawContext, tickCounter);
+	@Override
+	public void onHudRender(DrawContext drawContext, RenderTickCounter tickCounter) {
+		super.onHudRender(drawContext, tickCounter);
 
-        final MinecraftClient CLIENT = MinecraftClient.getInstance();
+		final MinecraftClient CLIENT = MinecraftClient.getInstance();
 
-        if(!ModConfig.getInstance().isEnabled || !this.enabled || CLIENT == null || CLIENT.options.hudHidden || CLIENT.player == null) {
-            return;
-        }
+		if (!ModConfig.getInstance().isEnabled || !this.enabled || CLIENT == null || CLIENT.options.hudHidden || CLIENT.player == null) {
+			return;
+		}
 
-        PlayerEntity player = CLIENT.player;
+		PlayerEntity player = CLIENT.player;
 
-        MatrixStack matrices = drawContext.getMatrices();
-        matrices.push();
-        matrices.translate(this.x, this.y, 0);
-        matrices.scale(this.scale, this.scale, 1.0f);
+		MatrixStack matrices = drawContext.getMatrices();
+		matrices.push();
+		matrices.translate(this.x, this.y, 0);
+		matrices.scale(this.scale, this.scale, 1.0f);
 
-        // Get the truncated coordinates with the correct amount of digits
-        String xCoords = "X: " + BigDecimal.valueOf(player.getX()).setScale(this.numberOfDigits, RoundingMode.DOWN);
-        String yCoords = "Y: " + BigDecimal.valueOf(player.getY()).setScale(this.numberOfDigits, RoundingMode.DOWN);
-        String zCoords = "Z: " + BigDecimal.valueOf(player.getZ()).setScale(this.numberOfDigits, RoundingMode.DOWN);
+		// Get the truncated coordinates with the correct amount of digits
+		String xCoords = "X: " + BigDecimal.valueOf(player.getX()).setScale(this.numberOfDigits, RoundingMode.DOWN);
+		String yCoords = "Y: " + BigDecimal.valueOf(player.getY()).setScale(this.numberOfDigits, RoundingMode.DOWN);
+		String zCoords = "Z: " + BigDecimal.valueOf(player.getZ()).setScale(this.numberOfDigits, RoundingMode.DOWN);
 
-        if (this.displayMode == DisplayMode.Vertical) {
+		if (this.displayMode == DisplayMode.Vertical) {
 
-            int hudX = 0;
-            int hudY = 0;
+			int hudX = 0;
+			int hudY = 0;
 
-            drawContext.drawText(CLIENT.textRenderer, xCoords, hudX, hudY, this.color, this.shadow);
-            updateWidth(xCoords);
-            if (this.showY) {
-                hudY += 10;
-                drawContext.drawText(CLIENT.textRenderer, yCoords, hudX, hudY, this.color, this.shadow);
-                updateWidth(yCoords);
-            }
-            hudY += 10;
-            drawContext.drawText(CLIENT.textRenderer, zCoords, hudX, hudY, this.color, this.shadow);
-            updateWidth(zCoords);
+			drawContext.drawText(CLIENT.textRenderer, xCoords, hudX, hudY, this.color, this.shadow);
+			updateWidth(xCoords);
+			if (this.showY) {
+				hudY += 10;
+				drawContext.drawText(CLIENT.textRenderer, yCoords, hudX, hudY, this.color, this.shadow);
+				updateWidth(yCoords);
+			}
+			hudY += 10;
+			drawContext.drawText(CLIENT.textRenderer, zCoords, hudX, hudY, this.color, this.shadow);
+			updateWidth(zCoords);
 
-            if (this.showBiome) {
-                hudY += 10;
-                renderBiome(drawContext, hudX, hudY);
-            }
-            this.height = hudY + 10;
+			if (this.showBiome) {
+				hudY += 10;
+				renderBiome(drawContext, hudX, hudY);
+			}
+			this.height = hudY + 10;
 
-            if (this.showDirection) {
-                int widestCoords = Math.max(CLIENT.textRenderer.getWidth(xCoords), CLIENT.textRenderer.getWidth(yCoords));
-                if (this.showY) {
-                    widestCoords = Math.max(widestCoords, CLIENT.textRenderer.getWidth(zCoords));
-                }
-                hudX = 24 + widestCoords;
-                hudY = 0;
-                String[] direction = getDirection(player);
-                String facing;
-                String axisX = direction[2];
-                String axisZ = direction[3];
+			if (this.showDirection) {
+				int widestCoords = Math.max(CLIENT.textRenderer.getWidth(xCoords), CLIENT.textRenderer.getWidth(yCoords));
+				if (this.showY) {
+					widestCoords = Math.max(widestCoords, CLIENT.textRenderer.getWidth(zCoords));
+				}
+				hudX = 24 + widestCoords;
+				hudY = 0;
+				String[] direction = getDirection(player);
+				String facing;
+				String axisX = direction[2];
+				String axisZ = direction[3];
 
-                if (this.directionAbreviation) {
-                    facing = direction[1];
-                } else {
-                    facing = direction[0];
-                }
+				if (this.directionAbreviation) {
+					facing = direction[1];
+				} else {
+					facing = direction[0];
+				}
 
 
-                drawContext.drawText(CLIENT.textRenderer, axisX, hudX, hudY, this.color, this.shadow);
-                updateWidth(axisX, hudX);
-                if (this.showY) {
-                    hudY += 10;
-                    drawContext.drawText(CLIENT.textRenderer, facing, hudX, hudY, this.color, this.shadow);
-                    updateWidth(facing, hudX);
-                } else {
-                    drawContext.drawText(CLIENT.textRenderer, facing, hudX + 8, hudY + 5, this.color, this.shadow);
-                    updateWidth(facing, hudX + 8);
-                }
-                hudY += 10;
-                drawContext.drawText(CLIENT.textRenderer, axisZ, hudX, hudY, this.color, this.shadow);
-                updateWidth(axisZ, hudX);
-            }
+				drawContext.drawText(CLIENT.textRenderer, axisX, hudX, hudY, this.color, this.shadow);
+				updateWidth(axisX, hudX);
+				if (this.showY) {
+					hudY += 10;
+					drawContext.drawText(CLIENT.textRenderer, facing, hudX, hudY, this.color, this.shadow);
+					updateWidth(facing, hudX);
+				} else {
+					drawContext.drawText(CLIENT.textRenderer, facing, hudX + 8, hudY + 5, this.color, this.shadow);
+					updateWidth(facing, hudX + 8);
+				}
+				hudY += 10;
+				drawContext.drawText(CLIENT.textRenderer, axisZ, hudX, hudY, this.color, this.shadow);
+				updateWidth(axisZ, hudX);
+			}
 
-        } else {
-            StringBuilder text = new StringBuilder();
-            text.append(xCoords);
-            if (this.showY) {
-                text.append("; ").append(yCoords);
-            }
-            text.append("; ").append(zCoords);
-            text.insert(0, "(");
-            text.append(")");
-            if (this.showDirection) {
-                text.append(" ");
-                if (this.directionAbreviation) {
-                    text.append(getDirection(player)[1]);
-                } else {
-                    text.append(getDirection(player)[0]);
-                }
-            }
+		} else {
+			StringBuilder text = new StringBuilder();
+			text.append(xCoords);
+			if (this.showY) {
+				text.append("; ").append(yCoords);
+			}
+			text.append("; ").append(zCoords);
+			text.insert(0, "(");
+			text.append(")");
+			if (this.showDirection) {
+				text.append(" ");
+				if (this.directionAbreviation) {
+					text.append(getDirection(player)[1]);
+				} else {
+					text.append(getDirection(player)[0]);
+				}
+			}
 
-            drawContext.drawText(CLIENT.textRenderer, text.toString(), 0, 0, this.color, this.shadow);
-            updateWidth(text.toString());
-            this.height = CLIENT.textRenderer.fontHeight;
-            if (this.showBiome) {
-                renderBiome(drawContext, 0, 10);
-                this.height += 10;
-            }
+			drawContext.drawText(CLIENT.textRenderer, text.toString(), 0, 0, this.color, this.shadow);
+			updateWidth(text.toString());
+			this.height = CLIENT.textRenderer.fontHeight;
+			if (this.showBiome) {
+				renderBiome(drawContext, 0, 10);
+				this.height += 10;
+			}
 
-        }
+		}
 
-        matrices.pop();
+		matrices.pop();
 
-    }
+	}
 
-    private String[] getDirection(PlayerEntity p) {
-        float yaw = (p.getYaw() % 360 + 360) % 360;
+	private String[] getDirection(PlayerEntity p) {
+		float yaw = (p.getYaw() % 360 + 360) % 360;
 
-        if (337.5 < yaw || yaw < 22.5) {
-            return new String[]{"South", "S", "", "+"};
-        } else if (22.5 <= yaw && yaw < 67.5) {
-            return new String[]{"South-West", "SW", "-", "+"};
-        } else if (67.5 <= yaw && yaw < 112.5) {
-            return new String[]{"West", "W", "-", ""};
-        } else if (112.5 <= yaw && yaw < 157.5) {
-            return new String[]{"North-West", "NW", "-", "-"};
-        } else if (157.5 <= yaw && yaw < 202.5) {
-            return new String[]{"North", "N", "", "-"};
-        } else if (202.5 <= yaw && yaw < 247.5) {
-            return new String[]{"North-East", "NE", "+", "-"};
-        } else if (247.5 <= yaw && yaw < 292.5) {
-            return new String[]{"East", "E", "+", ""};
-        } else  {
-            return new String[]{"South-East", "SE", "+", "+"};
-        }
+		if (337.5 < yaw || yaw < 22.5) {
+			return new String[]{Text.translatable("better_hud.hud.coordinates.direction.south").getString(),
+					Text.translatable("better_hud.hud.coordinates.direction_abbr.south").getString(), "", "+"};
+		} else if (22.5 <= yaw && yaw < 67.5) {
+			return new String[]{Text.translatable("better_hud.hud.coordinates.direction.south_west").getString(),
+					Text.translatable("better_hud.hud.coordinates.direction_abbr.south_west").getString(), "-", "+"};
+		} else if (67.5 <= yaw && yaw < 112.5) {
+			return new String[]{Text.translatable("better_hud.hud.coordinates.direction.west").getString(),
+					Text.translatable("better_hud.hud.coordinates.direction_abbr.west").getString(), "-", ""};
+		} else if (112.5 <= yaw && yaw < 157.5) {
+			return new String[]{Text.translatable("better_hud.hud.coordinates.direction.north_west").getString(),
+					Text.translatable("better_hud.hud.coordinates.direction_abbr.north_west").getString(), "-", "-"};
+		} else if (157.5 <= yaw && yaw < 202.5) {
+			return new String[]{Text.translatable("better_hud.hud.coordinates.direction.north").getString(),
+					Text.translatable("better_hud.hud.coordinates.direction_abbr.north").getString(), "", "-"};
+		} else if (202.5 <= yaw && yaw < 247.5) {
+			return new String[]{Text.translatable("better_hud.hud.coordinates.direction.north_east").getString(),
+					Text.translatable("better_hud.hud.coordinates.direction_abbr.north_east").getString(), "+", "-"};
+		} else if (247.5 <= yaw && yaw < 292.5) {
+			return new String[]{Text.translatable("better_hud.hud.coordinates.direction.east").getString(),
+					Text.translatable("better_hud.hud.coordinates.direction_abbr.east").getString(), "+", ""};
+		} else {
+			return new String[]{Text.translatable("better_hud.hud.coordinates.direction.south_east").getString(),
+					Text.translatable("better_hud.hud.coordinates.direction_abbr.south_east").getString(), "+", "+"};
+		}
 
-    }
+	}
 
-    private void renderBiome(DrawContext drawContext, int hudX, int hudY) {
-        MinecraftClient CLIENT = MinecraftClient.getInstance();
-        PlayerEntity p = CLIENT.player;
+	private void renderBiome(DrawContext drawContext, int hudX, int hudY) {
+		MinecraftClient CLIENT = MinecraftClient.getInstance();
+		PlayerEntity p = CLIENT.player;
 
-        RegistryKey<Biome> biomeKey = CLIENT.world.getBiome(p.getBlockPos()).getKey().orElse(null);
-        String biomeName = CLIENT.world.getBiome(p.getBlockPos()).getIdAsString().replace("minecraft:", "");
-        drawContext.drawText(CLIENT.textRenderer, "Biome: ", hudX, hudY, this.color, this.shadow);
-        hudX += CLIENT.textRenderer.getWidth("Biome: ");
-        drawContext.drawText(CLIENT.textRenderer, biomeName, hudX, hudY, Better_hudClient.BIOME_COLORS.getOrDefault(biomeKey, 0xFFFFFF), this.shadow);
-        updateWidth("Biome: " + biomeName);
-    }
+		RegistryKey<Biome> biomeKey = CLIENT.world.getBiome(p.getBlockPos()).getKey().orElse(null);
+		String biomeName = CLIENT.world.getBiome(p.getBlockPos()).getIdAsString().replace("minecraft:", "");
+		drawContext.drawText(CLIENT.textRenderer, "Biome: ", hudX, hudY, this.color, this.shadow);
+		hudX += CLIENT.textRenderer.getWidth("Biome: ");
+		drawContext.drawText(CLIENT.textRenderer, biomeName, hudX, hudY, Better_hudClient.BIOME_COLORS.getOrDefault(biomeKey, 0xFFFFFF), this.shadow);
+		updateWidth("Biome: " + biomeName);
+	}
 }

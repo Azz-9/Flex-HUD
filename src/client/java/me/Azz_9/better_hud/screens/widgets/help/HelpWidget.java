@@ -25,6 +25,7 @@ public class HelpWidget extends ClickableWidget {
 	private int alpha = 0;
 	private final int TRANSITION_DURATION = 300; //ms
 	private long timestamp;
+	private boolean isFadingOut = false;
 
 	public HelpWidget(int x, int y, int width, int height) {
 		super(x, y, width, height, Text.of("Help button"));
@@ -34,16 +35,23 @@ public class HelpWidget extends ClickableWidget {
 	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
 		context.drawTexture(RenderLayer::getGuiTexturedOverlay, texture, getX(), getY(), 0, 0, getWidth(), getHeight(), 20, 20);
 
-		if (displayHelp) {
-			if (alpha < 255) {
-				long elapsedTime = System.currentTimeMillis() - timestamp;
-				float progress = Math.min(1.0f, (float) elapsedTime / TRANSITION_DURATION);
+		if (displayHelp || isFadingOut) {
 
+			long elapsedTime = System.currentTimeMillis() - timestamp;
+			float animationProgress = Math.min(1.0f, (float) elapsedTime / TRANSITION_DURATION);
+			float easedProgress = 0.0f;
+			if (displayHelp && !isFadingOut) {
 				// Ease-Out
-				float easedProgress = 1 - (1 - progress) * (1 - progress);
-
-				alpha = (int) (251 * easedProgress) + 4; // with alpha < 4 the text is rendered without taking the alpha into account
+				easedProgress = 1 - (1 - animationProgress) * (1 - animationProgress);
+			} else if (isFadingOut) {
+				// Ease-Out reversed
+				easedProgress = (1 - animationProgress) * (1 - animationProgress);
+				if (easedProgress <= 0.0f) {
+					isFadingOut = false;
+				}
 			}
+
+			alpha = (int) (251 * easedProgress) + 4;
 
 			TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 
@@ -72,7 +80,7 @@ public class HelpWidget extends ClickableWidget {
 
 			renderArrow(context, marginBottom);
 
-            for (int i = 0; i < helpLines.size(); i++) {
+			for (int i = 0; i < helpLines.size(); i++) {
 				context.drawText(textRenderer, helpLines.get(i), popupX + padding, popupY + padding + lineHeight * i, (alpha << 24) | TEXT_COLOR, false);
 			}
 		}
@@ -97,9 +105,9 @@ public class HelpWidget extends ClickableWidget {
 
 	@Override
 	public void onClick(double mouseX, double mouseY) {
-		displayHelp = !displayHelp;
+		isFadingOut = displayHelp;
 		timestamp = System.currentTimeMillis();
-		alpha = 0;
+		displayHelp = !displayHelp;
 	}
 
 	@Override

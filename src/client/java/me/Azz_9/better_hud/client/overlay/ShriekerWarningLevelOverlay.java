@@ -6,6 +6,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.Text;
 
 public class ShriekerWarningLevelOverlay extends HudElement {
 	public boolean showWhenInDeepDark = true;
@@ -16,7 +17,8 @@ public class ShriekerWarningLevelOverlay extends HudElement {
 
 	@Override
 	public void onHudRender(DrawContext drawContext, RenderTickCounter tickCounter) {
-		
+		super.onHudRender(drawContext, tickCounter);
+
 		final MinecraftClient CLIENT = MinecraftClient.getInstance();
 
 		if (!ModConfig.getInstance().isEnabled || !this.enabled || CLIENT == null || CLIENT.options.hudHidden || CLIENT.player == null || CLIENT.world == null) {
@@ -37,7 +39,7 @@ public class ShriekerWarningLevelOverlay extends HudElement {
 			matrices.translate(this.x, this.y, 0);
 			matrices.scale(this.scale, this.scale, 1.0f);
 
-			drawContext.drawText(CLIENT.textRenderer, "Warning level : " + warningLevel, (int) this.x, (int) this.y, this.color, this.shadow);
+			drawContext.drawText(CLIENT.textRenderer, Text.translatable("better_hud.hud.shrieker_warning_level.prefix").getString() + ": " + warningLevel, (int) this.x, (int) this.y, this.color, this.shadow);
 
 			matrices.pop();
 		}

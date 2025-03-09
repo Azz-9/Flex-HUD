@@ -6,55 +6,56 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
 
 public class ServerAddressOverlay extends HudElement {
-    public boolean hideWhenOffline = true;
+	public boolean hideWhenOffline = true;
 
-    public ServerAddressOverlay(double defaultX, double defaultY) {
-        super(defaultX, defaultY);
-    }
+	public ServerAddressOverlay(double defaultX, double defaultY) {
+		super(defaultX, defaultY);
+	}
 
-    @Override
-    public void onHudRender(DrawContext drawContext, RenderTickCounter tickCounter) {
-        super.onHudRender(drawContext, tickCounter);
+	@Override
+	public void onHudRender(DrawContext drawContext, RenderTickCounter tickCounter) {
+		super.onHudRender(drawContext, tickCounter);
 
-        final MinecraftClient CLIENT = MinecraftClient.getInstance();
+		final MinecraftClient CLIENT = MinecraftClient.getInstance();
 
-        if (!ModConfig.getInstance().isEnabled || !this.enabled || CLIENT == null || CLIENT.options.hudHidden) {
-            return;
-        }
+		if (!ModConfig.getInstance().isEnabled || !this.enabled || CLIENT == null || CLIENT.options.hudHidden) {
+			return;
+		}
 
-        String text = "";
+		String text = "";
 
-        if (CLIENT.getCurrentServerEntry() != null) {
+		if (CLIENT.getCurrentServerEntry() != null) {
 
-            text = CLIENT.getCurrentServerEntry().address;
+			text = CLIENT.getCurrentServerEntry().address;
 
-        } else if (!this.hideWhenOffline) {
+		} else if (!this.hideWhenOffline) {
 
-            text = "Offline";
+			text = Text.translatable("better_hud.hud.ping.offline").getString();
 
-        } else if (Better_hudClient.isEditing) {
+		} else if (Better_hudClient.isEditing) {
 
-            text = "play.hypixel.net";
+			text = "play.hypixel.net";
 
-        }
+		}
 
-        if (!text.isEmpty()) {
+		if (!text.isEmpty()) {
 
-            MatrixStack matrices = drawContext.getMatrices();
-            matrices.push();
-            matrices.translate(this.x, this.y, 0);
-            matrices.scale(this.scale, this.scale, 1.0f);
+			MatrixStack matrices = drawContext.getMatrices();
+			matrices.push();
+			matrices.translate(this.x, this.y, 0);
+			matrices.scale(this.scale, this.scale, 1.0f);
 
-            drawContext.drawText(CLIENT.textRenderer, text, 0, 0, this.color, this.shadow);
+			drawContext.drawText(CLIENT.textRenderer, text, 0, 0, this.color, this.shadow);
 
-            matrices.pop();
+			matrices.pop();
 
-            setWidth(text);
-            this.height = CLIENT.textRenderer.fontHeight;
-        }
+			setWidth(text);
+			this.height = CLIENT.textRenderer.fontHeight;
+		}
 
-    }
+	}
 
 }

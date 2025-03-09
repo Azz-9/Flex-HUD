@@ -6,6 +6,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
 
 public class PlaytimeOverlay extends HudElement {
 	public boolean showPrefix = true;
@@ -16,7 +17,7 @@ public class PlaytimeOverlay extends HudElement {
 
 	@Override
 	public void onHudRender(DrawContext drawContext, RenderTickCounter tickCounter) {
-		
+
 		final MinecraftClient CLIENT = MinecraftClient.getInstance();
 
 		if (!ModConfig.getInstance().isEnabled || !this.enabled || CLIENT == null || CLIENT.options.hudHidden) {
@@ -25,7 +26,7 @@ public class PlaytimeOverlay extends HudElement {
 
 		String elapsedTime = getElapsedTime();
 		if (showPrefix) {
-			elapsedTime = "Playtime: " + elapsedTime;
+			elapsedTime = Text.translatable("better_hud.hud.playtime.prefix").getString() + ": " + elapsedTime;
 		}
 
 		MatrixStack matrices = drawContext.getMatrices();
