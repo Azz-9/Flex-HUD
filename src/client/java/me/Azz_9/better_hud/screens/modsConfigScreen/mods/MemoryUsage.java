@@ -7,7 +7,7 @@ import net.minecraft.text.Text;
 public class MemoryUsage extends ModsConfigTemplate {
 
 	public MemoryUsage(Screen parent, double scrollAmount) {
-		super(Text.literal("Memory Usage Mod"), parent, scrollAmount);
+		super(Text.literal("Memory Usage"), parent, scrollAmount);
 	}
 
 	@Override

@@ -7,7 +7,7 @@ import net.minecraft.text.Text;
 public class DayCounter extends ModsConfigTemplate {
 
 	public DayCounter(Screen parent, double scrollAmount) {
-		super(Text.literal("Day Counter Mod"), parent, scrollAmount);
+		super(Text.literal("Day Counter"), parent, scrollAmount);
 	}
 
 	@Override
@@ -16,10 +16,10 @@ public class DayCounter extends ModsConfigTemplate {
 
 		addToggleButton(getCenterX(), startY, getButtonWidth(), getButtonHeight(), Text.of("Show day counter"), INSTANCE.dayCounter.enabled, true,
 				toggled -> INSTANCE.dayCounter.enabled = toggled);
-		addToggleButton(getCenterX(), startY + 30, getButtonWidth(),getButtonHeight(), Text.of("Text shadow"), INSTANCE.dayCounter.shadow, true,
+		addToggleButton(getCenterX(), startY + 30, getButtonWidth(), getButtonHeight(), Text.of("Text shadow"), INSTANCE.dayCounter.shadow, true,
 				toggled -> INSTANCE.dayCounter.shadow = toggled);
 
-        addColorButton(getCenterX(), startY + 60, getButtonWidth(), Text.of("Text color"), INSTANCE.dayCounter.color, 0xffffff,
+		addColorButton(getCenterX(), startY + 60, getButtonWidth(), Text.of("Text color"), INSTANCE.dayCounter.color, 0xffffff,
 				color -> INSTANCE.dayCounter.color = color);
 	}
 }

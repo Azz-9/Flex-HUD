@@ -41,7 +41,7 @@ public class PingOverlay extends HudElement {
 
 		} else if (!this.hideWhenOffline) {
 
-			text = Text.translatable("better_hud.hud.ping.offline").getString();
+			text = Text.translatable("better_hud.ping.hud.offline").getString();
 
 		} else if (Better_hudClient.isEditing) {
 

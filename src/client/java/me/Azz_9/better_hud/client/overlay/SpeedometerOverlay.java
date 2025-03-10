@@ -51,7 +51,7 @@ public class SpeedometerOverlay extends HudElement {
 		String formattedSpeed = String.format(format, CalculateSpeed.getSpeed());
 
 		if (this.units == KNOT || (this.useKnotInBoat && player.getVehicle() instanceof BoatEntity)) {
-			formattedSpeed += " " + Text.translatable("better_hud.hud.speedometer.units.knots").getString();
+			formattedSpeed += " " + Text.translatable("better_hud.speedometer.hud.units.knots").getString();
 		} else if (this.units == KPH) {
 			formattedSpeed += " km/h";
 		} else if (this.units == MPH) {

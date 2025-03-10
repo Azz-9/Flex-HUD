@@ -26,7 +26,7 @@ public class PlaytimeOverlay extends HudElement {
 
 		String elapsedTime = getElapsedTime();
 		if (showPrefix) {
-			elapsedTime = Text.translatable("better_hud.hud.playtime.prefix").getString() + ": " + elapsedTime;
+			elapsedTime = Text.translatable("better_hud.playtime.hud.prefix").getString() + ": " + elapsedTime;
 		}
 
 		MatrixStack matrices = drawContext.getMatrices();

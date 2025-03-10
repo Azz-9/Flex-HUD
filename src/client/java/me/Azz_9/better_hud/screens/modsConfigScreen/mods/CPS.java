@@ -7,7 +7,7 @@ import net.minecraft.text.Text;
 public class CPS extends ModsConfigTemplate {
 
 	public CPS(Screen parent, double scrollAmount) {
-		super(Text.literal("cps Mod"), parent, scrollAmount);
+		super(Text.literal("CPS"), parent, scrollAmount);
 	}
 
 	@Override

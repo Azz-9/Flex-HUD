@@ -7,7 +7,7 @@ import net.minecraft.text.Text;
 public class WeatherChanger extends ModsConfigTemplate {
 
 	public WeatherChanger(Screen parent, double scrollAmount) {
-		super(Text.literal("Weather Changer Mod"), parent, scrollAmount);
+		super(Text.literal("Weather Changer"), parent, scrollAmount);
 	}
 
 	public enum Weather {

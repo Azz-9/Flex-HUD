@@ -99,7 +99,7 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 	private boolean shouldDrawScaleValue = false;
 
 	private float scale = 1.0f;
-	private final float MAX_SCALE = 2.0f;
+	private final float MAX_SCALE = 3.0f;
 	private final float MIN_SCALE = 0.5f;
 	private final int handleSize = 4;
 	private int handleX = getX() - handleSize / 2;
@@ -133,7 +133,7 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 			this.hovered = context.scissorContains(mouseX, mouseY) && mouseX >= handleX && mouseY >= handleY && mouseX < handleX + handleSize && mouseY < handleY + handleSize;
 		}
 
-		setDimensions(roundCustom(HUD_ELEMENT.getWidth() * getScale()), roundCustom(HUD_ELEMENT.getHeight() * getScale()));
+		setDimensions(roundCustom(HUD_ELEMENT.getWidth() * getScale() + HUD_ELEMENT.x - this.getX()), roundCustom(HUD_ELEMENT.getHeight() * getScale() + HUD_ELEMENT.y - this.getY()));
 
 		context.fill(getX(), getY(), getWidth() + getX(), getHeight() + getY(), 0x4F88888C);
 		if (this.isHovered() || this.isFocused()) {
@@ -208,9 +208,9 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 		context.fill(handleX, handleY, handleX + handleSize, handleY + handleSize, 0xffF8F8FC);
 	}
 
-	private int roundCustom(float value) {
+	private int roundCustom(double value) {
 		int intPart = (int) value;
-		float decimalPart = value - intPart;
+		double decimalPart = value - intPart;
 
 		if (decimalPart > 0.16666666) {
 			return intPart + 1;
@@ -218,6 +218,7 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 			return intPart;
 		}
 	}
+
 
 	public float getScale() {
 		return HUD_ELEMENT.scale;

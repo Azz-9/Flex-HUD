@@ -6,7 +6,7 @@ import net.minecraft.text.Text;
 
 public class Reach extends ModsConfigTemplate {
 	public Reach(Screen parent, double scrollAmount) {
-		super(Text.literal("Reach Mod"), parent, scrollAmount);
+		super(Text.literal("Reach"), parent, scrollAmount);
 	}
 
 	@Override

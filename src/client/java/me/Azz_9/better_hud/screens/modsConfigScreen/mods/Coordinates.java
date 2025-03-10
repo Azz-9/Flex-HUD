@@ -7,7 +7,7 @@ import net.minecraft.text.Text;
 
 public class Coordinates extends ModsConfigTemplate {
 	public Coordinates(Screen parent, double scrollAmount) {
-		super(Text.literal("Coordinates Mod"), parent, scrollAmount);
+		super(Text.literal("Coordinates"), parent, scrollAmount);
 	}
 
 	@Override
@@ -28,7 +28,7 @@ public class Coordinates extends ModsConfigTemplate {
 				toggled -> INSTANCE.coordinates.showBiome = toggled);
 		addToggleButton(getCenterX(), startY + 150, getButtonWidth(), getButtonHeight(), Text.of("Show direction"), INSTANCE.coordinates.showDirection, true,
 				toggled -> INSTANCE.coordinates.showDirection = toggled);
-		addToggleButton(getCenterX(), startY + 180, getButtonWidth(), getButtonHeight(), Text.of("Direction abreviation"), INSTANCE.coordinates.directionAbreviation, true,
+		addToggleButton(getCenterX(), startY + 180, getButtonWidth(), getButtonHeight(), Text.of("Direction abbreviation"), INSTANCE.coordinates.directionAbreviation, true,
 				toggled -> INSTANCE.coordinates.directionAbreviation = toggled);
 
 		addIntField(getCenterX(), startY + 210, getButtonWidth(), Text.of("Number of digits"), INSTANCE.coordinates.numberOfDigits, 0, 0, 14,

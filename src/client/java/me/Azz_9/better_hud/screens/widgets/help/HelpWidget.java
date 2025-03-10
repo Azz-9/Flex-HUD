@@ -9,7 +9,7 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import org.joml.Quaternionf;
+import net.minecraft.util.math.RotationAxis;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +76,7 @@ public class HelpWidget extends ClickableWidget {
 				popupWidth = Math.max(popupWidth, textRenderer.getWidth(line) + padding * 2);
 			}
 
-			context.fill(popupX, popupY, popupX + popupWidth, popupY + popupHeight,  (alpha / 2 << 24) | BACKGROUND_COLOR);
+			context.fill(popupX, popupY, popupX + popupWidth, popupY + popupHeight, (alpha / 2 << 24) | BACKGROUND_COLOR);
 
 			renderArrow(context, marginBottom);
 
@@ -94,7 +94,7 @@ public class HelpWidget extends ClickableWidget {
 		MatrixStack matrices = context.getMatrices();
 		matrices.push();
 		matrices.translate(getX() + getWidth() / 2.0, getY() - marginBottom - Math.sqrt(Math.pow(arrowSize, 2) * 2) / 2, 0);
-		matrices.multiply(new Quaternionf().rotationZ((float) Math.toRadians(45)));
+		matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(45));
 
 		context.fill(0, 0, arrowSize, arrowSize, (alpha / 2 << 24) | BACKGROUND_COLOR);
 

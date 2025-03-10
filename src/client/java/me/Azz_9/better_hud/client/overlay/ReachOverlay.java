@@ -31,7 +31,7 @@ public class ReachOverlay extends HudElement {
 
 		String format = "%." + this.digits + "f";
 		String formattedSpeed = String.format(format, CalculateReach.getReach());
-		Text text = Text.literal(formattedSpeed).append(" ").append(Text.translatable("better_hud.hud.reach.units"));
+		Text text = Text.literal(formattedSpeed).append(" ").append(Text.translatable("better_hud.reach.hud.units"));
 
 		MatrixStack matrices = drawContext.getMatrices();
 		matrices.push();

@@ -8,7 +8,7 @@ import net.minecraft.util.Formatting;
 public class DurabilityPing extends ModsConfigTemplate {
 
 	public DurabilityPing(Screen parent, double scrollAmount) {
-		super(Text.literal("Durability Ping Mod"), parent, scrollAmount);
+		super(Text.literal("Durability Ping"), parent, scrollAmount);
 	}
 
 	public enum DurabilityPingType {

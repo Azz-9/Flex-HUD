@@ -6,7 +6,7 @@ import net.minecraft.text.Text;
 
 public class ServerAddress extends ModsConfigTemplate {
 	public ServerAddress(Screen parent, double scrollAmount) {
-		super(Text.literal("Server Address Mod"), parent, scrollAmount);
+		super(Text.literal("Server Address"), parent, scrollAmount);
 	}
 
 	@Override

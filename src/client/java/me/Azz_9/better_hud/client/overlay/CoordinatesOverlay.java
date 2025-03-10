@@ -141,29 +141,29 @@ public class CoordinatesOverlay extends HudElement {
 		float yaw = (p.getYaw() % 360 + 360) % 360;
 
 		if (337.5 < yaw || yaw < 22.5) {
-			return new String[]{Text.translatable("better_hud.hud.coordinates.direction.south").getString(),
-					Text.translatable("better_hud.hud.coordinates.direction_abbr.south").getString(), "", "+"};
+			return new String[]{Text.translatable("better_hud.coordinates.hud.direction.south").getString(),
+					Text.translatable("better_hud.coordinates.hud.direction_abbr.south").getString(), "", "+"};
 		} else if (22.5 <= yaw && yaw < 67.5) {
-			return new String[]{Text.translatable("better_hud.hud.coordinates.direction.south_west").getString(),
-					Text.translatable("better_hud.hud.coordinates.direction_abbr.south_west").getString(), "-", "+"};
+			return new String[]{Text.translatable("better_hud.coordinates.hud.direction.south_west").getString(),
+					Text.translatable("better_hud.coordinates.hud.direction_abbr.south_west").getString(), "-", "+"};
 		} else if (67.5 <= yaw && yaw < 112.5) {
-			return new String[]{Text.translatable("better_hud.hud.coordinates.direction.west").getString(),
-					Text.translatable("better_hud.hud.coordinates.direction_abbr.west").getString(), "-", ""};
+			return new String[]{Text.translatable("better_hud.coordinates.hud.direction.west").getString(),
+					Text.translatable("better_hud.coordinates.hud.direction_abbr.west").getString(), "-", ""};
 		} else if (112.5 <= yaw && yaw < 157.5) {
-			return new String[]{Text.translatable("better_hud.hud.coordinates.direction.north_west").getString(),
-					Text.translatable("better_hud.hud.coordinates.direction_abbr.north_west").getString(), "-", "-"};
+			return new String[]{Text.translatable("better_hud.coordinates.hud.direction.north_west").getString(),
+					Text.translatable("better_hud.coordinates.hud.direction_abbr.north_west").getString(), "-", "-"};
 		} else if (157.5 <= yaw && yaw < 202.5) {
-			return new String[]{Text.translatable("better_hud.hud.coordinates.direction.north").getString(),
-					Text.translatable("better_hud.hud.coordinates.direction_abbr.north").getString(), "", "-"};
+			return new String[]{Text.translatable("better_hud.coordinates.hud.direction.north").getString(),
+					Text.translatable("better_hud.coordinates.hud.direction_abbr.north").getString(), "", "-"};
 		} else if (202.5 <= yaw && yaw < 247.5) {
-			return new String[]{Text.translatable("better_hud.hud.coordinates.direction.north_east").getString(),
-					Text.translatable("better_hud.hud.coordinates.direction_abbr.north_east").getString(), "+", "-"};
+			return new String[]{Text.translatable("better_hud.coordinates.hud.direction.north_east").getString(),
+					Text.translatable("better_hud.coordinates.hud.direction_abbr.north_east").getString(), "+", "-"};
 		} else if (247.5 <= yaw && yaw < 292.5) {
-			return new String[]{Text.translatable("better_hud.hud.coordinates.direction.east").getString(),
-					Text.translatable("better_hud.hud.coordinates.direction_abbr.east").getString(), "+", ""};
+			return new String[]{Text.translatable("better_hud.coordinates.hud.direction.east").getString(),
+					Text.translatable("better_hud.coordinates.hud.direction_abbr.east").getString(), "+", ""};
 		} else {
-			return new String[]{Text.translatable("better_hud.hud.coordinates.direction.south_east").getString(),
-					Text.translatable("better_hud.hud.coordinates.direction_abbr.south_east").getString(), "+", "+"};
+			return new String[]{Text.translatable("better_hud.coordinates.hud.direction.south_east").getString(),
+					Text.translatable("better_hud.coordinates.hud.direction_abbr.south_east").getString(), "+", "+"};
 		}
 
 	}

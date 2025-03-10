@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public class Speedometer extends ModsConfigTemplate {
 	public Speedometer(Screen parent, double scrollAmount) {
-		super(Text.literal("Speedometer Mod"), parent, scrollAmount);
+		super(Text.literal("Speedometer"), parent, scrollAmount);
 	}
 
 	public enum SpeedometerUnits {
@@ -33,11 +33,11 @@ public class Speedometer extends ModsConfigTemplate {
 		addCyclingStringButton(getCenterX(), startY + 90, getButtonWidth(), Text.of("Speed unit"), SpeedometerUnits.class, INSTANCE.speedometer.units, SpeedometerUnits.MPS,
 				value -> INSTANCE.speedometer.units = value,
 				value -> switch (value) {
-											case SpeedometerUnits.MPS -> Optional.of(new Text[]{Text.literal("Meters per second (m/s):")});
-											case SpeedometerUnits.KPH -> Optional.of(new Text[]{Text.literal("Kilometers per hour (km/h):")});
-											case SpeedometerUnits.MPH -> Optional.of(new Text[]{Text.literal("Miles per hour (mph):")});
-											default -> Optional.empty();
-										});
+					case SpeedometerUnits.MPS -> Optional.of(new Text[]{Text.literal("Meters per second (m/s):")});
+					case SpeedometerUnits.KPH -> Optional.of(new Text[]{Text.literal("Kilometers per hour (km/h):")});
+					case SpeedometerUnits.MPH -> Optional.of(new Text[]{Text.literal("Miles per hour (mph):")});
+					default -> Optional.empty();
+				});
 
 		addColorButton(getCenterX(), startY + 120, getButtonWidth(), Text.of("Text color"), INSTANCE.speedometer.color, 0xffffff,
 				color -> INSTANCE.speedometer.color = color);

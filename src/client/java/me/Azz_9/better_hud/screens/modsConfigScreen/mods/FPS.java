@@ -6,7 +6,7 @@ import net.minecraft.text.Text;
 
 public class FPS extends ModsConfigTemplate {
 	public FPS(Screen parent, double scrollAmount) {
-		super(Text.literal("FPS Mod"), parent, scrollAmount);
+		super(Text.literal("FPS"), parent, scrollAmount);
 	}
 
 	@Override

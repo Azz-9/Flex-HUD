@@ -6,7 +6,7 @@ import net.minecraft.text.Text;
 
 public class Ping extends ModsConfigTemplate {
 	public Ping(Screen parent, double scrollAmount) {
-		super(Text.literal("Ping Mod"), parent, scrollAmount);
+		super(Text.literal("Ping"), parent, scrollAmount);
 	}
 
 	@Override

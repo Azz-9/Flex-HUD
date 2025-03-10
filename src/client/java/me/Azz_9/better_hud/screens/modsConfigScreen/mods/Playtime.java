@@ -6,7 +6,7 @@ import net.minecraft.text.Text;
 
 public class Playtime extends ModsConfigTemplate {
 	public Playtime(Screen parent, double scrollAmount) {
-		super(Text.literal("Playtime Mod"), parent, scrollAmount);
+		super(Text.literal("Playtime"), parent, scrollAmount);
 	}
 
 	@Override

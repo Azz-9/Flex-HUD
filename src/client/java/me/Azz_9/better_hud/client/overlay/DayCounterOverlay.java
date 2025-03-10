@@ -24,7 +24,7 @@ public class DayCounterOverlay extends HudElement {
 		}
 
 		long time = CLIENT.world.getTimeOfDay() / 24000;
-		Text text = Text.translatable("better_hud.hud.day_counter.prefix").append(" " + (int) time);
+		Text text = Text.translatable("better_hud.day_counter.hud.prefix").append(" " + (int) time);
 
 		MatrixStack matrices = drawContext.getMatrices();
 		matrices.push();

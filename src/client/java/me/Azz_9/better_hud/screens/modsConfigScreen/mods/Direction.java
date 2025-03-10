@@ -7,7 +7,7 @@ import net.minecraft.text.Text;
 public class Direction extends ModsConfigTemplate {
 
 	public Direction(Screen parent, double scrollAmount) {
-		super(Text.literal("Direction Mod"), parent, scrollAmount);
+		super(Text.literal("Direction"), parent, scrollAmount);
 	}
 
 	@Override
@@ -26,7 +26,7 @@ public class Direction extends ModsConfigTemplate {
 
 		addToggleButton(getCenterX(), startY + 90, getButtonWidth(), getButtonHeight(), Text.of("Show marker"), INSTANCE.direction.showMarker, true,
 				toggled -> INSTANCE.direction.showMarker = toggled);
-        addToggleButton(getCenterX(), startY + 120, getButtonWidth(), getButtonHeight(), Text.of("Show intermediate points"), INSTANCE.direction.showIntermediatePoint, true,
+		addToggleButton(getCenterX(), startY + 120, getButtonWidth(), getButtonHeight(), Text.of("Show intermediate points"), INSTANCE.direction.showIntermediatePoint, true,
 				toggled -> INSTANCE.direction.showIntermediatePoint = toggled);
 		addToggleButton(getCenterX(), startY + 150, getButtonWidth(), getButtonHeight(), Text.of("Show Xaero's map waypoints"), INSTANCE.direction.showXaerosMapWaypoints, true,
 				toggled -> INSTANCE.direction.showXaerosMapWaypoints = toggled);

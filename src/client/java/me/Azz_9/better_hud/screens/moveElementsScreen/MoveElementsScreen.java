@@ -43,6 +43,7 @@ public class MoveElementsScreen extends Screen {
 
 	public interface SnapLines {
 		boolean XcenteredLine();
+
 		boolean YcenteredLine();
 	}
 
@@ -113,7 +114,7 @@ public class MoveElementsScreen extends Screen {
 
 	private void addChild(ButtonWidget button) {
 		drawables.add(button);
-        addDrawableChild(button);
+		addDrawableChild(button);
 	}
 
 	private void addChild(HelpWidget button) {
@@ -124,7 +125,7 @@ public class MoveElementsScreen extends Screen {
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		if (button == 0 && helpWidget.getDisplayHelp() && !helpWidget.isHovered()) {
-			helpWidget.setDisplayHelp(false);
+			helpWidget.onClick(mouseX, mouseY);
 		}
 		return super.mouseClicked(mouseX, mouseY, button);
 	}
