@@ -1,0 +1,64 @@
+{
+	"better_hud.controls.open_menu": "Ouvrir le menu",
+
+
+	"better_hud.global.config.text_shadow": "Ombre du texte",
+	"better_hud.global.config.text_color": "Couleur du texte",
+
+	"better_hud.armor_status": "État de l'armure",
+	"better_hud.armor_status.config.enabled": "Afficher l'état de l'armure",
+	"better_hud.armor_status.config.show_helmet": "Afficher le casque",
+	"better_hud.armor_status.config.show_chestplate": "Afficher le plastron",
+	"better_hud.armor_status.config.show_leggings": "Afficher les jambières",
+	"better_hud.armor_status.config.show_boots": "Afficher les bottes",
+	"better_hud.armor_status.config.show_held_item": "Afficher l'objet tenu",
+	"better_hud.armor_status.config.show_arrows": "Afficher les flèches si l'arc est tenu",
+	"better_hud.armor_status.config.show_durability": "Afficher la durabilité",
+	"better_hud.armor_status.config.orientation": "Orientation",
+
+	"better_hud.clock": "Clock",
+	"better_hud.clock.config.enabled": "Show clock",
+	"better_hud.clock.config.24-hour_format": "24-hour format",
+	"better_hud.clock.config.text_format": "Text format",
+
+	"better_hud.coordinates": "Coordinates",
+	"better_hud.coordinates.config.enabled": "Show coordinates",
+	"better_hud.coordinates.config.show_y": "Show Y coordinates",
+	"better_hud.coordinates.config.show_biome": "Show biome",
+	"better_hud.coordinates.config.show_direction": "Show direction",
+	"better_hud.coordinates.config.direction_abbreviation": "Direction abbreviation",
+	"better_hud.coordinates.config.number_of_digits": "Number of digits",
+
+
+	"better_hud.coordinates.hud.direction.south": "Sud",
+	"better_hud.coordinates.hud.direction.south_west": "Sud-Ouest",
+	"better_hud.coordinates.hud.direction.west": "Ouest",
+	"better_hud.coordinates.hud.direction.north_west": "Nord-Ouest",
+	"better_hud.coordinates.hud.direction.north": "Nord",
+	"better_hud.coordinates.hud.direction.north_east": "Nord-Est",
+	"better_hud.coordinates.hud.direction.east": "Est",
+	"better_hud.coordinates.hud.direction.south_east": "Sud-Est",
+	"better_hud.coordinates.hud.direction_abbr.south": "S",
+	"better_hud.coordinates.hud.direction_abbr.south_west": "SO",
+	"better_hud.coordinates.hud.direction_abbr.west": "O",
+	"better_hud.coordinates.hud.direction_abbr.north_west": "NO",
+	"better_hud.coordinates.hud.direction_abbr.north": "N",
+	"better_hud.coordinates.hud.direction_abbr.north_east": "NE",
+	"better_hud.coordinates.hud.direction_abbr.east": "E",
+	"better_hud.coordinates.hud.direction_abbr.south_east": "SE",
+
+	"better_hud.day_counter.hud.prefix": "jour",
+
+	"better_hud.ping.hud.offline": "Hors ligne",
+
+	"better_hud.playtime.hud.prefix": "Temps de jeu",
+
+	"better_hud.reach.hud.units": "blocs",
+
+	"better_hud.shrieker_warning_level.hud.prefix": "Niveau d'alerte",
+
+	"better_hud.speedometer.hud.units.knots": "nœuds",
+
+
+	"better_hud.durability_ping.message": "durabilité faible!"
+}
