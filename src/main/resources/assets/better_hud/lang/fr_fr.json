@@ -2,11 +2,44 @@
 	"better_hud.controls.open_menu": "Ouvrir le menu",
 
 
+	"better_hud.configuration_screen": "Configuration des mods",
+	"better_hud.configuration_screen.searchbar_placeholder": "Rechercher...",
+	"better_hud.configuration_screen.columns": "Colonnes",
+	"better_hud.configuration_screen.done": "Terminé",
+
+	"better_hud.move_elements_screen": "Déplacer les éléments",
+
+	"better_hud.options_screen": "Options",
+
+	"better_hud.color_entry_widget": "Entrée de couleur",
+	"better_hud.gradient_widget": "Dégradé de couleur",
+	"better_hud.hue_bar": "Barre de teinte",
+
+	"better_hud.integer_field": "Champ de nombres entiers",
+
+	"better_hud.text_field": "Champ de texte",
+
+	"better_hud.help_widget": "Bouton d'aide",
+	"better_hud.help_widget.line1": "CTRL + Z : annuler",
+	"better_hud.help_widget.line2": "CTRL + Y / CTRL + SHIFT + Z : rétablir",
+	"better_hud.help_widget.line3": "Maintenez SHIFT enfoncé tout en déplaçant",
+	"better_hud.help_widget.line4": "un élément pour empêcher l'alignement automatique",
+	"better_hud.help_widget.line5": "Maintenez SHIFT enfoncé tout en redimensionnant",
+	"better_hud.help_widget.line6": "un élément pour activer l'alignement automatique",
+
+
+	"better_hud.global.hours": "heures",
+	"better_hud.global.minutes": "minutes",
+	"better_hud.global.seconds": "secondes",
+	"better_hud.global.config.save_and_quit": "Sauvegarder et quitter",
+	"better_hud.global.config.cancel": "Annuler",
+	"better_hud.global.config.min": "Min",
+	"better_hud.global.config.max": "Max",
 	"better_hud.global.config.text_shadow": "Ombre du texte",
 	"better_hud.global.config.text_color": "Couleur du texte",
 
 	"better_hud.armor_status": "État de l'armure",
-	"better_hud.armor_status.config.enabled": "Afficher l'état de l'armure",
+	"better_hud.armor_status.config.enable": "Afficher l'état de l'armure",
 	"better_hud.armor_status.config.show_helmet": "Afficher le casque",
 	"better_hud.armor_status.config.show_chestplate": "Afficher le plastron",
 	"better_hud.armor_status.config.show_leggings": "Afficher les jambières",
@@ -16,18 +49,79 @@
 	"better_hud.armor_status.config.show_durability": "Afficher la durabilité",
 	"better_hud.armor_status.config.orientation": "Orientation",
 
-	"better_hud.clock": "Clock",
-	"better_hud.clock.config.enabled": "Show clock",
-	"better_hud.clock.config.24-hour_format": "24-hour format",
-	"better_hud.clock.config.text_format": "Text format",
+	"better_hud.clock": "Horloge",
+	"better_hud.clock.config.enable": "Afficher l'horloge",
+	"better_hud.clock.config.24-hour_format": "Format 24 heures",
+	"better_hud.clock.config.text_format": "Format du texte",
 
-	"better_hud.coordinates": "Coordinates",
-	"better_hud.coordinates.config.enabled": "Show coordinates",
-	"better_hud.coordinates.config.show_y": "Show Y coordinates",
-	"better_hud.coordinates.config.show_biome": "Show biome",
-	"better_hud.coordinates.config.show_direction": "Show direction",
-	"better_hud.coordinates.config.direction_abbreviation": "Direction abbreviation",
-	"better_hud.coordinates.config.number_of_digits": "Number of digits",
+	"better_hud.coordinates": "Coordonnées",
+	"better_hud.coordinates.config.enable": "Afficher les coordonnées",
+	"better_hud.coordinates.config.show_y": "Afficher la coordonnée Y",
+	"better_hud.coordinates.config.show_biome": "Afficher le biome",
+	"better_hud.coordinates.config.show_direction": "Afficher la direction",
+	"better_hud.coordinates.config.direction_abbreviation": "Abréviation de la direction",
+	"better_hud.coordinates.config.number_of_digits": "Nombre de décimales",
+	"better_hud.coordinates.config.orientation": "Orientation",
+
+	"better_hud.cps": "CPS",
+	"better_hud.cps.config.enable": "Afficher les CPS",
+	"better_hud.cps.config.show_left_click": "Afficher les CPS du clic gauche",
+	"better_hud.cps.config.show_right_click": "Afficher les CPS du clic droit",
+
+	"better_hud.day_counter": "Compteur de jours",
+	"better_hud.day_counter.config.enable": "Afficher le compteur de jours",
+
+	"better_hud.direction": "Direction",
+	"better_hud.direction.config.enable": "Afficher la direction",
+	"better_hud.direction.config.show_marker": "Afficher le marqueur",
+	"better_hud.direction.config.show_intermediate_point": "Afficher les points intermédiaires",
+	"better_hud.direction.config.show_xaeros_map_waypoints": "Afficher les waypoints de Xaero's map",
+
+	"better_hud.durability_ping": "Ping de durabilité",
+	"better_hud.durability_ping.config.enable": "Activer le ping de durabilité",
+	"better_hud.durability_ping.config.threshold": "Seuil",
+	"better_hud.durability_ping.config.ping_type": "Type de ping",
+	"better_hud.durability_ping.config.check_armor_pieces": "Vérifier la durabilité des pièces d'armure",
+	"better_hud.durability_ping.config.check_elytra_only": "Vérifier uniquement la durabilité de l'elytre",
+
+	"better_hud.fps": "FPS",
+	"better_hud.fps.config.enable": "Afficher les FPS",
+
+	"better_hud.memory_usage": "Utilisation de la mémoire",
+	"better_hud.memory_usage.config.enable": "Afficher l'utilisation de la mémoire",
+
+	"better_hud.ping": "Ping",
+	"better_hud.ping.config.enable": "Afficher le ping",
+	"better_hud.ping.config.hide_when_offline": "Masquer le ping en étant hors ligne",
+
+	"better_hud.playtime": "Temps de jeu",
+	"better_hud.playtime.config.enable": "Afficher le temps de jeu",
+	"better_hud.playtime.config.show_prefix": "Afficher le préfixe",
+
+	"better_hud.reach": "Portée",
+	"better_hud.reach.config.enable": "Afficher la portée",
+	"better_hud.reach.config.number_of_digits": "Nombre de décimales",
+
+	"better_hud.server_address": "Adresse du serveur",
+	"better_hud.server_address.config.enable": "Afficher l'adresse du serveur",
+	"better_hud.server_address.config.hide_when_offline": "Masquer l'adresse du serveur en étant hors ligne",
+
+	"better_hud.speedometer": "Compteur de vitesse",
+	"better_hud.speedometer.config.enable": "Afficher le compteur de vitesse",
+	"better_hud.speedometer.config.number_of_digits": "Nombre de décimales",
+	"better_hud.speedometer.config.selected_unit": "Unité sélectionnée",
+	"better_hud.speedometer.config.tooltip.mps": "Mètres par seconde (m/s)",
+	"better_hud.speedometer.config.tooltip.kph": "Kilomètres par heure (km/h)",
+	"better_hud.speedometer.config.tooltip.mph": "Milles par heure (mi/h)",
+
+	"better_hud.time_changer": "Changeur d'heure",
+	"better_hud.time_changer.config.enable": "Activer le changeur d'heure",
+	"better_hud.time_changer.config.use_real_time": "Utiliser l'heure réelle",
+	"better_hud.time_changer.config.selected_time": "Heure sélectionnée",
+
+	"better_hud.weather_changer": "Changeur de temps",
+	"better_hud.weather_changer.config.enable": "Activer le changeur de temps",
+	"better_hud.weather_changer.config.selected_weather": "Temps sélectionné",
 
 
 	"better_hud.coordinates.hud.direction.south": "Sud",
@@ -47,18 +141,31 @@
 	"better_hud.coordinates.hud.direction_abbr.east": "E",
 	"better_hud.coordinates.hud.direction_abbr.south_east": "SE",
 
+	"better_hud.direction.hud.direction_abbr.south": "S",
+	"better_hud.direction.hud.direction_abbr.south_west": "SO",
+	"better_hud.direction.hud.direction_abbr.west": "O",
+	"better_hud.direction.hud.direction_abbr.north_west": "NO",
+	"better_hud.direction.hud.direction_abbr.north": "N",
+	"better_hud.direction.hud.direction_abbr.north_east": "NE",
+	"better_hud.direction.hud.direction_abbr.east": "E",
+	"better_hud.direction.hud.direction_abbr.south_east": "SE",
+
 	"better_hud.day_counter.hud.prefix": "jour",
 
 	"better_hud.ping.hud.offline": "Hors ligne",
 
+	"better_hud.server_address.hud.offline": "Hors ligne",
+
 	"better_hud.playtime.hud.prefix": "Temps de jeu",
 
-	"better_hud.reach.hud.units": "blocs",
+	"better_hud.reach.hud.unit": "blocs",
 
 	"better_hud.shrieker_warning_level.hud.prefix": "Niveau d'alerte",
 
 	"better_hud.speedometer.hud.units.knots": "nœuds",
-
+	"better_hud.speedometer.hud.units.kph": "km/h",
+	"better_hud.speedometer.hud.units.mph": "mi/h",
+	"better_hud.speedometer.hud.units.mps": "m/s",
 
 	"better_hud.durability_ping.message": "durabilité faible!"
 }

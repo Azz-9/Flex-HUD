@@ -2,11 +2,44 @@
 	"better_hud.controls.open_menu": "Open menu",
 
 
+	"better_hud.configuration_screen": "Mods configuration",
+	"better_hud.configuration_screen.searchbar_placeholder": "Search...",
+	"better_hud.configuration_screen.columns": "Columns",
+	"better_hud.configuration_screen.done": "Done",
+
+	"better_hud.move_elements_screen": "Move elements",
+
+	"better_hud.options_screen": "Options",
+
+	"better_hud.color_entry_widget": "Color entry",
+	"better_hud.gradient_widget": "Color gradient",
+	"better_hud.hue_bar": "Hue bar",
+
+	"better_hud.integer_field": "Integer field",
+
+	"better_hud.text_field": "Text Field",
+
+	"better_hud.help_widget": "Help button",
+	"better_hud.help_widget.line1": "CTRL + Z : undo",
+	"better_hud.help_widget.line2": "CTRL + Y / CTRL + SHIFT + Z : redo",
+	"better_hud.help_widget.line3": "Press SHIFT while moving an",
+	"better_hud.help_widget.line4": "element to prevent snapping",
+	"better_hud.help_widget.line5": "Press SHIFT while scaling an",
+	"better_hud.help_widget.line6": "element to snap",
+
+
+	"better_hud.global.hours": "hours",
+	"better_hud.global.minutes": "minutes",
+	"better_hud.global.seconds": "seconds",
+	"better_hud.global.config.save_and_quit": "Save and quit",
+	"better_hud.global.config.cancel": "Cancel",
+	"better_hud.global.config.min": "Min",
+	"better_hud.global.config.max": "Max",
 	"better_hud.global.config.text_shadow": "Text shadow",
 	"better_hud.global.config.text_color": "Text color",
 
 	"better_hud.armor_status": "Armor status",
-	"better_hud.armor_status.config.enabled": "Show armor status",
+	"better_hud.armor_status.config.enable": "Show armor status",
 	"better_hud.armor_status.config.show_helmet": "Show helmet",
 	"better_hud.armor_status.config.show_chestplate": "Show chestplate",
 	"better_hud.armor_status.config.show_leggings": "Show leggings",
@@ -17,17 +50,78 @@
 	"better_hud.armor_status.config.orientation": "Orientation",
 
 	"better_hud.clock": "Clock",
-	"better_hud.clock.config.enabled": "Show clock",
+	"better_hud.clock.config.enable": "Show clock",
 	"better_hud.clock.config.24-hour_format": "24-hour format",
 	"better_hud.clock.config.text_format": "Text format",
 
 	"better_hud.coordinates": "Coordinates",
-	"better_hud.coordinates.config.enabled": "Show coordinates",
-	"better_hud.coordinates.config.show_y": "Show Y coordinates",
+	"better_hud.coordinates.config.enable": "Show coordinates",
+	"better_hud.coordinates.config.show_y": "Show Y coordinate",
 	"better_hud.coordinates.config.show_biome": "Show biome",
 	"better_hud.coordinates.config.show_direction": "Show direction",
 	"better_hud.coordinates.config.direction_abbreviation": "Direction abbreviation",
 	"better_hud.coordinates.config.number_of_digits": "Number of digits",
+	"better_hud.coordinates.config.orientation": "Orientation",
+
+	"better_hud.cps": "CPS",
+	"better_hud.cps.config.enable": "Show CPS",
+	"better_hud.cps.config.show_left_click": "Show left click CPS",
+	"better_hud.cps.config.show_right_click": "Show right click CPS",
+
+	"better_hud.day_counter": "Day Counter",
+	"better_hud.day_counter.config.enable": "Show day counter",
+
+	"better_hud.direction": "Direction",
+	"better_hud.direction.config.enable": "Show direction",
+	"better_hud.direction.config.show_marker": "Show marker",
+	"better_hud.direction.config.show_intermediate_point": "Show intermediate points",
+	"better_hud.direction.config.show_xaeros_map_waypoints": "Show Xaero's map waypoints",
+
+	"better_hud.durability_ping": "Durability Ping",
+	"better_hud.durability_ping.config.enable": "Enable durability ping",
+	"better_hud.durability_ping.config.threshold": "Threshold",
+	"better_hud.durability_ping.config.ping_type": "Ping type",
+	"better_hud.durability_ping.config.check_armor_pieces": "Check armor pieces durability",
+	"better_hud.durability_ping.config.check_elytra_only": "Check elytra durability only",
+
+	"better_hud.fps": "FPS",
+	"better_hud.fps.config.enable": "Show FPS",
+
+	"better_hud.memory_usage": "Memory Usage",
+	"better_hud.memory_usage.config.enable": "Show memory usage",
+
+	"better_hud.ping": "Ping",
+	"better_hud.ping.config.enable": "Show ping",
+	"better_hud.ping.config.hide_when_offline": "Hide ping when offline",
+
+	"better_hud.playtime": "Playtime",
+	"better_hud.playtime.config.enable": "Show playtime",
+	"better_hud.playtime.config.show_prefix": "Show prefix",
+
+	"better_hud.reach": "Reach",
+	"better_hud.reach.config.enable": "Show reach",
+	"better_hud.reach.config.number_of_digits": "Number of digits",
+
+	"better_hud.server_address": "Server address",
+	"better_hud.server_address.config.enable": "Show server address",
+	"better_hud.server_address.config.hide_when_offline": "Hide ping when offline",
+
+	"better_hud.speedometer": "Speedometer",
+	"better_hud.speedometer.config.enable": "Show speedometer",
+	"better_hud.speedometer.config.number_of_digits": "Number of digits",
+	"better_hud.speedometer.config.selected_unit": "Selected unit",
+	"better_hud.speedometer.config.tooltip.mps": "Meters per second (m/s)",
+	"better_hud.speedometer.config.tooltip.kph": "Kilometers per hour (km/h)",
+	"better_hud.speedometer.config.tooltip.mph": "Miles per hour (mph)",
+
+	"better_hud.time_changer": "Time changer",
+	"better_hud.time_changer.config.enable": "Enable",
+	"better_hud.time_changer.config.use_real_time": "Use real time",
+	"better_hud.time_changer.config.selected_time": "Selected time",
+
+	"better_hud.weather_changer": "Weather changer",
+	"better_hud.weather_changer.config.enable": "Enable",
+	"better_hud.weather_changer.config.selected_weather": "Selected weather",
 
 
 	"better_hud.coordinates.hud.direction.south": "South",
@@ -47,18 +141,31 @@
 	"better_hud.coordinates.hud.direction_abbr.east": "E",
 	"better_hud.coordinates.hud.direction_abbr.south_east": "SE",
 
+	"better_hud.direction.hud.direction_abbr.south": "S",
+	"better_hud.direction.hud.direction_abbr.south_west": "SW",
+	"better_hud.direction.hud.direction_abbr.west": "W",
+	"better_hud.direction.hud.direction_abbr.north_west": "NW",
+	"better_hud.direction.hud.direction_abbr.north": "N",
+	"better_hud.direction.hud.direction_abbr.north_east": "NE",
+	"better_hud.direction.hud.direction_abbr.east": "E",
+	"better_hud.direction.hud.direction_abbr.south_east": "SE",
+
 	"better_hud.day_counter.hud.prefix": "Day",
 
 	"better_hud.ping.hud.offline": "Offline",
 
+	"better_hud.server_address.hud.offline": "Offline",
+
 	"better_hud.playtime.hud.prefix": "Playtime",
 
-	"better_hud.reach.hud.units": "blocks",
+	"better_hud.reach.hud.unit": "blocks",
 
 	"better_hud.shrieker_warning_level.hud.prefix": "Warning level",
 
 	"better_hud.speedometer.hud.units.knots": "knots",
-
+	"better_hud.speedometer.hud.units.kph": "km/h",
+	"better_hud.speedometer.hud.units.mph": "mph",
+	"better_hud.speedometer.hud.units.mps": "m/s",
 
 	"better_hud.durability_ping.message": "durability low!"
 }
