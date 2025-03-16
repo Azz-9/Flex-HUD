@@ -38,7 +38,7 @@ public class Better_hudClient implements ClientModInitializer {
 	private transient final ModConfig INSTANCE = ModConfig.getInstance();
 
 	public static List<HudRenderCallback> hudElements;
-	public static boolean isEditing = false;
+	public static boolean isEditing = false; // is player in the move elements screen
 
 	//biome colors for coordinates overlay
 	public static final Map<RegistryKey<Biome>, Integer> BIOME_COLORS = Map.copyOf(Map.<RegistryKey<Biome>, Integer>ofEntries(

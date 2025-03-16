@@ -36,7 +36,7 @@ public class ShriekerWarningLevelOverlay extends HudElement {
 
 			MatrixStack matrices = drawContext.getMatrices();
 			matrices.push();
-			matrices.translate(this.x, this.y, 0);
+			matrices.translate(Math.round(this.x * vw), Math.round(this.y * vh), 0);
 			matrices.scale(this.scale, this.scale, 1.0f);
 
 			drawContext.drawText(CLIENT.textRenderer, Text.translatable("better_hud.shrieker_warning_level.hud.prefix").getString() + ": " + warningLevel, (int) this.x, (int) this.y, this.color, this.shadow);

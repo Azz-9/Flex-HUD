@@ -88,8 +88,8 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 
 	private double offsetX;
 	private double offsetY;
-	private final int INITIAL_X;
-	private final int INITIAL_Y;
+	private final double INITIAL_X;
+	private final double INITIAL_Y;
 	private final float INITIAL_SCALE;
 	private final HudElement HUD_ELEMENT;
 	private final MoveElementsScreen SCREEN;
@@ -99,8 +99,8 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 	private boolean shouldDrawScaleValue = false;
 
 	private float scale = 1.0f;
-	private final float MAX_SCALE = 3.0f;
-	private final float MIN_SCALE = 0.5f;
+	private static final float MAX_SCALE = 10.0f;
+	private static final float MIN_SCALE = 0.5f;
 	private final int handleSize = 4;
 	private int handleX = getX() - handleSize / 2;
 	private int handleY = getY() - handleSize / 2;
@@ -118,10 +118,12 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 
 	private boolean isDraggingScalehandle = false;
 
-	public MovableWidget(int x, int y, float scale, int width, int height, HudElement hudElement, MoveElementsScreen screen) {
-		super(x, y, width, height, Text.literal(""));
-		this.INITIAL_X = x;
-		this.INITIAL_Y = y;
+	public MovableWidget(double x, double y, float scale, int width, int height, HudElement hudElement, MoveElementsScreen screen) {
+		super((int) Math.round(x * (MinecraftClient.getInstance().getWindow().getScaledWidth() / 100.0F)),
+				(int) Math.round(y * (MinecraftClient.getInstance().getWindow().getScaledHeight() / 100.0F)),
+				width, height, Text.empty());
+		this.INITIAL_X = getX();
+		this.INITIAL_Y = getY();
 		this.INITIAL_SCALE = scale;
 		HUD_ELEMENT = hudElement;
 		this.SCREEN = screen;
@@ -133,7 +135,7 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 			this.hovered = context.scissorContains(mouseX, mouseY) && mouseX >= handleX && mouseY >= handleY && mouseX < handleX + handleSize && mouseY < handleY + handleSize;
 		}
 
-		setDimensions(roundCustom(HUD_ELEMENT.getWidth() * getScale() + HUD_ELEMENT.x - this.getX()), roundCustom(HUD_ELEMENT.getHeight() * getScale() + HUD_ELEMENT.y - this.getY()));
+		setDimensions(roundCustom(HUD_ELEMENT.getWidth() * getScale()), roundCustom(HUD_ELEMENT.getHeight() * getScale()));
 
 		context.fill(getX(), getY(), getWidth() + getX(), getHeight() + getY(), 0x4F88888C);
 		if (this.isHovered() || this.isFocused()) {
@@ -154,6 +156,22 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 		}
 
 		renderScalehandle(context);
+	}
+
+	private double getHud_elementX() {
+		return HUD_ELEMENT.x * (MinecraftClient.getInstance().getWindow().getScaledWidth() / 100.0F);
+	}
+
+	private double getHud_elementY() {
+		return HUD_ELEMENT.y * (MinecraftClient.getInstance().getWindow().getScaledHeight() / 100.0F);
+	}
+
+	private double toPercentageX(double value) {
+		return value / MinecraftClient.getInstance().getWindow().getScaledWidth() * 100;
+	}
+
+	private double toPercentageY(double value) {
+		return value / MinecraftClient.getInstance().getWindow().getScaledHeight() * 100;
 	}
 
 	private void renderScalehandle(DrawContext context) {
@@ -235,8 +253,8 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 			isDraggingScalehandle = true;
 			onClickRight = (int) (getWidth() / getScale()) + getX();
 			onClickBottom = (int) (getHeight() / getScale()) + getY();
-			onClickX = HUD_ELEMENT.x;
-			onClickY = HUD_ELEMENT.y;
+			onClickX = getHud_elementX();
+			onClickY = getHud_elementY();
 			onClickScale = getScale();
 		}
 		offsetX = mouseX - getX();
@@ -413,8 +431,7 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 
 	private void move(double x, double y) {
 		if (isNotOverflowing(x, y)) {
-			setPosition((int) x, (int) y);
-			HUD_ELEMENT.setPos(x, y);
+			forceMove(x, y);
 		}
 	}
 
@@ -422,17 +439,20 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 	 * Doesn't check if, with the new coordinates, the element will be overflowing
 	 */
 	private void forceMove(double x, double y) {
-		setPosition((int) x, (int) y);
-		HUD_ELEMENT.setPos(x, y);
+		System.out.println(toPercentageX(x) + " " + toPercentageY(y) + " -> " + x + " " + y + " -> " +
+				toPercentageX(x) * (MinecraftClient.getInstance().getWindow().getScaledWidth() / 100.0F) + " "
+				+ toPercentageY(y) * (MinecraftClient.getInstance().getWindow().getScaledHeight() / 100.0F));
+		setPosition((int) Math.round(x), (int) Math.round(y));
+		HUD_ELEMENT.setPos(toPercentageX(x), toPercentageY(y));
 	}
 
 	private void setScale(float scale) {
 		scale = Math.clamp(scale, MIN_SCALE, MAX_SCALE);
 		switch (handlePosition) {
 			case TOP_RIGHT ->
-					forceMove(HUD_ELEMENT.x, onClickY - (HUD_ELEMENT.getHeight() * scale) + (HUD_ELEMENT.getHeight() * onClickScale));
+					forceMove(getHud_elementX(), onClickY - (HUD_ELEMENT.getHeight() * scale) + (HUD_ELEMENT.getHeight() * onClickScale));
 			case BOTTOM_LEFT ->
-					forceMove(onClickX - (HUD_ELEMENT.getWidth() * scale) + (HUD_ELEMENT.getWidth() * onClickScale), HUD_ELEMENT.y);
+					forceMove(onClickX - (HUD_ELEMENT.getWidth() * scale) + (HUD_ELEMENT.getWidth() * onClickScale), getHud_elementY());
 			case TOP_LEFT ->
 					forceMove(onClickX - (HUD_ELEMENT.getWidth() * scale) + (HUD_ELEMENT.getWidth() * onClickScale),
 							onClickY - (HUD_ELEMENT.getHeight() * scale) + (HUD_ELEMENT.getHeight() * onClickScale));
@@ -448,13 +468,13 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 		 */
 		if (!isShiftKeyPressed()) {
 			if (Math.abs((x + (double) width / 2) - (SCREEN.width / 2.0)) < (SCREEN.width / 30.0)) {
-				x = (SCREEN.width - width) / 2.0F;
+				x = (int) ((SCREEN.width - width) / 2.0F);
 				shouldDrawXCenteredLine = true;
 			} else {
 				shouldDrawXCenteredLine = false;
 			}
-			if (Math.abs((y + (double) height / 2) - (SCREEN.height / 2.0)) < (SCREEN.width / 30.0)) { // we want the same value after the <
-				y = (SCREEN.height - height) / 2.0F;
+			if (Math.abs((y + (double) height / 2) - (SCREEN.height / 2.0)) < (SCREEN.width / 30.0)) { // we want the same value as the first if after the <
+				y = (int) ((SCREEN.height - height) / 2.0F);
 				shouldDrawYCenteredLine = true;
 			} else {
 				shouldDrawYCenteredLine = false;
@@ -503,7 +523,15 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 
 	@Override
 	public void cancel() {
-		HUD_ELEMENT.setPos(INITIAL_X, INITIAL_Y);
+		HUD_ELEMENT.setPos(toPercentageX(INITIAL_X), toPercentageY(INITIAL_Y));
 		HUD_ELEMENT.scale = INITIAL_SCALE;
+	}
+
+	public static float getMAX_SCALE() {
+		return MAX_SCALE;
+	}
+
+	public static float getMIN_SCALE() {
+		return MIN_SCALE;
 	}
 }

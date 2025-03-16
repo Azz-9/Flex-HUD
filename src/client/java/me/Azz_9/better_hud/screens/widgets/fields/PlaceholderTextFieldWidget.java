@@ -8,11 +8,11 @@ public class PlaceholderTextFieldWidget extends net.minecraft.client.gui.widget.
 
 	private int placeholderColor = 0xa0a0a0;
 	private Text placeholderText;
-	private final TextRenderer textRenderer;
+	private final TextRenderer TEXT_RENDERER;
 
 	public PlaceholderTextFieldWidget(TextRenderer textRenderer, int x, int y, int width, int height, Text text) {
 		super(textRenderer, x, y, width, height, text);
-		this.textRenderer = textRenderer;
+		this.TEXT_RENDERER = textRenderer;
 	}
 
 	public void setPlaceholderColor(int color) {
@@ -32,7 +32,7 @@ public class PlaceholderTextFieldWidget extends net.minecraft.client.gui.widget.
 				int x = this.drawsBackground() ? this.getX() + 4 : this.getX();
 				int y = this.drawsBackground() ? this.getY() + (this.height - 8) / 2 : this.getY();
 
-				context.drawTextWithShadow(this.textRenderer, this.placeholderText, x, y, this.placeholderColor);
+				context.drawTextWithShadow(this.TEXT_RENDERER, this.placeholderText, x, y, this.placeholderColor);
 			}
 		}
 	}

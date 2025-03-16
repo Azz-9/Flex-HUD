@@ -18,6 +18,7 @@ public class PingOverlay extends HudElement {
 
 	@Override
 	public void onHudRender(DrawContext drawContext, RenderTickCounter tickCounter) {
+		super.onHudRender(drawContext, tickCounter);
 
 		final MinecraftClient CLIENT = MinecraftClient.getInstance();
 
@@ -53,7 +54,7 @@ public class PingOverlay extends HudElement {
 
 			MatrixStack matrices = drawContext.getMatrices();
 			matrices.push();
-			matrices.translate(this.x, this.y, 0);
+			matrices.translate(Math.round(this.x * vw), Math.round(this.y * vh), 0);
 			matrices.scale(this.scale, this.scale, 1.0f);
 
 			drawContext.drawText(CLIENT.textRenderer, text, 0, 0, this.color, this.shadow);

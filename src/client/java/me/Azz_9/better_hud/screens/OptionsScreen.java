@@ -4,10 +4,12 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import me.Azz_9.better_hud.client.Better_hudClient;
 import me.Azz_9.better_hud.screens.modsList.ConfigurationScreen;
 import me.Azz_9.better_hud.screens.moveElementsScreen.MoveElementsScreen;
+import me.Azz_9.better_hud.screens.widgets.buttons.TexturedButtonWidget;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.RenderLayer;
@@ -21,7 +23,7 @@ import static me.Azz_9.better_hud.client.Better_hudClient.MOD_ID;
 @Environment(EnvType.CLIENT)
 public class OptionsScreen extends Screen {
 	public OptionsScreen() {
-		super(Text.of("Option screen"));
+		super(Text.translatable("better_hud.options_screen"));
 	}
 
 	private float alpha = 0.0f;
@@ -29,14 +31,18 @@ public class OptionsScreen extends Screen {
 
 	@Override
 	protected void init() {
-		ButtonWidget modsButton = ButtonWidget.builder(Text.of("Mods"), (btn) -> {
-			MinecraftClient.getInstance().setScreen(new ConfigurationScreen(this));
-		}).dimensions(width / 2 - 60, height / 2 - 10, 120, 20).build();
+		ButtonWidget modsButton = ButtonWidget.builder(Text.of("Mods"), (btn) ->
+						MinecraftClient.getInstance().setScreen(new ConfigurationScreen(this)))
+				.dimensions(width / 2 - 60, height / 2 - 10, 120, 20)
+				.build();
 
-		ButtonWidget moveButton = ButtonWidget.builder(Text.of("←↑→↓"), (btn) -> {
-			MinecraftClient.getInstance().setScreen(new MoveElementsScreen(this));
-			Better_hudClient.isEditing = true;
-		}).dimensions(width / 2 - 10 + 80, height / 2 - 10, 20, 20).build();
+		TexturedButtonWidget moveButton = new TexturedButtonWidget(width / 2 - 10 + 80, height / 2 - 10, 20, 20,
+				new ButtonTextures(Identifier.of(MOD_ID, "widgets/buttons/open_move_elements_screen/unfocused.png"),
+						Identifier.of(MOD_ID, "widgets/buttons/open_move_elements_screen/focused.png")),
+				(btn) -> {
+					MinecraftClient.getInstance().setScreen(new MoveElementsScreen(this));
+					Better_hudClient.isEditing = true;
+				});
 
 
 		this.addDrawableChild(modsButton);

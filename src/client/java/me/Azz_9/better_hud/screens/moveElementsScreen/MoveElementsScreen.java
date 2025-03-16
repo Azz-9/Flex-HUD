@@ -37,7 +37,7 @@ public class MoveElementsScreen extends Screen {
 	private final List<MovableWidget> redoModifiedMovableWidgets = new LinkedList<>();
 
 	public MoveElementsScreen(Screen parent) {
-		super(Text.literal("Move Elements"));
+		super(Text.translatable("better_hud.move_elements_screen"));
 		this.parent = parent;
 	}
 
@@ -49,11 +49,11 @@ public class MoveElementsScreen extends Screen {
 
 	@Override
 	protected void init() {
-		ButtonWidget cancelButton = ButtonWidget.builder(Text.literal("Cancel"), (btn) -> this.cancel())
-				.dimensions(this.width / 2 - 125, this.height - 30, 120, 20)
+		ButtonWidget cancelButton = ButtonWidget.builder(Text.translatable("better_hud.global.config.cancel"), (btn) -> this.cancel())
+				.dimensions(this.width / 2 - 145, this.height - 30, 140, 20)
 				.build();
-		saveButton = ButtonWidget.builder(Text.literal("Save and quit"), (btn) -> this.saveAndClose())
-				.dimensions(this.width / 2 + 5, this.height - 30, 120, 20)
+		saveButton = ButtonWidget.builder(Text.translatable("better_hud.global.config.save_and_quit"), (btn) -> this.saveAndClose())
+				.dimensions(this.width / 2 + 5, this.height - 30, 140, 20)
 				.build();
 		saveButton.active = false;
 
@@ -68,7 +68,7 @@ public class MoveElementsScreen extends Screen {
 		}
 		for (HudRenderCallback element : hudElements) {
 			if (element instanceof HudElement hudElement && hudElement.isEnabled()) {
-				MovableWidget widget = new MovableWidget((int) hudElement.x, (int) hudElement.y, hudElement.scale, hudElement.getWidth(), hudElement.getHeight(), hudElement, this);
+				MovableWidget widget = new MovableWidget(hudElement.x, hudElement.y, hudElement.scale, hudElement.getWidth(), hudElement.getHeight(), hudElement, this);
 				addChild(widget);
 			}
 		}

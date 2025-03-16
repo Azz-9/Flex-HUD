@@ -11,15 +11,15 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class StringFieldWidget extends TextFieldWidget implements TrackableChange {
-	private final String initialValue;
-	private final Consumer<String> onChange;
-	private final Predicate<String> isValid;
+	private final String INITIAL_VALUE;
+	private final Consumer<String> ON_CHANGE;
+	private final Predicate<String> IS_VALID;
 
 	public StringFieldWidget(TextRenderer textRenderer, int x, int y, int width, int height, String currentValue, Consumer<String> consumer, Predicate<String> isValid) {
-		super(textRenderer, x, y, width, height, Text.of("Text Field"));
-		this.initialValue = currentValue;
-		this.onChange = consumer;
-		this.isValid = isValid;
+		super(textRenderer, x, y, width, height, Text.translatable("better_hud.text_field"));
+		this.INITIAL_VALUE = currentValue;
+		this.ON_CHANGE = consumer;
+		this.IS_VALID = isValid;
 
 		setText(currentValue);
 
@@ -47,19 +47,19 @@ public class StringFieldWidget extends TextFieldWidget implements TrackableChang
 
 	@Override
 	public boolean hasChanged() {
-		return !initialValue.equals(getText());
+		return !INITIAL_VALUE.equals(getText());
 	}
 
 	@Override
 	public void cancel() {
-		onChange.accept(initialValue);
+		ON_CHANGE.accept(INITIAL_VALUE);
 	}
 
 	@Override
 	public boolean isValid() {
-		if (isValid == null) {
+		if (IS_VALID == null) {
 			return true;
 		}
-		return isValid.test(getText());
+		return IS_VALID.test(getText());
 	}
 }

@@ -14,13 +14,13 @@ import java.util.function.Consumer;
 import static me.Azz_9.better_hud.client.Better_hudClient.MOD_ID;
 
 public class CustomToggleButtonWidget extends ToggleButtonWidget implements TrackableChange {
-	private final Consumer<Boolean> onToggle;
-	private boolean initialState;
+	private final Consumer<Boolean> ON_TOGGLE;
+	private final boolean INITIAL_STATE;
 
-	public CustomToggleButtonWidget(int x, int y, int width, int height, boolean toggled, Consumer<Boolean> onToggle) {
-		super(x, y, width, height, toggled);
-		this.onToggle = onToggle;
-		this.initialState = toggled;
+	public CustomToggleButtonWidget(int width, int height, boolean toggled, Consumer<Boolean> onToggle) {
+		super(0, 0, width, height, toggled);
+		this.ON_TOGGLE = onToggle;
+		this.INITIAL_STATE = toggled;
 		this.textures = new ButtonTextures(
 				Identifier.of(MOD_ID, "widgets/buttons/toggle/unfocused_enabled.png"),
 				Identifier.of(MOD_ID, "widgets/buttons/toggle/unfocused_disabled.png"),
@@ -58,20 +58,20 @@ public class CustomToggleButtonWidget extends ToggleButtonWidget implements Trac
 
 	public void onClickAction() {
 		this.toggled = !this.toggled;
-		onToggle.accept(this.toggled);
+		ON_TOGGLE.accept(this.toggled);
 	}
 
 	@Override
 	public boolean hasChanged() {
-		return toggled != initialState;
+		return toggled != INITIAL_STATE;
 	}
 
 	@Override
 	public void cancel() {
-		onToggle.accept(initialState);
+		ON_TOGGLE.accept(INITIAL_STATE);
 	}
 
-	public Consumer<Boolean> getOnToggle() {
-		return onToggle;
+	public Consumer<Boolean> getON_TOGGLE() {
+		return ON_TOGGLE;
 	}
 }

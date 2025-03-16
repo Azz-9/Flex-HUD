@@ -1,13 +1,13 @@
 package me.Azz_9.better_hud.screens.modsConfigScreen.mods;
 
-import me.Azz_9.better_hud.screens.modsConfigScreen.ModsConfigTemplate;
+import me.Azz_9.better_hud.screens.modsConfigScreen.ModsConfigAbstract;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 
-public class WeatherChanger extends ModsConfigTemplate {
+public class WeatherChanger extends ModsConfigAbstract {
 
 	public WeatherChanger(Screen parent, double scrollAmount) {
-		super(Text.literal("Weather Changer"), parent, scrollAmount);
+		super(Text.translatable("better_hud.weather_changer"), parent, scrollAmount);
 	}
 
 	public enum Weather {
@@ -22,9 +22,9 @@ public class WeatherChanger extends ModsConfigTemplate {
 
 		setButtonWidth(170);
 
-		addToggleButton(getCenterX(), startY, getButtonWidth(), getButtonHeight(), Text.of("Enable weather changer"), INSTANCE.weatherChanger.enabled, true,
+		addToggleButton(getCenterX(), startY, getButtonWidth(), getButtonHeight(), Text.translatable("better_hud.weather_changer.config.enable"), INSTANCE.weatherChanger.enabled, true,
 				toggled -> INSTANCE.weatherChanger.enabled = toggled);
-		addCyclingStringButton(getCenterX(), startY + 30, getButtonWidth(), Text.of("Selected weather"), Weather.class, INSTANCE.weatherChanger.selectedWeather, Weather.Clear,
+		addCyclingStringButton(getCenterX(), startY + 30, getButtonWidth(), Text.translatable("better_hud.weather_changer.config.selected_weather"), Weather.class, INSTANCE.weatherChanger.selectedWeather, Weather.Clear,
 				value -> INSTANCE.weatherChanger.selectedWeather = value);
 	}
 }

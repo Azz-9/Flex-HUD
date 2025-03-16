@@ -50,20 +50,20 @@ public class DirectionOverlay extends HudElement {
 
 		MatrixStack matrices = drawContext.getMatrices();
 		matrices.push();
-		matrices.translate(this.x, this.y, 0);
+		matrices.translate(Math.round(this.x * vw), Math.round(this.y * vh), 0);
 		matrices.scale(this.scale, this.scale, 1.0f);
 
 		drawContext.enableScissor(0, 0, this.width, this.height);
 
 		// Affichage des points cardinaux
-		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.hud.coordinates.direction_abbr.south"), 0, yaw);
-		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.hud.coordinates.direction_abbr.south_west"), 45, yaw);
-		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.hud.coordinates.direction_abbr.west"), 90, yaw);
-		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.hud.coordinates.direction_abbr.north_west"), 135, yaw);
-		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.hud.coordinates.direction_abbr.north"), 180, yaw);
-		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.hud.coordinates.direction_abbr.north_east"), 225, yaw);
-		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.hud.coordinates.direction_abbr.east"), 270, yaw);
-		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.hud.coordinates.direction_abbr.south_east"), 315, yaw);
+		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.direction.hud.direction_abbr.south"), 0, yaw);
+		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.direction.hud.direction_abbr.south_west"), 45, yaw);
+		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.direction.hud.direction_abbr.west"), 90, yaw);
+		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.direction.hud.direction_abbr.north_west"), 135, yaw);
+		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.direction.hud.direction_abbr.north"), 180, yaw);
+		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.direction.hud.direction_abbr.north_east"), 225, yaw);
+		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.direction.hud.direction_abbr.east"), 270, yaw);
+		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.direction.hud.direction_abbr.south_east"), 315, yaw);
 
 		// Affichage des points intermediaires
 		if (this.showIntermediatePoint) {

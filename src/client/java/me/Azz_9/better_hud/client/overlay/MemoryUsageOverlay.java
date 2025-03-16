@@ -12,49 +12,50 @@ import java.lang.management.MemoryUsage;
 
 public class MemoryUsageOverlay extends HudElement {
 
-    public MemoryUsageOverlay(double defaultX, double defaultY) {
-        super(defaultX, defaultY);
-    }
+	public MemoryUsageOverlay(double defaultX, double defaultY) {
+		super(defaultX, defaultY);
+		this.enabled = false; // disable by default
+	}
 
-    @Override
-    public void onHudRender(DrawContext drawContext, RenderTickCounter tickCounter) {
-        super.onHudRender(drawContext, tickCounter);
-        
-        final MinecraftClient CLIENT = MinecraftClient.getInstance();
+	@Override
+	public void onHudRender(DrawContext drawContext, RenderTickCounter tickCounter) {
+		super.onHudRender(drawContext, tickCounter);
 
-        if (!ModConfig.getInstance().isEnabled || !this.enabled || CLIENT == null || CLIENT.options.hudHidden) {
-            return;
-        }
+		final MinecraftClient CLIENT = MinecraftClient.getInstance();
 
-        String text = "Mem: " + getMemoryUsagePercentage() + "%";
+		if (!ModConfig.getInstance().isEnabled || !this.enabled || CLIENT == null || CLIENT.options.hudHidden) {
+			return;
+		}
 
-        MatrixStack matrices = drawContext.getMatrices();
-        matrices.push();
-        matrices.translate(this.x, this.y, 0);
-        matrices.scale(this.scale, this.scale, 1.0f);
+		String text = "Mem: " + getMemoryUsagePercentage() + "%";
 
-        drawContext.drawText(CLIENT.textRenderer, text, 0, 0, this.color, this.shadow);
+		MatrixStack matrices = drawContext.getMatrices();
+		matrices.push();
+		matrices.translate(Math.round(this.x * vw), Math.round(this.y * vh), 0);
+		matrices.scale(this.scale, this.scale, 1.0f);
 
-        matrices.pop();
+		drawContext.drawText(CLIENT.textRenderer, text, 0, 0, this.color, this.shadow);
 
-        setWidth(text);
-        this.height = CLIENT.textRenderer.fontHeight;
-    }
+		matrices.pop();
 
-    private int getMemoryUsagePercentage() {
-        // Accéder au gestionnaire de mémoire de la JVM
-        MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
+		setWidth(text);
+		this.height = CLIENT.textRenderer.fontHeight;
+	}
 
-        // Obtenir les informations sur la mémoire heap
-        MemoryUsage heapMemoryUsage = memoryBean.getHeapMemoryUsage();
+	private int getMemoryUsagePercentage() {
+		// Accéder au gestionnaire de mémoire de la JVM
+		MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
 
-        // Mémoire utilisée et maximum allouée
-        long usedMemory = heapMemoryUsage.getUsed();
-        long maxMemory = heapMemoryUsage.getMax();
+		// Obtenir les informations sur la mémoire heap
+		MemoryUsage heapMemoryUsage = memoryBean.getHeapMemoryUsage();
 
-        // Calculer le pourcentage
-        return (int) ((double) usedMemory / maxMemory * 100);
-    }
+		// Mémoire utilisée et maximum allouée
+		long usedMemory = heapMemoryUsage.getUsed();
+		long maxMemory = heapMemoryUsage.getMax();
+
+		// Calculer le pourcentage
+		return (int) ((double) usedMemory / maxMemory * 100);
+	}
 
 
 }

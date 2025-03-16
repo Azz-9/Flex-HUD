@@ -33,7 +33,7 @@ public class ServerAddressOverlay extends HudElement {
 
 		} else if (!this.hideWhenOffline) {
 
-			text = Text.translatable("better_hud.ping.hud.offline").getString();
+			text = Text.translatable("better_hud.server_address.hud.offline").getString();
 
 		} else if (Better_hudClient.isEditing) {
 
@@ -45,7 +45,7 @@ public class ServerAddressOverlay extends HudElement {
 
 			MatrixStack matrices = drawContext.getMatrices();
 			matrices.push();
-			matrices.translate(this.x, this.y, 0);
+			matrices.translate(Math.round(this.x * vw), Math.round(this.y * vh), 0);
 			matrices.scale(this.scale, this.scale, 1.0f);
 
 			drawContext.drawText(CLIENT.textRenderer, text, 0, 0, this.color, this.shadow);

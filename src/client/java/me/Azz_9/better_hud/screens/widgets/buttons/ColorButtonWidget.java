@@ -9,27 +9,27 @@ import java.util.function.Consumer;
 
 public class ColorButtonWidget extends ButtonWidget implements TrackableChange {
 	private int color;
-	private int initialColor;
+	private final int INITIAL_COLOR;
 	public boolean isSelectingColor = false;
 	private int colorSelectorX = getX();
 	private int colorSelectorY = getY() + getHeight();
-	private final int colorSelectorWidth = 120;
-	private final int colorSelectorHeight = 124;
+	private final int COLOR_SELECTOR_WIDTH = 120;
+	private final int COLOR_SELECTOR_HEIGHT = 124;
 
-	private final Consumer<Integer> consumer;
+	private final Consumer<Integer> CONSUMER;
 
-	public ColorButtonWidget(int x, int y, int width, int height, int currentColor, PressAction onPress, int screenWidth, int screenHeight, Consumer<Integer> consumer) {
-		super(x, y, width, height, Text.of(""), onPress, DEFAULT_NARRATION_SUPPLIER);
+	public ColorButtonWidget(int width, int height, int currentColor, PressAction onPress, int screenWidth, int screenHeight, Consumer<Integer> consumer) {
+		super(0, 0, width, height, Text.of(""), onPress, DEFAULT_NARRATION_SUPPLIER);
 		this.color = currentColor;
-		this.initialColor = currentColor;
+		this.INITIAL_COLOR = currentColor;
 
-		this.consumer = consumer;
+		this.CONSUMER = consumer;
 
-		if (colorSelectorX + colorSelectorWidth > screenWidth) {
-			colorSelectorX = colorSelectorX - colorSelectorWidth + getWidth();
+		if (colorSelectorX + COLOR_SELECTOR_WIDTH > screenWidth) {
+			colorSelectorX = colorSelectorX - COLOR_SELECTOR_WIDTH + getWidth();
 		}
-		if (colorSelectorY + colorSelectorHeight > screenHeight) {
-			colorSelectorY = colorSelectorY - getHeight() - colorSelectorHeight;
+		if (colorSelectorY + COLOR_SELECTOR_HEIGHT > screenHeight) {
+			colorSelectorY = colorSelectorY - getHeight() - COLOR_SELECTOR_HEIGHT;
 		}
 	}
 
@@ -46,16 +46,16 @@ public class ColorButtonWidget extends ButtonWidget implements TrackableChange {
 	}
 
 	public int getColorSelectorY() {
-        return colorSelectorY;
-    }
+		return colorSelectorY;
+	}
 
 	public int getColorSelectorWidth() {
-        return colorSelectorWidth;
-    }
+		return COLOR_SELECTOR_WIDTH;
+	}
 
-    public int getColorSelectorHeight() {
-        return colorSelectorHeight;
-    }
+	public int getColorSelectorHeight() {
+		return COLOR_SELECTOR_HEIGHT;
+	}
 
 	@Override
 	public void onClick(double mouseX, double mouseY) {
@@ -65,7 +65,7 @@ public class ColorButtonWidget extends ButtonWidget implements TrackableChange {
 
 	@Override
 	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-		consumer.accept(color);
+		CONSUMER.accept(color);
 
 		context.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), color | 0xFF000000);
 		if (this.isFocused()) {
@@ -77,11 +77,11 @@ public class ColorButtonWidget extends ButtonWidget implements TrackableChange {
 
 	@Override
 	public boolean hasChanged() {
-		return color != initialColor;
+		return color != INITIAL_COLOR;
 	}
 
 	@Override
 	public void cancel() {
-		consumer.accept(initialColor);
+		CONSUMER.accept(INITIAL_COLOR);
 	}
 }

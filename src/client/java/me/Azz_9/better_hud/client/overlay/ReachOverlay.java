@@ -13,6 +13,7 @@ public class ReachOverlay extends HudElement {
 
 	public ReachOverlay(double defaultX, double defaultY) {
 		super(defaultX, defaultY);
+		this.enabled = false; // disable by default
 	}
 
 	@Override
@@ -31,11 +32,11 @@ public class ReachOverlay extends HudElement {
 
 		String format = "%." + this.digits + "f";
 		String formattedSpeed = String.format(format, CalculateReach.getReach());
-		Text text = Text.literal(formattedSpeed).append(" ").append(Text.translatable("better_hud.reach.hud.units"));
+		Text text = Text.literal(formattedSpeed).append(" ").append(Text.translatable("better_hud.reach.hud.unit"));
 
 		MatrixStack matrices = drawContext.getMatrices();
 		matrices.push();
-		matrices.translate(this.x, this.y, 0);
+		matrices.translate(Math.round(this.x * vw), Math.round(this.y * vh), 0);
 		matrices.scale(this.scale, this.scale, 1.0f);
 
 		drawContext.drawText(CLIENT.textRenderer, Text.of(text), 0, 0, this.color, this.shadow);

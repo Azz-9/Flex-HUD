@@ -10,46 +10,46 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class ClockOverlay extends HudElement {
-    public String textFormat = "hh:mm:ss";
-    public boolean isTwentyFourHourFormat = true;
+	public String textFormat = "hh:mm:ss";
+	public boolean isTwentyFourHourFormat = true;
 
-    public ClockOverlay(double defaultX, double defaultY) {
-        super(defaultX, defaultY);
-    }
+	public ClockOverlay(double defaultX, double defaultY) {
+		super(defaultX, defaultY);
+	}
 
-    @Override
-    public void onHudRender(DrawContext drawContext, RenderTickCounter tickCounter) {
-        super.onHudRender(drawContext, tickCounter);
+	@Override
+	public void onHudRender(DrawContext drawContext, RenderTickCounter tickCounter) {
+		super.onHudRender(drawContext, tickCounter);
 
-        final MinecraftClient CLIENT = MinecraftClient.getInstance();
+		final MinecraftClient CLIENT = MinecraftClient.getInstance();
 
-        if (!ModConfig.getInstance().isEnabled || !this.enabled || CLIENT == null || CLIENT.options.hudHidden) {
-            return;
-        }
+		if (!ModConfig.getInstance().isEnabled || !this.enabled || CLIENT == null || CLIENT.options.hudHidden) {
+			return;
+		}
 
-        String currentTime = getCurrentTime();
+		String currentTime = getCurrentTime();
 
-        MatrixStack matrices = drawContext.getMatrices();
-        matrices.push();
-        matrices.translate(this.x, this.y, 0);
-        matrices.scale(this.scale, this.scale, 1.0f);
+		MatrixStack matrices = drawContext.getMatrices();
+		matrices.push();
+		matrices.translate(Math.round(this.x * vw), Math.round(this.y * vh), 0);
+		matrices.scale(this.scale, this.scale, 1.0f);
 
-        drawContext.drawText(CLIENT.textRenderer, currentTime,0, 0, this.color, this.shadow);
+		drawContext.drawText(CLIENT.textRenderer, currentTime, 0, 0, this.color, this.shadow);
 
-        matrices.pop();
+		matrices.pop();
 
-        setWidth(currentTime);
-        this.height = CLIENT.textRenderer.fontHeight;
-    }
+		setWidth(currentTime);
+		this.height = CLIENT.textRenderer.fontHeight;
+	}
 
-    public String getCurrentTime() {
-        String textFormat = this.textFormat.toLowerCase();
-        if (this.isTwentyFourHourFormat) {
-            textFormat = textFormat.replace("hh", "HH");
-        } else {
-            textFormat += " a";
-        }
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(textFormat);
-        return LocalTime.now().format(formatter);
-    }
+	public String getCurrentTime() {
+		String textFormat = this.textFormat.toLowerCase();
+		if (this.isTwentyFourHourFormat) {
+			textFormat = textFormat.replace("hh", "HH");
+		} else {
+			textFormat += " a";
+		}
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(textFormat);
+		return LocalTime.now().format(formatter);
+	}
 }

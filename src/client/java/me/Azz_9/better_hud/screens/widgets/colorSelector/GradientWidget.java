@@ -18,12 +18,12 @@ public class GradientWidget extends ClickableWidget {
 	private int selectedColor;
 	private double cursorX;
 	private double cursorY;
-	private final ColorButtonWidget colorButtonWidget;
+	private final ColorButtonWidget COLOR_BUTTON_WIDGET;
 	private ColorEntryWidget colorEntryWidget;
 
 	public GradientWidget(int x, int y, int width, int height, ColorButtonWidget colorButtonWidget) {
-		super(x, y, width, height, Text.literal("Color Gradient"));
-		this.colorButtonWidget = colorButtonWidget;
+		super(x, y, width, height, Text.translatable("better_hud.gradient_widget"));
+		this.COLOR_BUTTON_WIDGET = colorButtonWidget;
 		this.selectedColor = colorButtonWidget.getColor();
 
 		setCursorPositionToSelectedColor();
@@ -77,7 +77,7 @@ public class GradientWidget extends ClickableWidget {
 
 		selectedColor = Color.HSBtoRGB(selectedHue / 360.0f, saturation, brightness) & 0x00ffffff;
 
-		colorButtonWidget.setColor(selectedColor);
+		COLOR_BUTTON_WIDGET.setColor(selectedColor);
 		colorEntryWidget.setText("#" + Integer.toHexString(selectedColor));
 	}
 
@@ -94,7 +94,7 @@ public class GradientWidget extends ClickableWidget {
 	public void setColor(int color) {
 		selectedColor = color;
 		setCursorPositionToSelectedColor();
-		colorButtonWidget.setColor(selectedColor);
+		COLOR_BUTTON_WIDGET.setColor(selectedColor);
 	}
 
 	public void setHue(float hue) {
@@ -106,8 +106,8 @@ public class GradientWidget extends ClickableWidget {
 		this.colorEntryWidget = colorEntryWidget;
 	}
 
-	public ColorButtonWidget getColorButtonWidget() {
-		return colorButtonWidget;
+	public ColorButtonWidget getCOLOR_BUTTON_WIDGET() {
+		return COLOR_BUTTON_WIDGET;
 	}
 
 	@Override

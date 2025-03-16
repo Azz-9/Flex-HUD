@@ -20,10 +20,12 @@ public class SpeedometerOverlay extends HudElement {
 
 	public SpeedometerOverlay(double defaultX, double defaultY) {
 		super(defaultX, defaultY);
+		this.enabled = false; // disable by default
 	}
 
 	@Override
 	public void onHudRender(DrawContext drawContext, RenderTickCounter tickCounter) {
+		super.onHudRender(drawContext, tickCounter);
 
 		final MinecraftClient CLIENT = MinecraftClient.getInstance();
 
@@ -35,7 +37,7 @@ public class SpeedometerOverlay extends HudElement {
 
 		MatrixStack matrices = drawContext.getMatrices();
 		matrices.push();
-		matrices.translate(this.x, this.y, 0);
+		matrices.translate(Math.round(this.x * vw), Math.round(this.y * vh), 0);
 		matrices.scale(this.scale, this.scale, 1.0f);
 
 		drawContext.drawText(CLIENT.textRenderer, formattedSpeed, 0, 0, this.color, this.shadow);
@@ -53,11 +55,11 @@ public class SpeedometerOverlay extends HudElement {
 		if (this.units == KNOT || (this.useKnotInBoat && player.getVehicle() instanceof BoatEntity)) {
 			formattedSpeed += " " + Text.translatable("better_hud.speedometer.hud.units.knots").getString();
 		} else if (this.units == KPH) {
-			formattedSpeed += " km/h";
+			formattedSpeed += " " + Text.translatable("better_hud.speedometer.hud.units.kph").getString();
 		} else if (this.units == MPH) {
-			formattedSpeed += " mph";
+			formattedSpeed += " " + Text.translatable("better_hud.speedometer.hud.units.mph").getString();
 		} else {
-			formattedSpeed += " m/s";
+			formattedSpeed += " " + Text.translatable("better_hud.speedometer.hud.units.mps").getString();
 		}
 		return formattedSpeed;
 	}

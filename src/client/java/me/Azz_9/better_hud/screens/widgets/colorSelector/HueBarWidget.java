@@ -16,13 +16,13 @@ import static me.Azz_9.better_hud.client.Better_hudClient.MOD_ID;
 public class HueBarWidget extends ClickableWidget {
 	private float selectedHue;
 	private double cursorY = 0;
-	private final ColorButtonWidget colorButtonWidget;
-	private final GradientWidget gradient;
+	private final ColorButtonWidget COLOR_BUTTON_WIDGET;
+	private final GradientWidget GRADIENT;
 
 	public HueBarWidget(int x, int y, int width, int height, ColorButtonWidget colorButtonWidget, GradientWidget gradient) {
-		super(x, y, width, height, Text.literal("Hue Bar"));
-		this.colorButtonWidget = colorButtonWidget;
-		this.gradient = gradient;
+		super(x, y, width, height, Text.translatable("better_hud.hue_bar"));
+		this.COLOR_BUTTON_WIDGET = colorButtonWidget;
+		this.GRADIENT = gradient;
 		this.selectedHue = getHue(colorButtonWidget.getColor());
 
 		this.cursorY = getY() + (selectedHue / 360.0) * height;
@@ -67,22 +67,22 @@ public class HueBarWidget extends ClickableWidget {
 
 	private void updateHue(double cursorY) {
 		selectedHue = (float) ((cursorY - getY()) * 360.0f / getHeight());
-		gradient.setHue(selectedHue);
+		GRADIENT.setHue(selectedHue);
 	}
 
 	private float getHue(int color) {
-		float [] hsb = Color.RGBtoHSB((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF, null);
-        return hsb[0] * 360.0f;
+		float[] hsb = Color.RGBtoHSB((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF, null);
+		return hsb[0] * 360.0f;
 	}
 
 	public void setHue(int color) {
 		this.selectedHue = getHue(color);
-        this.cursorY = (getY() + (selectedHue / 360.0) * height);
-		gradient.setHue(selectedHue);
+		this.cursorY = (getY() + (selectedHue / 360.0) * height);
+		GRADIENT.setHue(selectedHue);
 	}
 
-	public ColorButtonWidget getColorButtonWidget() {
-		return colorButtonWidget;
+	public ColorButtonWidget getCOLOR_BUTTON_WIDGET() {
+		return COLOR_BUTTON_WIDGET;
 	}
 
 	@Override

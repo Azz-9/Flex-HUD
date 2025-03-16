@@ -14,6 +14,7 @@ import net.minecraft.text.Text;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 @Environment(EnvType.CLIENT)
 public class ConfigurationScreen extends Screen {
@@ -22,61 +23,60 @@ public class ConfigurationScreen extends Screen {
 	private PlaceholderTextFieldWidget searchBar;
 	private ScrollableFeatureList featureList;
 
-	private final List<String> modsList = new ArrayList<>() {{
-		add("Coordinates");
-		add("FPS");
-		add("Clock");
-		add("Armor status");
-		add("Direction");
-		add("Day Counter");
-		add("Ping");
-		add("Server address");
-		add("Weather changer");
-		add("Memory usage");
-		add("cps");
-		add("Time changer");
-		add("Durability ping");
-		add("Speedometer");
-		add("Reach");
-		add("Combo (HS)");
-		add("playtime");
-		add("stopwatch (HS)");
-		add("shrieker warning level (HS)");
-	}};
+	private final String[] MODS_LIST = {
+			Text.translatable("better_hud.coordinates").getString(),
+			Text.translatable("better_hud.fps").getString(),
+			Text.translatable("better_hud.clock").getString(),
+			Text.translatable("better_hud.armor_status").getString(),
+			Text.translatable("better_hud.direction").getString(),
+			Text.translatable("better_hud.day_counter").getString(),
+			Text.translatable("better_hud.ping").getString(),
+			Text.translatable("better_hud.server_address").getString(),
+			Text.translatable("better_hud.weather_changer").getString(),
+			Text.translatable("better_hud.memory_usage").getString(),
+			Text.translatable("better_hud.cps").getString(),
+			Text.translatable("better_hud.time_changer").getString(),
+			Text.translatable("better_hud.durability_ping").getString(),
+			Text.translatable("better_hud.speedometer").getString(),
+			Text.translatable("better_hud.reach").getString(),
+			"Combo (HS)",
+			Text.translatable("better_hud.playtime").getString(),
+			"stopwatch (HS)",
+			"shrieker warning level (HS)"
+	};
 
 	public ConfigurationScreen(Screen parent) {
-		super(Text.literal("Mods Configuration"));
+		super(Text.translatable("better_hud.configuration_screen"));
 		this.parent = parent;
 	}
 
 	@Override
 	protected void init() {
-		final int buttonWidth = 160;
-		final int buttonHeight = 20;
-		final int iconWidthHeight = 64;
-		final int padding = 10;
+		final int BUTTON_WIDTH = 160;
+		final int BUTTON_HEIGHT = 20;
+		final int ICON_WIDTH_HEIGHT = 64;
+		final int PADDING = 10;
+		final int MAX_COLUMNS = Math.min((this.width - 30) / (BUTTON_WIDTH + PADDING), 4);
 		int columns = ModConfig.getInstance().numberOfColumns;
-		if (columns > 4 || columns < 1) {
-			columns = 2;
-		}
+		columns = Math.clamp(columns, 1, MAX_COLUMNS);
 
 		// Initialisation de la barre de recherche
 		this.searchBar = new PlaceholderTextFieldWidget(this.textRenderer, this.width / 2 - 100, 20, 200, 20, Text.empty());
 		this.searchBar.setChangedListener(this::onSearchUpdate); // Met à jour la liste lorsque le texte change
-		this.searchBar.setPlaceholder(Text.of("Search..."));
+		this.searchBar.setPlaceholder(Text.translatable("better_hud.configuration_screen.searchbar_placeholder"));
 		this.addDrawableChild(this.searchBar);
 
 		// Initialisation du choix du nombre de colonnes
 		CyclingButtonWidget<Integer> columnsButton = CyclingButtonWidget.<Integer>builder(value -> Text.literal(value.toString()))
-				.values(1, 2, 3, 4)
+				.values(IntStream.rangeClosed(1, MAX_COLUMNS).boxed().toList())
 				.initially(columns)
-				.build(this.width / 2 + 150, 20, 100, 20, Text.literal("Columns "), this::onColumnsUpdate);
+				.build(Math.clamp(this.width / 2 + 105 + (int) (this.width / 100.0F * 5), this.width / 2 + 105, Math.max(this.width - 105, this.width / 2 + 105)), 20, 100, 20, Text.translatable("better_hud.configuration_screen.columns"), this::onColumnsUpdate);
 
 		// Initialisation de la liste défilante
-		this.featureList = new ScrollableFeatureList(this.client, this.width, this.height - 84, 50, buttonHeight + iconWidthHeight + padding, buttonWidth, buttonHeight, iconWidthHeight, padding, columns);
+		this.featureList = new ScrollableFeatureList(this.client, this.width, this.height - 84, 50, BUTTON_HEIGHT + ICON_WIDTH_HEIGHT + PADDING, BUTTON_WIDTH, BUTTON_HEIGHT, ICON_WIDTH_HEIGHT, PADDING, columns);
 
 		//Initialisation du bouton done
-		ButtonWidget doneButton = ButtonWidget.builder(Text.of("Done"), (btn) -> close())
+		ButtonWidget doneButton = ButtonWidget.builder(Text.translatable("better_hud.configuration_screen.done"), (btn) -> close())
 				.dimensions(this.width / 2 - 80, this.height - 27, 160, 20)
 				.build();
 
@@ -87,7 +87,7 @@ public class ConfigurationScreen extends Screen {
 
 
 		//Ajout des mods
-		addMods(buttonWidth, buttonHeight, columns);
+		addMods(BUTTON_WIDTH, BUTTON_HEIGHT, columns);
 	}
 
 	public ScrollableFeatureList getFeatureList() {
@@ -98,7 +98,7 @@ public class ConfigurationScreen extends Screen {
 	public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
 		this.renderBackground(drawContext, mouseX, mouseY, delta);
 
-		drawContext.drawCenteredTextWithShadow(textRenderer, Text.literal("Mods Configuration"), this.width / 2, 7, 0xffffff);
+		drawContext.drawCenteredTextWithShadow(textRenderer, Text.translatable("better_hud.configuration_screen"), this.width / 2, 7, 0xffffff);
 
 		super.render(drawContext, mouseX, mouseY, delta);
 		this.featureList.render(drawContext, mouseX, mouseY, delta);
@@ -127,13 +127,13 @@ public class ConfigurationScreen extends Screen {
 
 	private void addMods(int buttonWidth, int buttonHeight, int columns) {
 		List<Feature> features = new ArrayList<>();
-		for (int i = 0; i < modsList.size(); i++) {
-			String modName = modsList.get(i);
-			String modId = getModId(modName);
+		for (int i = 0; i < MODS_LIST.length; i++) {
+			String modName = MODS_LIST[i];
+			String modId = getModId(i);
 
 			features.add(new Feature(modName, modId, getScreen(modId), buttonWidth, buttonHeight));
 
-			if ((i+1) % columns == 0) {
+			if ((i + 1) % columns == 0) {
 				this.featureList.addFeature(new ArrayList<>(features)); // copie de la liste
 				features.clear();
 			}
@@ -143,55 +143,63 @@ public class ConfigurationScreen extends Screen {
 		}
 	}
 
-	private String getModId(String modName) {
-		modName = modName.replace(" (HS)", "");
-		modName = modName.replace(" ", "_");
-		modName = modName.toLowerCase();
-		return modName;
+	private String getModId(int idx) {
+		return new String[]{
+				"coordinates",
+				"fps",
+				"clock",
+				"armor_status",
+				"direction",
+				"day_counter",
+				"ping",
+				"server_address",
+				"weather_changer",
+				"memory_usage",
+				"cps",
+				"time_changer",
+				"durability_ping",
+				"speedometer",
+				"reach",
+				"combo",
+				"playtime",
+				"stopwatch",
+				"shrieker_warning_level"
+		}[idx];
 	}
 
 	private Runnable getScreen(String modId) {
-		switch (modId) {
-			case "coordinates":
-				return () -> MinecraftClient.getInstance().setScreen(new Coordinates(this, featureList.getScrollY()));
-            case "fps":
-                return () -> MinecraftClient.getInstance().setScreen(new FPS(this, featureList.getScrollY()));
-            case "clock":
-                return () -> MinecraftClient.getInstance().setScreen(new Clock(this, featureList.getScrollY()));
-            case "armor_status":
-                return () -> MinecraftClient.getInstance().setScreen(new ArmorStatus(this, featureList.getScrollY()));
-            case "direction":
-                return () -> MinecraftClient.getInstance().setScreen(new Direction(this, featureList.getScrollY()));
-            case "day_counter":
-                return () -> MinecraftClient.getInstance().setScreen(new DayCounter(this, featureList.getScrollY()));
-            case "ping":
-                return () -> MinecraftClient.getInstance().setScreen(new Ping(this, featureList.getScrollY()));
-            case "server_address":
-                return () -> MinecraftClient.getInstance().setScreen(new ServerAddress(this, featureList.getScrollY()));
-            case "weather_changer":
-                return () -> MinecraftClient.getInstance().setScreen(new WeatherChanger(this, featureList.getScrollY()));
-			case "memory_usage":
-				return () -> MinecraftClient.getInstance().setScreen(new MemoryUsage(this, featureList.getScrollY()));
-            case "cps":
-				return () -> MinecraftClient.getInstance().setScreen(new CPS(this, featureList.getScrollY()));
-			case "time_changer":
-				return () -> MinecraftClient.getInstance().setScreen(new TimeChanger(this, featureList.getScrollY()));
-			case "durability_ping":
-				return () -> MinecraftClient.getInstance().setScreen(new DurabilityPing(this, featureList.getScrollY()));
-			case "speedometer":
-				return () -> MinecraftClient.getInstance().setScreen(new Speedometer(this, featureList.getScrollY()));
-			case "reach":
-				return () -> MinecraftClient.getInstance().setScreen(new Reach(this, featureList.getScrollY()));
-			case "combo":
-				return () -> System.out.println("Mod Combo");
-			case "playtime":
-				return () -> MinecraftClient.getInstance().setScreen(new Playtime(this, featureList.getScrollY()));
-			case "stopwatch":
-				return () -> System.out.println("Mod Stopwatch");
-			case "shrieker_warning_level":
-				return () -> System.out.println("Mod Shrieker Warning Level");
-
-		}
-		return null;
+		return switch (modId) {
+			case "coordinates" ->
+					() -> MinecraftClient.getInstance().setScreen(new Coordinates(this, featureList.getScrollY()));
+			case "fps" -> () -> MinecraftClient.getInstance().setScreen(new FPS(this, featureList.getScrollY()));
+			case "clock" -> () -> MinecraftClient.getInstance().setScreen(new Clock(this, featureList.getScrollY()));
+			case "armor_status" ->
+					() -> MinecraftClient.getInstance().setScreen(new ArmorStatus(this, featureList.getScrollY()));
+			case "direction" ->
+					() -> MinecraftClient.getInstance().setScreen(new Direction(this, featureList.getScrollY()));
+			case "day_counter" ->
+					() -> MinecraftClient.getInstance().setScreen(new DayCounter(this, featureList.getScrollY()));
+			case "ping" -> () -> MinecraftClient.getInstance().setScreen(new Ping(this, featureList.getScrollY()));
+			case "server_address" ->
+					() -> MinecraftClient.getInstance().setScreen(new ServerAddress(this, featureList.getScrollY()));
+			case "weather_changer" ->
+					() -> MinecraftClient.getInstance().setScreen(new WeatherChanger(this, featureList.getScrollY()));
+			case "memory_usage" ->
+					() -> MinecraftClient.getInstance().setScreen(new MemoryUsage(this, featureList.getScrollY()));
+			case "cps" -> () -> MinecraftClient.getInstance().setScreen(new CPS(this, featureList.getScrollY()));
+			case "time_changer" ->
+					() -> MinecraftClient.getInstance().setScreen(new TimeChanger(this, featureList.getScrollY()));
+			case "durability_ping" ->
+					() -> MinecraftClient.getInstance().setScreen(new DurabilityPing(this, featureList.getScrollY()));
+			case "speedometer" ->
+					() -> MinecraftClient.getInstance().setScreen(new Speedometer(this, featureList.getScrollY()));
+			case "reach" -> () -> MinecraftClient.getInstance().setScreen(new Reach(this, featureList.getScrollY()));
+			case "combo" -> () -> System.out.println("Mod Combo");
+			case "playtime" ->
+					() -> MinecraftClient.getInstance().setScreen(new Playtime(this, featureList.getScrollY()));
+			case "stopwatch" -> () -> System.out.println("Mod Stopwatch");
+			case "shrieker_warning_level" -> () -> System.out.println("Mod Shrieker Warning Level");
+			default -> null;
+		};
 	}
 }

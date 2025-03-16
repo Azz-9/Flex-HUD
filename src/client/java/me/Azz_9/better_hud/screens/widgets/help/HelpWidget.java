@@ -11,9 +11,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static me.Azz_9.better_hud.client.Better_hudClient.MOD_ID;
 
 public class HelpWidget extends ClickableWidget {
@@ -28,12 +25,12 @@ public class HelpWidget extends ClickableWidget {
 	private boolean isFadingOut = false;
 
 	public HelpWidget(int x, int y, int width, int height) {
-		super(x, y, width, height, Text.of("Help button"));
+		super(x, y, width, height, Text.translatable("better_hud.help_widget"));
 	}
 
 	@Override
 	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-		context.drawTexture(RenderLayer::getGuiTexturedOverlay, texture, getX(), getY(), 0, 0, getWidth(), getHeight(), 20, 20);
+		context.drawTexture(RenderLayer::getGuiTextured, texture, getX(), getY(), 0, 0, getWidth(), getHeight(), 20, 20);
 
 		if (displayHelp || isFadingOut) {
 
@@ -55,13 +52,14 @@ public class HelpWidget extends ClickableWidget {
 
 			TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 
-			List<String> helpLines = new ArrayList<>();
-			helpLines.add("CTRL + Z : undo");
-			helpLines.add("CTRL + Y / CTRL + SHIFT + Z : redo");
-			helpLines.add("Press SHIFT while moving an");
-			helpLines.add("element to prevent snapping");
-			helpLines.add("Press SHIFT while scaling an");
-			helpLines.add("element to snap");
+			Text[] helpLines = {
+					Text.translatable("better_hud.help_widget.line1"),
+					Text.translatable("better_hud.help_widget.line2"),
+					Text.translatable("better_hud.help_widget.line3"),
+					Text.translatable("better_hud.help_widget.line4"),
+					Text.translatable("better_hud.help_widget.line5"),
+					Text.translatable("better_hud.help_widget.line6")
+			};
 
 			int padding = 4;
 			int marginBottom = 6;
@@ -69,10 +67,10 @@ public class HelpWidget extends ClickableWidget {
 			int lineHeight = 12;
 
 			int popupX = getX();
-			int popupY = getY() - marginBottom - lineHeight * helpLines.size() - padding;
-			int popupHeight = padding + lineHeight * helpLines.size();
+			int popupY = getY() - marginBottom - lineHeight * helpLines.length - padding;
+			int popupHeight = padding + lineHeight * helpLines.length;
 			int popupWidth = 0;
-			for (String line : helpLines) {
+			for (Text line : helpLines) {
 				popupWidth = Math.max(popupWidth, textRenderer.getWidth(line) + padding * 2);
 			}
 
@@ -80,8 +78,8 @@ public class HelpWidget extends ClickableWidget {
 
 			renderArrow(context, marginBottom);
 
-			for (int i = 0; i < helpLines.size(); i++) {
-				context.drawText(textRenderer, helpLines.get(i), popupX + padding, popupY + padding + lineHeight * i, (alpha << 24) | TEXT_COLOR, false);
+			for (int i = 0; i < helpLines.length; i++) {
+				context.drawText(textRenderer, helpLines[i], popupX + padding, popupY + padding + lineHeight * i, (alpha << 24) | TEXT_COLOR, false);
 			}
 		}
 	}

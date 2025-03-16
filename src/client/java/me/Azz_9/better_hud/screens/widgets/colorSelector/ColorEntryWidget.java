@@ -9,21 +9,20 @@ import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
 public class ColorEntryWidget extends TextFieldWidget {
-	private final ColorButtonWidget colorButtonWidget;
-	private final GradientWidget gradientWidget;
-	private final HueBarWidget hueBarWidget;
+	private final ColorButtonWidget COLOR_BUTTON_WIDGET;
+	private final GradientWidget GRADIENT_WIDGET;
+	private final HueBarWidget HUE_BAR_WIDGET;
 
 	public ColorEntryWidget(TextRenderer textRenderer, int x, int y, int width, int height, ColorButtonWidget colorButtonWidget, GradientWidget gradientWidget, HueBarWidget hueBarWidget) {
-		super(textRenderer, x, y, width, height, Text.literal("Color Entry"));
-		this.colorButtonWidget = colorButtonWidget;
-		this.gradientWidget = gradientWidget;
-		this.hueBarWidget = hueBarWidget;
+		super(textRenderer, x, y, width, height, Text.translatable("better_hud.color_entry_widget"));
+		this.COLOR_BUTTON_WIDGET = colorButtonWidget;
+		this.GRADIENT_WIDGET = gradientWidget;
+		this.HUE_BAR_WIDGET = hueBarWidget;
 
 		setText("#" + Integer.toHexString(colorButtonWidget.getColor()));
 
 		setTextPredicate(text -> text.matches("^#[0-9a-fA-F]{0,6}$"));
 	}
-
 
 
 	@Override
@@ -33,8 +32,8 @@ public class ColorEntryWidget extends TextFieldWidget {
 				int color = Integer.parseInt(getText().substring(1), 16);
 
 				// Update the GradientWidget and HueBarWidget
-				gradientWidget.setColor(color);
-				hueBarWidget.setHue(color);
+				GRADIENT_WIDGET.setColor(color);
+				HUE_BAR_WIDGET.setHue(color);
 				return true;
 			} else if (Screen.isPaste(keyCode)) {
 				String textToPaste = MinecraftClient.getInstance().keyboard.getClipboard();
@@ -49,7 +48,7 @@ public class ColorEntryWidget extends TextFieldWidget {
 		return super.keyPressed(keyCode, scanCode, modifiers);
 	}
 
-	public ColorButtonWidget getColorButtonWidget() {
-		return colorButtonWidget;
+	public ColorButtonWidget getCOLOR_BUTTON_WIDGET() {
+		return COLOR_BUTTON_WIDGET;
 	}
 }

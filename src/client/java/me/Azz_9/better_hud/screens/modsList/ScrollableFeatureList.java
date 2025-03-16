@@ -29,8 +29,8 @@ public class ScrollableFeatureList extends ElementListWidget<ScrollableFeatureLi
 	}
 
 	/*
-	* features' size needs to be equal or lower than number of columns
-	* */
+	 * features' size needs to be equal or lower than number of columns
+	 * */
 	public void addFeature(List<Feature> features) {
 		assert features.size() <= columns;
 		if (features.size() < columns) {
@@ -61,7 +61,7 @@ public class ScrollableFeatureList extends ElementListWidget<ScrollableFeatureLi
 		for (Entry entry : this.allEntries) {
 			// Vérification pour les colonnes
 			for (Feature feature : entry.rowMods) {
-				if (feature != null && feature.name.toLowerCase().contains(query.toLowerCase())) {
+				if (feature != null && (feature.name.toLowerCase().contains(query.toLowerCase()) || feature.id.replace("_", " ").contains(query.toLowerCase()))) {
 					addFeatureToEntry.accept(feature);
 				}
 			}
@@ -96,8 +96,8 @@ public class ScrollableFeatureList extends ElementListWidget<ScrollableFeatureLi
 	}
 
 	public int getButtonHeight() {
-        return buttonHeight;
-    }
+		return buttonHeight;
+	}
 
 	public List<Entry> getAllEntries() {
 		return this.allEntries;
