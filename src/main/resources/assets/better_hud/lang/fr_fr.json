@@ -68,8 +68,8 @@
 	"better_hud.cps.config.show_left_click": "Afficher les CPS du clic gauche",
 	"better_hud.cps.config.show_right_click": "Afficher les CPS du clic droit",
 
-	"better_hud.day_counter": "Compteur de jours",
-	"better_hud.day_counter.config.enable": "Afficher le compteur de jours",
+	"better_hud.day_counter": "Compte-jours",
+	"better_hud.day_counter.config.enable": "Afficher le compte-jours",
 
 	"better_hud.direction": "Direction",
 	"better_hud.direction.config.enable": "Afficher la direction",
@@ -119,9 +119,9 @@
 	"better_hud.time_changer.config.use_real_time": "Utiliser l'heure réelle",
 	"better_hud.time_changer.config.selected_time": "Heure sélectionnée",
 
-	"better_hud.weather_changer": "Changeur de temps",
-	"better_hud.weather_changer.config.enable": "Activer le changeur de temps",
-	"better_hud.weather_changer.config.selected_weather": "Temps sélectionné",
+	"better_hud.weather_changer": "Changeur de météo",
+	"better_hud.weather_changer.config.enable": "Activer le changeur de météo",
+	"better_hud.weather_changer.config.selected_weather": "Météo sélectionné",
 
 
 	"better_hud.coordinates.hud.direction.south": "Sud",
