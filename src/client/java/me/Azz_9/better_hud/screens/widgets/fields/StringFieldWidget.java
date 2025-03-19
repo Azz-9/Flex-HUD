@@ -15,8 +15,8 @@ public class StringFieldWidget extends TextFieldWidget implements TrackableChang
 	private final Consumer<String> ON_CHANGE;
 	private final Predicate<String> IS_VALID;
 
-	public StringFieldWidget(TextRenderer textRenderer, int x, int y, int width, int height, String currentValue, Consumer<String> consumer, Predicate<String> isValid) {
-		super(textRenderer, x, y, width, height, Text.translatable("better_hud.text_field"));
+	public StringFieldWidget(TextRenderer textRenderer, int width, int height, String currentValue, Consumer<String> consumer, Predicate<String> isValid) {
+		super(textRenderer, 0, 0, width, height, Text.translatable("better_hud.text_field"));
 		this.INITIAL_VALUE = currentValue;
 		this.ON_CHANGE = consumer;
 		this.IS_VALID = isValid;

@@ -15,8 +15,8 @@ public class IntSliderWidget extends SliderWidget implements TrackableChange {
 	private final int initialValue;
 	private final Consumer<Integer> consumer;
 
-	public IntSliderWidget(int x, int y, int width, int height, double value, Integer step, int minValue, int maxValue, Consumer<Integer> consumer) {
-		super(x, y, width, height, Text.of(String.valueOf((int) (value * maxValue))), value);
+	public IntSliderWidget(int width, int height, double value, Integer step, int minValue, int maxValue, Consumer<Integer> consumer) {
+		super(0, 0, width, height, Text.of(String.valueOf((int) (value * maxValue))), value);
 		this.step = step;
 		this.minValue = minValue;
 		this.maxValue = maxValue;
@@ -48,7 +48,7 @@ public class IntSliderWidget extends SliderWidget implements TrackableChange {
 	private boolean isShiftPressed() {
 		MinecraftClient client = MinecraftClient.getInstance();
 		return InputUtil.isKeyPressed(client.getWindow().getHandle(), InputUtil.GLFW_KEY_LEFT_SHIFT) ||
-			   InputUtil.isKeyPressed(client.getWindow().getHandle(), InputUtil.GLFW_KEY_RIGHT_SHIFT);
+				InputUtil.isKeyPressed(client.getWindow().getHandle(), InputUtil.GLFW_KEY_RIGHT_SHIFT);
 	}
 
 	public void setValue(int value) {

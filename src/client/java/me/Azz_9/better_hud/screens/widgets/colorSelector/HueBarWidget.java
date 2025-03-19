@@ -19,8 +19,8 @@ public class HueBarWidget extends ClickableWidget {
 	private final ColorButtonWidget COLOR_BUTTON_WIDGET;
 	private final GradientWidget GRADIENT;
 
-	public HueBarWidget(int x, int y, int width, int height, ColorButtonWidget colorButtonWidget, GradientWidget gradient) {
-		super(x, y, width, height, Text.translatable("better_hud.hue_bar"));
+	public HueBarWidget(int width, int height, ColorButtonWidget colorButtonWidget, GradientWidget gradient) {
+		super(0, 0, width, height, Text.translatable("better_hud.hue_bar"));
 		this.COLOR_BUTTON_WIDGET = colorButtonWidget;
 		this.GRADIENT = gradient;
 		this.selectedHue = getHue(colorButtonWidget.getColor());

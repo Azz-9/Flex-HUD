@@ -21,8 +21,8 @@ public class GradientWidget extends ClickableWidget {
 	private final ColorButtonWidget COLOR_BUTTON_WIDGET;
 	private ColorEntryWidget colorEntryWidget;
 
-	public GradientWidget(int x, int y, int width, int height, ColorButtonWidget colorButtonWidget) {
-		super(x, y, width, height, Text.translatable("better_hud.gradient_widget"));
+	public GradientWidget(int width, int height, ColorButtonWidget colorButtonWidget) {
+		super(0, 0, width, height, Text.translatable("better_hud.gradient_widget"));
 		this.COLOR_BUTTON_WIDGET = colorButtonWidget;
 		this.selectedColor = colorButtonWidget.getColor();
 

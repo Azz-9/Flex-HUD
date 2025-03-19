@@ -12,8 +12,8 @@ public class IntFieldWidget extends TextFieldWidget implements TrackableChange {
 	private final Integer MIN_VALUE;
 	private final Integer MAX_VALUE;
 
-	public IntFieldWidget(TextRenderer textRenderer, int x, int y, int width, int height, Integer min, Integer max, int number, Consumer<String> consumer) {
-		super(textRenderer, x, y, width, height, Text.translatable("better_hud.integer_field"));
+	public IntFieldWidget(TextRenderer textRenderer, int width, int height, Integer min, Integer max, int number, Consumer<String> consumer) {
+		super(textRenderer, 0, 0, width, height, Text.translatable("better_hud.integer_field"));
 		this.MIN_VALUE = min;
 		this.MAX_VALUE = max;
 

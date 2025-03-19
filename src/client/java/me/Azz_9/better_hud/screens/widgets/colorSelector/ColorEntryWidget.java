@@ -13,8 +13,8 @@ public class ColorEntryWidget extends TextFieldWidget {
 	private final GradientWidget GRADIENT_WIDGET;
 	private final HueBarWidget HUE_BAR_WIDGET;
 
-	public ColorEntryWidget(TextRenderer textRenderer, int x, int y, int width, int height, ColorButtonWidget colorButtonWidget, GradientWidget gradientWidget, HueBarWidget hueBarWidget) {
-		super(textRenderer, x, y, width, height, Text.translatable("better_hud.color_entry_widget"));
+	public ColorEntryWidget(TextRenderer textRenderer, int width, int height, ColorButtonWidget colorButtonWidget, GradientWidget gradientWidget, HueBarWidget hueBarWidget) {
+		super(textRenderer, 0, 0, width, height, Text.translatable("better_hud.color_entry_widget"));
 		this.COLOR_BUTTON_WIDGET = colorButtonWidget;
 		this.GRADIENT_WIDGET = gradientWidget;
 		this.HUE_BAR_WIDGET = hueBarWidget;

@@ -33,7 +33,7 @@ public class CustomToggleButtonWidget extends ToggleButtonWidget implements Trac
 	public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (this.isSelected() && this.active) {
 			Identifier selectedTexture = Identifier.of(MOD_ID, "widgets/buttons/selected.png");
-			context.drawTexture(RenderLayer::getGuiTexturedOverlay, selectedTexture, this.getX(), this.getY(), 0, 0, this.width, 20, 100, 20);
+			context.drawTexture(RenderLayer::getGuiTextured, selectedTexture, this.getX(), this.getY(), 0, 0, this.width, 20, 100, 20);
 		}
 
 		if (this.textures != null) {

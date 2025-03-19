@@ -22,8 +22,10 @@ import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.text.Text;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +40,7 @@ public abstract class ModsConfigAbstract extends Screen {
 	private final double scrollAmount;
 	private final List<TrackableChange> trackableWidgets = new ArrayList<>();
 	private ButtonWidget saveButton;
+	private ButtonWidget cancelButton;
 
 	private boolean isColorSelectorOpen = false;
 
@@ -61,6 +64,7 @@ public abstract class ModsConfigAbstract extends Screen {
 	public void setButtonWidth(int width) {
 		buttonWidth = width;
 		centerX = (this.width - buttonWidth) / 2;
+		configList.setWidth(width);
 	}
 
 	public int getButtonWidth() {
@@ -70,6 +74,7 @@ public abstract class ModsConfigAbstract extends Screen {
 	public void setButtonHeight(int height) {
 		buttonHeight = height;
 		centerY = (this.height - buttonHeight) / 2;
+		configList.setWidth(height);
 	}
 
 	public int getButtonHeight() {
@@ -89,7 +94,9 @@ public abstract class ModsConfigAbstract extends Screen {
 		this.centerX = (this.width - buttonWidth) / 2;
 		this.centerY = (this.height - buttonHeight) / 2;
 
-		ButtonWidget cancelButton = ButtonWidget.builder(Text.translatable("better_hud.global.config.cancel"), (btn) -> this.cancel())
+		int configListY = Math.max(MinecraftClient.getInstance().getWindow().getScaledHeight() / 10, 20);
+
+		cancelButton = ButtonWidget.builder(Text.translatable("better_hud.global.config.cancel"), (btn) -> this.cancel())
 				.dimensions(this.width / 2 - 165, this.height - 30, 160, 20)
 				.build();
 		saveButton = ButtonWidget.builder(Text.translatable("better_hud.global.config.save_and_quit"), (btn) -> this.saveAndClose())
@@ -97,8 +104,10 @@ public abstract class ModsConfigAbstract extends Screen {
 				.build();
 		saveButton.active = false;
 
-		configList = new ScrollableConfigList(MinecraftClient.getInstance(), getButtonWidth() + 50, 300,
-				startY, (this.width - (getButtonWidth() + 50)) / 2, 30, buttonWidth + 30);
+		configList = new ScrollableConfigList(MinecraftClient.getInstance(),
+				getButtonWidth() + 50, Math.min(300, MinecraftClient.getInstance().getWindow().getScaledHeight() - configListY - 50),
+				configListY, (this.width - (getButtonWidth() + 50)) / 2,
+				30, buttonWidth + 30);
 
 		this.addDrawableChild(cancelButton);
 		this.addDrawableChild(saveButton);
@@ -115,7 +124,7 @@ public abstract class ModsConfigAbstract extends Screen {
 
 		TextWidget textWidget = new TextWidget(text, textRenderer);
 
-		this.configList.addButton(new ScrollableConfigList.ButtonEntry(toggleButtonWidget, resetButtonWidget, textWidget, buttonWidth, buttonHeight));
+		this.configList.addButton(new ScrollableConfigList.ButtonEntry(toggleButtonWidget, resetButtonWidget, textWidget));
 
 		registerTrackableWidget(toggleButtonWidget);
 	}
@@ -123,43 +132,36 @@ public abstract class ModsConfigAbstract extends Screen {
 	protected void addColorButton(int x, int y, int buttonWidth, Text text, int currentColor, int defaultColor, Consumer<Integer> consumer) {
 		ColorButtonWidget colorButtonWidget = new ColorButtonWidget(20, 20, currentColor, (btn) -> {
 			isColorSelectorOpen = !isColorSelectorOpen;
+			configList.setActiveToEveryEntry(!isColorSelectorOpen);
 		}, width, height, consumer);
 
-		GradientWidget gradientWidget = new GradientWidget(colorButtonWidget.getColorSelectorX() + 1, colorButtonWidget.getColorSelectorY() + 1, 100, 100, colorButtonWidget);
-		HueBarWidget hueBarWidget = new HueBarWidget(gradientWidget.getRight() + 2, gradientWidget.getY(), 16, gradientWidget.getHeight(), colorButtonWidget, gradientWidget);
-		ColorEntryWidget colorEntryWidget = new ColorEntryWidget(textRenderer, gradientWidget.getX(), gradientWidget.getBottom() + 2, colorButtonWidget.getColorSelectorWidth() - 2, 20, colorButtonWidget, gradientWidget, hueBarWidget);
-
-		gradientWidget.setColorEntryWidget(colorEntryWidget);
-
 		ResetButtonWidget resetButtonWidget = new ResetButtonWidget(20, 20, (btn) -> {
-			gradientWidget.setColor(defaultColor);
-			hueBarWidget.setHue(defaultColor);
+			colorButtonWidget.getGradientWidget().setColor(defaultColor);
+			colorButtonWidget.getHueBarWidget().setHue(defaultColor);
 		});
 
 		TextWidget textWidget = new TextWidget(text, textRenderer);
 
 		this.addDrawableChild(colorButtonWidget);
 
-		this.addDrawableColorSelector(gradientWidget);
-		super.addDrawableChild(gradientWidget);
-
-		this.addDrawableColorSelector(hueBarWidget);
-		super.addDrawableChild(hueBarWidget);
-
-		this.addDrawableColorSelector(colorEntryWidget);
-		super.addDrawableChild(colorEntryWidget);
+		this.addDrawableColorSelector(colorButtonWidget.getGradientWidget());
+		super.addDrawableChild(colorButtonWidget.getGradientWidget());
+		this.addDrawableColorSelector(colorButtonWidget.getHueBarWidget());
+		super.addDrawableChild(colorButtonWidget.getHueBarWidget());
+		this.addDrawableColorSelector(colorButtonWidget.getColorEntryWidget());
+		super.addDrawableChild(colorButtonWidget.getColorEntryWidget());
 
 		this.addDrawableChild(resetButtonWidget);
 
 		this.addDrawableChild(textWidget);
 
-		this.configList.addButton(new ScrollableConfigList.ButtonEntry(colorButtonWidget, resetButtonWidget, textWidget, buttonWidth, buttonHeight));
+		this.configList.addButton(new ScrollableConfigList.ButtonEntry(colorButtonWidget, resetButtonWidget, textWidget));
 
 		registerTrackableWidget(colorButtonWidget);
 	}
 
 	protected void addIntField(int x, int y, int buttonWidth, Text text, int currentValue, int defaultValue, Integer min, Integer max, Consumer<Integer> consumer) {
-		IntFieldWidget intFieldWidget = new IntFieldWidget(textRenderer, x + buttonWidth - 20, y, 20, 20, min, max, currentValue, value -> consumer.accept(Integer.valueOf(value)));
+		IntFieldWidget intFieldWidget = new IntFieldWidget(textRenderer, 20, 20, min, max, currentValue, value -> consumer.accept(Integer.valueOf(value)));
 		String tooltipText = "";
 		if (min != null) {
 			tooltipText += Text.translatable("better_hud.global.config.min").getString() + ": " + min;
@@ -178,9 +180,7 @@ public abstract class ModsConfigAbstract extends Screen {
 
 		TextWidget textWidget = new TextWidget(text, textRenderer);
 
-		this.addDrawableChild(intFieldWidget);
-		this.addDrawableChild(resetButtonWidget);
-		this.addDrawableChild(textWidget);
+		this.configList.addButton(new ScrollableConfigList.ButtonEntry(intFieldWidget, resetButtonWidget, textWidget));
 
 		registerTrackableWidget(intFieldWidget);
 	}
@@ -191,7 +191,7 @@ public abstract class ModsConfigAbstract extends Screen {
 
 
 	protected void addTextField(int x, int y, int buttonWidth, int buttonHeight, int fieldWidth, Text text, String currentValue, String defaultValue, Consumer<String> consumer, Predicate<String> isValid) {
-		StringFieldWidget textFieldWidget = new StringFieldWidget(textRenderer, x + buttonWidth - fieldWidth, y, fieldWidth, buttonHeight, currentValue, consumer, isValid);
+		StringFieldWidget textFieldWidget = new StringFieldWidget(textRenderer, fieldWidth, buttonHeight, currentValue, consumer, isValid);
 		textFieldWidget.setTooltip(Tooltip.of(Text.literal("hh: ").append(Text.translatable("better_hud.global.hours").append("\nmm: ").append(Text.translatable("better_hud.global.minutes").append("\nss: ").append(Text.translatable("better_hud.global.seconds"))))));
 
 		ResetButtonWidget resetButtonWidget = new ResetButtonWidget(20, 20, (btn) -> {
@@ -199,11 +199,8 @@ public abstract class ModsConfigAbstract extends Screen {
 		});
 
 		TextWidget textWidget = new TextWidget(text, textRenderer);
-		textWidget.setPosition(x + 3, y + (20 - textRenderer.fontHeight) / 2);
 
-		this.addDrawableChild(textFieldWidget);
-		this.addDrawableChild(resetButtonWidget);
-		this.addDrawableChild(textWidget);
+		this.configList.addButton(new ScrollableConfigList.ButtonEntry(textFieldWidget, resetButtonWidget, textWidget));
 
 		registerTrackableWidget(textFieldWidget);
 	}
@@ -231,7 +228,7 @@ public abstract class ModsConfigAbstract extends Screen {
 			}
 		}
 
-		CyclingButtonWidget cyclingButtonWidget = new CyclingButtonWidget(x + buttonWidth - 70, y, 70, 20, currentValue, Text.of(enumValues[index[0]].name()), btn -> {
+		CyclingButtonWidget cyclingButtonWidget = new CyclingButtonWidget(70, 20, currentValue, Text.of(enumValues[index[0]].name()), btn -> {
 			// Passer à la prochaine valeur de l'enum
 			index[0] = (index[0] + 1) % enumValues.length;
 
@@ -259,11 +256,8 @@ public abstract class ModsConfigAbstract extends Screen {
 		});
 
 		TextWidget textWidget = new TextWidget(text, textRenderer);
-		textWidget.setPosition(x + 3, y + (20 - textRenderer.fontHeight) / 2);
 
-		this.addDrawableChild(cyclingButtonWidget);
-		this.addDrawableChild(resetButtonWidget);
-		this.addDrawableChild(textWidget);
+		this.configList.addButton(new ScrollableConfigList.ButtonEntry(cyclingButtonWidget, resetButtonWidget, textWidget));
 
 		registerTrackableWidget(cyclingButtonWidget);
 	}
@@ -273,18 +267,16 @@ public abstract class ModsConfigAbstract extends Screen {
 	}
 
 	protected void addIntSlider(int x, int y, int buttonWidth, int buttonHeight, int sliderWidth, Text text, int currentValue, int defaultValue, int min, int max, Consumer<Integer> consumer, Integer step) {
-		IntSliderWidget sliderWidget = new IntSliderWidget(x + buttonWidth - sliderWidth, y, sliderWidth, buttonHeight, (double) currentValue / max, step, min, max, consumer);
+
+		IntSliderWidget sliderWidget = new IntSliderWidget(sliderWidth, buttonHeight, (double) currentValue / max, step, min, max, consumer);
 
 		ResetButtonWidget resetButtonWidget = new ResetButtonWidget(20, 20, (btn) -> {
 			sliderWidget.setValue(defaultValue);
 		});
 
 		TextWidget textWidget = new TextWidget(text, textRenderer);
-		textWidget.setPosition(x + 3, y + (20 - textRenderer.fontHeight) / 2);
 
-		this.addDrawableChild(sliderWidget);
-		this.addDrawableChild(resetButtonWidget);
-		this.addDrawableChild(textWidget);
+		this.configList.addButton(new ScrollableConfigList.ButtonEntry(sliderWidget, resetButtonWidget, textWidget));
 
 		registerTrackableWidget(sliderWidget);
 	}
@@ -303,24 +295,12 @@ public abstract class ModsConfigAbstract extends Screen {
 		// render list
 		this.configList.render(context, mouseX, mouseY, delta);
 
-		for (Drawable drawable : this.drawables) {
-			if (drawable instanceof CustomToggleButtonWidget button) {
-				button.active = !isColorSelectorOpen;
-			} else if (drawable instanceof ColorButtonWidget button) {
-				button.active = !isColorSelectorOpen;
-			} else if (drawable instanceof ResetButtonWidget button) {
-				button.active = !isColorSelectorOpen;
-			} else if (drawable instanceof CyclingButtonWidget<?> button) {
-				button.active = !isColorSelectorOpen;
-			} else if (drawable instanceof IntFieldWidget button) {
-				button.active = !isColorSelectorOpen;
-			}
+		checkForChanges();
+		checkValid();
 
-			checkForChanges();
-			checkValid();
+		saveButton.render(context, mouseX, mouseY, delta);
+		cancelButton.render(context, mouseX, mouseY, delta);
 
-			drawable.render(context, mouseX, mouseY, delta);
-		}
 
 		// Render the color selector over others widgets
 		for (Drawable drawable : this.colorSelectorDrawables) {
@@ -368,6 +348,13 @@ public abstract class ModsConfigAbstract extends Screen {
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (keyCode == 256 && this.shouldCloseOnEsc()) {
 			cancel();
+		} else if (keyCode == GLFW.GLFW_KEY_F) {
+			System.out.println();
+			for (Drawable drawable : this.drawables) {
+				if (drawable instanceof ClickableWidget clickableWidget) {
+					System.out.println(clickableWidget.active);
+				}
+			}
 		}
 		return super.keyPressed(keyCode, scanCode, modifiers);
 	}
