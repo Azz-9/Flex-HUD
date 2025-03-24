@@ -92,7 +92,7 @@
 
 	"better_hud.ping": "Ping",
 	"better_hud.ping.config.enable": "Afficher le ping",
-	"better_hud.ping.config.hide_when_offline": "Masquer le ping en étant hors ligne",
+	"better_hud.ping.config.hide_when_offline": "Masquer lorsque vous êtes hors ligne",
 
 	"better_hud.playtime": "Temps de jeu",
 	"better_hud.playtime.config.enable": "Afficher le temps de jeu",
@@ -104,7 +104,7 @@
 
 	"better_hud.server_address": "Adresse du serveur",
 	"better_hud.server_address.config.enable": "Afficher l'adresse du serveur",
-	"better_hud.server_address.config.hide_when_offline": "Masquer l'adresse du serveur en étant hors ligne",
+	"better_hud.server_address.config.hide_when_offline": "Masquer lorsque vous êtes hors ligne",
 
 	"better_hud.speedometer": "Compteur de vitesse",
 	"better_hud.speedometer.config.enable": "Afficher le compteur de vitesse",

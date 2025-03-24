@@ -115,12 +115,12 @@
 	"better_hud.speedometer.config.tooltip.mph": "Miles per hour (mph)",
 
 	"better_hud.time_changer": "Time changer",
-	"better_hud.time_changer.config.enable": "Enable",
+	"better_hud.time_changer.config.enable": "Enable time changer",
 	"better_hud.time_changer.config.use_real_time": "Use real time",
 	"better_hud.time_changer.config.selected_time": "Selected time",
 
 	"better_hud.weather_changer": "Weather changer",
-	"better_hud.weather_changer.config.enable": "Enable",
+	"better_hud.weather_changer.config.enable": "Enable weather changer",
 	"better_hud.weather_changer.config.selected_weather": "Selected weather",
 
 
