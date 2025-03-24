@@ -136,7 +136,11 @@ public class Better_hudClient implements ClientModInitializer {
 		ItemDurabilityLostCallback.EVENT.register((player, stack, amount) -> {
 			MinecraftClient client = MinecraftClient.getInstance();
 			if (client.player != null && player.getUuid().equals(client.player.getUuid()) && DurabilityPing.isDurabilityUnderThreshold(stack)) {
-				DurabilityPing.pingPlayer(player, stack);
+				if (INSTANCE.durabilityPing.checkElytraOnly && DurabilityPing.isElytra(stack)) {
+					DurabilityPing.pingPlayer(player, stack);
+				} else if (INSTANCE.durabilityPing.checkArmorPieces && DurabilityPing.isArmorPiece(stack)) {
+					DurabilityPing.pingPlayer(player, stack);
+				}
 			}
 		});
 

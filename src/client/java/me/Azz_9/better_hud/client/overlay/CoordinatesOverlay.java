@@ -134,7 +134,6 @@ public class CoordinatesOverlay extends HudElement {
 		}
 
 		matrices.pop();
-
 	}
 
 	private String[] getDirection(PlayerEntity p) {

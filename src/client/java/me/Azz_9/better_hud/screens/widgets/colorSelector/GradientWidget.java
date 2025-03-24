@@ -1,6 +1,7 @@
 package me.Azz_9.better_hud.screens.widgets.colorSelector;
 
 import me.Azz_9.better_hud.screens.widgets.buttons.ColorButtonWidget;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
@@ -8,6 +9,7 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
 
@@ -25,6 +27,7 @@ public class GradientWidget extends ClickableWidget {
 		super(0, 0, width, height, Text.translatable("better_hud.gradient_widget"));
 		this.COLOR_BUTTON_WIDGET = colorButtonWidget;
 		this.selectedColor = colorButtonWidget.getColor();
+		this.selectedHue = Color.RGBtoHSB((selectedColor >> 16) & 0xFF, (selectedColor >> 8) & 0xFF, selectedColor & 0xFF, null)[0] * 360;
 
 		setCursorPositionToSelectedColor();
 	}
@@ -35,7 +38,7 @@ public class GradientWidget extends ClickableWidget {
 
 		MatrixStack matrices = context.getMatrices();
 		matrices.push();
-		matrices.translate(cursorX, cursorY, 0);
+		matrices.translate(cursorX + getX(), cursorY + getY(), 0);
 
 		// Draw the cursor
 		context.drawTexture(RenderLayer::getGuiTexturedOverlay, Identifier.of(MOD_ID, "widgets/color_selector/gradient_cursor.png"),
@@ -57,6 +60,8 @@ public class GradientWidget extends ClickableWidget {
 
 	@Override
 	public void onClick(double mouseX, double mouseY) {
+		long window = MinecraftClient.getInstance().getWindow().getHandle();
+		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);
 		moveCursor(mouseX, mouseY);
 	}
 
@@ -65,15 +70,21 @@ public class GradientWidget extends ClickableWidget {
 		moveCursor(mouseX, mouseY);
 	}
 
+	@Override
+	public void onRelease(double mouseX, double mouseY) {
+		long window = MinecraftClient.getInstance().getWindow().getHandle();
+		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
+	}
+
 	private void moveCursor(double mouseX, double mouseY) {
-		cursorX = Math.clamp(mouseX, getX(), getRight());
-		cursorY = Math.clamp(mouseY, getY(), getBottom());
+		cursorX = Math.clamp(mouseX, getX(), getRight()) - getX();
+		cursorY = Math.clamp(mouseY, getY(), getBottom()) - getY();
 		updateColor(cursorX, cursorY);
 	}
 
 	private void updateColor(double cursorX, double cursorY) {
-		float saturation = (float) (cursorX - getX()) / getWidth();
-		float brightness = 1.0f - (float) (cursorY - getY()) / getHeight();
+		float saturation = (float) cursorX / getWidth();
+		float brightness = 1.0f - (float) cursorY / getHeight();
 
 		selectedColor = Color.HSBtoRGB(selectedHue / 360.0f, saturation, brightness) & 0x00ffffff;
 
@@ -87,8 +98,8 @@ public class GradientWidget extends ClickableWidget {
 		float saturation = hsbValues[1];
 		float brightness = hsbValues[2];
 
-		cursorX = getX() + saturation * getWidth();
-		cursorY = getY() + (1.0f - brightness) * getHeight();
+		cursorX = saturation * getWidth();
+		cursorY = (1.0f - brightness) * getHeight();
 	}
 
 	public void setColor(int color) {

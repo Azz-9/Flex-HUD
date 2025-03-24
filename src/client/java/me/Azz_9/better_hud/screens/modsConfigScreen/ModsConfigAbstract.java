@@ -4,10 +4,7 @@ import com.google.common.collect.Lists;
 import me.Azz_9.better_hud.client.interfaces.TrackableChange;
 import me.Azz_9.better_hud.modMenu.ModConfig;
 import me.Azz_9.better_hud.screens.modsList.ConfigurationScreen;
-import me.Azz_9.better_hud.screens.widgets.buttons.ColorButtonWidget;
-import me.Azz_9.better_hud.screens.widgets.buttons.CustomToggleButtonWidget;
-import me.Azz_9.better_hud.screens.widgets.buttons.CyclingButtonWidget;
-import me.Azz_9.better_hud.screens.widgets.buttons.ResetButtonWidget;
+import me.Azz_9.better_hud.screens.widgets.buttons.*;
 import me.Azz_9.better_hud.screens.widgets.colorSelector.ColorEntryWidget;
 import me.Azz_9.better_hud.screens.widgets.colorSelector.GradientWidget;
 import me.Azz_9.better_hud.screens.widgets.colorSelector.HueBarWidget;
@@ -22,7 +19,6 @@ import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
@@ -63,8 +59,9 @@ public abstract class ModsConfigAbstract extends Screen {
 
 	public void setButtonWidth(int width) {
 		buttonWidth = width;
-		centerX = (this.width - buttonWidth) / 2;
 		configList.setWidth(width);
+		centerX = (this.width - configList.getWidth()) / 2;
+		configList.setX(centerX);
 	}
 
 	public int getButtonWidth() {
@@ -74,7 +71,6 @@ public abstract class ModsConfigAbstract extends Screen {
 	public void setButtonHeight(int height) {
 		buttonHeight = height;
 		centerY = (this.height - buttonHeight) / 2;
-		configList.setWidth(height);
 	}
 
 	public int getButtonHeight() {
@@ -105,8 +101,8 @@ public abstract class ModsConfigAbstract extends Screen {
 		saveButton.active = false;
 
 		configList = new ScrollableConfigList(MinecraftClient.getInstance(),
-				getButtonWidth() + 50, Math.min(300, MinecraftClient.getInstance().getWindow().getScaledHeight() - configListY - 50),
-				configListY, (this.width - (getButtonWidth() + 50)) / 2,
+				getButtonWidth() + 62, Math.min(300, MinecraftClient.getInstance().getWindow().getScaledHeight() - configListY - 50),
+				configListY, (this.width - (getButtonWidth() + 62)) / 2,
 				30, buttonWidth + 30);
 
 		this.addDrawableChild(cancelButton);
@@ -114,10 +110,10 @@ public abstract class ModsConfigAbstract extends Screen {
 		this.addSelectableChild(configList);
 	}
 
-	protected void addToggleButton(int x, int y, int buttonWidth, int buttonHeight, Text text, boolean currentValue, boolean defaultValue, Consumer<Boolean> consumer) {
+	protected CustomToggleButtonWidget addToggleButton(Text text, boolean currentValue, boolean defaultValue, Consumer<Boolean> consumer) {
 		CustomToggleButtonWidget toggleButtonWidget = new CustomToggleButtonWidget(buttonWidth, buttonHeight, currentValue, consumer);
 
-		ResetButtonWidget resetButtonWidget = new ResetButtonWidget(20, 20, (btn) -> {
+		ResetButtonWidget resetButtonWidget = new ResetButtonWidget(buttonHeight, buttonHeight, (btn) -> {
 			toggleButtonWidget.setToggled(defaultValue);
 			toggleButtonWidget.getON_TOGGLE().accept(defaultValue);
 		});
@@ -127,29 +123,46 @@ public abstract class ModsConfigAbstract extends Screen {
 		this.configList.addButton(new ScrollableConfigList.ButtonEntry(toggleButtonWidget, resetButtonWidget, textWidget));
 
 		registerTrackableWidget(toggleButtonWidget);
+
+		return toggleButtonWidget;
 	}
 
-	protected void addColorButton(int x, int y, int buttonWidth, Text text, int currentColor, int defaultColor, Consumer<Integer> consumer) {
-		ColorButtonWidget colorButtonWidget = new ColorButtonWidget(20, 20, currentColor, (btn) -> {
+	protected void addDependentToggleButton(Text text, boolean currentValue, boolean defaultValue, Consumer<Boolean> consumer, CustomToggleButtonWidget dependencyToggleButton, boolean disableIf) {
+		DependentCustomToggleButtonWidget toggleButtonWidget = new DependentCustomToggleButtonWidget(buttonWidth, buttonHeight, currentValue, consumer, dependencyToggleButton, disableIf);
+
+		DependentResetButtonWidget resetButtonWidget = new DependentResetButtonWidget(buttonHeight, buttonHeight, (btn) -> {
+			toggleButtonWidget.setToggled(defaultValue);
+			toggleButtonWidget.getON_TOGGLE().accept(defaultValue);
+		}, dependencyToggleButton, disableIf);
+
+		DependentTextWidget textWidget = new DependentTextWidget(text, textRenderer, dependencyToggleButton, disableIf);
+
+		this.configList.addButton(new ScrollableConfigList.ButtonEntry(toggleButtonWidget, resetButtonWidget, textWidget));
+
+		registerTrackableWidget(toggleButtonWidget);
+	}
+
+	protected void addColorButton(Text text, int currentColor, int defaultColor, Consumer<Integer> consumer) {
+		ColorButtonWidget colorButtonWidget = new ColorButtonWidget(buttonWidth, buttonHeight, currentColor, (btn) -> {
 			isColorSelectorOpen = !isColorSelectorOpen;
 			configList.setActiveToEveryEntry(!isColorSelectorOpen);
 		}, width, height, consumer);
 
 		ResetButtonWidget resetButtonWidget = new ResetButtonWidget(20, 20, (btn) -> {
-			colorButtonWidget.getGradientWidget().setColor(defaultColor);
-			colorButtonWidget.getHueBarWidget().setHue(defaultColor);
+			colorButtonWidget.getGRADIENT_WIDGET().setColor(defaultColor);
+			colorButtonWidget.getHUE_BAR_WIDGET().setHue(defaultColor);
 		});
 
 		TextWidget textWidget = new TextWidget(text, textRenderer);
 
 		this.addDrawableChild(colorButtonWidget);
 
-		this.addDrawableColorSelector(colorButtonWidget.getGradientWidget());
-		super.addDrawableChild(colorButtonWidget.getGradientWidget());
-		this.addDrawableColorSelector(colorButtonWidget.getHueBarWidget());
-		super.addDrawableChild(colorButtonWidget.getHueBarWidget());
-		this.addDrawableColorSelector(colorButtonWidget.getColorEntryWidget());
-		super.addDrawableChild(colorButtonWidget.getColorEntryWidget());
+		this.addDrawableColorSelector(colorButtonWidget.getGRADIENT_WIDGET());
+		super.addDrawableChild(colorButtonWidget.getGRADIENT_WIDGET());
+		this.addDrawableColorSelector(colorButtonWidget.getHUE_BAR_WIDGET());
+		super.addDrawableChild(colorButtonWidget.getHUE_BAR_WIDGET());
+		this.addDrawableColorSelector(colorButtonWidget.getCOLOR_ENTRY_WIDGET());
+		super.addDrawableChild(colorButtonWidget.getCOLOR_ENTRY_WIDGET());
 
 		this.addDrawableChild(resetButtonWidget);
 
@@ -160,7 +173,7 @@ public abstract class ModsConfigAbstract extends Screen {
 		registerTrackableWidget(colorButtonWidget);
 	}
 
-	protected void addIntField(int x, int y, int buttonWidth, Text text, int currentValue, int defaultValue, Integer min, Integer max, Consumer<Integer> consumer) {
+	protected void addIntField(Text text, int currentValue, int defaultValue, Integer min, Integer max, Consumer<Integer> consumer) {
 		IntFieldWidget intFieldWidget = new IntFieldWidget(textRenderer, 20, 20, min, max, currentValue, value -> consumer.accept(Integer.valueOf(value)));
 		String tooltipText = "";
 		if (min != null) {
@@ -186,7 +199,7 @@ public abstract class ModsConfigAbstract extends Screen {
 	}
 
 	protected void addIntField(int x, int y, int buttonWidth, Text text, int currentValue, int defaultValue, Consumer<Integer> consumer) {
-		addIntField(x, y, buttonWidth, text, currentValue, defaultValue, null, null, consumer);
+		addIntField(text, currentValue, defaultValue, null, null, consumer);
 	}
 
 
@@ -312,7 +325,10 @@ public abstract class ModsConfigAbstract extends Screen {
 				} else {
 					button.active = true;
 					// Display the background of the color selector
-					context.fill(button.getColorSelectorX(), button.getColorSelectorY(), button.getColorSelectorX() + button.getColorSelectorWidth(), button.getColorSelectorY() + button.getColorSelectorHeight(), 0xff1e1f22);
+					context.fill(button.getColorSelectorX(), button.getColorSelectorY(),
+							button.getColorSelectorX() + button.getColorSelectorWidth(),
+							button.getColorSelectorY() + button.getColorSelectorHeight(),
+							0xff1e1f22);
 				}
 			} else if (drawable instanceof HueBarWidget hueBar) {
 				hueBar.active = hueBar.getCOLOR_BUTTON_WIDGET().isSelectingColor;
@@ -337,26 +353,34 @@ public abstract class ModsConfigAbstract extends Screen {
 	}
 
 	@Override
+	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		if (!cancelButton.isHovered() && !saveButton.isHovered()) {
+			for (Drawable drawable : this.drawables) {
+				if (drawable instanceof ColorButtonWidget colorButtonWidget && colorButtonWidget.isSelectingColor &&
+						!colorButtonWidget.isHovered() && !colorButtonWidget.isMouseHoverColorSelector(mouseX, mouseY)) {
+
+					colorButtonWidget.onClick(mouseX, mouseY);
+					return true;
+				}
+			}
+		}
+		return super.mouseClicked(mouseX, mouseY, button);
+	}
+
+	@Override
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (keyCode == GLFW.GLFW_KEY_ESCAPE && this.shouldCloseOnEsc()) {
+			this.cancel();
+		}
+		return super.keyPressed(keyCode, scanCode, modifiers);
+	}
+
+	@Override
 	public void close() {
 		client.setScreen(parent);
 		if (parent instanceof ConfigurationScreen configScreen) {
 			configScreen.getFeatureList().setScrollY(scrollAmount);
 		}
-	}
-
-	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (keyCode == 256 && this.shouldCloseOnEsc()) {
-			cancel();
-		} else if (keyCode == GLFW.GLFW_KEY_F) {
-			System.out.println();
-			for (Drawable drawable : this.drawables) {
-				if (drawable instanceof ClickableWidget clickableWidget) {
-					System.out.println(clickableWidget.active);
-				}
-			}
-		}
-		return super.keyPressed(keyCode, scanCode, modifiers);
 	}
 
 	private void saveAndClose() {

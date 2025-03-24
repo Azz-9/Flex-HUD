@@ -1,6 +1,7 @@
 package me.Azz_9.better_hud.screens.widgets.colorSelector;
 
 import me.Azz_9.better_hud.screens.widgets.buttons.ColorButtonWidget;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
@@ -8,6 +9,7 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
 
@@ -23,9 +25,9 @@ public class HueBarWidget extends ClickableWidget {
 		super(0, 0, width, height, Text.translatable("better_hud.hue_bar"));
 		this.COLOR_BUTTON_WIDGET = colorButtonWidget;
 		this.GRADIENT = gradient;
-		this.selectedHue = getHue(colorButtonWidget.getColor());
+		this.selectedHue = calculateHue(colorButtonWidget.getColor());
 
-		this.cursorY = getY() + (selectedHue / 360.0) * height;
+		this.cursorY = (selectedHue / 360.0) * height;
 	}
 
 	@Override
@@ -34,7 +36,7 @@ public class HueBarWidget extends ClickableWidget {
 
 		MatrixStack matrices = context.getMatrices();
 		matrices.push();
-		matrices.translate(getX(), cursorY, 0);
+		matrices.translate(getX(), cursorY + getY(), 0);
 
 		// Draw the cursor
 		context.drawTexture(RenderLayer::getGuiTexturedOverlay, Identifier.of(MOD_ID, "widgets/color_selector/hue_cursor.png"),
@@ -52,6 +54,8 @@ public class HueBarWidget extends ClickableWidget {
 
 	@Override
 	public void onClick(double mouseX, double mouseY) {
+		long window = MinecraftClient.getInstance().getWindow().getHandle();
+		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);
 		moveCursor(mouseY);
 	}
 
@@ -60,24 +64,30 @@ public class HueBarWidget extends ClickableWidget {
 		moveCursor(mouseY);
 	}
 
+	@Override
+	public void onRelease(double mouseX, double mouseY) {
+		long window = MinecraftClient.getInstance().getWindow().getHandle();
+		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
+	}
+
 	private void moveCursor(double mouseY) {
-		cursorY = Math.clamp(mouseY, getY(), getBottom());
+		cursorY = Math.clamp(mouseY, getY(), getBottom()) - getY();
 		updateHue(cursorY);
 	}
 
 	private void updateHue(double cursorY) {
-		selectedHue = (float) ((cursorY - getY()) * 360.0f / getHeight());
+		selectedHue = (float) ((cursorY) * 360.0f / getHeight());
 		GRADIENT.setHue(selectedHue);
 	}
 
-	private float getHue(int color) {
+	private float calculateHue(int color) {
 		float[] hsb = Color.RGBtoHSB((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF, null);
 		return hsb[0] * 360.0f;
 	}
 
 	public void setHue(int color) {
-		this.selectedHue = getHue(color);
-		this.cursorY = (getY() + (selectedHue / 360.0) * height);
+		this.selectedHue = calculateHue(color);
+		this.cursorY = ((selectedHue / 360.0) * height);
 		GRADIENT.setHue(selectedHue);
 	}
 
