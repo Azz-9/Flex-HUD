@@ -1,8 +1,8 @@
 package me.Azz_9.better_hud.screens.modsConfigScreen;
 
-import com.google.common.collect.Lists;
 import me.Azz_9.better_hud.client.interfaces.TrackableChange;
 import me.Azz_9.better_hud.modMenu.ModConfig;
+import me.Azz_9.better_hud.screens.AbstractCallbackScreen;
 import me.Azz_9.better_hud.screens.modsList.ConfigurationScreen;
 import me.Azz_9.better_hud.screens.widgets.buttons.*;
 import me.Azz_9.better_hud.screens.widgets.colorSelector.ColorEntryWidget;
@@ -19,6 +19,7 @@ import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
@@ -30,18 +31,18 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public abstract class ModsConfigAbstract extends Screen {
+import static net.minecraft.text.Text.translatable;
+
+public abstract class ModsConfigAbstract extends AbstractCallbackScreen {
 	protected final ModConfig INSTANCE = ModConfig.getInstance();
 	private final Screen parent;
 	private final double scrollAmount;
-	private final List<TrackableChange> trackableWidgets = new ArrayList<>();
 	private ButtonWidget saveButton;
 	private ButtonWidget cancelButton;
 
 	private boolean isColorSelectorOpen = false;
 
-	private final List<Drawable> drawables = Lists.newArrayList();
-	private final List<Drawable> colorSelectorDrawables = Lists.newArrayList();
+	private final List<Drawable> colorSelectorDrawables = new ArrayList<>();
 
 	private int buttonWidth = 150;
 	private int buttonHeight = 20;
@@ -52,7 +53,7 @@ public abstract class ModsConfigAbstract extends Screen {
 	private ScrollableConfigList configList;
 
 	protected ModsConfigAbstract(Text title, Screen parent, double scrollAmount) {
-		super(title);
+		super(title, translatable("better_hud.global.config.callback.message_title"), translatable("better_hud.global.config.callback.message_content"));
 		this.parent = parent;
 		this.scrollAmount = scrollAmount;
 	}
@@ -92,10 +93,10 @@ public abstract class ModsConfigAbstract extends Screen {
 
 		int configListY = Math.max(MinecraftClient.getInstance().getWindow().getScaledHeight() / 10, 20);
 
-		cancelButton = ButtonWidget.builder(Text.translatable("better_hud.global.config.cancel"), (btn) -> this.cancel())
+		cancelButton = ButtonWidget.builder(translatable("better_hud.global.config.cancel"), (btn) -> this.onCancelButtonClick())
 				.dimensions(this.width / 2 - 165, this.height - 30, 160, 20)
 				.build();
-		saveButton = ButtonWidget.builder(Text.translatable("better_hud.global.config.save_and_quit"), (btn) -> this.saveAndClose())
+		saveButton = ButtonWidget.builder(translatable("better_hud.global.config.save_and_quit"), (btn) -> this.saveAndClose())
 				.dimensions(this.width / 2 + 5, this.height - 30, 160, 20)
 				.build();
 		saveButton.active = false;
@@ -155,7 +156,30 @@ public abstract class ModsConfigAbstract extends Screen {
 
 		TextWidget textWidget = new TextWidget(text, textRenderer);
 
-		this.addDrawableChild(colorButtonWidget);
+		this.addDrawableColorSelector(colorButtonWidget.getGRADIENT_WIDGET());
+		super.addDrawableChild(colorButtonWidget.getGRADIENT_WIDGET());
+		this.addDrawableColorSelector(colorButtonWidget.getHUE_BAR_WIDGET());
+		super.addDrawableChild(colorButtonWidget.getHUE_BAR_WIDGET());
+		this.addDrawableColorSelector(colorButtonWidget.getCOLOR_ENTRY_WIDGET());
+		super.addDrawableChild(colorButtonWidget.getCOLOR_ENTRY_WIDGET());
+
+		this.configList.addButton(new ScrollableConfigList.ButtonEntry(colorButtonWidget, resetButtonWidget, textWidget));
+
+		registerTrackableWidget(colorButtonWidget);
+	}
+
+	protected DependentColorButtonWidget addDependentColorButton(Text text, int currentColor, int defaultColor, Consumer<Integer> consumer, CustomToggleButtonWidget dependencyToggleButton, boolean disableIf) {
+		DependentColorButtonWidget colorButtonWidget = new DependentColorButtonWidget(buttonWidth, buttonHeight, currentColor, (btn) -> {
+			isColorSelectorOpen = !isColorSelectorOpen;
+			configList.setActiveToEveryEntry(!isColorSelectorOpen);
+		}, width, height, consumer, disableIf);
+
+		DependentResetButtonWidget resetButtonWidget = new DependentResetButtonWidget(20, 20, (btn) -> {
+			colorButtonWidget.getGRADIENT_WIDGET().setColor(defaultColor);
+			colorButtonWidget.getHUE_BAR_WIDGET().setHue(defaultColor);
+		}, dependencyToggleButton, disableIf);
+
+		DependentTextWidget textWidget = new DependentTextWidget(text, textRenderer, dependencyToggleButton, disableIf);
 
 		this.addDrawableColorSelector(colorButtonWidget.getGRADIENT_WIDGET());
 		super.addDrawableChild(colorButtonWidget.getGRADIENT_WIDGET());
@@ -164,26 +188,24 @@ public abstract class ModsConfigAbstract extends Screen {
 		this.addDrawableColorSelector(colorButtonWidget.getCOLOR_ENTRY_WIDGET());
 		super.addDrawableChild(colorButtonWidget.getCOLOR_ENTRY_WIDGET());
 
-		this.addDrawableChild(resetButtonWidget);
-
-		this.addDrawableChild(textWidget);
-
 		this.configList.addButton(new ScrollableConfigList.ButtonEntry(colorButtonWidget, resetButtonWidget, textWidget));
 
 		registerTrackableWidget(colorButtonWidget);
+
+		return colorButtonWidget;
 	}
 
 	protected void addIntField(Text text, int currentValue, int defaultValue, Integer min, Integer max, Consumer<Integer> consumer) {
-		IntFieldWidget intFieldWidget = new IntFieldWidget(textRenderer, 20, 20, min, max, currentValue, value -> consumer.accept(Integer.valueOf(value)));
+		IntFieldWidget intFieldWidget = new IntFieldWidget(textRenderer, Math.clamp(textRenderer.getWidth(String.valueOf(max) + 30), 20 + 10, 100), 20, min, max, currentValue, value -> consumer.accept(Integer.valueOf(value)));
 		String tooltipText = "";
 		if (min != null) {
-			tooltipText += Text.translatable("better_hud.global.config.min").getString() + ": " + min;
+			tooltipText += translatable("better_hud.global.config.min").getString() + ": " + min;
 			if (max != null) {
 				tooltipText += "\n";
 			}
 		}
 		if (max != null) {
-			tooltipText += Text.translatable("better_hud.global.config.max").getString() + ": " + max;
+			tooltipText += translatable("better_hud.global.config.max").getString() + ": " + max;
 		}
 		intFieldWidget.setTooltip(Tooltip.of(Text.literal(tooltipText)));
 
@@ -205,7 +227,7 @@ public abstract class ModsConfigAbstract extends Screen {
 
 	protected void addTextField(int x, int y, int buttonWidth, int buttonHeight, int fieldWidth, Text text, String currentValue, String defaultValue, Consumer<String> consumer, Predicate<String> isValid) {
 		StringFieldWidget textFieldWidget = new StringFieldWidget(textRenderer, fieldWidth, buttonHeight, currentValue, consumer, isValid);
-		textFieldWidget.setTooltip(Tooltip.of(Text.literal("hh: ").append(Text.translatable("better_hud.global.hours").append("\nmm: ").append(Text.translatable("better_hud.global.minutes").append("\nss: ").append(Text.translatable("better_hud.global.seconds"))))));
+		textFieldWidget.setTooltip(Tooltip.of(Text.literal("hh: ").append(translatable("better_hud.global.hours").append("\nmm: ").append(translatable("better_hud.global.minutes").append("\nss: ").append(translatable("better_hud.global.seconds"))))));
 
 		ResetButtonWidget resetButtonWidget = new ResetButtonWidget(20, 20, (btn) -> {
 			textFieldWidget.setText(defaultValue);
@@ -302,50 +324,59 @@ public abstract class ModsConfigAbstract extends Screen {
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		this.renderBackground(context, mouseX, mouseY, delta);
 
-		// render title
-		context.drawCenteredTextWithShadow(textRenderer, title, this.width / 2, 7, 0xffffff);
-
-		// render list
-		this.configList.render(context, mouseX, mouseY, delta);
-
-		checkForChanges();
-		checkValid();
-
-		saveButton.render(context, mouseX, mouseY, delta);
-		cancelButton.render(context, mouseX, mouseY, delta);
-
-
-		// Render the color selector over others widgets
-		for (Drawable drawable : this.colorSelectorDrawables) {
-			if (drawable instanceof GradientWidget gradient) {
-				ColorButtonWidget button = gradient.getCOLOR_BUTTON_WIDGET();
-				gradient.active = button.isSelectingColor;
-				if (!gradient.active) {
-					continue; // if player is not selecting a color don't render the gradient
-				} else {
-					button.active = true;
-					// Display the background of the color selector
-					context.fill(button.getColorSelectorX(), button.getColorSelectorY(),
-							button.getColorSelectorX() + button.getColorSelectorWidth(),
-							button.getColorSelectorY() + button.getColorSelectorHeight(),
-							0xff1e1f22);
-				}
-			} else if (drawable instanceof HueBarWidget hueBar) {
-				hueBar.active = hueBar.getCOLOR_BUTTON_WIDGET().isSelectingColor;
-				if (!hueBar.active) continue; // if player is not selecting a color don't render the hue bar
-			} else if (drawable instanceof ColorEntryWidget entry) {
-				entry.active = entry.getCOLOR_BUTTON_WIDGET().isSelectingColor;
-				if (!entry.active) continue; // if player is not selecting a color don't render the color entry
+		for (ScrollableConfigList.ButtonEntry buttonEntry : this.configList.getButtonsList()) {
+			for (ClickableWidget clickableWidget : buttonEntry.children()) {
+				clickableWidget.visible = !isCallbackScreen();
 			}
-
-			drawable.render(context, mouseX, mouseY, delta);
 		}
-	}
+		saveButton.visible = !isCallbackScreen();
+		cancelButton.visible = !isCallbackScreen();
 
-	@Override
-	public <T extends Element & Drawable & Selectable> T addDrawableChild(T drawableElement) {
-		this.drawables.add(drawableElement);
-		return super.addDrawableChild(drawableElement);
+		if (!renderCallback(context, mouseX, mouseY, delta)) {
+			// render title
+			context.drawCenteredTextWithShadow(textRenderer, title, this.width / 2, 7, 0xffffff);
+
+			// render list
+			this.configList.render(context, mouseX, mouseY, delta);
+
+			checkForChanges();
+			checkValid();
+
+			saveButton.render(context, mouseX, mouseY, delta);
+			cancelButton.render(context, mouseX, mouseY, delta);
+
+
+			// Render the color selector over others widgets
+			for (Drawable drawable : this.colorSelectorDrawables) {
+				if (drawable instanceof GradientWidget gradient) {
+					ColorButtonWidget button = gradient.getCOLOR_BUTTON_WIDGET();
+
+					if (button.getColor() == 0xffffff) {
+						System.out.println("1 -> " + button.hashCode());
+					}
+
+
+					gradient.active = button.isSelectingColor;
+					if (!gradient.active) {
+						continue; // if the player is not selecting a color, don't render the gradient
+					} else {
+						// Display the background of the color selector
+						context.fill(button.getColorSelectorX(), button.getColorSelectorY(),
+								button.getColorSelectorX() + button.getColorSelectorWidth(),
+								button.getColorSelectorY() + button.getColorSelectorHeight(),
+								0xff1e1f22);
+					}
+				} else if (drawable instanceof HueBarWidget hueBar) {
+					hueBar.active = hueBar.getCOLOR_BUTTON_WIDGET().isSelectingColor;
+					if (!hueBar.active) continue; // if the player is not selecting a color, don't render the hue bar
+				} else if (drawable instanceof ColorEntryWidget entry) {
+					entry.active = entry.getCOLOR_BUTTON_WIDGET().isSelectingColor;
+					if (!entry.active) continue; // if the player is not selecting a color, don't render the color entry
+				}
+
+				drawable.render(context, mouseX, mouseY, delta);
+			}
+		}
 	}
 
 	public <T extends Element & Drawable & Selectable> void addDrawableColorSelector(T drawableElement) {
@@ -353,30 +384,21 @@ public abstract class ModsConfigAbstract extends Screen {
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		if (!cancelButton.isHovered() && !saveButton.isHovered()) {
-			for (Drawable drawable : this.drawables) {
-				if (drawable instanceof ColorButtonWidget colorButtonWidget && colorButtonWidget.isSelectingColor &&
-						!colorButtonWidget.isHovered() && !colorButtonWidget.isMouseHoverColorSelector(mouseX, mouseY)) {
-
-					colorButtonWidget.onClick(mouseX, mouseY);
-					return true;
-				}
-			}
-		}
-		return super.mouseClicked(mouseX, mouseY, button);
-	}
-
-	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (keyCode == GLFW.GLFW_KEY_ESCAPE && this.shouldCloseOnEsc()) {
-			this.cancel();
+			if (!isCallbackScreen()) {
+				this.onCancelButtonClick();
+			} else {
+				setCallbackScreen(false);
+			}
+			return true;
 		}
 		return super.keyPressed(keyCode, scanCode, modifiers);
 	}
 
 	@Override
 	public void close() {
+		assert client != null;
 		client.setScreen(parent);
 		if (parent instanceof ConfigurationScreen configScreen) {
 			configScreen.getFeatureList().setScrollY(scrollAmount);
@@ -388,28 +410,13 @@ public abstract class ModsConfigAbstract extends Screen {
 		close();
 	}
 
-	public void cancel() {
-		trackableWidgets.forEach(TrackableChange::cancel);
-		close();
-	}
-
-	protected void registerTrackableWidget(TrackableChange widget) {
-		trackableWidgets.add(widget);
-	}
-
 	private void checkForChanges() {
-		saveButton.active = trackableWidgets.stream().anyMatch(TrackableChange::hasChanged); // Met à jour l'état du bouton de sauvegarde
+		saveButton.active = getTrackableWidgets().stream().anyMatch(TrackableChange::hasChanged); // Met à jour l'état du bouton de sauvegarde
 	}
 
 	private void checkValid() {
 		if (saveButton.active) {
-			saveButton.active = trackableWidgets.stream().allMatch(TrackableChange::isValid);
+			saveButton.active = getTrackableWidgets().stream().allMatch(TrackableChange::isValid);
 		}
-	}
-
-	@Override
-	protected void clearChildren() {
-		super.clearChildren();
-		drawables.clear();
 	}
 }

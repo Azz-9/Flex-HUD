@@ -1,23 +1,26 @@
 package me.Azz_9.better_hud.client;
 
 import me.Azz_9.better_hud.client.interfaces.ItemDurabilityLostCallback;
-import me.Azz_9.better_hud.client.utils.CalculateReach;
-import me.Azz_9.better_hud.client.utils.CalculateSpeed;
-import me.Azz_9.better_hud.client.utils.DurabilityPing;
+import me.Azz_9.better_hud.client.overlay.HudElement;
+import me.Azz_9.better_hud.client.utils.*;
 import me.Azz_9.better_hud.modMenu.ModConfig;
 import me.Azz_9.better_hud.screens.OptionsScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import org.lwjgl.glfw.GLFW;
@@ -37,7 +40,7 @@ public class Better_hudClient implements ClientModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 	private transient final ModConfig INSTANCE = ModConfig.getInstance();
 
-	public static List<HudRenderCallback> hudElements;
+	public static List<HudElement> hudElements;
 	public static boolean isEditing = false; // is player in the move elements screen
 
 	//biome colors for coordinates overlay
@@ -121,16 +124,16 @@ public class Better_hudClient implements ClientModInitializer {
 		launchTime = System.currentTimeMillis();
 
 		LOGGER.info("Better HUD has started up.");
-		if (isXaerosMinimapLoaded) {
-			LOGGER.info("Xaeros Minimap found !");
-		} else {
-			LOGGER.info("Xaeros Minimap not found !");
-		}
+		LOGGER.info("Xaeros Minimap {}found !", isXaerosMinimapLoaded ? "" : "not ");
 
 		// HUD elements
-		for (HudRenderCallback element : hudElements) {
-			HudRenderCallback.EVENT.register(element);
-		}
+		HudLayerRegistrationCallback.EVENT.register(layeredDrawer -> {
+			for (int i = 0; i < hudElements.size(); i++) {
+				HudElement element = hudElements.get(i);
+				Identifier id = Identifier.of(MOD_ID, "element-" + i);
+				layeredDrawer.attachLayerBefore(IdentifiedLayer.CHAT, id, element::render);
+			}
+		});
 
 		// durability ping
 		ItemDurabilityLostCallback.EVENT.register((player, stack, amount) -> {
@@ -146,6 +149,8 @@ public class Better_hudClient implements ClientModInitializer {
 
 		//speedometer
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
+			ChromaColor.updateColor();
+
 			if (!INSTANCE.isEnabled || !INSTANCE.speedometer.enabled || client.player == null) {
 				return;
 			}
@@ -175,6 +180,14 @@ public class Better_hudClient implements ClientModInitializer {
 			}
 		});
 
+		ServerTickEvents.START_SERVER_TICK.register(minecraftServer -> {
+			for (ServerPlayerEntity player : minecraftServer.getPlayerManager().getPlayerList()) {
+				if (MinecraftClient.getInstance().player != null && player.getUuid().equals(MinecraftClient.getInstance().player.getUuid())) {
+					ShriekerWarningLevelUtils.updateLevel(player);
+				}
+			}
+		});
+
 
 		//keybinds
 		KeyBinding rightShift = KeyBindingHelper.registerKeyBinding(new KeyBinding("better_hud.controls.open_menu", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_RIGHT_SHIFT, "Better HUD"));
@@ -194,5 +207,4 @@ public class Better_hudClient implements ClientModInitializer {
 
 }
 
-//TODO faire les fichiers langues en_us, fr_fr
 //TODO faire des tooltip custom

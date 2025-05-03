@@ -1,10 +1,13 @@
 package me.Azz_9.better_hud.client.overlay;
 
 import me.Azz_9.better_hud.client.Better_hudClient;
+import me.Azz_9.better_hud.client.utils.ChromaColor;
 import me.Azz_9.better_hud.modMenu.ModConfig;
 import me.Azz_9.better_hud.screens.modsConfigScreen.DisplayMode;
+import me.Azz_9.better_hud.screens.modsConfigScreen.mods.Coordinates;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,14 +31,16 @@ public class CoordinatesOverlay extends HudElement {
 	}
 
 	@Override
-	public void onHudRender(DrawContext drawContext, RenderTickCounter tickCounter) {
-		super.onHudRender(drawContext, tickCounter);
+	public void render(DrawContext drawContext, RenderTickCounter tickCounter) {
+		super.render(drawContext, tickCounter);
 
 		final MinecraftClient CLIENT = MinecraftClient.getInstance();
 
 		if (!ModConfig.getInstance().isEnabled || !this.enabled || CLIENT == null || CLIENT.options.hudHidden || CLIENT.player == null) {
 			return;
 		}
+
+		int usedColor = (chromaColor ? ChromaColor.getColor() : this.color);
 
 		PlayerEntity player = CLIENT.player;
 
@@ -54,15 +59,15 @@ public class CoordinatesOverlay extends HudElement {
 			int hudX = 0;
 			int hudY = 0;
 
-			drawContext.drawText(CLIENT.textRenderer, xCoords, hudX, hudY, this.color, this.shadow);
+			drawContext.drawText(CLIENT.textRenderer, xCoords, hudX, hudY, usedColor, this.shadow);
 			updateWidth(xCoords);
 			if (this.showY) {
 				hudY += 10;
-				drawContext.drawText(CLIENT.textRenderer, yCoords, hudX, hudY, this.color, this.shadow);
+				drawContext.drawText(CLIENT.textRenderer, yCoords, hudX, hudY, usedColor, this.shadow);
 				updateWidth(yCoords);
 			}
 			hudY += 10;
-			drawContext.drawText(CLIENT.textRenderer, zCoords, hudX, hudY, this.color, this.shadow);
+			drawContext.drawText(CLIENT.textRenderer, zCoords, hudX, hudY, usedColor, this.shadow);
 			updateWidth(zCoords);
 
 			if (this.showBiome) {
@@ -90,18 +95,18 @@ public class CoordinatesOverlay extends HudElement {
 				}
 
 
-				drawContext.drawText(CLIENT.textRenderer, axisX, hudX, hudY, this.color, this.shadow);
+				drawContext.drawText(CLIENT.textRenderer, axisX, hudX, hudY, usedColor, this.shadow);
 				updateWidth(axisX, hudX);
 				if (this.showY) {
 					hudY += 10;
-					drawContext.drawText(CLIENT.textRenderer, facing, hudX, hudY, this.color, this.shadow);
+					drawContext.drawText(CLIENT.textRenderer, facing, hudX, hudY, usedColor, this.shadow);
 					updateWidth(facing, hudX);
 				} else {
-					drawContext.drawText(CLIENT.textRenderer, facing, hudX + 8, hudY + 5, this.color, this.shadow);
+					drawContext.drawText(CLIENT.textRenderer, facing, hudX + 8, hudY + 5, usedColor, this.shadow);
 					updateWidth(facing, hudX + 8);
 				}
 				hudY += 10;
-				drawContext.drawText(CLIENT.textRenderer, axisZ, hudX, hudY, this.color, this.shadow);
+				drawContext.drawText(CLIENT.textRenderer, axisZ, hudX, hudY, usedColor, this.shadow);
 				updateWidth(axisZ, hudX);
 			}
 
@@ -123,7 +128,7 @@ public class CoordinatesOverlay extends HudElement {
 				}
 			}
 
-			drawContext.drawText(CLIENT.textRenderer, text.toString(), 0, 0, this.color, this.shadow);
+			drawContext.drawText(CLIENT.textRenderer, text.toString(), 0, 0, usedColor, this.shadow);
 			updateWidth(text.toString());
 			this.height = CLIENT.textRenderer.fontHeight;
 			if (this.showBiome) {
@@ -131,6 +136,10 @@ public class CoordinatesOverlay extends HudElement {
 				this.height += 10;
 			}
 
+		}
+
+		if (drawBackground) {
+			drawContext.fill(-BACKGROUND_PADDING, -BACKGROUND_PADDING, width + BACKGROUND_PADDING, height + BACKGROUND_PADDING, 0x7f000000 | backgroundColor);
 		}
 
 		matrices.pop();
@@ -173,9 +182,14 @@ public class CoordinatesOverlay extends HudElement {
 
 		RegistryKey<Biome> biomeKey = CLIENT.world.getBiome(p.getBlockPos()).getKey().orElse(null);
 		String biomeName = CLIENT.world.getBiome(p.getBlockPos()).getIdAsString().replace("minecraft:", "");
-		drawContext.drawText(CLIENT.textRenderer, "Biome: ", hudX, hudY, this.color, this.shadow);
+		drawContext.drawText(CLIENT.textRenderer, "Biome: ", hudX, hudY, (chromaColor ? ChromaColor.getColor() : this.color), this.shadow);
 		hudX += CLIENT.textRenderer.getWidth("Biome: ");
 		drawContext.drawText(CLIENT.textRenderer, biomeName, hudX, hudY, Better_hudClient.BIOME_COLORS.getOrDefault(biomeKey, 0xFFFFFF), this.shadow);
 		updateWidth("Biome: " + biomeName);
+	}
+
+	@Override
+	public Screen getConfigScreen(Screen parent) {
+		return new Coordinates(parent, 0);
 	}
 }

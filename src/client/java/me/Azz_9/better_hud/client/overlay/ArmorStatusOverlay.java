@@ -6,6 +6,7 @@ import me.Azz_9.better_hud.screens.modsConfigScreen.DisplayMode;
 import me.Azz_9.better_hud.screens.modsConfigScreen.mods.ArmorStatus;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
@@ -27,8 +28,8 @@ public class ArmorStatusOverlay extends HudElement {
 	}
 
 	@Override
-	public void onHudRender(DrawContext drawContext, RenderTickCounter tickCounter) {
-		super.onHudRender(drawContext, tickCounter);
+	public void render(DrawContext drawContext, RenderTickCounter tickCounter) {
+		super.render(drawContext, tickCounter);
 
 		final MinecraftClient CLIENT = MinecraftClient.getInstance();
 
@@ -49,11 +50,11 @@ public class ArmorStatusOverlay extends HudElement {
 			hudY -= 16;
 		}
 
-		ItemStack helmet = player.getInventory().getArmorStack(3);
-		ItemStack chestplate = player.getInventory().getArmorStack(2);
-		ItemStack leggings = player.getInventory().getArmorStack(1);
-		ItemStack boots = player.getInventory().getArmorStack(0);
-		ItemStack heldItem = player.getInventory().getMainHandStack();
+		ItemStack helmet = player.getInventory().getStack(39);
+		ItemStack chestplate = player.getInventory().getStack(38);
+		ItemStack leggings = player.getInventory().getStack(37);
+		ItemStack boots = player.getInventory().getStack(36);
+		ItemStack heldItem = player.getMainHandStack();
 
 		if (Better_hudClient.isEditing) {
 			helmet = new ItemStack(Items.DIAMOND_HELMET);
@@ -176,7 +177,7 @@ public class ArmorStatusOverlay extends HudElement {
 			int spectralArrowCount = 0;
 			int tippedArrowCount = 0;
 
-			for (ItemStack stack : player.getInventory().main) {
+			for (ItemStack stack : player.getInventory().getMainStacks()) {
 				if (stack.getItem() == Items.ARROW) {
 					arrowCount += stack.getCount();
 				} else if (stack.getItem() == Items.SPECTRAL_ARROW) {
@@ -290,6 +291,11 @@ public class ArmorStatusOverlay extends HudElement {
 		}
 
 		return itemCount;
+	}
+
+	@Override
+	public Screen getConfigScreen(Screen parent) {
+		return new ArmorStatus(parent, 0);
 	}
 }
 //TODO faire une liste les flèches tipped pour les afficher avec le bon effet

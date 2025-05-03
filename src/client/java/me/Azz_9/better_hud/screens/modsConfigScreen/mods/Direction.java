@@ -1,6 +1,7 @@
 package me.Azz_9.better_hud.screens.modsConfigScreen.mods;
 
 import me.Azz_9.better_hud.screens.modsConfigScreen.ModsConfigAbstract;
+import me.Azz_9.better_hud.screens.widgets.buttons.CustomToggleButtonWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 
@@ -27,8 +28,15 @@ public class Direction extends ModsConfigAbstract {
 		addToggleButton(translatable("better_hud.global.config.text_shadow"), INSTANCE.direction.shadow, true,
 				toggled -> INSTANCE.direction.shadow = toggled);
 
-		addColorButton(translatable("better_hud.global.config.text_color"), INSTANCE.direction.color, 0xffffff,
-				color -> INSTANCE.direction.color = color);
+		CustomToggleButtonWidget toggleButton = addToggleButton(translatable("better_hud.global.config.chroma_text_color"), INSTANCE.direction.chromaColor, false,
+				toggled -> INSTANCE.direction.chromaColor = toggled);
+		toggleButton.addDependents(addDependentColorButton(translatable("better_hud.global.config.text_color"), INSTANCE.direction.color, 0xffffff,
+				color -> INSTANCE.direction.color = color, toggleButton, true));
+
+		toggleButton = addToggleButton(translatable("better_hud.global.config.show_background"), INSTANCE.direction.drawBackground, false,
+				toggled -> INSTANCE.direction.drawBackground = toggled);
+		toggleButton.addDependents(addDependentColorButton(translatable("better_hud.global.config.background_color"), INSTANCE.direction.backgroundColor, 0x313131,
+				color -> INSTANCE.direction.backgroundColor = color, toggleButton, false));
 
 		addToggleButton(translatable("better_hud.direction.config.show_marker"), INSTANCE.direction.showMarker, true,
 				toggled -> INSTANCE.direction.showMarker = toggled);

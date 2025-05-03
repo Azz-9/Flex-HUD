@@ -1,8 +1,11 @@
 package me.Azz_9.better_hud.client.overlay;
 
+import me.Azz_9.better_hud.client.utils.ChromaColor;
 import me.Azz_9.better_hud.modMenu.ModConfig;
+import me.Azz_9.better_hud.screens.modsConfigScreen.mods.Direction;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
@@ -16,6 +19,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static me.Azz_9.better_hud.client.Better_hudClient.isXaerosMinimapLoaded;
 
@@ -29,14 +33,16 @@ public class DirectionOverlay extends HudElement {
 	}
 
 	@Override
-	public void onHudRender(DrawContext drawContext, RenderTickCounter tickCounter) {
-		super.onHudRender(drawContext, tickCounter);
+	public void render(DrawContext drawContext, RenderTickCounter tickCounter) {
+		super.render(drawContext, tickCounter);
 
 		final MinecraftClient CLIENT = MinecraftClient.getInstance();
 
 		if (!ModConfig.getInstance().isEnabled || !this.enabled || CLIENT == null || CLIENT.options.hudHidden || CLIENT.player == null) {
 			return;
 		}
+
+		int usedColor = (chromaColor ? ChromaColor.getColor() : this.color);
 
 		PlayerEntity player = CLIENT.player;
 
@@ -56,20 +62,20 @@ public class DirectionOverlay extends HudElement {
 		drawContext.enableScissor(0, 0, this.width, this.height);
 
 		// Affichage des points cardinaux
-		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.direction.hud.direction_abbr.south"), 0, yaw);
-		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.direction.hud.direction_abbr.south_west"), 45, yaw);
-		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.direction.hud.direction_abbr.west"), 90, yaw);
-		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.direction.hud.direction_abbr.north_west"), 135, yaw);
-		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.direction.hud.direction_abbr.north"), 180, yaw);
-		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.direction.hud.direction_abbr.north_east"), 225, yaw);
-		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.direction.hud.direction_abbr.east"), 270, yaw);
-		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.direction.hud.direction_abbr.south_east"), 315, yaw);
+		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.direction.hud.direction_abbr.south"), 0, yaw, usedColor);
+		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.direction.hud.direction_abbr.south_west"), 45, yaw, usedColor);
+		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.direction.hud.direction_abbr.west"), 90, yaw, usedColor);
+		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.direction.hud.direction_abbr.north_west"), 135, yaw, usedColor);
+		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.direction.hud.direction_abbr.north"), 180, yaw, usedColor);
+		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.direction.hud.direction_abbr.north_east"), 225, yaw, usedColor);
+		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.direction.hud.direction_abbr.east"), 270, yaw, usedColor);
+		drawCompassPoint(drawContext, matrices, Text.translatable("better_hud.direction.hud.direction_abbr.south_east"), 315, yaw, usedColor);
 
 		// Affichage des points intermediaires
 		if (this.showIntermediatePoint) {
 			for (int i = 0; i < 8; i++) {
-				drawIntermediatePoint(drawContext, matrices, 15 * i * 3 + 15, yaw);
-				drawIntermediatePoint(drawContext, matrices, 15 * i * 3 + 30, yaw);
+				drawIntermediatePoint(drawContext, matrices, 15 * i * 3 + 15, yaw, usedColor);
+				drawIntermediatePoint(drawContext, matrices, 15 * i * 3 + 30, yaw, usedColor);
 			}
 		}
 
@@ -85,15 +91,19 @@ public class DirectionOverlay extends HudElement {
 			matrices.push();
 			matrices.translate((this.width / 2.0f) - (CLIENT.textRenderer.getWidth("▼") / 2.0f), 0, 0.0f);
 			matrices.scale(1.0f, 0.5f, 1.0f);
-			drawContext.drawText(CLIENT.textRenderer, "▼", 0, 0, this.color, this.shadow);
+			drawContext.drawText(CLIENT.textRenderer, "▼", 0, 0, usedColor, this.shadow);
 			matrices.pop();
+		}
+
+		if (drawBackground) {
+			drawContext.fill(-BACKGROUND_PADDING, -BACKGROUND_PADDING, width + BACKGROUND_PADDING, height + BACKGROUND_PADDING, 0x7f000000 | backgroundColor);
 		}
 
 		matrices.pop();
 
 	}
 
-	private void drawCompassPoint(DrawContext drawContext, MatrixStack matrices, Text label, int angle, float yaw) {
+	private void drawCompassPoint(DrawContext drawContext, MatrixStack matrices, Text label, int angle, float yaw, int usedColor) {
 		MinecraftClient CLIENT = MinecraftClient.getInstance();
 		int screenWidth = CLIENT.getWindow().getScaledWidth();
 
@@ -108,13 +118,13 @@ public class DirectionOverlay extends HudElement {
 			matrices.push();
 			matrices.translate(positionX, 10, 0);
 			matrices.scale(1.25f, 1.25f, 1.5f); // make the text 1.5 times bigger
-			drawContext.drawText(CLIENT.textRenderer, label, 0, 0, this.color, this.shadow);
+			drawContext.drawText(CLIENT.textRenderer, label, 0, 0, usedColor, this.shadow);
 			matrices.pop();
 
 		}
 	}
 
-	private void drawIntermediatePoint(DrawContext drawContext, MatrixStack matrices, int angle, float yaw) {
+	private void drawIntermediatePoint(DrawContext drawContext, MatrixStack matrices, int angle, float yaw, int usedColor) {
 		MinecraftClient CLIENT = MinecraftClient.getInstance();
 		int screenWidth = CLIENT.getWindow().getScaledWidth();
 
@@ -127,14 +137,14 @@ public class DirectionOverlay extends HudElement {
 			matrices.push();
 			matrices.translate(positionX - (CLIENT.textRenderer.getWidth("|") / 2.0f), 12, 0);
 			matrices.scale(1.0f, 0.75f, 1.0f);
-			drawContext.drawText(CLIENT.textRenderer, "|", 0, 0, this.color, this.shadow);
+			drawContext.drawText(CLIENT.textRenderer, "|", 0, 0, usedColor, this.shadow);
 			matrices.pop();
 
 
 			matrices.push();
 			matrices.translate(positionX - (CLIENT.textRenderer.getWidth(String.valueOf(angle)) / 4.0f), 20, 0);
 			matrices.scale(0.5f, 0.5f, 1.0f); // 2 times smaller
-			drawContext.drawText(CLIENT.textRenderer, String.valueOf(angle), 0, 0, this.color, this.shadow);
+			drawContext.drawText(CLIENT.textRenderer, String.valueOf(angle), 0, 0, usedColor, this.shadow);
 			matrices.pop();
 
 		}
@@ -246,7 +256,7 @@ public class DirectionOverlay extends HudElement {
 	private void drawXaerosMapWaypoints(DrawContext drawContext, MatrixStack matrices, float yaw) {
 		MinecraftClient CLIENT = MinecraftClient.getInstance();
 		int screenWidth = CLIENT.getWindow().getScaledWidth();
-		List<Waypoint> waypoints = loadWaypoints(getCurrentDimensionWaypointsFile());
+		List<Waypoint> waypoints = loadWaypoints(Objects.requireNonNull(getCurrentDimensionWaypointsFile()));
 
 		for (Waypoint waypoint : waypoints) {
 			if (!waypoint.disabled) {
@@ -287,7 +297,12 @@ public class DirectionOverlay extends HudElement {
 		drawContext.fill(x - 2, y - 1, x + textWidth + 1, y + textHeight - 1, backgroundColor);
 
 		// Dessiner le texte par-dessus le rectangle
-		drawContext.drawText(CLIENT.textRenderer, text, x, y, this.color, this.shadow);
+		drawContext.drawText(CLIENT.textRenderer, text, x, y, (chromaColor ? ChromaColor.getColor() : this.color), this.shadow);
+	}
+
+	@Override
+	public Screen getConfigScreen(Screen parent) {
+		return new Direction(parent, 0);
 	}
 }
 // TODO faire l'effet fondu sur les extrémités de la boussole (trop dur aled)

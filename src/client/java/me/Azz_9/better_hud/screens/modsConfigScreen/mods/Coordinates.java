@@ -27,8 +27,15 @@ public class Coordinates extends ModsConfigAbstract {
 		addToggleButton(translatable("better_hud.global.config.text_shadow"), INSTANCE.coordinates.shadow, true,
 				toggled -> INSTANCE.coordinates.shadow = toggled);
 
-		addColorButton(translatable("better_hud.global.config.text_color"), INSTANCE.coordinates.color, 0xffffff,
-				color -> INSTANCE.coordinates.color = color);
+		CustomToggleButtonWidget toggleButton = addToggleButton(translatable("better_hud.global.config.chroma_text_color"), INSTANCE.coordinates.chromaColor, false,
+				toggled -> INSTANCE.coordinates.chromaColor = toggled);
+		toggleButton.addDependents(addDependentColorButton(translatable("better_hud.global.config.text_color"), INSTANCE.coordinates.color, 0xffffff,
+				color -> INSTANCE.coordinates.color = color, toggleButton, true));
+
+		toggleButton = addToggleButton(translatable("better_hud.global.config.show_background"), INSTANCE.coordinates.drawBackground, false,
+				toggled -> INSTANCE.coordinates.drawBackground = toggled);
+		toggleButton.addDependents(addDependentColorButton(translatable("better_hud.global.config.background_color"), INSTANCE.coordinates.backgroundColor, 0x313131,
+				color -> INSTANCE.coordinates.backgroundColor = color, toggleButton, false));
 
 		addToggleButton(translatable("better_hud.coordinates.config.show_y"), INSTANCE.coordinates.showY, true,
 				toggled -> INSTANCE.coordinates.showY = toggled);
@@ -36,7 +43,7 @@ public class Coordinates extends ModsConfigAbstract {
 		addToggleButton(translatable("better_hud.coordinates.config.show_biome"), INSTANCE.coordinates.showBiome, true,
 				toggled -> INSTANCE.coordinates.showBiome = toggled);
 
-		CustomToggleButtonWidget toggleButton = addToggleButton(translatable("better_hud.coordinates.config.show_direction"), INSTANCE.coordinates.showDirection, true,
+		toggleButton = addToggleButton(translatable("better_hud.coordinates.config.show_direction"), INSTANCE.coordinates.showDirection, true,
 				toggled -> INSTANCE.coordinates.showDirection = toggled);
 
 		addDependentToggleButton(translatable("better_hud.coordinates.config.direction_abbreviation"), INSTANCE.coordinates.directionAbreviation, true,

@@ -1,19 +1,30 @@
 package me.Azz_9.better_hud.screens.widgets.fields;
 
 import me.Azz_9.better_hud.client.interfaces.TrackableChange;
+import me.Azz_9.better_hud.screens.widgets.buttons.TexturedButtonWidget;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.screen.ButtonTextures;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 import java.util.function.Consumer;
+
+import static me.Azz_9.better_hud.client.Better_hudClient.MOD_ID;
 
 public class IntFieldWidget extends TextFieldWidget implements TrackableChange {
 	private final int INITIAL_VALUE;
 	private final Integer MIN_VALUE;
 	private final Integer MAX_VALUE;
 
+	private ButtonWidget increase;
+	private ButtonWidget decrease;
+	private final int BUTTONS_WIDTH = 10;
+
 	public IntFieldWidget(TextRenderer textRenderer, int width, int height, Integer min, Integer max, int number, Consumer<String> consumer) {
 		super(textRenderer, 0, 0, width, height, Text.translatable("better_hud.integer_field"));
+		setWidth(width - BUTTONS_WIDTH);
 		this.MIN_VALUE = min;
 		this.MAX_VALUE = max;
 
@@ -40,6 +51,15 @@ public class IntFieldWidget extends TextFieldWidget implements TrackableChange {
 		};
 
 		setChangedListener(onChange);
+
+		increase = new TexturedButtonWidget(BUTTONS_WIDTH, height / 2, new ButtonTextures(
+				Identifier.of(MOD_ID, "widgets/buttons/int_field/increase/unfocused.png"),
+				Identifier.of(MOD_ID, "widgets/buttons/int_field/increase/focused.png")
+		), (btn) -> setText(String.valueOf(Integer.parseInt(getText()) + 1)), 10, 10);
+		decrease = new TexturedButtonWidget(BUTTONS_WIDTH, height / 2, new ButtonTextures(
+				Identifier.of(MOD_ID, "widgets/buttons/int_field/decrease/unfocused.png"),
+				Identifier.of(MOD_ID, "widgets/buttons/int_field/decrease/focused.png")
+		), (btn) -> setText(String.valueOf(Integer.parseInt(getText()) - 1)), 10, 10);
 	}
 
 	@Override
@@ -50,5 +70,31 @@ public class IntFieldWidget extends TextFieldWidget implements TrackableChange {
 	@Override
 	public void cancel() {
 		setText(String.valueOf(INITIAL_VALUE));
+	}
+
+	@Override
+	public void setX(int x) {
+		super.setX(x);
+		increase.setX(x + width);
+		decrease.setX(x + width);
+	}
+
+	@Override
+	public void setY(int y) {
+		super.setY(y);
+		increase.setY(getY());
+		decrease.setY(getY() + height / 2);
+	}
+
+	public int getBUTTONS_WIDTH() {
+		return BUTTONS_WIDTH;
+	}
+
+	public ButtonWidget getIncrease() {
+		return increase;
+	}
+
+	public ButtonWidget getDecrease() {
+		return decrease;
 	}
 }

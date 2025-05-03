@@ -1,13 +1,16 @@
 package me.Azz_9.better_hud.client.overlay;
 
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
 
-public abstract class HudElement implements HudRenderCallback {
+public class HudElement {
 	public boolean enabled = true;
+	public boolean chromaColor = false;
 	public int color = 0xFFFFFF;
+	public boolean drawBackground = false;
+	public int backgroundColor = 0x313131;
 	public boolean shadow = true;
 	public double x;
 	public double y;
@@ -16,14 +19,15 @@ public abstract class HudElement implements HudRenderCallback {
 	transient protected int width;
 	transient protected double vw;
 	transient protected double vh;
+	transient protected final int BACKGROUND_PADDING = 2;
+
 
 	public HudElement(double defaultX, double defaultY) {
 		this.x = defaultX;
 		this.y = defaultY;
 	}
 
-	@Override
-	public void onHudRender(DrawContext drawContext, RenderTickCounter tickCounter) {
+	public void render(DrawContext drawContext, RenderTickCounter tickCounter) {
 		this.height = 0;
 		this.width = 0;
 		vw = MinecraftClient.getInstance().getWindow().getScaledWidth() / 100.0F;
@@ -63,5 +67,9 @@ public abstract class HudElement implements HudRenderCallback {
 
 	public boolean isEnabled() {
 		return this.enabled;
+	}
+
+	public Screen getConfigScreen(Screen parent) {
+		return null;
 	}
 }

@@ -2,6 +2,7 @@ package me.Azz_9.better_hud.screens.modsConfigScreen;
 
 import me.Azz_9.better_hud.screens.widgets.buttons.ColorButtonWidget;
 import me.Azz_9.better_hud.screens.widgets.buttons.ResetButtonWidget;
+import me.Azz_9.better_hud.screens.widgets.fields.IntFieldWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ClickableWidget;
@@ -43,8 +44,15 @@ public class ScrollableConfigList extends ElementListWidget<ScrollableConfigList
 
 	public void setActiveToEveryEntry(boolean active) {
 		for (ButtonEntry buttonEntry : buttonsList) {
+			if (buttonEntry.configButton instanceof IntFieldWidget intFieldWidget) {
+				intFieldWidget.getIncrease().active = active;
+				intFieldWidget.getDecrease().active = active;
+			}
 			if (!(buttonEntry.configButton instanceof ColorButtonWidget colorButtonWidget) || !colorButtonWidget.isSelectingColor) {
 				buttonEntry.configButton.active = active;
+				if (buttonEntry.configButton instanceof ColorButtonWidget colorButtonWidget) {
+					System.out.println(buttonEntry.textWidget.getMessage().getString() + " " + colorButtonWidget.isSelectingColor + " " + colorButtonWidget.active + " " + colorButtonWidget.hashCode());
+				}
 			}
 			buttonEntry.resetButtonWidget.active = active;
 		}
@@ -65,6 +73,11 @@ public class ScrollableConfigList extends ElementListWidget<ScrollableConfigList
 				if (colorButtonWidget.getCOLOR_ENTRY_WIDGET().mouseClicked(mouseX, mouseY, button)) {
 					return true;
 				}
+			}
+
+			if (buttonEntry.configButton instanceof IntFieldWidget intFieldWidget) {
+				intFieldWidget.getIncrease().mouseClicked(mouseX, mouseY, button);
+				intFieldWidget.getDecrease().mouseClicked(mouseX, mouseY, button);
 			}
 		}
 		return super.mouseClicked(mouseX, mouseY, button);
@@ -98,6 +111,10 @@ public class ScrollableConfigList extends ElementListWidget<ScrollableConfigList
 		return super.mouseReleased(mouseX, mouseY, button);
 	}
 
+	public List<ButtonEntry> getButtonsList() {
+		return buttonsList;
+	}
+
 	public static class ButtonEntry extends ElementListWidget.Entry<ButtonEntry> {
 		ClickableWidget configButton;
 		ResetButtonWidget resetButtonWidget;
@@ -117,7 +134,14 @@ public class ScrollableConfigList extends ElementListWidget<ScrollableConfigList
 			this.configButton.setPosition(x + entryWidth - resetButtonWidget.getWidth() - GAP - configButton.getWidth(), y);
 			this.resetButtonWidget.setPosition(x + entryWidth - resetButtonWidget.getWidth(), y);
 			this.textWidget.setPosition(x + TEXT_MARGIN_LEFT, (int) (y + (configButton.getHeight() - MinecraftClient.getInstance().textRenderer.fontHeight) / 2.0));
-			
+
+			if (configButton instanceof IntFieldWidget intFieldWidget) {
+				intFieldWidget.setX(intFieldWidget.getX() - intFieldWidget.getBUTTONS_WIDTH());
+
+				intFieldWidget.getIncrease().render(context, mouseX, mouseY, tickDelta);
+				intFieldWidget.getDecrease().render(context, mouseX, mouseY, tickDelta);
+			}
+
 			this.configButton.render(context, mouseX, mouseY, tickDelta);
 			this.resetButtonWidget.render(context, mouseX, mouseY, tickDelta);
 			this.textWidget.render(context, mouseX, mouseY, tickDelta);
@@ -130,13 +154,13 @@ public class ScrollableConfigList extends ElementListWidget<ScrollableConfigList
 
 		@Override
 		public List<ClickableWidget> children() {
-			if (this.configButton instanceof ColorButtonWidget colorButtonWidget) {
+			if (configButton instanceof ColorButtonWidget colorButtonWidget) {
 				return List.of(
 						colorButtonWidget,
+						colorButtonWidget.getCOLOR_ENTRY_WIDGET(),
 						colorButtonWidget.getGRADIENT_WIDGET(),
 						colorButtonWidget.getHUE_BAR_WIDGET(),
-						colorButtonWidget.getCOLOR_ENTRY_WIDGET(),
-						this.resetButtonWidget
+						resetButtonWidget
 				);
 			}
 			return List.of(this.configButton, this.resetButtonWidget);

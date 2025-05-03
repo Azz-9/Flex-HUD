@@ -6,7 +6,6 @@ import me.Azz_9.better_hud.client.overlay.*;
 import me.Azz_9.better_hud.client.utils.DurabilityPing;
 import me.Azz_9.better_hud.client.utils.TimeChanger;
 import me.Azz_9.better_hud.client.utils.WeatherChangerConfig;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 
 import java.io.File;
 import java.io.FileReader;
@@ -76,7 +75,7 @@ public class ModConfig {
 		}
 	}
 
-	public static List<HudRenderCallback> getHudElements() {
+	public static List<HudElement> getHudElements() {
 		return List.of(INSTANCE.coordinates, INSTANCE.fps, INSTANCE.clock, INSTANCE.armorStatus, INSTANCE.direction,
 				INSTANCE.dayCounter, INSTANCE.ping, INSTANCE.serverAddress, INSTANCE.memoryUsage, INSTANCE.cps,
 				INSTANCE.speedometer, INSTANCE.reach, INSTANCE.comboCounter, INSTANCE.playtime,

@@ -2,6 +2,7 @@ package me.Azz_9.better_hud.screens.modsConfigScreen.mods;
 
 import me.Azz_9.better_hud.modMenu.ModConfig;
 import me.Azz_9.better_hud.screens.modsConfigScreen.ModsConfigAbstract;
+import me.Azz_9.better_hud.screens.widgets.buttons.CustomToggleButtonWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 
@@ -29,8 +30,15 @@ public class Clock extends ModsConfigAbstract {
 		addToggleButton(translatable("better_hud.global.config.text_shadow"), INSTANCE.clock.shadow, true,
 				toggled -> INSTANCE.clock.shadow = toggled);
 
-		addColorButton(translatable("better_hud.global.config.text_color"), INSTANCE.clock.color, 0xffffff,
-				color -> INSTANCE.clock.color = color);
+		CustomToggleButtonWidget toggleButton = addToggleButton(translatable("better_hud.global.config.chroma_text_color"), INSTANCE.clock.chromaColor, false,
+				toggled -> INSTANCE.clock.chromaColor = toggled);
+		toggleButton.addDependents(addDependentColorButton(translatable("better_hud.global.config.text_color"), INSTANCE.clock.color, 0xffffff,
+				color -> INSTANCE.clock.color = color, toggleButton, true));
+
+		toggleButton = addToggleButton(translatable("better_hud.global.config.show_background"), INSTANCE.clock.drawBackground, false,
+				toggled -> INSTANCE.clock.drawBackground = toggled);
+		toggleButton.addDependents(addDependentColorButton(translatable("better_hud.global.config.background_color"), INSTANCE.clock.backgroundColor, 0x313131,
+				color -> INSTANCE.clock.backgroundColor = color, toggleButton, false));
 
 		addToggleButton(translatable("better_hud.clock.config.24-hour_format"), INSTANCE.clock.isTwentyFourHourFormat, true,
 				toggled -> INSTANCE.clock.isTwentyFourHourFormat = toggled);

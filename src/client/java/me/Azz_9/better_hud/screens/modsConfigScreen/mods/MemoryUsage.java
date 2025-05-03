@@ -1,6 +1,7 @@
 package me.Azz_9.better_hud.screens.modsConfigScreen.mods;
 
 import me.Azz_9.better_hud.screens.modsConfigScreen.ModsConfigAbstract;
+import me.Azz_9.better_hud.screens.widgets.buttons.CustomToggleButtonWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 
@@ -25,7 +26,14 @@ public class MemoryUsage extends ModsConfigAbstract {
 		addToggleButton(translatable("better_hud.global.config.text_shadow"), INSTANCE.memoryUsage.shadow, true,
 				toggled -> INSTANCE.memoryUsage.shadow = toggled);
 
-		addColorButton(translatable("better_hud.global.config.text_color"), INSTANCE.memoryUsage.color, 0xffffff,
-				color -> INSTANCE.memoryUsage.color = color);
+		CustomToggleButtonWidget toggleButton = addToggleButton(translatable("better_hud.global.config.chroma_text_color"), INSTANCE.memoryUsage.chromaColor, false,
+				toggled -> INSTANCE.memoryUsage.chromaColor = toggled);
+		toggleButton.addDependents(addDependentColorButton(translatable("better_hud.global.config.text_color"), INSTANCE.memoryUsage.color, 0xffffff,
+				color -> INSTANCE.memoryUsage.color = color, toggleButton, true));
+
+		toggleButton = addToggleButton(translatable("better_hud.global.config.show_background"), INSTANCE.memoryUsage.drawBackground, false,
+				toggled -> INSTANCE.memoryUsage.drawBackground = toggled);
+		toggleButton.addDependents(addDependentColorButton(translatable("better_hud.global.config.background_color"), INSTANCE.memoryUsage.backgroundColor, 0x313131,
+				color -> INSTANCE.memoryUsage.backgroundColor = color, toggleButton, false));
 	}
 }

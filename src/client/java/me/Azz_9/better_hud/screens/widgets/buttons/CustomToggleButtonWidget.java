@@ -9,6 +9,8 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 import static me.Azz_9.better_hud.client.Better_hudClient.MOD_ID;
@@ -16,6 +18,8 @@ import static me.Azz_9.better_hud.client.Better_hudClient.MOD_ID;
 public class CustomToggleButtonWidget extends ToggleButtonWidget implements TrackableChange {
 	private final Consumer<Boolean> ON_TOGGLE;
 	private final boolean INITIAL_STATE;
+
+	private final List<Dependents> dependents = new ArrayList<>();
 
 	public CustomToggleButtonWidget(int width, int height, boolean toggled, Consumer<Boolean> onToggle) {
 		super(0, 0, width, height, toggled);
@@ -59,6 +63,12 @@ public class CustomToggleButtonWidget extends ToggleButtonWidget implements Trac
 	public void onClickAction() {
 		this.toggled = !this.toggled;
 		ON_TOGGLE.accept(this.toggled);
+		dependents.forEach((element) -> element.onDependencyChange(toggled));
+	}
+
+	public void addDependents(Dependents d) {
+		d.onDependencyChange(this.toggled);
+		dependents.add(d);
 	}
 
 	@Override

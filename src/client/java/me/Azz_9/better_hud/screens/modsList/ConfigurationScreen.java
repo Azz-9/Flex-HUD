@@ -42,7 +42,7 @@ public class ConfigurationScreen extends Screen {
 			"Combo (HS)",
 			Text.translatable("better_hud.playtime").getString(),
 			"stopwatch (HS)",
-			"shrieker warning level (HS)"
+			Text.translatable("better_hud.shrieker_warning_level").getString()
 	};
 
 	public ConfigurationScreen(Screen parent) {
@@ -198,8 +198,9 @@ public class ConfigurationScreen extends Screen {
 			case "playtime" ->
 					() -> MinecraftClient.getInstance().setScreen(new Playtime(this, featureList.getScrollY()));
 			case "stopwatch" -> () -> System.out.println("Mod Stopwatch");
-			case "shrieker_warning_level" -> () -> System.out.println("Mod Shrieker Warning Level");
-			default -> null;
+			case "shrieker_warning_level" ->
+					() -> MinecraftClient.getInstance().setScreen(new ShriekerWarningLevel(this, featureList.getScrollY()));
+			default -> () -> System.out.println(modId);
 		};
 	}
 }

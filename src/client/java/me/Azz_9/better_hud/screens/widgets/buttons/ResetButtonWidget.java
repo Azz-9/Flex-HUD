@@ -11,6 +11,6 @@ public class ResetButtonWidget extends TexturedButtonWidget {
 		super(0, 0, width, height, new ButtonTextures(
 				Identifier.of(MOD_ID, "widgets/buttons/reset/unfocused.png"),
 				Identifier.of(MOD_ID, "widgets/buttons/reset/focused.png")
-		), pressAction);
+		), pressAction, 20, 20);
 	}
 }

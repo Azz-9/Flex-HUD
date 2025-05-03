@@ -42,7 +42,7 @@ public class OptionsScreen extends Screen {
 				(btn) -> {
 					MinecraftClient.getInstance().setScreen(new MoveElementsScreen(this));
 					Better_hudClient.isEditing = true;
-				});
+				}, 20, 20);
 
 
 		this.addDrawableChild(modsButton);
@@ -74,9 +74,7 @@ public class OptionsScreen extends Screen {
 		double y = height / 2.0 - iconHeight / 2.0 - 35 - yAnimation;
 
 
-		RenderSystem.enableBlend();
-		RenderSystem.defaultBlendFunc(); // Définit une fonction de mélange par défaut
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha); // Définit une opacité à 50% (alpha = 0.5)
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
 
 		MatrixStack matrices = context.getMatrices();
 		matrices.push();
@@ -90,7 +88,6 @@ public class OptionsScreen extends Screen {
 		context.drawText(textRenderer, ".", -10, 0, 0xffffff, false); // i don't know why but i need to put this in order to the texture to be rendered with the correct opacity
 
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F); // Opacité à 100%
-		RenderSystem.disableBlend(); // Désactive le mélange pour éviter des effets indésirables
 	}
 
 	@Override

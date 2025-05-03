@@ -4,7 +4,6 @@
 	"package": "me.Azz_9.better_hud.mixin.client",
 	"compatibilityLevel": "JAVA_21",
 	"client": [
-		"BossBarHudMixin",
 		"ClientWorldMixin",
 		"ClientWorldPropertiesMixin",
 		"KeyboardMixin",

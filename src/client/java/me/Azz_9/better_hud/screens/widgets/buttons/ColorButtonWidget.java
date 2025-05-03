@@ -118,15 +118,15 @@ public class ColorButtonWidget extends ButtonWidget implements TrackableChange {
 
 	@Override
 	public void onClick(double mouseX, double mouseY) {
-		super.onClick(mouseX, mouseY);
 		isSelectingColor = !isSelectingColor;
+		super.onClick(mouseX, mouseY);
 	}
 
 	@Override
 	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
 		CONSUMER.accept(color);
 
-		if (this.isFocused() || this.isHovered()) {
+		if (this.isSelected() && this.active) {
 			Identifier selectedTexture = Identifier.of(MOD_ID, "widgets/buttons/selected.png");
 			context.drawTexture(RenderLayer::getGuiTextured, selectedTexture, this.getX(), this.getY(), 0, 0, getWidth(), getHeight(), 100, 20);
 

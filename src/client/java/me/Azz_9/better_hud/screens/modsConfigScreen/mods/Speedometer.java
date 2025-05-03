@@ -1,6 +1,7 @@
 package me.Azz_9.better_hud.screens.modsConfigScreen.mods;
 
 import me.Azz_9.better_hud.screens.modsConfigScreen.ModsConfigAbstract;
+import me.Azz_9.better_hud.screens.widgets.buttons.CustomToggleButtonWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
@@ -49,7 +50,14 @@ public class Speedometer extends ModsConfigAbstract {
 					default -> Optional.empty();
 				});
 
-		addColorButton(translatable("better_hud.global.config.text_color"), INSTANCE.speedometer.color, 0xffffff,
-				color -> INSTANCE.speedometer.color = color);
+		CustomToggleButtonWidget toggleButton = addToggleButton(translatable("better_hud.global.config.chroma_text_color"), INSTANCE.speedometer.chromaColor, false,
+				toggled -> INSTANCE.speedometer.chromaColor = toggled);
+		toggleButton.addDependents(addDependentColorButton(translatable("better_hud.global.config.text_color"), INSTANCE.speedometer.color, 0xffffff,
+				color -> INSTANCE.speedometer.color = color, toggleButton, true));
+
+		toggleButton = addToggleButton(translatable("better_hud.global.config.show_background"), INSTANCE.speedometer.drawBackground, false,
+				toggled -> INSTANCE.speedometer.drawBackground = toggled);
+		toggleButton.addDependents(addDependentColorButton(translatable("better_hud.global.config.background_color"), INSTANCE.speedometer.backgroundColor, 0x313131,
+				color -> INSTANCE.speedometer.backgroundColor = color, toggleButton, false));
 	}
 }

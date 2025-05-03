@@ -1,6 +1,7 @@
 package me.Azz_9.better_hud.screens.modsConfigScreen.mods;
 
 import me.Azz_9.better_hud.screens.modsConfigScreen.ModsConfigAbstract;
+import me.Azz_9.better_hud.screens.widgets.buttons.CustomToggleButtonWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 
@@ -25,8 +26,15 @@ public class CPS extends ModsConfigAbstract {
 		addToggleButton(translatable("better_hud.global.config.text_shadow"), INSTANCE.cps.shadow, true,
 				toggled -> INSTANCE.cps.shadow = toggled);
 
-		addColorButton(translatable("better_hud.global.config.text_color"), INSTANCE.cps.color, 0xffffff,
-				color -> INSTANCE.cps.color = color);
+		CustomToggleButtonWidget toggleButton = addToggleButton(translatable("better_hud.global.config.chroma_text_color"), INSTANCE.cps.chromaColor, false,
+				toggled -> INSTANCE.cps.chromaColor = toggled);
+		toggleButton.addDependents(addDependentColorButton(translatable("better_hud.global.config.text_color"), INSTANCE.cps.color, 0xffffff,
+				color -> INSTANCE.cps.color = color, toggleButton, true));
+
+		toggleButton = addToggleButton(translatable("better_hud.global.config.show_background"), INSTANCE.cps.drawBackground, false,
+				toggled -> INSTANCE.cps.drawBackground = toggled);
+		toggleButton.addDependents(addDependentColorButton(translatable("better_hud.global.config.background_color"), INSTANCE.cps.backgroundColor, 0x313131,
+				color -> INSTANCE.cps.backgroundColor = color, toggleButton, false));
 
 		addToggleButton(translatable("better_hud.cps.config.show_left_click"), INSTANCE.cps.showLeftClick, true,
 				toggled -> INSTANCE.cps.showLeftClick = toggled);

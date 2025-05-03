@@ -1,6 +1,7 @@
 package me.Azz_9.better_hud.screens.modsConfigScreen.mods;
 
 import me.Azz_9.better_hud.screens.modsConfigScreen.ModsConfigAbstract;
+import me.Azz_9.better_hud.screens.widgets.buttons.CustomToggleButtonWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 
@@ -25,7 +26,14 @@ public class DayCounter extends ModsConfigAbstract {
 		addToggleButton(translatable("better_hud.global.config.text_shadow"), INSTANCE.dayCounter.shadow, true,
 				toggled -> INSTANCE.dayCounter.shadow = toggled);
 
-		addColorButton(translatable("better_hud.global.config.text_color"), INSTANCE.dayCounter.color, 0xffffff,
-				color -> INSTANCE.dayCounter.color = color);
+		CustomToggleButtonWidget toggleButton = addToggleButton(translatable("better_hud.global.config.chroma_text_color"), INSTANCE.cps.chromaColor, false,
+				toggled -> INSTANCE.cps.chromaColor = toggled);
+		toggleButton.addDependents(addDependentColorButton(translatable("better_hud.global.config.text_color"), INSTANCE.cps.color, 0xffffff,
+				color -> INSTANCE.cps.color = color, toggleButton, true));
+
+		toggleButton = addToggleButton(translatable("better_hud.global.config.show_background"), INSTANCE.dayCounter.drawBackground, false,
+				toggled -> INSTANCE.dayCounter.drawBackground = toggled);
+		toggleButton.addDependents(addDependentColorButton(translatable("better_hud.global.config.background_color"), INSTANCE.dayCounter.backgroundColor, 0x313131,
+				color -> INSTANCE.dayCounter.backgroundColor = color, toggleButton, false));
 	}
 }

@@ -7,15 +7,19 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
+import static me.Azz_9.better_hud.client.Better_hudClient.MOD_ID;
 
 public class MovableWidget extends ClickableWidget implements MoveElementsScreen.SnapLines, TrackableChange {
 
@@ -31,7 +35,7 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 		SCALE
 	}
 
-	private class PreviousAction {
+	private static class PreviousAction {
 		/* if the action type is SCALE, the X value is used as the scale value */
 		private final Action ACTION_TYPE;
 		private final int X;
@@ -98,12 +102,13 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 	private boolean shouldDrawYCenteredLine = false;
 	private boolean shouldDrawScaleValue = false;
 
+	//Scale
 	private float scale = 1.0f;
-	private static final float MAX_SCALE = 10.0f;
+	private static final float MAX_SCALE = 4.0f;
 	private static final float MIN_SCALE = 0.5f;
-	private final int handleSize = 4;
-	private int handleX = getX() - handleSize / 2;
-	private int handleY = getY() - handleSize / 2;
+	private final int HANDLE_SIZE = 4;
+	private int handleX = getX() - HANDLE_SIZE / 2;
+	private int handleY = getY() - HANDLE_SIZE / 2;
 	private HandlePosition handlePosition;
 	private int onClickRight;
 	private int onClickBottom;
@@ -111,10 +116,23 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 	private double onClickY;
 	private float onClickScale;
 
+	//cogwheel
+	private int cogwheelX;
+	private int cogwheelY;
+	private final int COGWHEEL_SIZE = 6;
+	private final Identifier cogwheelFocused = Identifier.of(MOD_ID, "widgets/buttons/cogwheel/focused.png");
+	private final Identifier cogwheelUnfocused = Identifier.of(MOD_ID, "widgets/buttons/cogwheel/unfocused.png");
+	//red cross
+	private int crossX;
+	private int crossY;
+	private final int CROSS_SIZE = 6;
+	private final Identifier crossFocused = Identifier.of(MOD_ID, "widgets/buttons/cross/focused.png");
+	private final Identifier crossUnfocused = Identifier.of(MOD_ID, "widgets/buttons/cross/unfocused.png");
+
 	private final Set<Integer> pressedKeys = new HashSet<>();
 
 	private final List<PreviousAction> prevActions = new LinkedList<>();
-	private final LinkedList<PreviousAction> redoActions = new LinkedList<>();
+	private final List<PreviousAction> redoActions = new LinkedList<>();
 
 	private boolean isDraggingScalehandle = false;
 
@@ -132,7 +150,7 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 	@Override
 	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (!this.isHovered()) {
-			this.hovered = context.scissorContains(mouseX, mouseY) && mouseX >= handleX && mouseY >= handleY && mouseX < handleX + handleSize && mouseY < handleY + handleSize;
+			this.hovered = context.scissorContains(mouseX, mouseY) && mouseX >= handleX && mouseY >= handleY && mouseX < handleX + HANDLE_SIZE && mouseY < handleY + HANDLE_SIZE;
 		}
 
 		setDimensions(roundCustom(HUD_ELEMENT.getWidth() * getScale()), roundCustom(HUD_ELEMENT.getHeight() * getScale()));
@@ -147,7 +165,7 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 		if (shouldDrawScaleValue) {
 			MatrixStack matrices = context.getMatrices();
 			matrices.push();
-			matrices.translate(handleX + handleSize + 1, handleY, 0);
+			matrices.translate(handleX + HANDLE_SIZE + 1, handleY, 0);
 			matrices.scale(0.75f, 0.75f, 1.0f);
 
 			context.drawText(MinecraftClient.getInstance().textRenderer, "×" + getScale(), 0, 0, 0xffffff, true);
@@ -155,7 +173,12 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 			matrices.pop();
 		}
 
-		renderScalehandle(context);
+		renderScaleHandle(context);
+
+		if (this.isHovered()) {
+			renderCross(context, mouseX, mouseY);
+			renderCogwheel(context, mouseX, mouseY);
+		}
 	}
 
 	private double getHud_elementX() {
@@ -174,7 +197,7 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 		return value / MinecraftClient.getInstance().getWindow().getScaledHeight() * 100;
 	}
 
-	private void renderScalehandle(DrawContext context) {
+	private void renderScaleHandle(DrawContext context) {
 		double screenCenterX = SCREEN.width / 2.0;
 		double screenCenterY = SCREEN.height / 2.0;
 		double centerX = getX() + getWidth() / 2.0;
@@ -183,47 +206,63 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 		if (isDraggingScalehandle) {
 			switch (handlePosition) {
 				case TOP_LEFT -> {
-					handleX = getX() - handleSize / 2;
-					handleY = getY() - handleSize / 2;
+					handleX = getX() - HANDLE_SIZE / 2;
+					handleY = getY() - HANDLE_SIZE / 2;
 				}
 				case TOP_RIGHT -> {
-					handleX = getRight() - handleSize / 2;
-					handleY = getY() - handleSize / 2;
+					handleX = getRight() - HANDLE_SIZE / 2;
+					handleY = getY() - HANDLE_SIZE / 2;
 				}
 				case BOTTOM_LEFT -> {
-					handleX = getX() - handleSize / 2;
-					handleY = getBottom() - handleSize / 2;
+					handleX = getX() - HANDLE_SIZE / 2;
+					handleY = getBottom() - HANDLE_SIZE / 2;
 				}
 				case BOTTOM_RIGHT -> {
-					handleX = getRight() - handleSize / 2;
-					handleY = getBottom() - handleSize / 2;
+					handleX = getRight() - HANDLE_SIZE / 2;
+					handleY = getBottom() - HANDLE_SIZE / 2;
 				}
 			}
 		} else {
 			if (centerX < screenCenterX) {
 				if (centerY < screenCenterY) {
 					handlePosition = HandlePosition.BOTTOM_RIGHT;
-					handleX = getRight() - handleSize / 2;
-					handleY = getBottom() - handleSize / 2;
+					handleX = getRight() - HANDLE_SIZE / 2;
+					handleY = getBottom() - HANDLE_SIZE / 2;
 				} else {
 					handlePosition = HandlePosition.TOP_RIGHT;
-					handleX = getRight() - handleSize / 2;
-					handleY = getY() - handleSize / 2;
+					handleX = getRight() - HANDLE_SIZE / 2;
+					handleY = getY() - HANDLE_SIZE / 2;
 				}
 			} else {
 				if (centerY < screenCenterY) {
 					handlePosition = HandlePosition.BOTTOM_LEFT;
-					handleX = getX() - handleSize / 2;
-					handleY = getBottom() - handleSize / 2;
+					handleX = getX() - HANDLE_SIZE / 2;
+					handleY = getBottom() - HANDLE_SIZE / 2;
 				} else {
 					handlePosition = HandlePosition.TOP_LEFT;
-					handleX = getX() - handleSize / 2;
-					handleY = getY() - handleSize / 2;
+					handleX = getX() - HANDLE_SIZE / 2;
+					handleY = getY() - HANDLE_SIZE / 2;
 				}
 			}
 		}
 
-		context.fill(handleX, handleY, handleX + handleSize, handleY + handleSize, 0xffF8F8FC);
+		context.fill(handleX, handleY, handleX + HANDLE_SIZE, handleY + HANDLE_SIZE, 0xffF8F8FC);
+	}
+
+	private void renderCogwheel(DrawContext context, int mouseX, int mouseY) {
+		this.cogwheelX = getX() + 1 + (handlePosition == HandlePosition.BOTTOM_LEFT ? HANDLE_SIZE / 2 : 0);
+		this.cogwheelY = Math.max(getBottom() - COGWHEEL_SIZE - 1, getY() + (getHeight() - COGWHEEL_SIZE) / 2);
+
+		Identifier texture = isCogwheelHovered(mouseX, mouseY) ? cogwheelFocused : cogwheelUnfocused;
+		context.drawTexture(RenderLayer::getGuiTextured, texture, cogwheelX, cogwheelY, 0, 0, COGWHEEL_SIZE, COGWHEEL_SIZE, COGWHEEL_SIZE, COGWHEEL_SIZE);
+	}
+
+	private void renderCross(DrawContext context, int mouseX, int mouseY) {
+		this.crossX = getRight() - CROSS_SIZE - 1 - (handlePosition == HandlePosition.BOTTOM_RIGHT ? HANDLE_SIZE / 2 : 0);
+		this.crossY = Math.max(getBottom() - CROSS_SIZE - 1, getY() + (getHeight() - CROSS_SIZE) / 2);
+
+		Identifier texture = isCrossHovered(mouseX, mouseY) ? crossFocused : crossUnfocused;
+		context.drawTexture(RenderLayer::getGuiTextured, texture, crossX, crossY, 0, 0, CROSS_SIZE, CROSS_SIZE, CROSS_SIZE, CROSS_SIZE);
 	}
 
 	private int roundCustom(double value) {
@@ -256,6 +295,11 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 			onClickX = getHud_elementX();
 			onClickY = getHud_elementY();
 			onClickScale = getScale();
+		} else if (isCogwheelHovered(mouseX, mouseY)) {
+			MinecraftClient.getInstance().setScreen(HUD_ELEMENT.getConfigScreen(SCREEN));
+		} else if (isCrossHovered(mouseX, mouseY)) {
+			HUD_ELEMENT.enabled = false;
+			SCREEN.removeChild(this);
 		}
 		offsetX = mouseX - getX();
 		offsetY = mouseY - getY();
@@ -439,9 +483,6 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 	 * Doesn't check if, with the new coordinates, the element will be overflowing
 	 */
 	private void forceMove(double x, double y) {
-		System.out.println(toPercentageX(x) + " " + toPercentageY(y) + " -> " + x + " " + y + " -> " +
-				toPercentageX(x) * (MinecraftClient.getInstance().getWindow().getScaledWidth() / 100.0F) + " "
-				+ toPercentageY(y) * (MinecraftClient.getInstance().getWindow().getScaledHeight() / 100.0F));
 		setPosition((int) Math.round(x), (int) Math.round(y));
 		HUD_ELEMENT.setPos(toPercentageX(x), toPercentageY(y));
 	}
@@ -498,7 +539,15 @@ public class MovableWidget extends ClickableWidget implements MoveElementsScreen
 	}
 
 	private boolean ishandleHovered(double mouseX, double mouseY) {
-		return mouseX >= handleX && mouseX < handleX + handleSize && mouseY >= handleY && mouseY < handleY + handleSize;
+		return mouseX >= handleX && mouseX < handleX + HANDLE_SIZE && mouseY >= handleY && mouseY < handleY + HANDLE_SIZE;
+	}
+
+	private boolean isCogwheelHovered(double mouseX, double mouseY) {
+		return mouseX >= cogwheelX && mouseX < cogwheelX + COGWHEEL_SIZE && mouseY >= cogwheelY && mouseY < cogwheelY + COGWHEEL_SIZE;
+	}
+
+	private boolean isCrossHovered(double mouseX, double mouseY) {
+		return mouseX >= crossX && mouseX < crossX + CROSS_SIZE && mouseY >= crossY && mouseY < crossY + CROSS_SIZE;
 	}
 
 	@Override
