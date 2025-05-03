@@ -28,6 +28,9 @@
 	"better_hud.help_widget.line6": "un élément pour activer l'alignement automatique",
 
 
+	"better_hud.global.config.quit_and_discard": "Quitter & annuler les modifications",
+	"better_hud.global.config.callback_message_title": "Modifications non sauvgardées",
+	"better_hud.global.config.callback_message_content": "Êtes-vous sûr de vouloir annuler vos modifications ? Vos changements de disposition ne seront pas enregistrés!",
 	"better_hud.global.hours": "heures",
 	"better_hud.global.minutes": "minutes",
 	"better_hud.global.seconds": "secondes",
@@ -36,7 +39,10 @@
 	"better_hud.global.config.min": "Min",
 	"better_hud.global.config.max": "Max",
 	"better_hud.global.config.text_shadow": "Ombre du texte",
+	"better_hud.global.config.chroma_text_color": "Texte RGB",
 	"better_hud.global.config.text_color": "Couleur du texte",
+	"better_hud.global.config.show_background": "Afficher l'arrière-plan",
+	"better_hud.global.config.background_color": "Couleur de l'arrière-plan",
 
 	"better_hud.armor_status": "État de l'armure",
 	"better_hud.armor_status.config.enable": "Afficher l'état de l'armure",
@@ -122,6 +128,10 @@
 	"better_hud.weather_changer": "Changeur de météo",
 	"better_hud.weather_changer.config.enable": "Activer le changeur de météo",
 	"better_hud.weather_changer.config.selected_weather": "Météo sélectionné",
+
+	"better_hud.shrieker_warning_level": "Niveau d'alerte des hurleurs",
+	"better_hud.shrieker_warning_level.config.enable": "Afficher le niveau d'alerte des hurleurs",
+	"better_hud.shrieker_warning_level.config.show_when_in_deep_dark": "Afficher uniquement dans un biome deep dark",
 
 
 	"better_hud.coordinates.hud.direction.south": "Sud",

@@ -28,6 +28,9 @@
 	"better_hud.help_widget.line6": "element to snap",
 
 
+	"better_hud.global.config.quit_and_discard": "Quit & discard changes",
+	"better_hud.global.config.callback.message_title": "Changes not saved",
+	"better_hud.global.config.callback.message_content": "Are you sure you want to cancel your changes? Your changes will not be saved!",
 	"better_hud.global.hours": "hours",
 	"better_hud.global.minutes": "minutes",
 	"better_hud.global.seconds": "seconds",
@@ -36,7 +39,10 @@
 	"better_hud.global.config.min": "Min",
 	"better_hud.global.config.max": "Max",
 	"better_hud.global.config.text_shadow": "Text shadow",
+	"better_hud.global.config.chroma_text_color": "Chroma text color",
 	"better_hud.global.config.text_color": "Text color",
+	"better_hud.global.config.show_background": "Show background",
+	"better_hud.global.config.background_color": "Background color",
 
 	"better_hud.armor_status": "Armor status",
 	"better_hud.armor_status.config.enable": "Show armor status",
@@ -122,6 +128,10 @@
 	"better_hud.weather_changer": "Weather changer",
 	"better_hud.weather_changer.config.enable": "Enable weather changer",
 	"better_hud.weather_changer.config.selected_weather": "Selected weather",
+
+	"better_hud.shrieker_warning_level": "Shrieker warning level",
+	"better_hud.shrieker_warning_level.config.enable": "Show shrieker warning level",
+	"better_hud.shrieker_warning_level.config.show_when_in_deep_dark": "Only show when in deep dark",
 
 
 	"better_hud.coordinates.hud.direction.south": "South",
