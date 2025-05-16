@@ -29,8 +29,8 @@
 
 
 	"better_hud.global.config.quit_and_discard": "Quitter & annuler les modifications",
-	"better_hud.global.config.callback_message_title": "Modifications non sauvgardées",
-	"better_hud.global.config.callback_message_content": "Êtes-vous sûr de vouloir annuler vos modifications ? Vos changements de disposition ne seront pas enregistrés!",
+	"better_hud.global.config.callback.message_title": "Modifications non sauvgardées",
+	"better_hud.global.config.callback.message_content": "Êtes-vous sûr de vouloir annuler vos modifications ? Vos changements de disposition ne seront pas enregistrés!",
 	"better_hud.global.hours": "heures",
 	"better_hud.global.minutes": "minutes",
 	"better_hud.global.seconds": "secondes",
