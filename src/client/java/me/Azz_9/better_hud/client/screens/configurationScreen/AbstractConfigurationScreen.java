@@ -19,6 +19,18 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 		this.buttonGap = buttonGap;
 	}
 
+	public AbstractConfigurationScreen(Text title, Screen parent, int buttonWidth, int buttonHeight) {
+		this(title, parent, buttonWidth, buttonHeight, 10);
+	}
+
+	public AbstractConfigurationScreen(Text title, Screen parent, int buttonWidth) {
+		this(title, parent, buttonWidth, 20, 10);
+	}
+
+	public AbstractConfigurationScreen(Text title, Screen parent) {
+		this(title, parent, 150, 20, 10);
+	}
+
 	protected class ToggleButton {
 		//TODO
 	}

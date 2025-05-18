@@ -17,9 +17,6 @@
 		],
 		"main": [
 			"me.Azz_9.better_hud.Better_hud"
-		],
-		"modmenu": [
-			"me.Azz_9.better_hud.modMenu.ModMenuIntegration"
 		]
 	},
 	"mixins": [
@@ -33,8 +30,6 @@
 		"fabricloader": ">=${loader_version}",
 		"fabric": "*",
 		"fabric-key-binding-api-v1": "*",
-		"minecraft": "${minecraft_version}",
-		"cloth-config": "*",
-		"modmenu": "*"
+		"minecraft": "${minecraft_version}"
 	}
 }
