@@ -1,9 +1,18 @@
 package me.Azz_9.better_hud.client.configurableMods.mods.notHud;
 
-public class WeatherChanger {
-	private Weather selectedWeather;
+import me.Azz_9.better_hud.client.configurableMods.mods.Mod;
+import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
+import net.minecraft.client.gui.screen.Screen;
 
-	private enum Weather {
+public class WeatherChanger extends Mod {
+	public Weather selectedWeather;
+
+	@Override
+	public AbstractConfigurationScreen getConfigScreen(Screen parent) {
+		return null;
+	}
+
+	public enum Weather {
 		CLEAR,
 		RAIN,
 		THUNDER

@@ -1,12 +1,16 @@
 package me.Azz_9.better_hud.client.configurableMods.mods.notHud;
 
+import me.Azz_9.better_hud.client.configurableMods.mods.Mod;
+import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
+import net.minecraft.client.gui.screen.Screen;
+
 import java.time.LocalTime;
 
-public class TimeChanger {
-	private int selectedTime;
-	private boolean useRealTime;
+public class TimeChanger extends Mod {
+	public int selectedTime;
+	public boolean useRealTime;
 
-	public long getRealTimeAsMinecraftTime() {
+	public static long getRealTimeAsMinecraftTime() {
 		LocalTime realTime = LocalTime.now();
 
 		// Dans Minecraft, un jour dure 24000 ticks
@@ -19,5 +23,10 @@ public class TimeChanger {
 		minecraftTime += (long) (minute / 60.0 * 1000);
 
 		return minecraftTime;
+	}
+
+	@Override
+	public AbstractConfigurationScreen getConfigScreen(Screen parent) {
+		return null;
 	}
 }

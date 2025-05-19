@@ -1,9 +1,11 @@
 {
 	"required": true,
 	"minVersion": "0.8",
-	"package": "me.Azz_9.better_hud.mixin",
+	"package": "me.Azz_9.better_hud.client.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"client": [
+		"ClientWorldMixin",
+		"ClientWorldPropertiesMixin"
 	],
 	"mixins": [
 	],

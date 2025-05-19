@@ -7,6 +7,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,11 +22,16 @@ public class Better_hudClient implements ClientModInitializer {
 	public static boolean isInMoveElementScreen;
 
 	private static long launchTime;
+	//is mod Xaero's Minimap loaded
+	public static boolean isXaerosMinimapLoaded = FabricLoader.getInstance().isModLoaded("xaerominimap");
 	//TODO
 
 	@Override
 	public void onInitializeClient() {
 		launchTime = System.currentTimeMillis();
+
+		LOGGER.info("Better HUD has started up.");
+		LOGGER.info("Xaeros Minimap {}found !", isXaerosMinimapLoaded ? "" : "not ");
 
 		List<AbstractHudElement> hudElements = JsonConfigHelper.getHudElements();
 		HudLayerRegistrationCallback.EVENT.register(layeredDrawer -> {
