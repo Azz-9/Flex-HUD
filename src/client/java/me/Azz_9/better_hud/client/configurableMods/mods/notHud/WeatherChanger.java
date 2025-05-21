@@ -7,6 +7,10 @@ import net.minecraft.client.gui.screen.Screen;
 public class WeatherChanger extends Mod {
 	public Weather selectedWeather;
 
+	public WeatherChanger() {
+		this.enabled = false;
+	}
+
 	@Override
 	public AbstractConfigurationScreen getConfigScreen(Screen parent) {
 		return null;

@@ -2,8 +2,10 @@ package me.Azz_9.better_hud.client.configurableMods;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import me.Azz_9.better_hud.client.Better_hudClient;
 import me.Azz_9.better_hud.client.configurableMods.mods.hud.AbstractHudElement;
 import me.Azz_9.better_hud.client.configurableMods.mods.hud.renderCallbacks.ArmorStatus;
+import me.Azz_9.better_hud.client.configurableMods.mods.hud.renderCallbacks.Cps;
 import me.Azz_9.better_hud.client.configurableMods.mods.notHud.DurabilityPing;
 import me.Azz_9.better_hud.client.configurableMods.mods.notHud.TimeChanger;
 import me.Azz_9.better_hud.client.configurableMods.mods.notHud.WeatherChanger;
@@ -18,6 +20,7 @@ public class JsonConfigHelper {
 	public boolean isEnabled = true;
 	//hud
 	public ArmorStatus armorStatus = new ArmorStatus(0.234, 41.685);
+	public Cps cps = new Cps(95.433, 0.443);
 	//others
 	public WeatherChanger weatherChanger = new WeatherChanger();
 	public TimeChanger timeChanger = new TimeChanger();
@@ -44,7 +47,7 @@ public class JsonConfigHelper {
 			try (FileReader reader = new FileReader(CONFIG_FILE)) {
 				return GSON.fromJson(reader, JsonConfigHelper.class);
 			} catch (IOException e) {
-				e.printStackTrace();
+				Better_hudClient.LOGGER.error("Failed to load config");
 			}
 		}
 		return new JsonConfigHelper(); // Si le fichier n'existe pas, retourner la configuration par défaut
@@ -55,11 +58,11 @@ public class JsonConfigHelper {
 		try (FileWriter writer = new FileWriter(CONFIG_FILE)) {
 			GSON.toJson(getInstance(), writer);
 		} catch (IOException e) {
-			e.printStackTrace();
+			Better_hudClient.LOGGER.error("Failed to save config");
 		}
 	}
 
 	public static List<AbstractHudElement> getHudElements() {
-		return List.of(getInstance().armorStatus);
+		return List.of(getInstance().armorStatus, getInstance().cps);
 	}
 }

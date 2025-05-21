@@ -42,9 +42,7 @@ public class Better_hudClient implements ClientModInitializer {
 			}
 		});
 
-		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-			ChromaColorUtil.updateColor();
-		});
+		ClientTickEvents.END_CLIENT_TICK.register(client -> ChromaColorUtil.updateColor());
 	}
 
 	public static long getLaunchTime() {

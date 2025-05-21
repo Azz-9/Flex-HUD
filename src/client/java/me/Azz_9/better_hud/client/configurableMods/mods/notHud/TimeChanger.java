@@ -7,8 +7,12 @@ import net.minecraft.client.gui.screen.Screen;
 import java.time.LocalTime;
 
 public class TimeChanger extends Mod {
-	public int selectedTime;
-	public boolean useRealTime;
+	public int selectedTime = 6000;
+	public boolean useRealTime = false;
+
+	public TimeChanger() {
+		this.enabled = false;
+	}
 
 	public static long getRealTimeAsMinecraftTime() {
 		LocalTime realTime = LocalTime.now();
