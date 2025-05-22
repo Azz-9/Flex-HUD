@@ -1,4 +1,4 @@
-package me.Azz_9.better_hud.client.utils;
+package me.Azz_9.better_hud.client.utils.cps;
 
 import me.Azz_9.better_hud.client.configurableMods.JsonConfigHelper;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;

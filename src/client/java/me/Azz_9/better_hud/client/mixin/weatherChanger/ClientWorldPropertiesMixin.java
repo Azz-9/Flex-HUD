@@ -1,4 +1,4 @@
-package me.Azz_9.better_hud.client.mixin;
+package me.Azz_9.better_hud.client.mixin.weatherChanger;
 
 import me.Azz_9.better_hud.client.configurableMods.JsonConfigHelper;
 import me.Azz_9.better_hud.client.configurableMods.mods.notHud.TimeChanger;
@@ -25,7 +25,6 @@ public abstract class ClientWorldPropertiesMixin {
 				cir.setReturnValue(TimeChanger.getRealTimeAsMinecraftTime());
 
 			}
-		}
-		else cir.cancel();
+		} else cir.cancel();
 	}
 }

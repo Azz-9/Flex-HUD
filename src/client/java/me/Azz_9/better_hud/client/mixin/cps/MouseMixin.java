@@ -1,6 +1,6 @@
-package me.Azz_9.better_hud.client.mixin;
+package me.Azz_9.better_hud.client.mixin.cps;
 
-import me.Azz_9.better_hud.client.utils.KeyHandler;
+import me.Azz_9.better_hud.client.utils.cps.KeyHandler;
 import net.minecraft.client.Mouse;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

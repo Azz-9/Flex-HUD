@@ -4,9 +4,9 @@
 	"package": "me.Azz_9.better_hud.client.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"client": [
-		"ClientWorldMixin",
-		"ClientWorldPropertiesMixin",
-		"MouseMixin"
+		"cps.MouseMixin",
+		"weatherChanger.ClientWorldMixin",
+		"weatherChanger.ClientWorldPropertiesMixin"
 	],
 	"mixins": [
 	],
