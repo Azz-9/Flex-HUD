@@ -1,13 +1,16 @@
 {
-  "required": true,
-  "minVersion": "0.8",
-  "package": "me.Azz_9.better_hud.mixin",
-  "compatibilityLevel": "JAVA_21",
-  "mixins": [
-  ],
-  "client": [
-  ],
-  "injectors": {
-    "defaultRequire": 1
-  }
+	"required": true,
+	"minVersion": "0.8",
+	"package": "me.Azz_9.better_hud.client.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"cps.MouseMixin",
+		"weatherChanger.ClientWorldMixin",
+		"weatherChanger.ClientWorldPropertiesMixin"
+	],
+	"client": [
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
 }

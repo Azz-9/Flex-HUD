@@ -2,14 +2,17 @@
 	"schemaVersion": 1,
 	"id": "better_hud",
 	"version": "${version}",
+
 	"name": "Better HUD",
 	"description": "Add a bunch of hud things",
 	"authors": [
 		"Azz_9"
 	],
 	"contact": {},
+
 	"license": "All-Rights-Reserved",
 	"icon": "assets/better_hud/icon.png",
+
 	"environment": "client",
 	"entrypoints": {
 		"client": [
@@ -19,12 +22,9 @@
 			"me.Azz_9.better_hud.Better_hud"
 		]
 	},
+
 	"mixins": [
-		"better_hud.mixins.json",
-		{
-			"config": "better_hud.client.mixins.json",
-			"environment": "client"
-		}
+		"better_hud.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=${loader_version}",
