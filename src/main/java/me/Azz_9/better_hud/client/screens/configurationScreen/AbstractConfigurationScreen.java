@@ -6,6 +6,7 @@ import me.Azz_9.better_hud.client.screens.modsList.DataGetter;
 import me.Azz_9.better_hud.client.screens.modsList.ModsListScreen;
 import me.Azz_9.better_hud.client.screens.widgets.buttons.configButtons.ConfigColorButtonWidget;
 import me.Azz_9.better_hud.client.screens.widgets.buttons.configButtons.ConfigToggleButtonWidget;
+import me.Azz_9.better_hud.client.screens.widgets.buttons.configButtons.colorSelector.ColorSelecor;
 import me.Azz_9.better_hud.client.screens.widgets.buttons.configButtons.colorSelector.GradientWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -15,6 +16,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 import org.apache.logging.log4j.core.config.Configuration;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -210,7 +212,7 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 
 	public static class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 		private final ConfigColorButtonWidget<?> colorButtonWidget;
-		private final GradientWidget gradientWidget;
+		private final ColorSelecor colorSelecor;
 
 		public <T> ColorButtonEntry(
 				int colorButtonWidth,
@@ -225,17 +227,17 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 			colorButtonWidget = new ConfigColorButtonWidget<>(colorButtonWidth, colorButtonHeight, color, onColorChange, observers, disableWhen);
 			setResetButtonPressAction((btn) -> colorButtonWidget.setToInitialState());
 
-			gradientWidget = new GradientWidget(100, 100);
+			colorSelecor = new ColorSelecor();
 		}
 
 		@Override
 		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickProgress) {
 			super.render(context, index, y, x, entryWidth, entryHeight, mouseX, mouseY, hovered, tickProgress);
 			colorButtonWidget.setPosition(x, y);
-			gradientWidget.setPosition(colorButtonWidget.getRight() - gradientWidget.getWidth(), colorButtonWidget.getBottom());
+
 
 			colorButtonWidget.render(context, mouseX, mouseY, tickProgress);
-			gradientWidget.render(context, mouseX, mouseY, tickProgress);
+			colorSelecor.render(context, mouseX, mouseY, tickProgress);
 		}
 
 		@Override
@@ -245,7 +247,9 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 
 		@Override
 		public List<? extends Element> children() {
-			return List.of(colorButtonWidget, resetButtonWidget, textWidget, gradientWidget);
+			List<Element> list = new ArrayList<>(List.of(colorButtonWidget, resetButtonWidget, textWidget));
+			list.addAll(colorSelecor.getChildren());
+			return list;
 		}
 
 		@Override

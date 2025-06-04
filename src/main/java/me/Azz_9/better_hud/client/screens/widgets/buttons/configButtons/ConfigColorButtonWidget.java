@@ -55,6 +55,11 @@ public class ConfigColorButtonWidget<T> extends ClickableWidget implements Track
 	}
 
 	@Override
+	public void onClick(double mouseX, double mouseY) {
+
+	}
+
+	@Override
 	public void setToInitialState() {
 		this.color = this.INITIAL_COLOR;
 	}
@@ -75,11 +80,11 @@ public class ConfigColorButtonWidget<T> extends ClickableWidget implements Track
 	}
 
 	@Override
-	protected void appendClickableNarrations(NarrationMessageBuilder builder) {
+	public boolean isSelected() {
+		return this.isFocused();
 	}
 
 	@Override
-	public boolean isSelected() {
-		return this.isFocused();
+	protected void appendClickableNarrations(NarrationMessageBuilder builder) {
 	}
 }
