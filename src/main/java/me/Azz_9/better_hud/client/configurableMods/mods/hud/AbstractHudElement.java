@@ -1,12 +1,12 @@
 package me.Azz_9.better_hud.client.configurableMods.mods.hud;
 
-import me.Azz_9.better_hud.client.configurableMods.mods.Mod;
+import me.Azz_9.better_hud.client.configurableMods.mods.abstractMod;
 import me.Azz_9.better_hud.client.utils.ChromaColorUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
 
-public abstract class AbstractHudElement extends Mod {
+public abstract class AbstractHudElement extends abstractMod {
 	protected transient final int BACKGROUND_PADDING = 2;
 
 	public double x, y;

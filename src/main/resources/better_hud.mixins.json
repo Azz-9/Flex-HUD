@@ -9,6 +9,7 @@
 		"weatherChanger.ClientWorldPropertiesMixin"
 	],
 	"client": [
+		"keyboard.KeyBindingMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

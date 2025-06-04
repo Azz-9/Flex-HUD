@@ -109,7 +109,7 @@ public class ModsListScreen extends AbstractBackNavigableScreen {
 			String modName = MODS_LIST[i];
 			String modId = getModId(i);
 
-			mods.add(new Mod(modName, modId, getScreen(modId), buttonWidth, buttonHeight));
+			mods.add(new Mod(modName, modId, getSetScreenRunnable(modId), buttonWidth, buttonHeight));
 
 			if ((i + 1) % columns == 0) {
 				this.modsList.addFeature(new ArrayList<>(mods)); // copie de la liste
@@ -145,14 +145,16 @@ public class ModsListScreen extends AbstractBackNavigableScreen {
 		}[idx];
 	}
 
-	private Runnable getScreen(String modId) {
+	private Runnable getSetScreenRunnable(String modId) {
 		return switch (modId) {
 			/*case "coordinates" ->
 					() -> MinecraftClient.getInstance().setScreen(new Coordinates(this, modsList.getScrollY()));
 			case "fps" -> () -> MinecraftClient.getInstance().setScreen(new FPS(this, modsList.getScrollY()));
 			case "clock" -> () -> MinecraftClient.getInstance().setScreen(new Clock(this, modsList.getScrollY()));*/
 			case "armor_status" ->
-					() -> MinecraftClient.getInstance().setScreen(JsonConfigHelper.getInstance().armorStatus.getConfigScreen(this));
+					() -> MinecraftClient.getInstance().setScreen(
+							JsonConfigHelper.getInstance().armorStatus.getConfigScreen(this, modsList.getScrollY())
+					);
 			/*case "direction" ->
 					() -> MinecraftClient.getInstance().setScreen(new Direction(this, modsList.getScrollY()));
 			case "day_counter" ->
@@ -163,13 +165,21 @@ public class ModsListScreen extends AbstractBackNavigableScreen {
 			case "memory_usage" ->
 					() -> MinecraftClient.getInstance().setScreen(new MemoryUsage(this, modsList.getScrollY()));*/
 			case "cps" ->
-					() -> MinecraftClient.getInstance().setScreen(JsonConfigHelper.getInstance().cps.getConfigScreen(this, modsList.getScrollY()));
+					() -> MinecraftClient.getInstance().setScreen(
+							JsonConfigHelper.getInstance().cps.getConfigScreen(this, modsList.getScrollY())
+					);
 			case "time_changer" ->
-					() -> MinecraftClient.getInstance().setScreen(JsonConfigHelper.getInstance().timeChanger.getConfigScreen(this, modsList.getScrollY()));
+					() -> MinecraftClient.getInstance().setScreen(
+							JsonConfigHelper.getInstance().timeChanger.getConfigScreen(this, modsList.getScrollY())
+					);
 			case "weather_changer" ->
-					() -> MinecraftClient.getInstance().setScreen(JsonConfigHelper.getInstance().weatherChanger.getConfigScreen(this, modsList.getScrollY()));
+					() -> MinecraftClient.getInstance().setScreen(
+							JsonConfigHelper.getInstance().weatherChanger.getConfigScreen(this, modsList.getScrollY())
+					);
 			case "durability_ping" ->
-					() -> MinecraftClient.getInstance().setScreen(JsonConfigHelper.getInstance().durabilityPing.getConfigScreen(this, modsList.getScrollY()));
+					() -> MinecraftClient.getInstance().setScreen(
+							JsonConfigHelper.getInstance().durabilityPing.getConfigScreen(this, modsList.getScrollY())
+					);
 			/*case "speedometer" ->
 					() -> MinecraftClient.getInstance().setScreen(new Speedometer(this, modsList.getScrollY()));
 			case "reach" -> () -> MinecraftClient.getInstance().setScreen(new Reach(this, modsList.getScrollY()));

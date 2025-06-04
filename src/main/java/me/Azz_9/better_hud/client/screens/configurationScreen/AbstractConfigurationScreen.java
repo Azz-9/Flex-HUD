@@ -3,6 +3,7 @@ package me.Azz_9.better_hud.client.screens.configurationScreen;
 import me.Azz_9.better_hud.client.screens.AbstractCallbackScreen;
 import me.Azz_9.better_hud.client.screens.TrackableChange;
 import me.Azz_9.better_hud.client.screens.modsList.DataGetter;
+import me.Azz_9.better_hud.client.screens.modsList.ModsListScreen;
 import me.Azz_9.better_hud.client.screens.widgets.buttons.configButtons.ConfigColorButtonWidget;
 import me.Azz_9.better_hud.client.screens.widgets.buttons.configButtons.ConfigToggleButtonWidget;
 import me.Azz_9.better_hud.client.screens.widgets.buttons.configButtons.colorSelector.GradientWidget;
@@ -12,6 +13,7 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
+import org.apache.logging.log4j.core.config.Configuration;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -58,6 +60,15 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 				this);
 
 		this.addDrawableChild(configList);
+	}
+
+	@Override
+	public void close() {
+		super.close();
+		System.out.println(parentScrollAmount);
+		if (PARENT instanceof ModsListScreen modsListScreen) {
+			modsListScreen.getModsList().setScrollY(parentScrollAmount);
+		}
 	}
 
 	@Override

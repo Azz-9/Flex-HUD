@@ -4,7 +4,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 
 public abstract class AbstractBackNavigableScreen extends Screen {
-	private final Screen PARENT;
+	protected final Screen PARENT;
 
 	protected AbstractBackNavigableScreen(Text title, Screen parent) {
 		super(title);

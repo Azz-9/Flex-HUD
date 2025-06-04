@@ -1,6 +1,6 @@
 package me.Azz_9.better_hud.client.configurableMods.mods.notHud;
 
-import me.Azz_9.better_hud.client.configurableMods.mods.Mod;
+import me.Azz_9.better_hud.client.configurableMods.mods.abstractMod;
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class DurabilityPing extends Mod {
+public class DurabilityPing extends abstractMod {
 	private static final Set<Item> ARMOR_PIECES = Set.of(
 			Items.LEATHER_BOOTS, Items.LEATHER_LEGGINGS, Items.LEATHER_CHESTPLATE, Items.LEATHER_HELMET,
 			Items.CHAINMAIL_BOOTS, Items.CHAINMAIL_LEGGINGS, Items.CHAINMAIL_CHESTPLATE, Items.CHAINMAIL_HELMET,

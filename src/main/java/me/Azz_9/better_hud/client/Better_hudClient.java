@@ -49,15 +49,8 @@ public class Better_hudClient implements ClientModInitializer {
 			}
 		});
 
+		// see KeyBindingMixin
 		openOptionScreenKeyBind = KeyBindingHelper.registerKeyBinding(new KeyBinding("better_hud.controls.open_menu", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_RIGHT_SHIFT, "Better HUD"));
-
-		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-			ChromaColorUtil.updateColor();
-
-			while (openOptionScreenKeyBind.wasPressed()) {
-				MinecraftClient.getInstance().setScreen(new OptionsScreen());
-			}
-		});
 	}
 
 	public static long getLaunchTime() {
