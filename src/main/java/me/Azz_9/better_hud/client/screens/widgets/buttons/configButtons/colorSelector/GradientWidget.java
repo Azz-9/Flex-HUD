@@ -20,10 +20,15 @@ public class GradientWidget extends ClickableWidget {
 	private double cursorX;
 	private double cursorY;
 
-	public GradientWidget(int width, int height) {
+	private boolean isDraggingCursor = false;
+
+	private ColorUpdatable colorSelector;
+
+	GradientWidget(int width, int height, ColorUpdatable colorSelector) {
 		super(0, 0, width, height, Text.translatable("better_hud.gradient_widget"));
 		selectedHue = 0;
 		selectedColor = 0;
+		this.colorSelector = colorSelector;
 	}
 
 	@Override
@@ -64,6 +69,7 @@ public class GradientWidget extends ClickableWidget {
 		long window = MinecraftClient.getInstance().getWindow().getHandle();
 		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);
 		moveCursor(mouseX, mouseY);
+		isDraggingCursor = true;
 	}
 
 	@Override
@@ -75,12 +81,31 @@ public class GradientWidget extends ClickableWidget {
 	public void onRelease(double mouseX, double mouseY) {
 		long window = MinecraftClient.getInstance().getWindow().getHandle();
 		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
+		isDraggingCursor = false;
 	}
 
 	private void moveCursor(double mouseX, double mouseY) {
 		cursorX = Math.clamp(mouseX, getX(), getRight()) - getX();
 		cursorY = Math.clamp(mouseY, getY(), getBottom()) - getY();
-		//updateColor(cursorX, cursorY); TODO
+		updateColor(cursorX, cursorY);
+
+		colorSelector.onUpdateColor(ColorSelector.ColorSelectorElement.GRADIENT);
+	}
+
+	private void updateColor(double cursorX, double cursorY) {
+		float saturation = (float) cursorX / getWidth();
+		float brightness = 1.0f - (float) cursorY / getHeight();
+
+		selectedColor = Color.HSBtoRGB(selectedHue / 360.0f, saturation, brightness) & 0x00ffffff;
+	}
+
+	void updateHue(float hue) {
+		selectedHue = hue;
+		updateColor(cursorX, cursorY);
+	}
+
+	public boolean isDraggingCursor() {
+		return isDraggingCursor;
 	}
 
 	@Override

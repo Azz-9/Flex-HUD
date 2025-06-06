@@ -6,17 +6,15 @@ import me.Azz_9.better_hud.client.screens.modsList.DataGetter;
 import me.Azz_9.better_hud.client.screens.modsList.ModsListScreen;
 import me.Azz_9.better_hud.client.screens.widgets.buttons.configButtons.ConfigColorButtonWidget;
 import me.Azz_9.better_hud.client.screens.widgets.buttons.configButtons.ConfigToggleButtonWidget;
-import me.Azz_9.better_hud.client.screens.widgets.buttons.configButtons.colorSelector.ColorSelecor;
-import me.Azz_9.better_hud.client.screens.widgets.buttons.configButtons.colorSelector.GradientWidget;
+import me.Azz_9.better_hud.client.screens.widgets.buttons.configButtons.colorSelector.ColorSelector;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
-import org.apache.logging.log4j.core.config.Configuration;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -28,6 +26,9 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 	private final double parentScrollAmount;
 
 	private ScrollableConfigList configList;
+
+	@Nullable
+	private ColorSelector colorSelector;
 
 	public AbstractConfigurationScreen(Text title, Screen parent, int buttonWidth, int buttonHeight, int buttonGap, double parentScrollAmount) {
 		super(title, parent, Text.translatable("better_hud.global.config.callback.message_title"), Text.translatable("better_hud.global.config.callback.message_content"));
@@ -46,6 +47,10 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 			configList.addConfigEntry(entry);
 			registerTrackableWidget(entry.getTrackableChangeWidget());
 		}
+	}
+
+	public ScrollableConfigList getConfigList() {
+		return configList;
 	}
 
 	@Override
@@ -83,10 +88,10 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 		context.drawCenteredTextWithShadow(textRenderer, title, this.width / 2, 7, textColor);
 
 		configList.render(context, mouseX, mouseY, deltaTicks);
-	}
 
-	public ScrollableConfigList getConfigList() {
-		return configList;
+		if (colorSelector != null && colorSelector.isFocused()) {
+			colorSelector.render(context, mouseX, mouseY, deltaTicks);
+		}
 	}
 
 	@Override
@@ -102,6 +107,48 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 			}
 		}
 		setSaveButtonActive(foundAChange);
+	}
+
+	@Override
+	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		if (colorSelector != null && colorSelector.isFocused() && colorSelector.isMouseOver(mouseX, mouseY)) {
+			if (colorSelector.mouseClicked(mouseX, mouseY, button)) {
+				return true;
+			}
+		}
+		return super.mouseClicked(mouseX, mouseY, button);
+	}
+
+	@Override
+	public boolean mouseReleased(double mouseX, double mouseY, int button) {
+		if (colorSelector != null && colorSelector.isFocused() && (colorSelector.isMouseOver(mouseX, mouseY) || colorSelector.isDraggingACursor())) {
+			if (colorSelector.mouseReleased(mouseX, mouseY, button)) {
+				return true;
+			}
+		}
+		return super.mouseReleased(mouseX, mouseY, button);
+	}
+
+	@Override
+	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+		if (colorSelector != null && colorSelector.isFocused() && colorSelector.isDraggingACursor()) {
+			if (colorSelector.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
+				return true;
+			}
+		}
+		return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+	}
+
+	public void openColorSelectorAt(int x, int y) {
+		this.colorSelector = new ColorSelector();
+		this.colorSelector.setPosition(x, y);
+		this.colorSelector.setFocused(true);
+	}
+
+	public void closeColorSelector() {
+		if (this.colorSelector != null) {
+			this.colorSelector.setFocused(false);
+		}
 	}
 
 	public static class ToggleButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
@@ -212,7 +259,6 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 
 	public static class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 		private final ConfigColorButtonWidget<?> colorButtonWidget;
-		private final ColorSelecor colorSelecor;
 
 		public <T> ColorButtonEntry(
 				int colorButtonWidth,
@@ -224,10 +270,19 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 				T disableWhen
 		) {
 			super(resetButtonSize, text);
-			colorButtonWidget = new ConfigColorButtonWidget<>(colorButtonWidth, colorButtonHeight, color, onColorChange, observers, disableWhen);
+			colorButtonWidget = new ConfigColorButtonWidget<>(colorButtonWidth, colorButtonHeight, color, onColorChange, observers, disableWhen,
+					(btn) -> {
+						AbstractConfigurationScreen screen = (AbstractConfigurationScreen) MinecraftClient.getInstance().currentScreen;
+						if (screen != null) {
+							ColorSelector colorSelector = screen.colorSelector;
+							if (colorSelector == null || !colorSelector.isFocused()) {
+								screen.openColorSelectorAt(btn.getRight(), btn.getY());
+							} else {
+								screen.closeColorSelector();
+							}
+						}
+					});
 			setResetButtonPressAction((btn) -> colorButtonWidget.setToInitialState());
-
-			colorSelecor = new ColorSelecor();
 		}
 
 		@Override
@@ -235,9 +290,7 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 			super.render(context, index, y, x, entryWidth, entryHeight, mouseX, mouseY, hovered, tickProgress);
 			colorButtonWidget.setPosition(x, y);
 
-
 			colorButtonWidget.render(context, mouseX, mouseY, tickProgress);
-			colorSelecor.render(context, mouseX, mouseY, tickProgress);
 		}
 
 		@Override
@@ -247,9 +300,7 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 
 		@Override
 		public List<? extends Element> children() {
-			List<Element> list = new ArrayList<>(List.of(colorButtonWidget, resetButtonWidget, textWidget));
-			list.addAll(colorSelecor.getChildren());
-			return list;
+			return List.of(colorButtonWidget, resetButtonWidget, textWidget);
 		}
 
 		@Override

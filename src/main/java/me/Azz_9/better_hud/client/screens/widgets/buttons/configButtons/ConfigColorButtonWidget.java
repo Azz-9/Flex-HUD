@@ -21,18 +21,20 @@ public class ConfigColorButtonWidget<T> extends ClickableWidget implements Track
 	private final int INITIAL_COLOR;
 	private final List<Observer> observers;
 	private final T disableWhen;
+	private final Consumer<ConfigColorButtonWidget<T>> onClickAction;
 
-	public ConfigColorButtonWidget(int x, int y, int width, int height, int currentColor, Consumer<Integer> onColorChange, List<Observer> observers, T disableWhen) {
+	public ConfigColorButtonWidget(int x, int y, int width, int height, int currentColor, Consumer<Integer> onColorChange, List<Observer> observers, T disableWhen, Consumer<ConfigColorButtonWidget<T>> onClickAction) {
 		super(x, y, width, height, Text.empty());
 		this.color = currentColor;
 		this.INITIAL_COLOR = currentColor;
 		this.ON_COlOR_CHANGE = onColorChange;
 		this.observers = observers;
 		this.disableWhen = disableWhen;
+		this.onClickAction = onClickAction;
 	}
 
-	public ConfigColorButtonWidget(int width, int height, int currentColor, Consumer<Integer> onColorChange, List<Observer> observers, T disableWhen) {
-		this(0, 0, width, height, currentColor, onColorChange, observers, disableWhen);
+	public ConfigColorButtonWidget(int width, int height, int currentColor, Consumer<Integer> onColorChange, List<Observer> observers, T disableWhen, Consumer<ConfigColorButtonWidget<T>> onClickAction) {
+		this(0, 0, width, height, currentColor, onColorChange, observers, disableWhen, onClickAction);
 	}
 
 	@Override
@@ -56,7 +58,7 @@ public class ConfigColorButtonWidget<T> extends ClickableWidget implements Track
 
 	@Override
 	public void onClick(double mouseX, double mouseY) {
-
+		onClickAction.accept(this);
 	}
 
 	@Override

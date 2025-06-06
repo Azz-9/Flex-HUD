@@ -1,4 +1,4 @@
-package me.Azz_9.better_hud.client.mixin.keyboard;
+package me.Azz_9.better_hud.client.mixin.keybind;
 
 import me.Azz_9.better_hud.client.Better_hudClient;
 import me.Azz_9.better_hud.client.screens.OptionsScreen;
