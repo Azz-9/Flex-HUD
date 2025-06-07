@@ -3,6 +3,7 @@ package me.Azz_9.better_hud.client.screens.widgets.buttons.configButtons;
 import me.Azz_9.better_hud.client.screens.TrackableChange;
 import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.better_hud.client.screens.modsList.DataGetter;
+import me.Azz_9.better_hud.client.screens.widgets.buttons.configButtons.colorSelector.ColorBindable;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
@@ -15,7 +16,7 @@ import java.util.function.Consumer;
 
 import static me.Azz_9.better_hud.client.Better_hudClient.MOD_ID;
 
-public class ConfigColorButtonWidget<T> extends ClickableWidget implements TrackableChange, DataGetter<Integer> {
+public class ConfigColorButtonWidget<T> extends ClickableWidget implements TrackableChange, DataGetter<Integer>, ColorBindable {
 	private int color;
 	private final Consumer<Integer> ON_COlOR_CHANGE;
 	private final int INITIAL_COLOR;
@@ -84,6 +85,27 @@ public class ConfigColorButtonWidget<T> extends ClickableWidget implements Track
 	@Override
 	public boolean isSelected() {
 		return this.isFocused();
+	}
+
+	@Override
+	public void onReceiveColor(int color) {
+		if (this.color != color) {
+			this.color = color;
+			ON_COlOR_CHANGE.accept(color);
+
+			for (Observer observer : observers) {
+				observer.onChange(this);
+			}
+		}
+	}
+
+	@Override
+	public int getColor() {
+		return color;
+	}
+
+	public T getDisableWhen() {
+		return disableWhen;
 	}
 
 	@Override

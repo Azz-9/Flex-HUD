@@ -17,8 +17,7 @@ import net.minecraft.text.Text;
 
 public class ArmorStatus extends AbstractHudElement {
 	private boolean showHelmet = true, showChestplate = true, showLeggings = true, showBoots = true;
-	private boolean showHeldItem = true;
-	private boolean showOffHandItem = true;
+	private boolean showHeldItem = true, showOffHandItem = true;
 	private boolean showArrowsWhenBowInHand = true;
 	private boolean separateArrowTypes = false;
 	private DurabilityType durabilityType = DurabilityType.PERCENTAGE;
@@ -179,6 +178,8 @@ public class ArmorStatus extends AbstractHudElement {
 		return new AbstractConfigurationScreen(Text.translatable("better_hud.armor_status"), parent, parentScrollAmount) {
 			@Override
 			protected void init() {
+				super.buttonWidth = 220;
+
 				super.init();
 
 				this.addAllEntries(
@@ -193,12 +194,71 @@ public class ArmorStatus extends AbstractHudElement {
 								.setToggled(JsonConfigHelper.getInstance().armorStatus.shadow)
 								.setOnToggle(toggled -> JsonConfigHelper.getInstance().armorStatus.shadow = toggled)
 								.setText(Text.translatable("better_hud.global.config.text_shadow"))
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setToggled(JsonConfigHelper.getInstance().armorStatus.chromaColor)
+								.setOnToggle(toggled -> JsonConfigHelper.getInstance().armorStatus.chromaColor = toggled)
+								.setText(Text.translatable("better_hud.global.config.chroma_text_color"))
 								.build()
 				);
 				this.addAllEntries(
-						new ColorButtonEntry(buttonWidth, buttonHeight, JsonConfigHelper.getInstance().armorStatus.color,
-								new_color -> JsonConfigHelper.getInstance().armorStatus.color = new_color, buttonHeight,
-								Text.translatable("better_hud.global.config.text_color"), false)
+						new ColorButtonEntry.Builder()
+								.setColorButtonWidth(buttonWidth)
+								.setColor(JsonConfigHelper.getInstance().armorStatus.color)
+								.setOnColorChange(color -> JsonConfigHelper.getInstance().armorStatus.color = color)
+								.setDependency(this.getConfigList().getLastEntry(), true)
+								.setText(Text.translatable("better_hud.global.config.text_color"))
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setToggled(JsonConfigHelper.getInstance().armorStatus.showHelmet)
+								.setOnToggle(toggled -> JsonConfigHelper.getInstance().armorStatus.showHelmet = toggled)
+								.setText(Text.translatable("better_hud.armor_status.config.show_helmet"))
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setToggled(JsonConfigHelper.getInstance().armorStatus.showChestplate)
+								.setOnToggle(toggled -> JsonConfigHelper.getInstance().armorStatus.showChestplate = toggled)
+								.setText(Text.translatable("better_hud.armor_status.config.show_chestplate"))
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setToggled(JsonConfigHelper.getInstance().armorStatus.showLeggings)
+								.setOnToggle(toggled -> JsonConfigHelper.getInstance().armorStatus.showLeggings = toggled)
+								.setText(Text.translatable("better_hud.armor_status.config.show_leggings"))
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setToggled(JsonConfigHelper.getInstance().armorStatus.showBoots)
+								.setOnToggle(toggled -> JsonConfigHelper.getInstance().armorStatus.showBoots = toggled)
+								.setText(Text.translatable("better_hud.armor_status.config.show_boots"))
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setToggled(JsonConfigHelper.getInstance().armorStatus.showHeldItem)
+								.setOnToggle(toggled -> JsonConfigHelper.getInstance().armorStatus.showHeldItem = toggled)
+								.setText(Text.translatable("better_hud.armor_status.config.show_held_item"))
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setToggled(JsonConfigHelper.getInstance().armorStatus.showOffHandItem)
+								.setOnToggle(toggled -> JsonConfigHelper.getInstance().armorStatus.showOffHandItem = toggled)
+								.setText(Text.translatable("better_hud.armor_status.config.show_off_hand_item"))
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setToggled(JsonConfigHelper.getInstance().armorStatus.showArrowsWhenBowInHand)
+								.setOnToggle(toggled -> JsonConfigHelper.getInstance().armorStatus.showArrowsWhenBowInHand = toggled)
+								.setText(Text.translatable("better_hud.armor_status.config.show_arrows"))
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setToggled(JsonConfigHelper.getInstance().armorStatus.separateArrowTypes)
+								.setOnToggle(toggled -> JsonConfigHelper.getInstance().armorStatus.separateArrowTypes = toggled)
+								.setText(Text.translatable("better_hud.armor_status.config.separate_arrow_types"))
+								.build()
+						//TODO cycling button
 				);
 			}
 		};

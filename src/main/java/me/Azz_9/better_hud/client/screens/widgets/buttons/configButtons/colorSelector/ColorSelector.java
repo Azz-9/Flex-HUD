@@ -5,10 +5,13 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 
-public class ColorSelector implements Element, Drawable, ColorUpdatable {
+import java.util.List;
+
+public class ColorSelector extends ColorUpdatable implements Element, Drawable {
 	private GradientWidget gradientWidget;
 	private HueWidget hueWidget;
 	private ColorFieldWidget colorFieldWidget;
+	private ColorBindable colorBindable;
 
 	private int x;
 	private int y;
@@ -20,25 +23,32 @@ public class ColorSelector implements Element, Drawable, ColorUpdatable {
 	private boolean isOpened;
 
 
-	public ColorSelector(int gradientWidth, int gradientHeight, int hueBarWidth, int hueBarHeight, int hexaFieldWidth, int hexaFieldHeight) {
+	public ColorSelector(int gradientWidth, int gradientHeight, int hueBarWidth, int hueBarHeight, int hexaFieldWidth, int hexaFieldHeight, ColorBindable colorBindable) {
 		this.gradientWidget = new GradientWidget(gradientWidth, gradientHeight, this);
+		this.gradientWidget.updateColor(colorBindable.getColor());
 		this.hueWidget = new HueWidget(hueBarWidth, hueBarHeight, this);
+		this.hueWidget.updateHue(colorBindable.getColor());
 		this.colorFieldWidget = new ColorFieldWidget(MinecraftClient.getInstance().textRenderer, hexaFieldWidth, hexaFieldHeight, this);
+		this.colorFieldWidget.updateColor(colorBindable.getColor());
+
+		this.colorBindable = colorBindable;
 
 		this.width = gradientWidth + GAP + hueBarWidth + OUTER_PADDING * 2;
 		this.height = gradientHeight + GAP + hexaFieldHeight + OUTER_PADDING * 2;
 	}
 
-	public ColorSelector(int grandientSize, int hueBarWidth, int hueBarHeight, int hexaFieldWidth, int hexaFieldHeight) {
-		this(grandientSize, grandientSize, hueBarWidth, hueBarHeight, hexaFieldWidth, hexaFieldHeight);
+	public ColorSelector(int grandientSize, int hueBarWidth, int hueBarHeight, int hexaFieldWidth, int hexaFieldHeight, ColorBindable colorBindable) {
+		this(grandientSize, grandientSize, hueBarWidth, hueBarHeight, hexaFieldWidth, hexaFieldHeight, colorBindable);
 	}
 
-	public ColorSelector() {
-		this(100, 16, 100, 100 + 16 + 3, 20);
+	public ColorSelector(ColorBindable colorBindable) {
+		this(100, 16, 100, 100 + 16 + 3, 20, colorBindable);
 	}
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+		setPosition(colorBindable.getRight(), colorBindable.getY());
+
 		int backgroundColor = 0xff1e1f22;
 		context.fill(getX(), getY(), getRight(), getBottom(), backgroundColor);
 
@@ -57,52 +67,77 @@ public class ColorSelector implements Element, Drawable, ColorUpdatable {
 
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		if (gradientWidget.isMouseOver(mouseX, mouseY)) {
-			gradientWidget.mouseClicked(mouseX, mouseY, button);
-		}
-		if (hueWidget.isMouseOver(mouseX, mouseY)) {
-			hueWidget.mouseClicked(mouseX, mouseY, button);
+		if (this.isMouseOver(mouseX, mouseY)) {
+			for (Element child : getChildren()) {
+				child.mouseClicked(mouseX, mouseY, button);
+			}
+
+			return true;
 		}
 		return false;
 	}
 
 	@Override
 	public boolean mouseReleased(double mouseX, double mouseY, int button) {
-		if (gradientWidget.isDraggingCursor()) {
+		if (this.isMouseOver(mouseX, mouseY) || this.isDraggingACursor()) {
 			gradientWidget.mouseReleased(mouseX, mouseY, button);
-		}
-		if (hueWidget.isDraggingCursor()) {
 			hueWidget.mouseReleased(mouseX, mouseY, button);
+
+			return true;
 		}
 		return false;
 	}
 
 	@Override
 	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-		if (gradientWidget.isDraggingCursor()) {
+		if (this.isMouseOver(mouseX, mouseY) || this.isDraggingACursor()) {
 			gradientWidget.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
-		}
-		if (hueWidget.isDraggingCursor()) {
 			hueWidget.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+
+			return true;
 		}
 		return false;
 	}
 
 	@Override
-	public void onUpdateColor(ColorSelectorElement element) {
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (colorFieldWidget.isFocused()) {
+			colorFieldWidget.keyPressed(keyCode, scanCode, modifiers);
+
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean charTyped(char chr, int modifiers) {
+		if (colorFieldWidget.isFocused()) {
+			return colorFieldWidget.charTyped(chr, modifiers);
+		}
+		return false;
+	}
+
+	@Override
+	void onUpdateColor(ColorSelectorElement element) {
+		int color = 0;
 		switch (element) {
 			case GRADIENT -> {
-				//TODO update colorField
+				color = gradientWidget.getSelectedColor();
+				colorFieldWidget.updateColor(color);
 			}
 			case HUE -> {
 				gradientWidget.updateHue(hueWidget.getSelectedHue());
-				//TODO update colorField
+				color = gradientWidget.getSelectedColor();
+				colorFieldWidget.updateColor(color);
 			}
 			case COLOR_FIELD -> {
-				//TODO update gradient
-				//TODO update huebar
+				color = colorFieldWidget.getColor();
+				gradientWidget.updateColor(color);
+				hueWidget.updateHue(color);
 			}
 		}
+
+		this.colorBindable.onReceiveColor(color);
 	}
 
 	@Override
@@ -134,6 +169,10 @@ public class ColorSelector implements Element, Drawable, ColorUpdatable {
 
 	public int getBottom() {
 		return y + height;
+	}
+
+	private List<Element> getChildren() {
+		return List.of(gradientWidget, hueWidget, colorFieldWidget);
 	}
 
 	public boolean isDraggingACursor() {

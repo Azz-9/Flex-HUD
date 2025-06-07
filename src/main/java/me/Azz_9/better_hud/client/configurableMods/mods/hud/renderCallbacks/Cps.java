@@ -67,6 +67,28 @@ public class Cps extends AbstractHudElement {
 		return new AbstractConfigurationScreen(Text.translatable("better_hud.cps"), parent, parentScrollAmount) {
 			@Override
 			protected void init() {
+				super.init();
+
+				this.addAllEntries(
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setToggled(JsonConfigHelper.getInstance().cps.enabled)
+								.setOnToggle(toggled -> JsonConfigHelper.getInstance().cps.enabled = toggled)
+								.setText(Text.translatable("better_hud.armor_status.config.enable"))
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setToggled(JsonConfigHelper.getInstance().cps.shadow)
+								.setOnToggle(toggled -> JsonConfigHelper.getInstance().cps.shadow = toggled)
+								.setText(Text.translatable("better_hud.global.config.text_shadow"))
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setToggled(JsonConfigHelper.getInstance().cps.chromaColor)
+								.setOnToggle(toggled -> JsonConfigHelper.getInstance().cps.chromaColor = toggled)
+								.setText(Text.translatable("better_hud.global.config.chroma_text_color"))
+								.build()
+				);
 			}
 		};
 	}

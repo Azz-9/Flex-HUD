@@ -73,8 +73,24 @@ public class GradientWidget extends ClickableWidget {
 	}
 
 	@Override
+	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+		if (isDraggingCursor) {
+			return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+		}
+		return false;
+	}
+
+	@Override
 	protected void onDrag(double mouseX, double mouseY, double deltaX, double deltaY) {
 		moveCursor(mouseX, mouseY);
+	}
+
+	@Override
+	public boolean mouseReleased(double mouseX, double mouseY, int button) {
+		if (isDraggingCursor) {
+			return super.mouseReleased(mouseX, mouseY, button);
+		}
+		return false;
 	}
 
 	@Override
@@ -99,13 +115,35 @@ public class GradientWidget extends ClickableWidget {
 		selectedColor = Color.HSBtoRGB(selectedHue / 360.0f, saturation, brightness) & 0x00ffffff;
 	}
 
+	public void updateColor(int color) {
+		selectedColor = color;
+		float[] hsbValues = new float[3];
+		Color.RGBtoHSB((selectedColor >> 16) & 0xFF, (selectedColor >> 8) & 0xFF, selectedColor & 0xFF, hsbValues);
+		selectedHue = hsbValues[0] * 360.0f;
+		setCursorPositionToSelectedColor();
+	}
+
 	void updateHue(float hue) {
 		selectedHue = hue;
 		updateColor(cursorX, cursorY);
 	}
 
+	public void setCursorPositionToSelectedColor() {
+		float[] hsbValues = new float[3];
+		Color.RGBtoHSB((selectedColor >> 16) & 0xFF, (selectedColor >> 8) & 0xFF, selectedColor & 0xFF, hsbValues);
+		float saturation = hsbValues[1];
+		float brightness = hsbValues[2];
+
+		cursorX = saturation * getWidth();
+		cursorY = (1.0f - brightness) * getHeight();
+	}
+
 	public boolean isDraggingCursor() {
 		return isDraggingCursor;
+	}
+
+	public int getSelectedColor() {
+		return selectedColor;
 	}
 
 	@Override

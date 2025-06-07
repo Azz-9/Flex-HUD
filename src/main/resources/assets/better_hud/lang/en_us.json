@@ -52,7 +52,9 @@
 	"better_hud.armor_status.config.show_leggings": "Show leggings",
 	"better_hud.armor_status.config.show_boots": "Show boots",
 	"better_hud.armor_status.config.show_held_item": "Show held item",
+	"better_hud.armor_status.config.show_off_hand_item": "Show off hand item",
 	"better_hud.armor_status.config.show_arrows": "Show arrows when held item is a bow",
+	"better_hud.armor_status.config.separate_arrow_types": "Separate arrow types",
 	"better_hud.armor_status.config.show_durability": "Show durability",
 	"better_hud.armor_status.config.orientation": "Orientation",
 

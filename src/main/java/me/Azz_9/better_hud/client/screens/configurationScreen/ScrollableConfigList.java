@@ -37,6 +37,10 @@ public class ScrollableConfigList extends ElementListWidget<ScrollableConfigList
 		return super.getEntry(index);
 	}
 
+	public AbstractConfigEntry getLastEntry() {
+		return super.getEntry(super.getEntryCount() - 1);
+	}
+
 	public void addConfigEntry(AbstractConfigEntry entry) {
 		this.addEntry(entry);
 		entry.addObserver(observer);
@@ -46,7 +50,6 @@ public class ScrollableConfigList extends ElementListWidget<ScrollableConfigList
 		protected TexturedButtonWidget resetButtonWidget;
 		protected TextWidget textWidget;
 		protected List<Observer> observers = new ArrayList<>();
-		private boolean active;
 
 		private final int resetButtonSize;
 
@@ -81,7 +84,6 @@ public class ScrollableConfigList extends ElementListWidget<ScrollableConfigList
 		}
 
 		public void setActive(boolean active) {
-			this.active = active;
 			resetButtonWidget.active = active;
 			textWidget.setTextColor((active ? 0xffffff : 0xafafaf));
 		}

@@ -6,6 +6,7 @@ import me.Azz_9.better_hud.client.screens.modsList.DataGetter;
 import me.Azz_9.better_hud.client.screens.modsList.ModsListScreen;
 import me.Azz_9.better_hud.client.screens.widgets.buttons.configButtons.ConfigColorButtonWidget;
 import me.Azz_9.better_hud.client.screens.widgets.buttons.configButtons.ConfigToggleButtonWidget;
+import me.Azz_9.better_hud.client.screens.widgets.buttons.configButtons.colorSelector.ColorBindable;
 import me.Azz_9.better_hud.client.screens.widgets.buttons.configButtons.colorSelector.ColorSelector;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -20,8 +21,8 @@ import java.util.function.Consumer;
 
 public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen implements Observer {
 
-	protected final int buttonWidth;
-	protected final int buttonHeight;
+	protected int buttonWidth;
+	protected int buttonHeight;
 	private final int buttonGap;
 	private final double parentScrollAmount;
 
@@ -72,7 +73,6 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 	@Override
 	public void close() {
 		super.close();
-		System.out.println(parentScrollAmount);
 		if (PARENT instanceof ModsListScreen modsListScreen) {
 			modsListScreen.getModsList().setScrollY(parentScrollAmount);
 		}
@@ -111,9 +111,11 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		if (colorSelector != null && colorSelector.isFocused() && colorSelector.isMouseOver(mouseX, mouseY)) {
+		if (colorSelector != null && colorSelector.isFocused()) {
 			if (colorSelector.mouseClicked(mouseX, mouseY, button)) {
 				return true;
+			} else {
+				closeColorSelector();
 			}
 		}
 		return super.mouseClicked(mouseX, mouseY, button);
@@ -121,7 +123,7 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 
 	@Override
 	public boolean mouseReleased(double mouseX, double mouseY, int button) {
-		if (colorSelector != null && colorSelector.isFocused() && (colorSelector.isMouseOver(mouseX, mouseY) || colorSelector.isDraggingACursor())) {
+		if (colorSelector != null && colorSelector.isFocused()) {
 			if (colorSelector.mouseReleased(mouseX, mouseY, button)) {
 				return true;
 			}
@@ -139,9 +141,29 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 		return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
 	}
 
-	public void openColorSelectorAt(int x, int y) {
-		this.colorSelector = new ColorSelector();
-		this.colorSelector.setPosition(x, y);
+	@Override
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (colorSelector != null && colorSelector.isFocused()) {
+			if (colorSelector.keyPressed(keyCode, scanCode, modifiers)) {
+				return true;
+			}
+		}
+		return super.keyPressed(keyCode, scanCode, modifiers);
+	}
+
+	@Override
+	public boolean charTyped(char chr, int modifiers) {
+		if (colorSelector != null && colorSelector.isFocused()) {
+			if (colorSelector.charTyped(chr, modifiers)) {
+				return true;
+			}
+		}
+		return super.charTyped(chr, modifiers);
+	}
+
+
+	public void openColorSelector(ColorBindable colorBindable) {
+		this.colorSelector = new ColorSelector(colorBindable);
 		this.colorSelector.setFocused(true);
 	}
 
@@ -203,7 +225,7 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 		}
 
 		// Builder
-		public static class Builder extends ScrollableConfigList.AbstractConfigEntry.AbstractBuilder {
+		public static class Builder extends AbstractBuilder {
 			private int toggleButtonWidth;
 			private int toggleButtonHeight = 20;
 			private boolean toggled;
@@ -258,7 +280,7 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 	}
 
 	public static class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
-		private final ConfigColorButtonWidget<?> colorButtonWidget;
+		private ConfigColorButtonWidget<?> colorButtonWidget;
 
 		public <T> ColorButtonEntry(
 				int colorButtonWidth,
@@ -276,7 +298,7 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 						if (screen != null) {
 							ColorSelector colorSelector = screen.colorSelector;
 							if (colorSelector == null || !colorSelector.isFocused()) {
-								screen.openColorSelectorAt(btn.getRight(), btn.getY());
+								screen.openColorSelector(this.colorButtonWidget);
 							} else {
 								screen.closeColorSelector();
 							}
@@ -315,7 +337,63 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 
 		@Override
 		public void onChange(DataGetter<?> dataGetter) {
+			boolean active = !colorButtonWidget.getDisableWhen().equals(dataGetter.getData());
+			colorButtonWidget.active = active;
+			setActive(active);
+		}
 
+		//Builder
+		public static class Builder extends AbstractBuilder {
+			private int colorButtonWidth;
+			private int colorButtonHeight = 20;
+			private int color;
+			private Consumer<Integer> onColorChange = t -> {
+			};
+			private ScrollableConfigList.AbstractConfigEntry dependency = null;
+			private Object disableWhen;
+
+			public ColorButtonEntry.Builder setColorButtonWidth(int width) {
+				this.colorButtonWidth = width;
+				return this;
+			}
+
+			public ColorButtonEntry.Builder setColorButtonSize(int width, int height) {
+				this.colorButtonWidth = width;
+				this.colorButtonHeight = height;
+				return this;
+			}
+
+			public ColorButtonEntry.Builder setColor(int color) {
+				this.color = color;
+				return this;
+			}
+
+			public ColorButtonEntry.Builder setOnColorChange(Consumer<Integer> onColorChange) {
+				this.onColorChange = onColorChange;
+				return this;
+			}
+
+			public <T> ColorButtonEntry.Builder setDependency(ScrollableConfigList.AbstractConfigEntry entry, T disableWhen) {
+				dependency = entry;
+				this.disableWhen = disableWhen;
+				return this;
+			}
+
+			@Override
+			public ColorButtonEntry build() {
+				ColorButtonEntry entry = new ColorButtonEntry(
+						colorButtonWidth, colorButtonHeight,
+						color, onColorChange,
+						resetButtonSize,
+						text,
+						disableWhen
+				);
+				if (dependency != null) {
+					dependency.addObserver(entry);
+					entry.onChange(dependency.getDataGetter());
+				}
+				return entry;
+			}
 		}
 	}
 }

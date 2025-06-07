@@ -60,8 +60,24 @@ public class HueWidget extends ClickableWidget {
 	}
 
 	@Override
+	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+		if (isDraggingCursor) {
+			return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+		}
+		return false;
+	}
+
+	@Override
 	protected void onDrag(double mouseX, double mouseY, double deltaX, double deltaY) {
 		moveCursor(mouseY);
+	}
+
+	@Override
+	public boolean mouseReleased(double mouseX, double mouseY, int button) {
+		if (isDraggingCursor) {
+			return super.mouseReleased(mouseX, mouseY, button);
+		}
+		return false;
 	}
 
 	@Override
@@ -74,12 +90,18 @@ public class HueWidget extends ClickableWidget {
 	private void moveCursor(double mouseY) {
 		cursorY = Math.clamp(mouseY, getY(), getBottom()) - getY();
 		updateHue(cursorY);
-		
+
 		colorSelector.onUpdateColor(ColorSelector.ColorSelectorElement.HUE);
 	}
 
 	private void updateHue(double cursorY) {
 		selectedHue = (float) ((cursorY) * 360.0f / getHeight());
+	}
+
+	public void updateHue(int color) {
+		float[] hsb = Color.RGBtoHSB((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF, null);
+		selectedHue = hsb[0] * 360.0f;
+		this.cursorY = (hsb[0] * height);
 	}
 
 	public boolean isDraggingCursor() {

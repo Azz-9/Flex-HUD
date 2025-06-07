@@ -2,7 +2,9 @@ package me.Azz_9.better_hud.client;
 
 import me.Azz_9.better_hud.client.configurableMods.JsonConfigHelper;
 import me.Azz_9.better_hud.client.configurableMods.mods.hud.AbstractHudElement;
+import me.Azz_9.better_hud.client.utils.ChromaColorUtil;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
@@ -44,6 +46,8 @@ public class Better_hudClient implements ClientModInitializer {
 				layeredDrawer.attachLayerBefore(IdentifiedLayer.CHAT, id, element::render);
 			}
 		});
+
+		ClientTickEvents.END_CLIENT_TICK.register(client -> ChromaColorUtil.updateColor());
 
 		// see KeyBindingMixin
 		openOptionScreenKeyBind = KeyBindingHelper.registerKeyBinding(new KeyBinding("better_hud.controls.open_menu", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_RIGHT_SHIFT, "Better HUD"));
