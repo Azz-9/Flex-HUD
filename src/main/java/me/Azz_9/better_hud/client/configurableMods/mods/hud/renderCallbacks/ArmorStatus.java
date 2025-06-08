@@ -257,8 +257,19 @@ public class ArmorStatus extends AbstractHudElement {
 								.setToggled(JsonConfigHelper.getInstance().armorStatus.separateArrowTypes)
 								.setOnToggle(toggled -> JsonConfigHelper.getInstance().armorStatus.separateArrowTypes = toggled)
 								.setText(Text.translatable("better_hud.armor_status.config.separate_arrow_types"))
+								.build(),
+						new CyclingButtonEntry.Builder<DurabilityType>()
+								.setCyclingButtonWidth(80)
+								.setValue(JsonConfigHelper.getInstance().armorStatus.durabilityType)
+								.setOnValueChange(value -> JsonConfigHelper.getInstance().armorStatus.durabilityType = value)
+								.setText(Text.translatable("better_hud.armor_status.config.show_durability"))
+								.build(),
+						new CyclingButtonEntry.Builder<DisplayMode>()
+								.setCyclingButtonWidth(80)
+								.setValue(JsonConfigHelper.getInstance().armorStatus.displayMode)
+								.setOnValueChange(value -> JsonConfigHelper.getInstance().armorStatus.displayMode = value)
+								.setText(Text.translatable("better_hud.armor_status.config.orientation"))
 								.build()
-						//TODO cycling button
 				);
 			}
 		};

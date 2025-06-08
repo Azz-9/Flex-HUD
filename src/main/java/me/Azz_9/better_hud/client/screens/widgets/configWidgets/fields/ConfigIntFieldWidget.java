@@ -18,8 +18,8 @@ public class ConfigIntFieldWidget<T> extends TextFieldWidget implements Trackabl
 	private final int INITIAL_STATE;
 	private final T disableWhen;
 
-	private final Integer MIN_VALUE;
-	private final Integer MAX_VALUE;
+	private final int MIN_VALUE;
+	private final int MAX_VALUE;
 
 	private boolean suppressIntFieldCallback = false;
 
@@ -29,39 +29,45 @@ public class ConfigIntFieldWidget<T> extends TextFieldWidget implements Trackabl
 		this.INITIAL_STATE = currentValue;
 		this.disableWhen = disableWhen;
 
-		this.MIN_VALUE = min;
-		this.MAX_VALUE = max;
+		if (min != null && min < 0) throw new IllegalArgumentException("Min value cannot be negative!");
+		if (max != null && max < 0) throw new IllegalArgumentException("Max value cannot be negative!");
+		if (min != null && max != null && min > max)
+			throw new IllegalArgumentException("Min value cannot be greater than max value!");
 
-		StringBuilder regex = new StringBuilder("[0-9]");
-		if (MIN_VALUE != null && MAX_VALUE != null) {
-			regex.append("{").append(MIN_VALUE.toString().length()).append(",").append(MAX_VALUE.toString().length()).append("}");
-		} else if (MIN_VALUE != null) {
-			regex.append("{").append(MIN_VALUE.toString().length()).append(",}");
-		} else if (MAX_VALUE != null) {
-			regex.append("{,").append(MAX_VALUE.toString().length()).append("}");
-		} else {
-			regex.append("*");
-		}
-		setTextPredicate(text -> text.isEmpty() || text.matches(regex.toString()));
+		this.MIN_VALUE = (min != null ? min : 0);
+		this.MAX_VALUE = (max != null ? max : Integer.MAX_VALUE);
+
+		String regex = String.format("[0-9]{%d,%d}", String.valueOf(MIN_VALUE).length(), String.valueOf(MAX_VALUE).length());
+		setTextPredicate(text -> text.isEmpty() || text.matches(regex));
 
 		setChangedListener(value -> {
 			if (suppressIntFieldCallback) return;
 
 			if (value.isEmpty()) {
-				value = "0";
-			} else if (value.startsWith("0") && value.length() > 1) {
-				value = value.substring(1);
-			} else if (MAX_VALUE != null && Integer.parseInt(value) > MAX_VALUE) {
-				value = MAX_VALUE.toString();
-			} else if (MIN_VALUE != null && Integer.parseInt(value) < MIN_VALUE) {
-				value = MIN_VALUE.toString();
+				value = String.valueOf(MIN_VALUE);
+			} else {
+				int intValue;
+				try {
+					intValue = Integer.parseUnsignedInt(value);
+				} catch (NumberFormatException e) {
+					intValue = Integer.MAX_VALUE;
+					value = String.valueOf(intValue);
+				}
+
+				if (value.startsWith("0") && value.length() > 1) {
+					value = value.substring(1);
+				} else if (intValue > MAX_VALUE) {
+					value = String.valueOf(MAX_VALUE);
+				} else if (intValue < MIN_VALUE) {
+					value = String.valueOf(MIN_VALUE);
+				}
 			}
 			setText(value);
 
 			for (Observer observer : observers) {
 				observer.onChange(this);
 			}
-			onChange.accept(Integer.parseInt(value));
+			onChange.accept(getValue());
 		});
 
 		setText(String.valueOf(currentValue));
@@ -81,13 +87,13 @@ public class ConfigIntFieldWidget<T> extends TextFieldWidget implements Trackabl
 	}
 
 	public void increase() {
-		if (MAX_VALUE != null && getValue() < MAX_VALUE) {
+		if (getValue() < MAX_VALUE) {
 			super.setText(String.valueOf(getValue() + 1));
 		}
 	}
 
 	public void decrease() {
-		if (MIN_VALUE != null && getValue() > MIN_VALUE) {
+		if (getValue() > MIN_VALUE) {
 			super.setText(String.valueOf(getValue() - 1));
 		}
 	}
@@ -100,7 +106,7 @@ public class ConfigIntFieldWidget<T> extends TextFieldWidget implements Trackabl
 	}
 
 	private int getValue() {
-		return Integer.parseInt(getText());
+		return Integer.parseUnsignedInt(getText());
 	}
 
 	public T getDisableWhen() {
@@ -109,7 +115,7 @@ public class ConfigIntFieldWidget<T> extends TextFieldWidget implements Trackabl
 
 	@Override
 	public void setToInitialState() {
-		setText(String.valueOf(INITIAL_STATE));
+		super.setText(String.valueOf(INITIAL_STATE));
 	}
 
 	@Override
