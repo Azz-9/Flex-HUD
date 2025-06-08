@@ -2,7 +2,7 @@ package me.Azz_9.better_hud.client.screens.modsList;
 
 import me.Azz_9.better_hud.client.configurableMods.JsonConfigHelper;
 import me.Azz_9.better_hud.client.screens.AbstractBackNavigableScreen;
-import me.Azz_9.better_hud.client.screens.widgets.TextFieldWidget.PlaceholderTextFieldWidget;
+import me.Azz_9.better_hud.client.screens.widgets.textFieldWidget.PlaceholderTextFieldWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -151,10 +151,9 @@ public class ModsListScreen extends AbstractBackNavigableScreen {
 					() -> MinecraftClient.getInstance().setScreen(new Coordinates(this, modsList.getScrollY()));
 			case "fps" -> () -> MinecraftClient.getInstance().setScreen(new FPS(this, modsList.getScrollY()));
 			case "clock" -> () -> MinecraftClient.getInstance().setScreen(new Clock(this, modsList.getScrollY()));*/
-			case "armor_status" ->
-					() -> MinecraftClient.getInstance().setScreen(
-							JsonConfigHelper.getInstance().armorStatus.getConfigScreen(this, modsList.getScrollY())
-					);
+			case "armor_status" -> () -> MinecraftClient.getInstance().setScreen(
+					JsonConfigHelper.getInstance().armorStatus.getConfigScreen(this, modsList.getScrollY())
+			);
 			/*case "direction" ->
 					() -> MinecraftClient.getInstance().setScreen(new Direction(this, modsList.getScrollY()));
 			case "day_counter" ->
@@ -164,22 +163,18 @@ public class ModsListScreen extends AbstractBackNavigableScreen {
 					() -> MinecraftClient.getInstance().setScreen(new ServerAddress(this, modsList.getScrollY()));
 			case "memory_usage" ->
 					() -> MinecraftClient.getInstance().setScreen(new MemoryUsage(this, modsList.getScrollY()));*/
-			case "cps" ->
-					() -> MinecraftClient.getInstance().setScreen(
-							JsonConfigHelper.getInstance().cps.getConfigScreen(this, modsList.getScrollY())
-					);
-			case "time_changer" ->
-					() -> MinecraftClient.getInstance().setScreen(
-							JsonConfigHelper.getInstance().timeChanger.getConfigScreen(this, modsList.getScrollY())
-					);
-			case "weather_changer" ->
-					() -> MinecraftClient.getInstance().setScreen(
-							JsonConfigHelper.getInstance().weatherChanger.getConfigScreen(this, modsList.getScrollY())
-					);
-			case "durability_ping" ->
-					() -> MinecraftClient.getInstance().setScreen(
-							JsonConfigHelper.getInstance().durabilityPing.getConfigScreen(this, modsList.getScrollY())
-					);
+			case "cps" -> () -> MinecraftClient.getInstance().setScreen(
+					JsonConfigHelper.getInstance().cps.getConfigScreen(this, modsList.getScrollY())
+			);
+			case "time_changer" -> () -> MinecraftClient.getInstance().setScreen(
+					JsonConfigHelper.getInstance().timeChanger.getConfigScreen(this, modsList.getScrollY())
+			);
+			case "weather_changer" -> () -> MinecraftClient.getInstance().setScreen(
+					JsonConfigHelper.getInstance().weatherChanger.getConfigScreen(this, modsList.getScrollY())
+			);
+			case "durability_ping" -> () -> MinecraftClient.getInstance().setScreen(
+					JsonConfigHelper.getInstance().durabilityPing.getConfigScreen(this, modsList.getScrollY())
+			);
 			/*case "speedometer" ->
 					() -> MinecraftClient.getInstance().setScreen(new Speedometer(this, modsList.getScrollY()));
 			case "reach" -> () -> MinecraftClient.getInstance().setScreen(new Reach(this, modsList.getScrollY()));

@@ -1,4 +1,4 @@
-package me.Azz_9.better_hud.client.screens.widgets.buttons.configButtons.colorSelector;
+package me.Azz_9.better_hud.client.screens.widgets.configWidgets.buttons.colorSelector;
 
 import me.Azz_9.better_hud.client.Better_hudClient;
 import net.minecraft.client.font.TextRenderer;
@@ -13,7 +13,7 @@ public class ColorFieldWidget extends TextFieldWidget {
 	ColorFieldWidget(TextRenderer textRenderer, int width, int height, ColorUpdatable colorSelector) {
 		super(textRenderer, width, height, Text.translatable("better_hud.color_entry_widget"));
 		this.colorSelector = colorSelector;
-		
+
 		setText("#FFFFFF");
 
 		setChangedListener(text -> {

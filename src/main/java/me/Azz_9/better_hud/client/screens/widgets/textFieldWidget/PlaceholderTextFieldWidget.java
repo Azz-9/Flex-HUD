@@ -1,4 +1,4 @@
-package me.Azz_9.better_hud.client.screens.widgets.TextFieldWidget;
+package me.Azz_9.better_hud.client.screens.widgets.textFieldWidget;
 
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;

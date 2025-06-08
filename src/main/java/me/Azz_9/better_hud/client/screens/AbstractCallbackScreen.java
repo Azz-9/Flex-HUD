@@ -81,19 +81,21 @@ public abstract class AbstractCallbackScreen extends AbstractBackNavigableScreen
 	protected final boolean renderCallback(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.renderBackground(context, mouseX, mouseY, delta);
 
-		cancelButton.render(context, mouseX, mouseY, delta);
-		saveButton.render(context, mouseX, mouseY, delta);
+		if (!callbackScreen) {
+			cancelButton.render(context, mouseX, mouseY, delta);
+			saveButton.render(context, mouseX, mouseY, delta);
 
-		if (callbackScreen) {
+			return false;
+		} else {
 			callbackDiscardButton.render(context, mouseX, mouseY, delta);
 			callbackCancelButton.render(context, mouseX, mouseY, delta);
 
 			int textColor = 0xffffff;
 			context.drawCenteredTextWithShadow(textRenderer, MESSAGE_TITLE, this.width / 2, this.height / 2 - 42, textColor);
 			context.drawCenteredTextWithShadow(textRenderer, MESSAGE_CONTENT, this.width / 2, this.height / 2 - 30, textColor);
+			
 			return true;
 		}
-		return false;
 	}
 
 	protected void cancel() {

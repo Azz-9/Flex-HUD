@@ -1,4 +1,4 @@
-package me.Azz_9.better_hud.client.screens.widgets.buttons.configButtons;
+package me.Azz_9.better_hud.client.screens.widgets.configWidgets.buttons;
 
 import me.Azz_9.better_hud.client.screens.widgets.buttons.TexturedButtonWidget;
 import net.minecraft.client.gui.DrawContext;

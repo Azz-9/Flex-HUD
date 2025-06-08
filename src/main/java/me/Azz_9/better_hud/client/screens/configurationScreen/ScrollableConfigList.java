@@ -3,7 +3,7 @@ package me.Azz_9.better_hud.client.screens.configurationScreen;
 import me.Azz_9.better_hud.client.screens.TrackableChange;
 import me.Azz_9.better_hud.client.screens.modsList.DataGetter;
 import me.Azz_9.better_hud.client.screens.widgets.buttons.TexturedButtonWidget;
-import me.Azz_9.better_hud.client.screens.widgets.buttons.configButtons.ConfigResetButtonWidget;
+import me.Azz_9.better_hud.client.screens.widgets.configWidgets.buttons.ConfigResetButtonWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
@@ -19,7 +19,6 @@ import java.util.List;
 public class ScrollableConfigList extends ElementListWidget<ScrollableConfigList.AbstractConfigEntry> {
 	private int itemWidth;
 	private final Observer observer;
-	//TODO
 
 	public ScrollableConfigList(MinecraftClient minecraftClient, int width, int height, int y, int x, int itemHeight, int itemWidth, Observer observer) {
 		super(minecraftClient, width, height, y, itemHeight);

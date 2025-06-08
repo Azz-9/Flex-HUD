@@ -1,9 +1,9 @@
-package me.Azz_9.better_hud.client.screens.widgets.buttons.configButtons;
+package me.Azz_9.better_hud.client.screens.widgets.configWidgets.buttons;
 
 import me.Azz_9.better_hud.client.screens.TrackableChange;
 import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.better_hud.client.screens.modsList.DataGetter;
-import me.Azz_9.better_hud.client.screens.widgets.buttons.configButtons.colorSelector.ColorBindable;
+import me.Azz_9.better_hud.client.screens.widgets.configWidgets.buttons.colorSelector.ColorBindable;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
@@ -65,6 +65,7 @@ public class ConfigColorButtonWidget<T> extends ClickableWidget implements Track
 	@Override
 	public void setToInitialState() {
 		this.color = this.INITIAL_COLOR;
+		ON_COlOR_CHANGE.accept(this.INITIAL_COLOR);
 	}
 
 	@Override

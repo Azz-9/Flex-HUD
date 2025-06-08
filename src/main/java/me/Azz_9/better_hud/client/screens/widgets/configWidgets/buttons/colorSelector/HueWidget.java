@@ -1,4 +1,4 @@
-package me.Azz_9.better_hud.client.screens.widgets.buttons.configButtons.colorSelector;
+package me.Azz_9.better_hud.client.screens.widgets.configWidgets.buttons.colorSelector;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
