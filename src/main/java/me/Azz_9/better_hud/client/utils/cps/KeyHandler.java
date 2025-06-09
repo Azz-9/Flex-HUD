@@ -6,28 +6,37 @@ import net.minecraft.client.MinecraftClient;
 import org.lwjgl.glfw.GLFW;
 
 public class KeyHandler {
-	private static boolean isPressed = false;
+	private static boolean isAttackKeyPressed = false;
+	private static boolean isUseKeyPressed = false;
 
 	public static void onKey(int button, int action) {
-		if (!JsonConfigHelper.getInstance().isEnabled || !JsonConfigHelper.getInstance().cps.enabled || !(JsonConfigHelper.getInstance().cps.showLeftClick || JsonConfigHelper.getInstance().cps.showRightClick)) {
-			isPressed = false;
+		if (!JsonConfigHelper.getInstance().isEnabled || !JsonConfigHelper.getInstance().cps.isEnabled()) {
+			isAttackKeyPressed = false;
+			isUseKeyPressed = false;
 			return;
 		}
 
 		int attackKeyCode = KeyBindingHelper.getBoundKeyOf(MinecraftClient.getInstance().options.attackKey).getCode();
 		int useKeyCode = KeyBindingHelper.getBoundKeyOf(MinecraftClient.getInstance().options.useKey).getCode();
 
-		if (button != attackKeyCode && button != useKeyCode || (button == attackKeyCode && !JsonConfigHelper.getInstance().cps.showLeftClick) || (button == useKeyCode && !JsonConfigHelper.getInstance().cps.showRightClick)) {
-			isPressed = false;
+		if ((button != attackKeyCode && button != useKeyCode) || (button == attackKeyCode && !JsonConfigHelper.getInstance().cps.showLeftClick) || (button == useKeyCode && !JsonConfigHelper.getInstance().cps.showRightClick)) {
+			isAttackKeyPressed = false;
+			isUseKeyPressed = false;
 			return;
 		}
 		if (action == GLFW.GLFW_PRESS) {
-			if (!isPressed) {
-				isPressed = true;
-				CalculateCps.onKeyPress(button);
+			if (!isAttackKeyPressed && button == attackKeyCode) {
+				isAttackKeyPressed = true;
+				CalculateCps.onAttackKeyPress();
+				return;
+
+			} else if (!isUseKeyPressed && button == useKeyCode) {
+				isUseKeyPressed = true;
+				CalculateCps.onUseKeyPress();
 				return;
 			}
 		}
-		isPressed = false;
+		isAttackKeyPressed = false;
+		isUseKeyPressed = false;
 	}
 }
