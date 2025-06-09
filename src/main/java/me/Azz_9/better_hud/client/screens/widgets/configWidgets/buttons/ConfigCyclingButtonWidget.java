@@ -3,7 +3,7 @@ package me.Azz_9.better_hud.client.screens.widgets.configWidgets.buttons;
 import me.Azz_9.better_hud.client.screens.TrackableChange;
 import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.better_hud.client.screens.modsList.DataGetter;
-import me.Azz_9.better_hud.client.utils.StringUtil;
+import me.Azz_9.better_hud.client.utils.StringUtils;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
@@ -20,7 +20,7 @@ public class ConfigCyclingButtonWidget<T, E extends Enum<E>> extends ButtonWidge
 	private E currentValue;
 
 	public ConfigCyclingButtonWidget(int width, int height, E currentValue, Consumer<E> onChange, List<Observer> observers, T disableWhen) {
-		super(0, 0, width, height, Text.of(StringUtil.capitalize(currentValue.name())), (btn) -> {
+		super(0, 0, width, height, Text.of(StringUtils.capitalize(currentValue.name())), (btn) -> {
 		}, DEFAULT_NARRATION_SUPPLIER);
 		this.ON_CHANGE = onChange;
 		this.INITIAL_STATE = currentValue;
@@ -46,7 +46,7 @@ public class ConfigCyclingButtonWidget<T, E extends Enum<E>> extends ButtonWidge
 		int index = (currentValue.ordinal() + 1) % values.length;
 
 		currentValue = values[index];
-		setMessage(Text.of(StringUtil.capitalize(currentValue.name())));
+		setMessage(Text.of(StringUtils.capitalize(currentValue.name())));
 		ON_CHANGE.accept(currentValue);
 
 		for (Observer observer : observers) {
@@ -57,7 +57,7 @@ public class ConfigCyclingButtonWidget<T, E extends Enum<E>> extends ButtonWidge
 	@Override
 	public void setToInitialState() {
 		currentValue = INITIAL_STATE;
-		setMessage(Text.of(StringUtil.capitalize(INITIAL_STATE.name())));
+		setMessage(Text.of(StringUtils.capitalize(INITIAL_STATE.name())));
 		ON_CHANGE.accept(currentValue);
 
 		for (Observer observer : observers) {

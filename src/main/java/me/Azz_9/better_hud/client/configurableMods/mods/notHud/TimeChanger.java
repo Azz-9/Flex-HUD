@@ -2,6 +2,7 @@ package me.Azz_9.better_hud.client.configurableMods.mods.notHud;
 
 import me.Azz_9.better_hud.client.configurableMods.mods.abstractMod;
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 
@@ -35,6 +36,29 @@ public class TimeChanger extends abstractMod {
 		return new AbstractConfigurationScreen(Text.translatable("better_hud.time_changer"), parent, parentScrollAmount) {
 			@Override
 			protected void init() {
+				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+					buttonWidth = 225;
+				} else {
+					buttonWidth = 200;
+				}
+
+				super.init();
+
+				this.addAllEntries(
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setToggled(enabled)
+								.setOnToggle(toggled -> enabled = toggled)
+								.setText(Text.translatable("better_hud.time_changer.config.enable"))
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setToggled(useRealTime)
+								.setOnToggle(toggled -> useRealTime = toggled)
+								.setText(Text.translatable("better_hud.time_changer.config.use_real_time"))
+								.build()
+						//TODO int slider
+				);
 			}
 		};
 	}

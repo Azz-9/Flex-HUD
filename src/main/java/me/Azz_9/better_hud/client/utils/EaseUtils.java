@@ -1,6 +1,6 @@
 package me.Azz_9.better_hud.client.utils;
 
-public class EaseUtil {
+public class EaseUtils {
 	public static float getEaseOutQuad(float progress) {
 		return 1 - (1 - progress) * (1 - progress);
 	}

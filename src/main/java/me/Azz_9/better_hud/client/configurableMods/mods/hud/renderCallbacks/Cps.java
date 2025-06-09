@@ -67,26 +67,66 @@ public class Cps extends AbstractHudElement {
 		return new AbstractConfigurationScreen(Text.translatable("better_hud.cps"), parent, parentScrollAmount) {
 			@Override
 			protected void init() {
+				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+					buttonWidth = 190;
+				}
+
 				super.init();
 
 				this.addAllEntries(
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(JsonConfigHelper.getInstance().cps.enabled)
-								.setOnToggle(toggled -> JsonConfigHelper.getInstance().cps.enabled = toggled)
-								.setText(Text.translatable("better_hud.armor_status.config.enable"))
+								.setToggled(enabled)
+								.setOnToggle(toggled -> enabled = toggled)
+								.setText(Text.translatable("better_hud.cps.config.enable"))
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(JsonConfigHelper.getInstance().cps.shadow)
-								.setOnToggle(toggled -> JsonConfigHelper.getInstance().cps.shadow = toggled)
+								.setToggled(shadow)
+								.setOnToggle(toggled -> shadow = toggled)
 								.setText(Text.translatable("better_hud.global.config.text_shadow"))
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(JsonConfigHelper.getInstance().cps.chromaColor)
-								.setOnToggle(toggled -> JsonConfigHelper.getInstance().cps.chromaColor = toggled)
+								.setToggled(chromaColor)
+								.setOnToggle(toggled -> chromaColor = toggled)
 								.setText(Text.translatable("better_hud.global.config.chroma_text_color"))
+								.build()
+				);
+				this.addAllEntries(
+						new ColorButtonEntry.Builder()
+								.setColorButtonWidth(buttonWidth)
+								.setColor(color)
+								.setOnColorChange(newColor -> color = newColor)
+								.setDependency(this.getConfigList().getLastEntry(), true)
+								.setText(Text.translatable("better_hud.global.config.text_color"))
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setToggled(drawBackground)
+								.setOnToggle(toggled -> drawBackground = toggled)
+								.setText(Text.translatable("better_hud.global.config.show_background"))
+								.build()
+				);
+				this.addAllEntries(
+						new ColorButtonEntry.Builder()
+								.setColorButtonWidth(buttonWidth)
+								.setColor(backgroundColor)
+								.setOnColorChange(newColor -> backgroundColor = newColor)
+								.setDependency(this.getConfigList().getLastEntry(), false)
+								.setText(Text.translatable("better_hud.global.config.background_color"))
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setToggled(showLeftClick)
+								.setOnToggle(toggled -> showLeftClick = toggled)
+								.setText(Text.translatable("better_hud.cps.config.show_left_click"))
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setToggled(showRightClick)
+								.setOnToggle(toggled -> showRightClick = toggled)
+								.setText(Text.translatable("better_hud.cps.config.show_right_click"))
 								.build()
 				);
 			}

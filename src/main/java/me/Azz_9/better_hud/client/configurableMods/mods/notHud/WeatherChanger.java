@@ -6,7 +6,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 
 public class WeatherChanger extends abstractMod {
-	public Weather selectedWeather;
+	public Weather selectedWeather = Weather.CLEAR;
 
 	public WeatherChanger() {
 		this.enabled = false;
@@ -17,6 +17,24 @@ public class WeatherChanger extends abstractMod {
 		return new AbstractConfigurationScreen(Text.translatable("better_hud.weather_changer"), parent, parentScrollAmount) {
 			@Override
 			protected void init() {
+				buttonWidth = 180;
+
+				super.init();
+
+				this.addAllEntries(
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setToggled(enabled)
+								.setOnToggle(toggled -> enabled = toggled)
+								.setText(Text.translatable("better_hud.weather_changer.config.enable"))
+								.build(),
+						new CyclingButtonEntry.Builder<Weather>()
+								.setCyclingButtonWidth(80)
+								.setValue(selectedWeather)
+								.setOnValueChange(value -> selectedWeather = value)
+								.setText(Text.translatable("better_hud.weather_changer.config.selected_weather"))
+								.build()
+				);
 			}
 		};
 	}

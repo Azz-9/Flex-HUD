@@ -3,7 +3,7 @@ package me.Azz_9.better_hud.client.screens;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.Azz_9.better_hud.client.screens.modsList.ModsListScreen;
 import me.Azz_9.better_hud.client.screens.widgets.buttons.TexturedButtonWidget;
-import me.Azz_9.better_hud.client.utils.EaseUtil;
+import me.Azz_9.better_hud.client.utils.EaseUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ButtonTextures;
@@ -51,7 +51,7 @@ public class OptionsScreen extends Screen {
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		final int ANIMATION_DURATION = 500;
 		float progress = Math.min((float) (System.currentTimeMillis() - initTimestamp) / ANIMATION_DURATION, 1.0f);
-		float easedProgress = EaseUtil.getEaseOutQuad(progress);
+		float easedProgress = EaseUtils.getEaseOutQuad(progress);
 
 		final Identifier modIcon = Identifier.of(MOD_ID, "icon.png");
 

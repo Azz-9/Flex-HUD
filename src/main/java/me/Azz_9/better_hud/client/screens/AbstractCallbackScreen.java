@@ -79,8 +79,6 @@ public abstract class AbstractCallbackScreen extends AbstractBackNavigableScreen
 	}
 
 	protected final boolean renderCallback(DrawContext context, int mouseX, int mouseY, float delta) {
-		super.renderBackground(context, mouseX, mouseY, delta);
-
 		if (!callbackScreen) {
 			cancelButton.render(context, mouseX, mouseY, delta);
 			saveButton.render(context, mouseX, mouseY, delta);

@@ -1,7 +1,7 @@
 package me.Azz_9.better_hud.client.configurableMods.mods.hud;
 
 import me.Azz_9.better_hud.client.configurableMods.mods.abstractMod;
-import me.Azz_9.better_hud.client.utils.ChromaColorUtil;
+import me.Azz_9.better_hud.client.utils.ChromaColorUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
@@ -65,7 +65,7 @@ public abstract class AbstractHudElement extends abstractMod {
 
 	protected int getColor() {
 		if (chromaColor) {
-			return ChromaColorUtil.getColor();
+			return ChromaColorUtils.getColor();
 		}
 		return color;
 	}

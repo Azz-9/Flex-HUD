@@ -4,7 +4,7 @@ import me.Azz_9.better_hud.client.Better_hudClient;
 
 import java.awt.*;
 
-public class ChromaColorUtil {
+public class ChromaColorUtils {
 	private static int color;
 	private static final int CYCLE_DURATION = 4000;
 

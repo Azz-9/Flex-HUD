@@ -1,6 +1,7 @@
 package me.Azz_9.better_hud.client.screens.modsList;
 
 import me.Azz_9.better_hud.client.configurableMods.JsonConfigHelper;
+import me.Azz_9.better_hud.client.screens.AbstractSmoothScrollableList;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ClickableWidget;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class ScrollableModsList extends ElementListWidget<ScrollableModsList.Entry> {
+public class ScrollableModsList extends AbstractSmoothScrollableList<ScrollableModsList.Entry> {
 
 	private final List<Entry> allEntries = new ArrayList<>();
 	private int buttonWidth;
@@ -156,7 +157,7 @@ public class ScrollableModsList extends ElementListWidget<ScrollableModsList.Ent
 
 		@Override
 		public List<ClickableWidget> selectableChildren() {
-			return this.children(); // Retourne les enfants sélectionnables (également le bouton ici)
+			return this.children();
 		}
 	}
 }
