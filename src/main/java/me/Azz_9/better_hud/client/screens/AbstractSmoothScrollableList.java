@@ -5,7 +5,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.util.math.MathHelper;
 
-public class AbstractSmoothScrollableList<E extends ElementListWidget.Entry<E>> extends ElementListWidget<E> {
+public abstract class AbstractSmoothScrollableList<E extends ElementListWidget.Entry<E>> extends ElementListWidget<E> {
 	private double targetScroll;     // Target scroll amount (set by mouse wheel)
 	private double currentScroll;    // Interpolated scroll amount (used for rendering)
 	private final double SCROLL_SPEED = 25.0; // Pixels per notch
