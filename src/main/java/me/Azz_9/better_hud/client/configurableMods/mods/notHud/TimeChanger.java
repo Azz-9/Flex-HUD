@@ -2,6 +2,8 @@ package me.Azz_9.better_hud.client.configurableMods.mods.notHud;
 
 import me.Azz_9.better_hud.client.configurableMods.mods.abstractMod;
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.IntSliderEntry;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
@@ -48,16 +50,27 @@ public class TimeChanger extends abstractMod {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setToggled(enabled)
+								.setDefaultValue(false)
 								.setOnToggle(toggled -> enabled = toggled)
 								.setText(Text.translatable("better_hud.time_changer.config.enable"))
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setToggled(useRealTime)
+								.setDefaultValue(false)
 								.setOnToggle(toggled -> useRealTime = toggled)
 								.setText(Text.translatable("better_hud.time_changer.config.use_real_time"))
+								.build(),
+						new IntSliderEntry.Builder()
+								.setIntSliderWidth(80)
+								.setValue(selectedTime)
+								.setMin(0)
+								.setMax(24000)
+								.setStep(1000)
+								.setDefaultValue(6000)
+								.setOnValueChange(value -> selectedTime = value)
+								.setText(Text.translatable("better_hud.time_changer.config.selected_time"))
 								.build()
-						//TODO int slider
 				);
 			}
 		};

@@ -3,6 +3,7 @@ package me.Azz_9.better_hud.client.configurableMods.mods.hud.renderCallbacks;
 import me.Azz_9.better_hud.client.configurableMods.JsonConfigHelper;
 import me.Azz_9.better_hud.client.configurableMods.mods.hud.AbstractHudElement;
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.better_hud.client.utils.cps.CalculateCps;
 import net.minecraft.client.MinecraftClient;
@@ -78,18 +79,21 @@ public class Cps extends AbstractHudElement {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setToggled(enabled)
+								.setDefaultValue(true)
 								.setOnToggle(toggled -> enabled = toggled)
 								.setText(Text.translatable("better_hud.cps.config.enable"))
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setToggled(shadow)
+								.setDefaultValue(true)
 								.setOnToggle(toggled -> shadow = toggled)
 								.setText(Text.translatable("better_hud.global.config.text_shadow"))
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setToggled(chromaColor)
+								.setDefaultValue(false)
 								.setOnToggle(toggled -> chromaColor = toggled)
 								.setText(Text.translatable("better_hud.global.config.chroma_text_color"))
 								.build()
@@ -98,6 +102,7 @@ public class Cps extends AbstractHudElement {
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
 								.setColor(color)
+								.setDefaultColor(0xffffff)
 								.setOnColorChange(newColor -> color = newColor)
 								.setDependency(this.getConfigList().getLastEntry(), true)
 								.setText(Text.translatable("better_hud.global.config.text_color"))
@@ -105,6 +110,7 @@ public class Cps extends AbstractHudElement {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setToggled(drawBackground)
+								.setDefaultValue(false)
 								.setOnToggle(toggled -> drawBackground = toggled)
 								.setText(Text.translatable("better_hud.global.config.show_background"))
 								.build()
@@ -113,6 +119,7 @@ public class Cps extends AbstractHudElement {
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
 								.setColor(backgroundColor)
+								.setDefaultColor(0x313131)
 								.setOnColorChange(newColor -> backgroundColor = newColor)
 								.setDependency(this.getConfigList().getLastEntry(), false)
 								.setText(Text.translatable("better_hud.global.config.background_color"))
@@ -120,12 +127,14 @@ public class Cps extends AbstractHudElement {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setToggled(showLeftClick)
+								.setDefaultValue(true)
 								.setOnToggle(toggled -> showLeftClick = toggled)
 								.setText(Text.translatable("better_hud.cps.config.show_left_click"))
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setToggled(showRightClick)
+								.setDefaultValue(true)
 								.setOnToggle(toggled -> showRightClick = toggled)
 								.setText(Text.translatable("better_hud.cps.config.show_right_click"))
 								.build()

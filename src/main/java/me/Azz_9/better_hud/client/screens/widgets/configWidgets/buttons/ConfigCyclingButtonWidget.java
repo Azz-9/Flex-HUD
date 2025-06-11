@@ -20,7 +20,7 @@ public class ConfigCyclingButtonWidget<T, E extends Enum<E>> extends ButtonWidge
 	private E currentValue;
 	private final E defaultValue;
 
-	public ConfigCyclingButtonWidget(int width, int height, E currentValue, Consumer<E> onChange, List<Observer> observers, T disableWhen) {
+	public ConfigCyclingButtonWidget(int width, int height, E currentValue, E defaultValue, Consumer<E> onChange, List<Observer> observers, T disableWhen) {
 		super(0, 0, width, height, Text.of(StringUtils.capitalize(currentValue.name())), (btn) -> {
 		}, DEFAULT_NARRATION_SUPPLIER);
 		this.ON_CHANGE = onChange;
@@ -58,9 +58,9 @@ public class ConfigCyclingButtonWidget<T, E extends Enum<E>> extends ButtonWidge
 
 	@Override
 	public void setToInitialState() {
-		currentValue = INITIAL_STATE;
-		setMessage(Text.of(StringUtils.capitalize(INITIAL_STATE.name())));
-		ON_CHANGE.accept(currentValue);
+		currentValue = defaultValue;
+		setMessage(Text.of(StringUtils.capitalize(defaultValue.name())));
+		ON_CHANGE.accept(defaultValue);
 
 		for (Observer observer : observers) {
 			observer.onChange(this);

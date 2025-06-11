@@ -4,27 +4,13 @@ import me.Azz_9.better_hud.client.screens.AbstractCallbackScreen;
 import me.Azz_9.better_hud.client.screens.TrackableChange;
 import me.Azz_9.better_hud.client.screens.modsList.DataGetter;
 import me.Azz_9.better_hud.client.screens.modsList.ModsListScreen;
-import me.Azz_9.better_hud.client.screens.widgets.buttons.TexturedButtonWidget;
-import me.Azz_9.better_hud.client.screens.widgets.configWidgets.buttons.ConfigColorButtonWidget;
-import me.Azz_9.better_hud.client.screens.widgets.configWidgets.buttons.ConfigCyclingButtonWidget;
-import me.Azz_9.better_hud.client.screens.widgets.configWidgets.buttons.ConfigToggleButtonWidget;
 import me.Azz_9.better_hud.client.screens.widgets.configWidgets.buttons.colorSelector.ColorBindable;
 import me.Azz_9.better_hud.client.screens.widgets.configWidgets.buttons.colorSelector.ColorSelector;
-import me.Azz_9.better_hud.client.screens.widgets.configWidgets.fields.ConfigIntFieldWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
-import java.util.function.Consumer;
-
-import static me.Azz_9.better_hud.client.Better_hudClient.MOD_ID;
 
 public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen implements Observer, ColorSelectorGetter {
 
@@ -182,6 +168,4 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 			this.colorSelector.setFocused(false);
 		}
 	}
-
-
 }
