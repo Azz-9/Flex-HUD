@@ -5,6 +5,9 @@ import me.Azz_9.better_hud.client.configurableMods.JsonConfigHelper;
 import me.Azz_9.better_hud.client.configurableMods.mods.hud.AbstractHudElement;
 import me.Azz_9.better_hud.client.configurableMods.mods.hud.DisplayMode;
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -186,18 +189,21 @@ public class ArmorStatus extends AbstractHudElement {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setToggled(JsonConfigHelper.getInstance().armorStatus.enabled)
+								.setDefaultValue(true)
 								.setOnToggle(toggled -> JsonConfigHelper.getInstance().armorStatus.enabled = toggled)
 								.setText(Text.translatable("better_hud.armor_status.config.enable"))
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setToggled(JsonConfigHelper.getInstance().armorStatus.shadow)
+								.setDefaultValue(true)
 								.setOnToggle(toggled -> JsonConfigHelper.getInstance().armorStatus.shadow = toggled)
 								.setText(Text.translatable("better_hud.global.config.text_shadow"))
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setToggled(JsonConfigHelper.getInstance().armorStatus.chromaColor)
+								.setDefaultValue(false)
 								.setOnToggle(toggled -> JsonConfigHelper.getInstance().armorStatus.chromaColor = toggled)
 								.setText(Text.translatable("better_hud.global.config.chroma_text_color"))
 								.build()
@@ -206,6 +212,7 @@ public class ArmorStatus extends AbstractHudElement {
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
 								.setColor(JsonConfigHelper.getInstance().armorStatus.color)
+								.setDefaultColor(0xffffff)
 								.setOnColorChange(color -> JsonConfigHelper.getInstance().armorStatus.color = color)
 								.setDependency(this.getConfigList().getLastEntry(), true)
 								.setText(Text.translatable("better_hud.global.config.text_color"))
@@ -213,60 +220,70 @@ public class ArmorStatus extends AbstractHudElement {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setToggled(JsonConfigHelper.getInstance().armorStatus.showHelmet)
+								.setDefaultValue(true)
 								.setOnToggle(toggled -> JsonConfigHelper.getInstance().armorStatus.showHelmet = toggled)
 								.setText(Text.translatable("better_hud.armor_status.config.show_helmet"))
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setToggled(JsonConfigHelper.getInstance().armorStatus.showChestplate)
+								.setDefaultValue(true)
 								.setOnToggle(toggled -> JsonConfigHelper.getInstance().armorStatus.showChestplate = toggled)
 								.setText(Text.translatable("better_hud.armor_status.config.show_chestplate"))
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setToggled(JsonConfigHelper.getInstance().armorStatus.showLeggings)
+								.setDefaultValue(true)
 								.setOnToggle(toggled -> JsonConfigHelper.getInstance().armorStatus.showLeggings = toggled)
 								.setText(Text.translatable("better_hud.armor_status.config.show_leggings"))
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setToggled(JsonConfigHelper.getInstance().armorStatus.showBoots)
+								.setDefaultValue(true)
 								.setOnToggle(toggled -> JsonConfigHelper.getInstance().armorStatus.showBoots = toggled)
 								.setText(Text.translatable("better_hud.armor_status.config.show_boots"))
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setToggled(JsonConfigHelper.getInstance().armorStatus.showHeldItem)
+								.setDefaultValue(true)
 								.setOnToggle(toggled -> JsonConfigHelper.getInstance().armorStatus.showHeldItem = toggled)
 								.setText(Text.translatable("better_hud.armor_status.config.show_held_item"))
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setToggled(JsonConfigHelper.getInstance().armorStatus.showOffHandItem)
+								.setDefaultValue(true)
 								.setOnToggle(toggled -> JsonConfigHelper.getInstance().armorStatus.showOffHandItem = toggled)
 								.setText(Text.translatable("better_hud.armor_status.config.show_off_hand_item"))
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setToggled(JsonConfigHelper.getInstance().armorStatus.showArrowsWhenBowInHand)
+								.setDefaultValue(true)
 								.setOnToggle(toggled -> JsonConfigHelper.getInstance().armorStatus.showArrowsWhenBowInHand = toggled)
 								.setText(Text.translatable("better_hud.armor_status.config.show_arrows"))
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setToggled(JsonConfigHelper.getInstance().armorStatus.separateArrowTypes)
+								.setDefaultValue(false)
 								.setOnToggle(toggled -> JsonConfigHelper.getInstance().armorStatus.separateArrowTypes = toggled)
 								.setText(Text.translatable("better_hud.armor_status.config.separate_arrow_types"))
 								.build(),
 						new CyclingButtonEntry.Builder<DurabilityType>()
 								.setCyclingButtonWidth(80)
 								.setValue(JsonConfigHelper.getInstance().armorStatus.durabilityType)
+								.setDefaultValue(DurabilityType.PERCENTAGE)
 								.setOnValueChange(value -> JsonConfigHelper.getInstance().armorStatus.durabilityType = value)
 								.setText(Text.translatable("better_hud.armor_status.config.show_durability"))
 								.build(),
 						new CyclingButtonEntry.Builder<DisplayMode>()
 								.setCyclingButtonWidth(80)
 								.setValue(JsonConfigHelper.getInstance().armorStatus.displayMode)
+								.setDefaultValue(DisplayMode.VERTICAL)
 								.setOnValueChange(value -> JsonConfigHelper.getInstance().armorStatus.displayMode = value)
 								.setText(Text.translatable("better_hud.armor_status.config.orientation"))
 								.build()

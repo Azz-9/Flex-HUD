@@ -1,0 +1,141 @@
+package me.Azz_9.better_hud.client.screens.configurationScreen.configEntries;
+
+import me.Azz_9.better_hud.client.screens.TrackableChange;
+import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
+import me.Azz_9.better_hud.client.screens.configurationScreen.ScrollableConfigList;
+import me.Azz_9.better_hud.client.screens.modsList.DataGetter;
+import me.Azz_9.better_hud.client.screens.widgets.configWidgets.buttons.ConfigColorButtonWidget;
+import me.Azz_9.better_hud.client.screens.widgets.configWidgets.buttons.colorSelector.ColorSelector;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.Selectable;
+import net.minecraft.text.Text;
+
+import java.util.List;
+import java.util.function.Consumer;
+
+public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
+	private ConfigColorButtonWidget<?> colorButtonWidget;
+
+	public <T> ColorButtonEntry(
+			int colorButtonWidth,
+			int colorButtonHeight,
+			int color,
+			int defaultColor,
+			Consumer<Integer> onColorChange,
+			int resetButtonSize,
+			Text text,
+			T disableWhen
+	) {
+		super(resetButtonSize, text);
+		colorButtonWidget = new ConfigColorButtonWidget<>(colorButtonWidth, colorButtonHeight, color, defaultColor, onColorChange, observers, disableWhen,
+				(btn) -> {
+					AbstractConfigurationScreen screen = (AbstractConfigurationScreen) MinecraftClient.getInstance().currentScreen;
+					if (screen != null) {
+						ColorSelector colorSelector = screen.getColorSelector();
+						if (colorSelector == null || !colorSelector.isFocused()) {
+							screen.openColorSelector(this.colorButtonWidget);
+						} else {
+							screen.closeColorSelector();
+						}
+					}
+				});
+		setResetButtonPressAction((btn) -> colorButtonWidget.setToInitialState());
+	}
+
+	@Override
+	public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickProgress) {
+		super.render(context, index, y, x, entryWidth, entryHeight, mouseX, mouseY, hovered, tickProgress);
+		colorButtonWidget.setPosition(x, y);
+
+		colorButtonWidget.render(context, mouseX, mouseY, tickProgress);
+	}
+
+	@Override
+	public List<? extends Selectable> selectableChildren() {
+		return List.of(colorButtonWidget, resetButtonWidget);
+	}
+
+	@Override
+	public List<? extends Element> children() {
+		return List.of(colorButtonWidget, resetButtonWidget, textWidget);
+	}
+
+	@Override
+	public TrackableChange getTrackableChangeWidget() {
+		return colorButtonWidget;
+	}
+
+	@Override
+	public DataGetter<?> getDataGetter() {
+		return colorButtonWidget;
+	}
+
+	@Override
+	public void onChange(DataGetter<?> dataGetter) {
+		boolean active = !colorButtonWidget.getDisableWhen().equals(dataGetter.getData());
+		colorButtonWidget.active = active;
+		setActive(active);
+	}
+
+	//Builder
+	public static class Builder extends AbstractBuilder {
+		private int colorButtonWidth;
+		private int colorButtonHeight = 20;
+		private int color;
+		private int defaultColor = 0xffffff;
+		private Consumer<Integer> onColorChange = t -> {
+		};
+		private ScrollableConfigList.AbstractConfigEntry dependency = null;
+		private Object disableWhen;
+
+		public ColorButtonEntry.Builder setColorButtonWidth(int width) {
+			this.colorButtonWidth = width;
+			return this;
+		}
+
+		public ColorButtonEntry.Builder setColorButtonSize(int width, int height) {
+			this.colorButtonWidth = width;
+			this.colorButtonHeight = height;
+			return this;
+		}
+
+		public ColorButtonEntry.Builder setColor(int color) {
+			this.color = color;
+			return this;
+		}
+
+		public ColorButtonEntry.Builder setDefaultColor(int defaultColor) {
+			this.defaultColor = defaultColor;
+			return this;
+		}
+
+		public ColorButtonEntry.Builder setOnColorChange(Consumer<Integer> onColorChange) {
+			this.onColorChange = onColorChange;
+			return this;
+		}
+
+		public <T> ColorButtonEntry.Builder setDependency(ScrollableConfigList.AbstractConfigEntry entry, T disableWhen) {
+			dependency = entry;
+			this.disableWhen = disableWhen;
+			return this;
+		}
+
+		@Override
+		public ColorButtonEntry build() {
+			ColorButtonEntry entry = new ColorButtonEntry(
+					colorButtonWidth, colorButtonHeight,
+					color, defaultColor, onColorChange,
+					resetButtonSize,
+					text,
+					disableWhen
+			);
+			if (dependency != null) {
+				dependency.addObserver(entry);
+				entry.onChange(dependency.getDataGetter());
+			}
+			return entry;
+		}
+	}
+}

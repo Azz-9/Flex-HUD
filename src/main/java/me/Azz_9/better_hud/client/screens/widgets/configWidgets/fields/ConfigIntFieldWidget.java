@@ -17,17 +17,19 @@ public class ConfigIntFieldWidget<T> extends TextFieldWidget implements Trackabl
 	private final Consumer<Integer> onChange;
 	private final int INITIAL_STATE;
 	private final T disableWhen;
+	private final int defaultValue;
 
 	private final int MIN_VALUE;
 	private final int MAX_VALUE;
 
 	private boolean suppressIntFieldCallback = false;
 
-	public ConfigIntFieldWidget(TextRenderer textRenderer, int width, int height, int currentValue, @Nullable Integer min, @Nullable Integer max, Consumer<Integer> onChange, List<Observer> observers, T disableWhen) {
+	public ConfigIntFieldWidget(TextRenderer textRenderer, int width, int height, int currentValue, int defaultValue, @Nullable Integer min, @Nullable Integer max, Consumer<Integer> onChange, List<Observer> observers, T disableWhen) {
 		super(textRenderer, width, height, Text.translatable("better_hud.integer_field"));
 		this.onChange = onChange;
 		this.INITIAL_STATE = currentValue;
 		this.disableWhen = disableWhen;
+		this.defaultValue = defaultValue;
 
 		if (min != null && min < 0) throw new IllegalArgumentException("Min value cannot be negative!");
 		if (max != null && max < 0) throw new IllegalArgumentException("Max value cannot be negative!");
@@ -115,7 +117,7 @@ public class ConfigIntFieldWidget<T> extends TextFieldWidget implements Trackabl
 
 	@Override
 	public void setToInitialState() {
-		super.setText(String.valueOf(INITIAL_STATE));
+		super.setText(String.valueOf(defaultValue));
 	}
 
 	@Override
