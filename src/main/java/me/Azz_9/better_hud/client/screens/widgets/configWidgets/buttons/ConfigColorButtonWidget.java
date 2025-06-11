@@ -23,8 +23,9 @@ public class ConfigColorButtonWidget<T> extends ClickableWidget implements Track
 	private final List<Observer> observers;
 	private final T disableWhen;
 	private final Consumer<ConfigColorButtonWidget<T>> onClickAction;
+	private final int defaultColor;
 
-	public ConfigColorButtonWidget(int x, int y, int width, int height, int currentColor, Consumer<Integer> onColorChange, List<Observer> observers, T disableWhen, Consumer<ConfigColorButtonWidget<T>> onClickAction) {
+	public ConfigColorButtonWidget(int x, int y, int width, int height, int currentColor, int defaultColor, Consumer<Integer> onColorChange, List<Observer> observers, T disableWhen, Consumer<ConfigColorButtonWidget<T>> onClickAction) {
 		super(x, y, width, height, Text.empty());
 		this.color = currentColor;
 		this.INITIAL_COLOR = currentColor;
@@ -32,10 +33,11 @@ public class ConfigColorButtonWidget<T> extends ClickableWidget implements Track
 		this.observers = observers;
 		this.disableWhen = disableWhen;
 		this.onClickAction = onClickAction;
+		this.defaultColor = defaultColor;
 	}
 
-	public ConfigColorButtonWidget(int width, int height, int currentColor, Consumer<Integer> onColorChange, List<Observer> observers, T disableWhen, Consumer<ConfigColorButtonWidget<T>> onClickAction) {
-		this(0, 0, width, height, currentColor, onColorChange, observers, disableWhen, onClickAction);
+	public ConfigColorButtonWidget(int width, int height, int currentColor, int defaultColor, Consumer<Integer> onColorChange, List<Observer> observers, T disableWhen, Consumer<ConfigColorButtonWidget<T>> onClickAction) {
+		this(0, 0, width, height, currentColor, defaultColor, onColorChange, observers, disableWhen, onClickAction);
 	}
 
 	@Override
@@ -64,8 +66,7 @@ public class ConfigColorButtonWidget<T> extends ClickableWidget implements Track
 
 	@Override
 	public void setToInitialState() {
-		this.color = this.INITIAL_COLOR;
-		ON_COlOR_CHANGE.accept(this.INITIAL_COLOR);
+		this.onReceiveColor(defaultColor);
 	}
 
 	@Override

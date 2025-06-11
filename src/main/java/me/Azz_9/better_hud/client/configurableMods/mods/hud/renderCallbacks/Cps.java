@@ -3,6 +3,7 @@ package me.Azz_9.better_hud.client.configurableMods.mods.hud.renderCallbacks;
 import me.Azz_9.better_hud.client.configurableMods.JsonConfigHelper;
 import me.Azz_9.better_hud.client.configurableMods.mods.hud.AbstractHudElement;
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.better_hud.client.utils.cps.CalculateCps;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;

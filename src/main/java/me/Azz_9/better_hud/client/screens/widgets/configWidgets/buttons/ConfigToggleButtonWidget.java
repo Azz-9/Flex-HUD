@@ -21,8 +21,9 @@ public class ConfigToggleButtonWidget<T> extends ToggleButtonWidget implements T
 	private final boolean INITIAL_STATE;
 	private final List<Observer> observers;
 	private final T disableWhen;
+	private final boolean defaultValue;
 
-	public ConfigToggleButtonWidget(int width, int height, boolean toggled, Consumer<Boolean> onToggle, List<Observer> observers, T disableWhen) {
+	public ConfigToggleButtonWidget(int width, int height, boolean toggled, boolean defaultValue, Consumer<Boolean> onToggle, List<Observer> observers, T disableWhen) {
 		super(0, 0, width, height, toggled);
 		this.ON_TOGGLE = onToggle;
 		this.INITIAL_STATE = toggled;
@@ -34,6 +35,7 @@ public class ConfigToggleButtonWidget<T> extends ToggleButtonWidget implements T
 		);
 		this.observers = observers;
 		this.disableWhen = disableWhen;
+		this.defaultValue = defaultValue;
 	}
 
 	@Override
@@ -83,8 +85,11 @@ public class ConfigToggleButtonWidget<T> extends ToggleButtonWidget implements T
 
 	@Override
 	public void setToInitialState() {
-		if (hasChanged()) {
-			onClickAction();
+		toggled = defaultValue;
+		ON_TOGGLE.accept(defaultValue);
+
+		for (Observer observer : observers) {
+			observer.onChange(this);
 		}
 	}
 
