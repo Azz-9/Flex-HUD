@@ -3,6 +3,7 @@ package me.Azz_9.better_hud.client.screens.widgets.configWidgets.buttons;
 import me.Azz_9.better_hud.client.screens.TrackableChange;
 import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.better_hud.client.screens.modsList.DataGetter;
+import me.Azz_9.better_hud.client.screens.widgets.configWidgets.ResetAware;
 import me.Azz_9.better_hud.client.utils.StringUtils;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -11,7 +12,7 @@ import net.minecraft.text.Text;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class ConfigCyclingButtonWidget<T, E extends Enum<E>> extends ButtonWidget implements TrackableChange, DataGetter<E> {
+public class ConfigCyclingButtonWidget<T, E extends Enum<E>> extends ButtonWidget implements TrackableChange, DataGetter<E>, ResetAware {
 	private final Consumer<E> ON_CHANGE;
 	private final E INITIAL_STATE;
 	private final List<Observer> observers;
@@ -84,5 +85,14 @@ public class ConfigCyclingButtonWidget<T, E extends Enum<E>> extends ButtonWidge
 
 	public T getDisableWhen() {
 		return disableWhen;
+	}
+
+	@Override
+	public boolean isCurrentValueDefault() {
+		return currentValue.equals(defaultValue);
+	}
+
+	public void addObserver(Observer observer) {
+		observers.add(observer);
 	}
 }

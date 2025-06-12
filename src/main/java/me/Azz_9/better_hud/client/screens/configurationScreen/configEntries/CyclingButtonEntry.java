@@ -1,6 +1,7 @@
 package me.Azz_9.better_hud.client.screens.configurationScreen.configEntries;
 
 import me.Azz_9.better_hud.client.screens.TrackableChange;
+import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.better_hud.client.screens.configurationScreen.ScrollableConfigList;
 import me.Azz_9.better_hud.client.screens.modsList.DataGetter;
 import me.Azz_9.better_hud.client.screens.widgets.configWidgets.buttons.ConfigCyclingButtonWidget;
@@ -28,6 +29,9 @@ public class CyclingButtonEntry<E extends Enum<E>> extends ScrollableConfigList.
 		super(resetButtonSize, text);
 		cyclingButtonWidget = new ConfigCyclingButtonWidget<>(cyclingButtonWidth, cyclingButtonHeight, initialValue, defaultValue, onValueChange, observers, disableWhen);
 		setResetButtonPressAction((btn) -> cyclingButtonWidget.setToInitialState());
+
+		cyclingButtonWidget.addObserver((Observer) this.resetButtonWidget);
+		((Observer) this.resetButtonWidget).onChange(cyclingButtonWidget);
 	}
 
 	@Override
@@ -63,6 +67,7 @@ public class CyclingButtonEntry<E extends Enum<E>> extends ScrollableConfigList.
 		boolean active = !cyclingButtonWidget.getDisableWhen().equals(dataGetter.getData());
 		cyclingButtonWidget.active = active;
 		setActive(active);
+		resetButtonWidget.active = active && !cyclingButtonWidget.isCurrentValueDefault();
 	}
 
 	// Builder

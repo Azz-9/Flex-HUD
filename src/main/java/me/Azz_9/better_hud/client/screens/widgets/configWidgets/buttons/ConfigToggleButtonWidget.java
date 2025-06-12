@@ -3,6 +3,7 @@ package me.Azz_9.better_hud.client.screens.widgets.configWidgets.buttons;
 import me.Azz_9.better_hud.client.screens.TrackableChange;
 import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.better_hud.client.screens.modsList.DataGetter;
+import me.Azz_9.better_hud.client.screens.widgets.configWidgets.ResetAware;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ButtonTextures;
@@ -16,7 +17,7 @@ import java.util.function.Consumer;
 
 import static me.Azz_9.better_hud.client.Better_hudClient.MOD_ID;
 
-public class ConfigToggleButtonWidget<T> extends ToggleButtonWidget implements TrackableChange, DataGetter<Boolean> {
+public class ConfigToggleButtonWidget<T> extends ToggleButtonWidget implements TrackableChange, DataGetter<Boolean>, ResetAware {
 	private final Consumer<Boolean> ON_TOGGLE;
 	private final boolean INITIAL_STATE;
 	private final List<Observer> observers;
@@ -119,5 +120,14 @@ public class ConfigToggleButtonWidget<T> extends ToggleButtonWidget implements T
 	@Override
 	public boolean isSelected() {
 		return this.isFocused();
+	}
+
+	@Override
+	public boolean isCurrentValueDefault() {
+		return toggled == defaultValue;
+	}
+
+	public void addObserver(Observer observer) {
+		observers.add(observer);
 	}
 }

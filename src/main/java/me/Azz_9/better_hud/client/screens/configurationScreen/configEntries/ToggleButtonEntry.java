@@ -1,6 +1,7 @@
 package me.Azz_9.better_hud.client.screens.configurationScreen.configEntries;
 
 import me.Azz_9.better_hud.client.screens.TrackableChange;
+import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.better_hud.client.screens.configurationScreen.ScrollableConfigList;
 import me.Azz_9.better_hud.client.screens.modsList.DataGetter;
 import me.Azz_9.better_hud.client.screens.widgets.configWidgets.buttons.ConfigToggleButtonWidget;
@@ -28,6 +29,9 @@ public class ToggleButtonEntry extends ScrollableConfigList.AbstractConfigEntry 
 		super(resetButtonSize, text);
 		toggleButtonWidget = new ConfigToggleButtonWidget<>(toggleButtonWidth, toggleButtonHeight, toggled, defaultValue, onToggle, observers, disableWhen);
 		setResetButtonPressAction((btn) -> toggleButtonWidget.setToInitialState());
+
+		toggleButtonWidget.addObserver((Observer) this.resetButtonWidget);
+		((Observer) this.resetButtonWidget).onChange(toggleButtonWidget);
 	}
 
 	@Override
@@ -62,6 +66,7 @@ public class ToggleButtonEntry extends ScrollableConfigList.AbstractConfigEntry 
 		boolean active = !toggleButtonWidget.getDisableWhen().equals(dataGetter.getData());
 		toggleButtonWidget.active = active;
 		setActive(active);
+		resetButtonWidget.active = active && !toggleButtonWidget.isCurrentValueDefault();
 	}
 
 	// Builder

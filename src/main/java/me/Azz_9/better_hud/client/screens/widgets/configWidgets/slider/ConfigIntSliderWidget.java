@@ -3,6 +3,7 @@ package me.Azz_9.better_hud.client.screens.widgets.configWidgets.slider;
 import me.Azz_9.better_hud.client.screens.TrackableChange;
 import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.better_hud.client.screens.modsList.DataGetter;
+import me.Azz_9.better_hud.client.screens.widgets.configWidgets.ResetAware;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.SliderWidget;
@@ -11,7 +12,7 @@ import net.minecraft.text.Text;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class ConfigIntSliderWidget<T> extends SliderWidget implements TrackableChange, DataGetter<Integer> {
+public class ConfigIntSliderWidget<T> extends SliderWidget implements TrackableChange, DataGetter<Integer>, ResetAware {
 	private final Integer STEP;
 	private final int MIN_VALUE;
 	private final int MAX_VALUE;
@@ -103,5 +104,14 @@ public class ConfigIntSliderWidget<T> extends SliderWidget implements TrackableC
 
 	public T getDisableWhen() {
 		return disableWhen;
+	}
+
+	@Override
+	public boolean isCurrentValueDefault() {
+		return getRelativeValue() == defaultValue;
+	}
+
+	public void addObserver(Observer observer) {
+		observers.add(observer);
 	}
 }

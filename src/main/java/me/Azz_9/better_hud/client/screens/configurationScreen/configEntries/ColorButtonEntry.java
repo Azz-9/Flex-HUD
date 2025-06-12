@@ -2,6 +2,7 @@ package me.Azz_9.better_hud.client.screens.configurationScreen.configEntries;
 
 import me.Azz_9.better_hud.client.screens.TrackableChange;
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
+import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.better_hud.client.screens.configurationScreen.ScrollableConfigList;
 import me.Azz_9.better_hud.client.screens.modsList.DataGetter;
 import me.Azz_9.better_hud.client.screens.widgets.configWidgets.buttons.ConfigColorButtonWidget;
@@ -42,6 +43,9 @@ public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 					}
 				});
 		setResetButtonPressAction((btn) -> colorButtonWidget.setToInitialState());
+
+		colorButtonWidget.addObserver((Observer) this.resetButtonWidget);
+		((Observer) this.resetButtonWidget).onChange(colorButtonWidget);
 	}
 
 	@Override
@@ -77,6 +81,7 @@ public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 		boolean active = !colorButtonWidget.getDisableWhen().equals(dataGetter.getData());
 		colorButtonWidget.active = active;
 		setActive(active);
+		resetButtonWidget.active = active && !colorButtonWidget.isCurrentValueDefault();
 	}
 
 	//Builder

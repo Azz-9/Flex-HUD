@@ -3,6 +3,7 @@ package me.Azz_9.better_hud.client.screens.widgets.configWidgets.buttons;
 import me.Azz_9.better_hud.client.screens.TrackableChange;
 import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.better_hud.client.screens.modsList.DataGetter;
+import me.Azz_9.better_hud.client.screens.widgets.configWidgets.ResetAware;
 import me.Azz_9.better_hud.client.screens.widgets.configWidgets.buttons.colorSelector.ColorBindable;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
@@ -16,7 +17,7 @@ import java.util.function.Consumer;
 
 import static me.Azz_9.better_hud.client.Better_hudClient.MOD_ID;
 
-public class ConfigColorButtonWidget<T> extends ClickableWidget implements TrackableChange, DataGetter<Integer>, ColorBindable {
+public class ConfigColorButtonWidget<T> extends ClickableWidget implements TrackableChange, DataGetter<Integer>, ResetAware, ColorBindable {
 	private int color;
 	private final Consumer<Integer> ON_COlOR_CHANGE;
 	private final int INITIAL_COLOR;
@@ -112,5 +113,15 @@ public class ConfigColorButtonWidget<T> extends ClickableWidget implements Track
 
 	@Override
 	protected void appendClickableNarrations(NarrationMessageBuilder builder) {
+	}
+
+	@Override
+	public boolean isCurrentValueDefault() {
+		System.out.println("dans le widget -> " + (color == defaultColor));
+		return color == defaultColor;
+	}
+
+	public void addObserver(Observer observer) {
+		observers.add(observer);
 	}
 }

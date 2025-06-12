@@ -1,13 +1,16 @@
 package me.Azz_9.better_hud.client.screens.widgets.configWidgets.buttons;
 
+import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
+import me.Azz_9.better_hud.client.screens.modsList.DataGetter;
 import me.Azz_9.better_hud.client.screens.widgets.buttons.TexturedButtonWidget;
+import me.Azz_9.better_hud.client.screens.widgets.configWidgets.ResetAware;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.util.Identifier;
 
 import static me.Azz_9.better_hud.client.Better_hudClient.MOD_ID;
 
-public class ConfigResetButtonWidget extends TexturedButtonWidget {
+public class ConfigResetButtonWidget extends TexturedButtonWidget implements Observer {
 	public ConfigResetButtonWidget(int x, int y, int width, int height, PressAction pressAction, int textureWidth, int textureHeight) {
 		super(x, y, width, height, new ButtonTextures(
 				Identifier.of(MOD_ID, "widgets/buttons/reset/unfocused.png"),
@@ -35,6 +38,16 @@ public class ConfigResetButtonWidget extends TexturedButtonWidget {
 			context.fill(getX(), getY(), getRight(), getBottom(), 0xcf4e4e4e);
 		} else if (this.isSelected()) {
 			context.drawBorder(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+		}
+	}
+
+	@Override
+	public void onChange(DataGetter<?> dataGetter) {
+		if (dataGetter instanceof ResetAware resetAware) {
+			if (resetAware instanceof ConfigColorButtonWidget<?>) {
+				System.out.println(resetAware.isCurrentValueDefault());
+			}
+			this.active = !resetAware.isCurrentValueDefault();
 		}
 	}
 }

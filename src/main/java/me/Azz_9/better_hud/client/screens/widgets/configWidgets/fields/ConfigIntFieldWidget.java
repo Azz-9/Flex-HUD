@@ -3,6 +3,7 @@ package me.Azz_9.better_hud.client.screens.widgets.configWidgets.fields;
 import me.Azz_9.better_hud.client.screens.TrackableChange;
 import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.better_hud.client.screens.modsList.DataGetter;
+import me.Azz_9.better_hud.client.screens.widgets.configWidgets.ResetAware;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -12,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class ConfigIntFieldWidget<T> extends TextFieldWidget implements TrackableChange, DataGetter<Integer> {
+public class ConfigIntFieldWidget<T> extends TextFieldWidget implements TrackableChange, DataGetter<Integer>, ResetAware {
 
 	private final Consumer<Integer> onChange;
 	private final int INITIAL_STATE;
@@ -133,5 +134,14 @@ public class ConfigIntFieldWidget<T> extends TextFieldWidget implements Trackabl
 	@Override
 	public Integer getData() {
 		return getValue();
+	}
+
+	@Override
+	public boolean isCurrentValueDefault() {
+		return getValue() == defaultValue;
+	}
+
+	public void addObserver(Observer observer) {
+		observer.onChange(this);
 	}
 }

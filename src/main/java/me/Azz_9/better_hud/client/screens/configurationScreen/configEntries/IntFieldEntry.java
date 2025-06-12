@@ -1,6 +1,7 @@
 package me.Azz_9.better_hud.client.screens.configurationScreen.configEntries;
 
 import me.Azz_9.better_hud.client.screens.TrackableChange;
+import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.better_hud.client.screens.configurationScreen.ScrollableConfigList;
 import me.Azz_9.better_hud.client.screens.modsList.DataGetter;
 import me.Azz_9.better_hud.client.screens.widgets.buttons.TexturedButtonWidget;
@@ -57,6 +58,9 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 				Identifier.of(MOD_ID, "widgets/buttons/int_field/decrease/unfocused.png"),
 				Identifier.of(MOD_ID, "widgets/buttons/int_field/decrease/focused.png")
 		), (btn) -> this.intFieldWidget.decrease());
+
+		intFieldWidget.addObserver((Observer) this.resetButtonWidget);
+		((Observer) this.resetButtonWidget).onChange(intFieldWidget);
 	}
 
 	@Override
@@ -105,6 +109,7 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 		increaseButton.active = active;
 		decreaseButton.active = active;
 		setActive(active);
+		resetButtonWidget.active = active && !intFieldWidget.isCurrentValueDefault();
 	}
 
 	// Builder
