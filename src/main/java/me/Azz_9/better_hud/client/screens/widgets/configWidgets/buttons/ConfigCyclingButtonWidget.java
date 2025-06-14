@@ -8,6 +8,7 @@ import me.Azz_9.better_hud.client.utils.StringUtils;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -55,6 +56,15 @@ public class ConfigCyclingButtonWidget<T, E extends Enum<E>> extends ButtonWidge
 		for (Observer observer : observers) {
 			observer.onChange(this);
 		}
+	}
+
+	@Override
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
+			this.onClick(0, 0);
+			return true;
+		}
+		return super.keyPressed(keyCode, scanCode, modifiers);
 	}
 
 	@Override

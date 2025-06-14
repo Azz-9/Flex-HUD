@@ -11,6 +11,7 @@ import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -63,6 +64,15 @@ public class ConfigColorButtonWidget<T> extends ClickableWidget implements Track
 	@Override
 	public void onClick(double mouseX, double mouseY) {
 		onClickAction.accept(this);
+	}
+
+	@Override
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
+			onClickAction.accept(this);
+			return true;
+		}
+		return false;
 	}
 
 	@Override
