@@ -28,6 +28,18 @@
 	"better_hud.help_widget.line5": "Press SHIFT while scaling an",
 	"better_hud.help_widget.line6": "element to snap",
 
+	"better_hud.enum.display_mode.horizontal": "Horizontal",
+	"better_hud.enum.display_mode.vertical": "Vertical",
+	"better_hud.enum.weather.clear": "Clear",
+	"better_hud.enum.weather.rain": "Rain",
+	"better_hud.enum.weather.thunder": "Thunder",
+	"better_hud.enum.durability_type.no": "No",
+	"better_hud.enum.durability_type.percentage": "Percentage",
+	"better_hud.enum.durability_type.value": "Value",
+	"better_hud.enum.ping_type.sound": "Sound",
+	"better_hud.enum.ping_type.message": "Message",
+	"better_hud.enum.ping_type.both": "Both",
+
 
 	"better_hud.global.config.quit_and_discard": "Quit & discard changes",
 	"better_hud.global.config.callback.message_title": "Changes not saved",

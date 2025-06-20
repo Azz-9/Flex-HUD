@@ -86,7 +86,12 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 		configList.render(context, mouseX, mouseY, deltaTicks);
 
 		if (colorSelector != null && colorSelector.isFocused()) {
-			colorSelector.render(context, mouseX, mouseY, deltaTicks);
+			colorSelector.updatePosition(configList.getY());
+			if (colorSelector.getY() >= configList.getY()) {
+				colorSelector.render(context, mouseX, mouseY, deltaTicks);
+			} else {
+				colorSelector.setFocused(false);
+			}
 		}
 	}
 
@@ -99,7 +104,7 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 			}
 			if (!widget.isValid()) {
 				setSaveButtonActive(false);
-				break;
+				return;
 			}
 		}
 		setSaveButtonActive(foundAChange);
@@ -167,5 +172,16 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 		if (this.colorSelector != null) {
 			this.colorSelector.setFocused(false);
 		}
+	}
+
+	@Override
+	protected void disableAllChildren() {
+		closeColorSelector();
+		configList.active = false;
+	}
+
+	@Override
+	protected void enableAllChildren() {
+		configList.active = true;
 	}
 }

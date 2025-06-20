@@ -2,6 +2,8 @@ package me.Azz_9.better_hud.client;
 
 import me.Azz_9.better_hud.client.configurableMods.JsonConfigHelper;
 import me.Azz_9.better_hud.client.configurableMods.mods.hud.AbstractHudElement;
+import me.Azz_9.better_hud.client.configurableMods.mods.notHud.durabilityPing.DurabilityPing;
+import me.Azz_9.better_hud.client.configurableMods.mods.notHud.durabilityPing.ItemDurabilityLostCallback;
 import me.Azz_9.better_hud.client.utils.ChromaColorUtils;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -44,6 +46,23 @@ public class Better_hudClient implements ClientModInitializer {
 				AbstractHudElement element = hudElements.get(i);
 				Identifier id = Identifier.of(MOD_ID, "element-" + i);
 				layeredDrawer.attachLayerBefore(IdentifiedLayer.CHAT, id, element::render);
+			}
+		});
+
+		ItemDurabilityLostCallback.EVENT.register((stack, damage) -> {
+			DurabilityPing durabilityPing = JsonConfigHelper.getInstance().durabilityPing;
+			if (durabilityPing.isDurabilityUnderThreshold(stack)) {
+				if (durabilityPing.checkElytraOnly) {
+					if (DurabilityPing.isElytra(stack)) {
+						durabilityPing.pingPlayer(stack);
+					}
+				} else if (DurabilityPing.isArmorPiece(stack)) {
+					if (durabilityPing.checkArmorPieces) {
+						durabilityPing.pingPlayer(stack);
+					}
+				} else {
+					durabilityPing.pingPlayer(stack);
+				}
 			}
 		});
 

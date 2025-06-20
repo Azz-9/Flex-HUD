@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 	private ConfigColorButtonWidget<?> colorButtonWidget;
 
-	public <T> ColorButtonEntry(
+	private <T> ColorButtonEntry(
 			int colorButtonWidth,
 			int colorButtonHeight,
 			int color,
@@ -42,7 +42,7 @@ public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 						}
 					}
 				});
-		setResetButtonPressAction((btn) -> colorButtonWidget.setToInitialState());
+		setResetButtonPressAction((btn) -> colorButtonWidget.setToDefaultState());
 
 		colorButtonWidget.addObserver((Observer) this.resetButtonWidget);
 		((Observer) this.resetButtonWidget).onChange(colorButtonWidget);
@@ -82,6 +82,11 @@ public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 		colorButtonWidget.active = active;
 		setActive(active);
 		resetButtonWidget.active = active && !colorButtonWidget.isCurrentValueDefault();
+		// fermer le color selector si le color button est désacitvé
+		AbstractConfigurationScreen screen = (AbstractConfigurationScreen) MinecraftClient.getInstance().currentScreen;
+		if (screen != null && !active) {
+			screen.closeColorSelector();
+		}
 	}
 
 	//Builder

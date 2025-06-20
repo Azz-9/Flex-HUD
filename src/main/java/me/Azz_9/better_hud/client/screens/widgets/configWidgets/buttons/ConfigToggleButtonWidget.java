@@ -85,7 +85,7 @@ public class ConfigToggleButtonWidget<T> extends ToggleButtonWidget implements T
 	}
 
 	@Override
-	public void setToInitialState() {
+	public void setToDefaultState() {
 		toggled = defaultValue;
 		ON_TOGGLE.accept(defaultValue);
 

@@ -28,6 +28,18 @@
 	"better_hud.help_widget.line5": "Maintenez SHIFT enfoncé tout en redimensionnant",
 	"better_hud.help_widget.line6": "un élément pour activer l'alignement automatique",
 
+	"better_hud.enum.display_mode.horizontal": "Horizontal",
+	"better_hud.enum.display_mode.vertical": "Vertical",
+	"better_hud.enum.weather.clear": "Clair",
+	"better_hud.enum.weather.rain": "Pluie",
+	"better_hud.enum.weather.thunder": "Orage",
+	"better_hud.enum.durability_type.no": "Non",
+	"better_hud.enum.durability_type.percentage": "Pourcentage",
+	"better_hud.enum.durability_type.value": "Valeur",
+	"better_hud.enum.ping_type.sound": "Son",
+	"better_hud.enum.ping_type.message": "Message",
+	"better_hud.enum.ping_type.both": "Les deux",
+
 
 	"better_hud.global.config.quit_and_discard": "Quitter & annuler les modifications",
 	"better_hud.global.config.callback.message_title": "Modifications non sauvgardées",

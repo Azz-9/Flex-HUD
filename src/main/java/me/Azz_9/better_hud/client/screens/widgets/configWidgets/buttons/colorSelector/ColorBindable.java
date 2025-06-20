@@ -8,4 +8,6 @@ public interface ColorBindable {
 	int getRight();
 
 	int getY();
+
+	int getBottom();
 }

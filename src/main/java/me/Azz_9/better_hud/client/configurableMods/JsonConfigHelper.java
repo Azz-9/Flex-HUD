@@ -5,10 +5,11 @@ import com.google.gson.GsonBuilder;
 import me.Azz_9.better_hud.client.Better_hudClient;
 import me.Azz_9.better_hud.client.configurableMods.mods.hud.AbstractHudElement;
 import me.Azz_9.better_hud.client.configurableMods.mods.hud.renderCallbacks.ArmorStatus;
+import me.Azz_9.better_hud.client.configurableMods.mods.hud.renderCallbacks.Clock;
 import me.Azz_9.better_hud.client.configurableMods.mods.hud.renderCallbacks.Cps;
-import me.Azz_9.better_hud.client.configurableMods.mods.notHud.DurabilityPing;
 import me.Azz_9.better_hud.client.configurableMods.mods.notHud.TimeChanger;
 import me.Azz_9.better_hud.client.configurableMods.mods.notHud.WeatherChanger;
+import me.Azz_9.better_hud.client.configurableMods.mods.notHud.durabilityPing.DurabilityPing;
 
 import java.io.File;
 import java.io.FileReader;
@@ -21,6 +22,7 @@ public class JsonConfigHelper {
 	//hud
 	public ArmorStatus armorStatus = new ArmorStatus(0.234, 41.685);
 	public Cps cps = new Cps(95.433, 0.443);
+	public Clock clock = new Clock(76.112, 0.443);
 	//others
 	public WeatherChanger weatherChanger = new WeatherChanger();
 	public TimeChanger timeChanger = new TimeChanger();
@@ -63,6 +65,6 @@ public class JsonConfigHelper {
 	}
 
 	public static List<AbstractHudElement> getHudElements() {
-		return List.of(getInstance().armorStatus, getInstance().cps);
+		return List.of(getInstance().armorStatus, getInstance().cps, getInstance().clock);
 	}
 }

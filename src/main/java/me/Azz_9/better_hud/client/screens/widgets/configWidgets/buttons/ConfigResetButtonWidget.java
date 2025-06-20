@@ -44,9 +44,6 @@ public class ConfigResetButtonWidget extends TexturedButtonWidget implements Obs
 	@Override
 	public void onChange(DataGetter<?> dataGetter) {
 		if (dataGetter instanceof ResetAware resetAware) {
-			if (resetAware instanceof ConfigColorButtonWidget<?>) {
-				System.out.println(resetAware.isCurrentValueDefault());
-			}
 			this.active = !resetAware.isCurrentValueDefault();
 		}
 	}

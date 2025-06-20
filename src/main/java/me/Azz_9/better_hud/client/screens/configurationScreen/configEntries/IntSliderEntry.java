@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 public class IntSliderEntry extends ScrollableConfigList.AbstractConfigEntry {
 	private final ConfigIntSliderWidget<?> sliderWidget;
 
-	public <T> IntSliderEntry(
+	private <T> IntSliderEntry(
 			int intSliderWidth,
 			int intSliderHeight,
 			int value,
@@ -31,7 +31,7 @@ public class IntSliderEntry extends ScrollableConfigList.AbstractConfigEntry {
 	) {
 		super(resetButtonSize, text);
 		sliderWidget = new ConfigIntSliderWidget<>(intSliderWidth, intSliderHeight, value, defaultValue, step, min, max, onChange, observers, disableWhen);
-		setResetButtonPressAction((btn) -> sliderWidget.setToInitialState());
+		setResetButtonPressAction((btn) -> sliderWidget.setToDefaultState());
 
 		sliderWidget.addObserver((Observer) this.resetButtonWidget);
 		((Observer) this.resetButtonWidget).onChange(sliderWidget);

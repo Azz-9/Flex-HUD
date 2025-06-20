@@ -1,5 +1,6 @@
 package me.Azz_9.better_hud.client.screens.configurationScreen.configEntries;
 
+import me.Azz_9.better_hud.client.configurableMods.mods.hud.Translatable;
 import me.Azz_9.better_hud.client.screens.TrackableChange;
 import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.better_hud.client.screens.configurationScreen.ScrollableConfigList;
@@ -13,10 +14,10 @@ import net.minecraft.text.Text;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class CyclingButtonEntry<E extends Enum<E>> extends ScrollableConfigList.AbstractConfigEntry {
+public class CyclingButtonEntry<E extends Enum<E> & Translatable> extends ScrollableConfigList.AbstractConfigEntry {
 	private final ConfigCyclingButtonWidget<?, E> cyclingButtonWidget;
 
-	public <T> CyclingButtonEntry(
+	private <T> CyclingButtonEntry(
 			int cyclingButtonWidth,
 			int cyclingButtonHeight,
 			E initialValue,
@@ -28,7 +29,7 @@ public class CyclingButtonEntry<E extends Enum<E>> extends ScrollableConfigList.
 	) {
 		super(resetButtonSize, text);
 		cyclingButtonWidget = new ConfigCyclingButtonWidget<>(cyclingButtonWidth, cyclingButtonHeight, initialValue, defaultValue, onValueChange, observers, disableWhen);
-		setResetButtonPressAction((btn) -> cyclingButtonWidget.setToInitialState());
+		setResetButtonPressAction((btn) -> cyclingButtonWidget.setToDefaultState());
 
 		cyclingButtonWidget.addObserver((Observer) this.resetButtonWidget);
 		((Observer) this.resetButtonWidget).onChange(cyclingButtonWidget);
@@ -71,7 +72,7 @@ public class CyclingButtonEntry<E extends Enum<E>> extends ScrollableConfigList.
 	}
 
 	// Builder
-	public static class Builder<E extends Enum<E>> extends AbstractBuilder {
+	public static class Builder<E extends Enum<E> & Translatable> extends AbstractBuilder {
 		private int cyclingButtonWidth;
 		private int cyclingButtonHeight = 20;
 		private E value;

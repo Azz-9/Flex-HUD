@@ -1,6 +1,7 @@
 package me.Azz_9.better_hud.client.configurableMods.mods.notHud;
 
 import me.Azz_9.better_hud.client.configurableMods.mods.abstractMod;
+import me.Azz_9.better_hud.client.configurableMods.mods.hud.Translatable;
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
@@ -43,9 +44,19 @@ public class WeatherChanger extends abstractMod {
 		};
 	}
 
-	public enum Weather {
-		CLEAR,
-		RAIN,
-		THUNDER
+	public enum Weather implements Translatable {
+		CLEAR("better_hud.enum.weather.clear"),
+		RAIN("better_hud.enum.weather.rain"),
+		THUNDER("better_hud.enum.weather.thunder");
+
+		private final String translationKey;
+
+		Weather(String translationKey) {
+			this.translationKey = translationKey;
+		}
+
+		public String getTranslationKey() {
+			return translationKey;
+		}
 	}
 }

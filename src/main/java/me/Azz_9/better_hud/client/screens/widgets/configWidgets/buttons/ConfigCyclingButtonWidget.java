@@ -1,10 +1,10 @@
 package me.Azz_9.better_hud.client.screens.widgets.configWidgets.buttons;
 
+import me.Azz_9.better_hud.client.configurableMods.mods.hud.Translatable;
 import me.Azz_9.better_hud.client.screens.TrackableChange;
 import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.better_hud.client.screens.modsList.DataGetter;
 import me.Azz_9.better_hud.client.screens.widgets.configWidgets.ResetAware;
-import me.Azz_9.better_hud.client.utils.StringUtils;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
@@ -13,7 +13,7 @@ import org.lwjgl.glfw.GLFW;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class ConfigCyclingButtonWidget<T, E extends Enum<E>> extends ButtonWidget implements TrackableChange, DataGetter<E>, ResetAware {
+public class ConfigCyclingButtonWidget<T, E extends Enum<E> & Translatable> extends ButtonWidget implements TrackableChange, DataGetter<E>, ResetAware {
 	private final Consumer<E> ON_CHANGE;
 	private final E INITIAL_STATE;
 	private final List<Observer> observers;
@@ -23,7 +23,7 @@ public class ConfigCyclingButtonWidget<T, E extends Enum<E>> extends ButtonWidge
 	private final E defaultValue;
 
 	public ConfigCyclingButtonWidget(int width, int height, E currentValue, E defaultValue, Consumer<E> onChange, List<Observer> observers, T disableWhen) {
-		super(0, 0, width, height, Text.of(StringUtils.capitalize(currentValue.name())), (btn) -> {
+		super(0, 0, width, height, Text.translatable(currentValue.getTranslationKey()), (btn) -> {
 		}, DEFAULT_NARRATION_SUPPLIER);
 		this.ON_CHANGE = onChange;
 		this.INITIAL_STATE = currentValue;
@@ -50,7 +50,7 @@ public class ConfigCyclingButtonWidget<T, E extends Enum<E>> extends ButtonWidge
 		int index = (currentValue.ordinal() + 1) % values.length;
 
 		currentValue = values[index];
-		setMessage(Text.of(StringUtils.capitalize(currentValue.name())));
+		setMessage(Text.translatable(currentValue.getTranslationKey()));
 		ON_CHANGE.accept(currentValue);
 
 		for (Observer observer : observers) {
@@ -68,9 +68,9 @@ public class ConfigCyclingButtonWidget<T, E extends Enum<E>> extends ButtonWidge
 	}
 
 	@Override
-	public void setToInitialState() {
+	public void setToDefaultState() {
 		currentValue = defaultValue;
-		setMessage(Text.of(StringUtils.capitalize(defaultValue.name())));
+		setMessage(Text.translatable(defaultValue.getTranslationKey()));
 		ON_CHANGE.accept(defaultValue);
 
 		for (Observer observer : observers) {

@@ -28,7 +28,7 @@ public class ToggleButtonEntry extends ScrollableConfigList.AbstractConfigEntry 
 	) {
 		super(resetButtonSize, text);
 		toggleButtonWidget = new ConfigToggleButtonWidget<>(toggleButtonWidth, toggleButtonHeight, toggled, defaultValue, onToggle, observers, disableWhen);
-		setResetButtonPressAction((btn) -> toggleButtonWidget.setToInitialState());
+		setResetButtonPressAction((btn) -> toggleButtonWidget.setToDefaultState());
 
 		toggleButtonWidget.addObserver((Observer) this.resetButtonWidget);
 		((Observer) this.resetButtonWidget).onChange(toggleButtonWidget);

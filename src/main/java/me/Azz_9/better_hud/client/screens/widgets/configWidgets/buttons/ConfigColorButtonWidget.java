@@ -76,7 +76,7 @@ public class ConfigColorButtonWidget<T> extends ClickableWidget implements Track
 	}
 
 	@Override
-	public void setToInitialState() {
+	public void setToDefaultState() {
 		this.onReceiveColor(defaultColor);
 	}
 
@@ -127,7 +127,6 @@ public class ConfigColorButtonWidget<T> extends ClickableWidget implements Track
 
 	@Override
 	public boolean isCurrentValueDefault() {
-		System.out.println("dans le widget -> " + (color == defaultColor));
 		return color == defaultColor;
 	}
 

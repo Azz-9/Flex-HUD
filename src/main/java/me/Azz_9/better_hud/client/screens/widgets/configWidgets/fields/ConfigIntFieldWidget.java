@@ -117,7 +117,7 @@ public class ConfigIntFieldWidget<T> extends TextFieldWidget implements Trackabl
 	}
 
 	@Override
-	public void setToInitialState() {
+	public void setToDefaultState() {
 		super.setText(String.valueOf(defaultValue));
 	}
 

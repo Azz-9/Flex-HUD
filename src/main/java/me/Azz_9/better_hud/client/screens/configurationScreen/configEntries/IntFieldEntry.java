@@ -26,7 +26,7 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 
 	private int increaseAndDecreaseButtonSize = 10;
 
-	public <T> IntFieldEntry(
+	private <T> IntFieldEntry(
 			int intFieldWidth,
 			int intFieldHeight,
 			int value,
@@ -48,7 +48,7 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 				observers,
 				disableWhen
 		);
-		setResetButtonPressAction((btn) -> intFieldWidget.setToInitialState());
+		setResetButtonPressAction((btn) -> intFieldWidget.setToDefaultState());
 
 		increaseButton = new TexturedButtonWidget(increaseAndDecreaseButtonSize, increaseAndDecreaseButtonSize, new ButtonTextures(
 				Identifier.of(MOD_ID, "widgets/buttons/int_field/increase/unfocused.png"),

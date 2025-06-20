@@ -5,6 +5,7 @@
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
 		"cps.MouseMixin",
+		"durabilityPing.ItemStackMixin",
 		"weatherChanger.ClientWorldMixin",
 		"weatherChanger.ClientWorldPropertiesMixin"
 	],

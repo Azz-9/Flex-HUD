@@ -56,7 +56,7 @@ public class ConfigIntSliderWidget<T> extends SliderWidget implements TrackableC
 	}
 
 	@Override
-	public void setToInitialState() {
+	public void setToDefaultState() {
 		value = getNormalizedValue(defaultValue);
 		ON_CHANGE.accept(defaultValue);
 		updateMessage();

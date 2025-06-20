@@ -1,7 +1,7 @@
 package me.Azz_9.better_hud.client.screens;
 
 public interface TrackableChange {
-	void setToInitialState();
+	void setToDefaultState();
 
 	boolean hasChanged();
 
