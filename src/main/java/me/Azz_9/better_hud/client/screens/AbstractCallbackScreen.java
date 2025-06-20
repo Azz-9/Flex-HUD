@@ -89,7 +89,7 @@ public abstract class AbstractCallbackScreen extends AbstractBackNavigableScreen
 			callbackDiscardButton.render(context, mouseX, mouseY, delta);
 			callbackCancelButton.render(context, mouseX, mouseY, delta);
 
-			int textColor = 0xffffff;
+			int textColor = 0xffffffff;
 			context.drawCenteredTextWithShadow(textRenderer, MESSAGE_TITLE, this.width / 2, this.height / 2 - 42, textColor);
 			context.drawCenteredTextWithShadow(textRenderer, MESSAGE_CONTENT, this.width / 2, this.height / 2 - 30, textColor);
 
@@ -121,7 +121,7 @@ public abstract class AbstractCallbackScreen extends AbstractBackNavigableScreen
 	}
 
 	protected void onCancelButtonClick() {
-		if (trackableWidgets.stream().anyMatch(TrackableChange::hasChanged)) {
+		if (!Screen.hasShiftDown() && trackableWidgets.stream().anyMatch(TrackableChange::hasChanged)) {
 			setCallbackScreen(true);
 		} else {
 			cancel();

@@ -19,6 +19,6 @@ public class ChromaColorUtils {
 		float hue = (elapsedTime % CYCLE_DURATION) / (float) CYCLE_DURATION; // `hue` est compris entre 0 et 1
 
 		// Génération de la couleur RGB à partir du Hue
-		color = Color.HSBtoRGB(hue, 1.0f, 1.0f);
+		color = Color.HSBtoRGB(hue, 1.0f, 1.0f) | 0xff000000;
 	}
 }

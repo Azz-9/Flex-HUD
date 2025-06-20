@@ -11,7 +11,7 @@ public abstract class AbstractHudElement extends abstractMod {
 
 	public double x, y;
 	public boolean chromaColor = false;
-	public int color = 0xFFFFFF;
+	public int color = 0xffffff;
 	public boolean drawBackground = false;
 	public int backgroundColor = 0x313131;
 	public boolean shadow = true;
@@ -67,6 +67,6 @@ public abstract class AbstractHudElement extends abstractMod {
 		if (chromaColor) {
 			return ChromaColorUtils.getColor();
 		}
-		return color;
+		return color | 0xff000000;
 	}
 }

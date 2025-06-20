@@ -3,10 +3,10 @@ package me.Azz_9.better_hud.client.screens.modsList;
 import me.Azz_9.better_hud.client.configurableMods.JsonConfigHelper;
 import me.Azz_9.better_hud.client.screens.AbstractSmoothScrollableList;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
-import net.minecraft.client.render.RenderLayer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -136,7 +136,7 @@ public class ScrollableModsList extends AbstractSmoothScrollableList<ScrollableM
 					iconX = buttonX + (scrollableModsList.buttonWidth - scrollableModsList.iconWidthHeight) / 2;
 				}
 
-				drawContext.drawTexture(RenderLayer::getGuiTextured, this.rowMods.get(i).icon, iconX, y, 0, 0,
+				drawContext.drawTexture(RenderPipelines.GUI_TEXTURED, this.rowMods.get(i).icon, iconX, y, 0, 0,
 						scrollableModsList.iconWidthHeight, scrollableModsList.iconWidthHeight, scrollableModsList.iconWidthHeight, scrollableModsList.iconWidthHeight);
 				this.rowMods.get(i).button.setX(buttonX);
 				this.rowMods.get(i).button.setY(y + scrollableModsList.iconWidthHeight + scrollableModsList.padding / 2);

@@ -80,7 +80,7 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 			return;
 		}
 
-		int textColor = 0xffffff;
+		int textColor = 0xffffffff;
 		context.drawCenteredTextWithShadow(textRenderer, title, this.width / 2, 7, textColor);
 
 		configList.render(context, mouseX, mouseY, deltaTicks);
@@ -93,6 +93,10 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 				colorSelector.setFocused(false);
 			}
 		}
+	}
+
+	@Override
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
 	}
 
 	@Override

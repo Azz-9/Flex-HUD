@@ -1,18 +1,17 @@
 package me.Azz_9.better_hud.client.screens;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.Azz_9.better_hud.client.screens.modsList.ModsListScreen;
 import me.Azz_9.better_hud.client.screens.widgets.buttons.TexturedButtonWidget;
 import me.Azz_9.better_hud.client.utils.EaseUtils;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.joml.Matrix3x2fStack;
 
 import static me.Azz_9.better_hud.client.Better_hudClient.MOD_ID;
 import static me.Azz_9.better_hud.client.Better_hudClient.openOptionScreenKeyBind;
@@ -65,22 +64,24 @@ public class OptionsScreen extends Screen {
 		double y = height / 2.0 - iconHeight / 2.0 - 35;
 		y -= 16 * easedProgress; // go up smoothly
 
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, easedProgress);
+		//TODO trouver comment remplacer ça
+		//RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, easedProgress);
 
 		super.render(context, mouseX, mouseY, delta);
 
-		MatrixStack matrices = context.getMatrices();
-		matrices.push();
-		matrices.translate(x, y, 0);
+		Matrix3x2fStack matrices = context.getMatrices();
+		matrices.pushMatrix();
+		matrices.translate((float) x, (float) y);
 
 		// Draw the icon
-		context.drawTexture(RenderLayer::getGuiTexturedOverlay, modIcon, 0, 0, 0, 0, iconWidth, iconHeight, iconWidth, iconHeight);
+		context.drawTexture(RenderPipelines.GUI_TEXTURED, modIcon, 0, 0, 0, 0, iconWidth, iconHeight, iconWidth, iconHeight);
 
-		matrices.pop();
+		matrices.popMatrix();
 
-		context.drawText(textRenderer, ".", -10, 0, 0xffffff, false); // i don't know why but i need to put this in order to the texture to be rendered with the correct opacity
+		context.drawText(textRenderer, ".", -10, 0, 0xffffffff, false); // i don't know why but i need to put this in order to the texture to be rendered with the correct opacity
 
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F); // Opacité à 100%
+		//TODO trouver comment remplacer ça
+		//RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F); // Opacité à 100%
 	}
 
 	@Override

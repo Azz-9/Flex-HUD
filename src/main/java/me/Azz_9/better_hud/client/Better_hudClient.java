@@ -8,8 +8,8 @@ import me.Azz_9.better_hud.client.utils.ChromaColorUtils;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
-import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
@@ -41,13 +41,13 @@ public class Better_hudClient implements ClientModInitializer {
 		LOGGER.info("Xaeros Minimap {}found !", isXaerosMinimapLoaded ? "" : "not ");
 
 		List<AbstractHudElement> hudElements = JsonConfigHelper.getHudElements();
-		HudLayerRegistrationCallback.EVENT.register(layeredDrawer -> {
-			for (int i = 0; i < hudElements.size(); i++) {
-				AbstractHudElement element = hudElements.get(i);
-				Identifier id = Identifier.of(MOD_ID, "element-" + i);
-				layeredDrawer.attachLayerBefore(IdentifiedLayer.CHAT, id, element::render);
-			}
-		});
+		for (int i = 0; i < hudElements.size(); i++) {
+			HudElementRegistry.attachElementBefore(
+					VanillaHudElements.CHAT,
+					Identifier.of(MOD_ID, "hud_element-" + i),
+					hudElements.get(i)::render
+			);
+		}
 
 		ItemDurabilityLostCallback.EVENT.register((stack, damage) -> {
 			DurabilityPing durabilityPing = JsonConfigHelper.getInstance().durabilityPing;

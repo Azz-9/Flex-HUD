@@ -10,8 +10,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import org.joml.Matrix3x2fStack;
 
 public class Cps extends AbstractHudElement {
 	public boolean showLeftClick = true;
@@ -42,10 +42,10 @@ public class Cps extends AbstractHudElement {
 			text += String.valueOf(CalculateCps.getRightCps());
 		}
 
-		MatrixStack matrices = drawContext.getMatrices();
-		matrices.push();
-		matrices.translate(Math.round(this.x * vw), Math.round(this.y * vh), 0);
-		matrices.scale(this.scale, this.scale, 1.0f);
+		Matrix3x2fStack matrices = drawContext.getMatrices();
+		matrices.pushMatrix();
+		matrices.translate(Math.round(this.x * vw), Math.round(this.y * vh));
+		matrices.scale(this.scale, this.scale);
 
 		drawContext.drawText(CLIENT.textRenderer, text, 0, 0, getColor(), this.shadow);
 
@@ -53,10 +53,10 @@ public class Cps extends AbstractHudElement {
 		this.height = CLIENT.textRenderer.fontHeight;
 
 		if (drawBackground) {
-			drawContext.fill(-BACKGROUND_PADDING, -BACKGROUND_PADDING, width + BACKGROUND_PADDING, height + BACKGROUND_PADDING, 0x7f000000 | backgroundColor);
+			drawContext.fill(-BACKGROUND_PADDING, -BACKGROUND_PADDING, width + BACKGROUND_PADDING, height + BACKGROUND_PADDING, backgroundColor | 0x7f000000);
 		}
 
-		matrices.pop();
+		matrices.popMatrix();
 	}
 
 	@Override

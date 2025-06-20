@@ -13,11 +13,11 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
+import org.joml.Matrix3x2fStack;
 
 public class ArmorStatus extends AbstractHudElement {
 	private boolean showHelmet = true, showChestplate = true, showLeggings = true, showBoots = true;
@@ -42,10 +42,10 @@ public class ArmorStatus extends AbstractHudElement {
 
 		PlayerEntity player = client.player;
 
-		MatrixStack matrices = context.getMatrices();
-		matrices.push();
-		matrices.translate(Math.round(this.x * vw), Math.round(this.y * vh), 0);
-		matrices.scale(this.scale, this.scale, 1.0f);
+		Matrix3x2fStack matrices = context.getMatrices();
+		matrices.pushMatrix();
+		matrices.translate(Math.round(this.x * vw), Math.round(this.y * vh));
+		matrices.scale(this.scale, this.scale);
 
 		boolean[] booleans = new boolean[]{
 				showHelmet,
@@ -103,7 +103,7 @@ public class ArmorStatus extends AbstractHudElement {
 			}
 		}
 
-		matrices.pop();
+		matrices.popMatrix();
 	}
 
 	//return width
@@ -115,15 +115,16 @@ public class ArmorStatus extends AbstractHudElement {
 			switch (this.durabilityType) {
 				case PERCENTAGE -> {
 					String text = Math.round(getDurabilityPercentage(stack)) + "%";
-					context.drawText(MinecraftClient.getInstance().textRenderer, text, x + 17, y + 4, stack.getItemBarColor(), shadow);
+					context.drawText(MinecraftClient.getInstance().textRenderer, text, x + 17, y + 4, stack.getItemBarColor() | 0xff000000, shadow);
 					drawingWidth += MinecraftClient.getInstance().textRenderer.getWidth(text);
 				}
 				case VALUE -> {
 					String text = String.valueOf(getDurabilityValue(stack));
-					context.drawText(MinecraftClient.getInstance().textRenderer, text, x + 17, y + 4, stack.getItemBarColor(), shadow);
+					context.drawText(MinecraftClient.getInstance().textRenderer, text, x + 17, y + 4, stack.getItemBarColor() | 0xff000000, shadow);
 					drawingWidth += MinecraftClient.getInstance().textRenderer.getWidth(text);
 				}
 			}
+
 		} else if (MinecraftClient.getInstance().player != null) {
 			String text = String.valueOf(getStackCount(stack, MinecraftClient.getInstance().player));
 			context.drawText(MinecraftClient.getInstance().textRenderer, text, x + 17, y + 4, getColor(), shadow);

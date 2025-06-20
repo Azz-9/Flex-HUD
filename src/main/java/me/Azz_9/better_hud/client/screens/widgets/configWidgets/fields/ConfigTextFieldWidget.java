@@ -35,9 +35,9 @@ public class ConfigTextFieldWidget<T> extends TextFieldWidget implements Trackab
 		setChangedListener(text -> {
 			if (isValid()) {
 				ON_CHANGE.accept(text);
-				setEditableColor(0xffffff);
+				setEditableColor(0xffffffff);
 			} else {
-				setEditableColor((Formatting.RED.getColorValue() != null ? Formatting.RED.getColorValue() : 0xfc5454));
+				setEditableColor((Formatting.RED.getColorValue() != null ? Formatting.RED.getColorValue() : 0xfc5454) | 0xff000000);
 			}
 
 			for (Observer observer : observers) {

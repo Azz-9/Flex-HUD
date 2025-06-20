@@ -5,10 +5,10 @@ import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.better_hud.client.screens.modsList.DataGetter;
 import me.Azz_9.better_hud.client.screens.widgets.configWidgets.ResetAware;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
@@ -44,7 +44,7 @@ public class ConfigToggleButtonWidget<T> extends ToggleButtonWidget implements T
 		if (this.active) {
 			if (this.isHovered()) {
 				Identifier selectedTexture = Identifier.of(MOD_ID, "widgets/buttons/selected.png");
-				context.drawTexture(RenderLayer::getGuiTextured, selectedTexture, this.getX(), this.getY(), 0, 0, this.width, this.height, 100, 20);
+				context.drawTexture(RenderPipelines.GUI_TEXTURED, selectedTexture, this.getX(), this.getY(), 0, 0, this.width, this.height, 100, 20);
 			}
 			if (this.isSelected()) {
 				context.drawBorder(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
@@ -52,7 +52,7 @@ public class ConfigToggleButtonWidget<T> extends ToggleButtonWidget implements T
 		}
 
 		if (this.textures != null) {
-			context.drawTexture(RenderLayer::getGuiTextured, this.textures.get(this.toggled, this.isHovered() && this.active), this.getX() + this.width - this.height, this.getY(), 0, 0, this.height, this.height, 20, 20);
+			context.drawTexture(RenderPipelines.GUI_TEXTURED, this.textures.get(this.toggled, this.isHovered() && this.active), this.getX() + this.width - this.height, this.getY(), 0, 0, this.height, this.height, 20, 20);
 		}
 
 		if (!this.active) {

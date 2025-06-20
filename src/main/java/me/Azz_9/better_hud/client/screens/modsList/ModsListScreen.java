@@ -78,7 +78,7 @@ public class ModsListScreen extends AbstractBackNavigableScreen {
 	public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
 		super.render(drawContext, mouseX, mouseY, delta);
 
-		drawContext.drawCenteredTextWithShadow(textRenderer, title, this.width / 2, 7, 0xffffff);
+		drawContext.drawCenteredTextWithShadow(textRenderer, title, this.width / 2, 7, 0xffffffff);
 
 		this.modsList.render(drawContext, mouseX, mouseY, delta);
 	}

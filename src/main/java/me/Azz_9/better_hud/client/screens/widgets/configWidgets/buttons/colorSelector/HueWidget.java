@@ -1,13 +1,13 @@
 package me.Azz_9.better_hud.client.screens.widgets.configWidgets.buttons.colorSelector;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.joml.Matrix3x2fStack;
 import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
@@ -31,17 +31,17 @@ public class HueWidget extends ClickableWidget {
 	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
 		drawHueBar(context);
 
-		MatrixStack matrices = context.getMatrices();
-		matrices.push();
-		matrices.translate(getX(), getY() + cursorY, 0);
+		Matrix3x2fStack matrices = context.getMatrices();
+		matrices.pushMatrix();
+		matrices.translate((float) getX(), (float) (getY() + cursorY));
 
 		// Draw the cursor
 		int cursorWidth = getWidth();
 		int cursorHeight = cursorWidth / 4;
-		context.drawTexture(RenderLayer::getGuiTexturedOverlay, Identifier.of(MOD_ID, "widgets/color_selector/hue_cursor.png"),
+		context.drawTexture(RenderPipelines.GUI_TEXTURED, Identifier.of(MOD_ID, "widgets/color_selector/hue_cursor.png"),
 				0, -2, 0, 0, cursorWidth, cursorHeight, cursorWidth, cursorHeight);
 
-		matrices.pop();
+		matrices.popMatrix();
 	}
 
 	private void drawHueBar(DrawContext context) {
