@@ -79,6 +79,7 @@
 	"better_hud.coordinates.config.enable": "Show coordinates",
 	"better_hud.coordinates.config.show_y": "Show Y coordinate",
 	"better_hud.coordinates.config.show_biome": "Show biome",
+	"better_hud.coordinates.config.custom_biome_color": "Custom biome colors",
 	"better_hud.coordinates.config.show_direction": "Show direction",
 	"better_hud.coordinates.config.direction_abbreviation": "Direction abbreviation",
 	"better_hud.coordinates.config.number_of_digits": "Number of digits",

@@ -22,12 +22,12 @@ public class Cps extends AbstractHudElement {
 	}
 
 	@Override
-	public void render(DrawContext drawContext, RenderTickCounter tickCounter) {
-		super.render(drawContext, tickCounter);
+	public void render(DrawContext context, RenderTickCounter tickCounter) {
+		super.render(context, tickCounter);
 
-		final MinecraftClient CLIENT = MinecraftClient.getInstance();
+		MinecraftClient client = MinecraftClient.getInstance();
 
-		if (!JsonConfigHelper.getInstance().isEnabled || !this.enabled || !(this.showLeftClick || this.showRightClick) || CLIENT == null || CLIENT.options.hudHidden) {
+		if (!JsonConfigHelper.getInstance().isEnabled || !this.enabled || !(this.showLeftClick || this.showRightClick) || client == null || client.options.hudHidden) {
 			return;
 		}
 
@@ -42,19 +42,15 @@ public class Cps extends AbstractHudElement {
 			text += String.valueOf(CalculateCps.getRightCps());
 		}
 
-		Matrix3x2fStack matrices = drawContext.getMatrices();
+		Matrix3x2fStack matrices = context.getMatrices();
 		matrices.pushMatrix();
 		matrices.translate(Math.round(this.x * vw), Math.round(this.y * vh));
 		matrices.scale(this.scale, this.scale);
 
-		drawContext.drawText(CLIENT.textRenderer, text, 0, 0, getColor(), this.shadow);
+		context.drawText(client.textRenderer, text, 0, 0, getColor(), this.shadow);
 
 		setWidth(text);
-		this.height = CLIENT.textRenderer.fontHeight;
-
-		if (drawBackground) {
-			drawContext.fill(-BACKGROUND_PADDING, -BACKGROUND_PADDING, width + BACKGROUND_PADDING, height + BACKGROUND_PADDING, backgroundColor | 0x7f000000);
-		}
+		this.height = client.textRenderer.fontHeight;
 
 		matrices.popMatrix();
 	}

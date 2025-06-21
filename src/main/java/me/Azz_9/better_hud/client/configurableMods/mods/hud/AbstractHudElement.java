@@ -5,6 +5,7 @@ import me.Azz_9.better_hud.client.utils.ChromaColorUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
+import org.joml.Matrix3x2fStack;
 
 public abstract class AbstractHudElement extends abstractMod {
 	protected transient final int BACKGROUND_PADDING = 2;
@@ -26,10 +27,22 @@ public abstract class AbstractHudElement extends abstractMod {
 	}
 
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		this.height = 0;
-		this.width = 0;
 		vw = MinecraftClient.getInstance().getWindow().getScaledWidth() / 100.0F;
 		vh = MinecraftClient.getInstance().getWindow().getScaledHeight() / 100.0F;
+
+		Matrix3x2fStack matrices = context.getMatrices();
+		matrices.pushMatrix();
+		matrices.translate(Math.round(this.x * vw), Math.round(this.y * vh));
+		matrices.scale(this.scale, this.scale);
+
+		if (drawBackground) {
+			context.fill(-BACKGROUND_PADDING, -BACKGROUND_PADDING, width + BACKGROUND_PADDING, height + BACKGROUND_PADDING, 0x7f000000 | backgroundColor);
+		}
+
+		matrices.popMatrix();
+
+		this.height = 0;
+		this.width = 0;
 	}
 
 	protected void updateWidth(String text) {

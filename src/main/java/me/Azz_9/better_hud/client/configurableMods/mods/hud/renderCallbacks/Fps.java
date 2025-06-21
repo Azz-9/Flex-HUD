@@ -1,10 +1,10 @@
 package me.Azz_9.better_hud.client.configurableMods.mods.hud.renderCallbacks;
 
+import me.Azz_9.better_hud.client.Better_hudClient;
 import me.Azz_9.better_hud.client.configurableMods.JsonConfigHelper;
 import me.Azz_9.better_hud.client.configurableMods.mods.hud.AbstractHudElement;
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
-import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.StringFieldEntry;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -13,14 +13,8 @@ import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
 import org.joml.Matrix3x2fStack;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-
-public class Clock extends AbstractHudElement {
-	public String textFormat = "hh:mm:ss";
-	public boolean isTwentyFourHourFormat = true;
-
-	public Clock(double defaultX, double defaultY) {
+public class Fps extends AbstractHudElement {
+	public Fps(double defaultX, double defaultY) {
 		super(defaultX, defaultY);
 	}
 
@@ -34,42 +28,31 @@ public class Clock extends AbstractHudElement {
 			return;
 		}
 
-		String currentTime = getCurrentTime();
+		String text;
+		if (Better_hudClient.isInMoveElementScreen) {
+			text = "100 FPS";
+		} else {
+			text = client.getCurrentFps() + " FPS";
+		}
 
 		Matrix3x2fStack matrices = context.getMatrices();
 		matrices.pushMatrix();
 		matrices.translate(Math.round(this.x * vw), Math.round(this.y * vh));
 		matrices.scale(this.scale, this.scale);
 
-		context.drawText(client.textRenderer, currentTime, 0, 0, getColor(), this.shadow);
+		context.drawText(client.textRenderer, text, 0, 0, getColor(), this.shadow);
 
-		setWidth(currentTime);
+		setWidth(text);
 		this.height = client.textRenderer.fontHeight;
 
 		matrices.popMatrix();
 	}
 
-	public String getCurrentTime() {
-		String textFormat = this.textFormat.toLowerCase();
-		if (this.isTwentyFourHourFormat) {
-			textFormat = textFormat.replace("hh", "HH").replace("h", "HH");
-		} else {
-			textFormat += " a";
-		}
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(textFormat);
-		return LocalTime.now().format(formatter);
-	}
-
-
 	@Override
 	public AbstractConfigurationScreen getConfigScreen(Screen parent, double parentScrollAmount) {
-		return new AbstractConfigurationScreen(Text.translatable("better_hud.clock"), parent, parentScrollAmount) {
+		return new AbstractConfigurationScreen(Text.translatable("better_hud.fps"), parent, parentScrollAmount) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
-					buttonWidth = 180;
-				}
-
 				super.init();
 
 				this.addAllEntries(
@@ -77,8 +60,8 @@ public class Clock extends AbstractHudElement {
 								.setToggleButtonWidth(buttonWidth)
 								.setToggled(enabled)
 								.setDefaultValue(true)
-								.setOnToggle(toggled -> enabled = toggled)
-								.setText(Text.translatable("better_hud.clock.config.enable"))
+								.setOnToggle((toggled) -> enabled = toggled)
+								.setText(Text.translatable("better_hud.fps.config.enable"))
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
@@ -100,7 +83,7 @@ public class Clock extends AbstractHudElement {
 								.setColorButtonWidth(buttonWidth)
 								.setColor(color)
 								.setDefaultColor(0xffffff)
-								.setOnColorChange(value -> color = value)
+								.setOnColorChange(newColor -> color = newColor)
 								.setDependency(this.getConfigList().getLastEntry(), true)
 								.setText(Text.translatable("better_hud.global.config.text_color"))
 								.build(),
@@ -117,39 +100,9 @@ public class Clock extends AbstractHudElement {
 								.setColorButtonWidth(buttonWidth)
 								.setColor(backgroundColor)
 								.setDefaultColor(0x313131)
-								.setOnColorChange(value -> backgroundColor = value)
+								.setOnColorChange(newColor -> backgroundColor = newColor)
 								.setDependency(this.getConfigList().getLastEntry(), false)
 								.setText(Text.translatable("better_hud.global.config.background_color"))
-								.build(),
-						new ToggleButtonEntry.Builder()
-								.setToggleButtonWidth(buttonWidth)
-								.setToggled(isTwentyFourHourFormat)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> isTwentyFourHourFormat = toggled)
-								.setText(Text.translatable("better_hud.clock.config.24-hour_format"))
-								.build(),
-						new StringFieldEntry.Builder()
-								.setIntFieldWidth(80)
-								.setValue(textFormat)
-								.setDefaultValue("hh:mm:ss")
-								.setOnValueChange((value) -> textFormat = value)
-								.setIsValid(textFormat -> {
-									try {
-										textFormat = textFormat.toLowerCase();
-										if (isTwentyFourHourFormat) {
-											textFormat = textFormat.replace("hh", "HH").replace("h", "HH");
-										} else {
-											textFormat += " a";
-										}
-										DateTimeFormatter formatter = DateTimeFormatter.ofPattern(textFormat);
-										LocalTime.now().format(formatter);
-										return true;
-
-									} catch (Exception e) {
-										return false;
-									}
-								})
-								.setText(Text.translatable("better_hud.clock.config.text_format"))
 								.build()
 				);
 			}

@@ -55,12 +55,11 @@ public class GradientWidget extends ClickableWidget {
 
 	private void renderGradient(DrawContext context) {
 		for (int x = 0; x < getWidth(); x++) {
-			for (int y = 0; y < getHeight(); y++) {
-				float saturation = x / (float) getWidth();
-				float brightness = 1.0f - y / (float) getHeight();
-				int color = Color.HSBtoRGB(selectedHue / 360.0f, saturation, brightness);
-				context.fill(getX() + x, getY() + y, getX() + x + 1, getY() + y + 1, color);
-			}
+			float saturation = x / (float) getWidth();
+
+			int topColor = Color.HSBtoRGB(selectedHue / 360.0f, saturation, 1.0f);
+			int bottomColor = Color.HSBtoRGB(selectedHue / 360.0f, saturation, 0.0f);
+			context.fillGradient(getX() + x, getY(), getX() + x + 1, getBottom(), topColor, bottomColor);
 		}
 	}
 

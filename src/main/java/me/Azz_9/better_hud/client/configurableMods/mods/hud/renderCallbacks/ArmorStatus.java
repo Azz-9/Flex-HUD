@@ -219,6 +219,23 @@ public class ArmorStatus extends AbstractHudElement {
 								.setDependency(this.getConfigList().getLastEntry(), true)
 								.setText(Text.translatable("better_hud.global.config.text_color"))
 								.build(),
+						/*new ToggleButtonEntry.Builder() TODO faire en sorte de pouvoir afficher le fond
+								.setToggleButtonWidth(buttonWidth)
+								.setToggled(drawBackground)
+								.setDefaultValue(false)
+								.setOnToggle(toggled -> drawBackground = toggled)
+								.setText(Text.translatable("better_hud.global.config.show_background"))
+								.build()
+				);
+				this.addAllEntries(
+						new ColorButtonEntry.Builder()
+								.setColorButtonWidth(buttonWidth)
+								.setColor(backgroundColor)
+								.setDefaultColor(0x313131)
+								.setOnColorChange(newColor -> backgroundColor = newColor)
+								.setDependency(this.getConfigList().getLastEntry(), false)
+								.setText(Text.translatable("better_hud.global.config.background_color"))
+								.build(),*/
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setToggled(showHelmet)

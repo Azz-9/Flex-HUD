@@ -23,6 +23,8 @@ public class ModsListScreen extends AbstractBackNavigableScreen {
 			Text.translatable("better_hud.armor_status").getString(),
 			Text.translatable("better_hud.cps").getString(),
 			Text.translatable("better_hud.clock").getString(),
+			Text.translatable("better_hud.fps").getString(),
+			Text.translatable("better_hud.coordinates").getString(),
 			Text.translatable("better_hud.durability_ping").getString(),
 			Text.translatable("better_hud.weather_changer").getString(),
 			Text.translatable("better_hud.time_changer").getString()
@@ -127,11 +129,12 @@ public class ModsListScreen extends AbstractBackNavigableScreen {
 				"armor_status",
 				"cps",
 				"clock",
+				"fps",
+				"coordinates",
 				"durability_ping",
 				"weather_changer",
 				"time_changer",
-				"coordinates",
-				"fps",
+
 				"direction",
 				"day_counter",
 				"ping",
@@ -148,9 +151,12 @@ public class ModsListScreen extends AbstractBackNavigableScreen {
 
 	private Runnable getSetScreenRunnable(String modId) {
 		return switch (modId) {
-			/*case "coordinates" ->
-					() -> MinecraftClient.getInstance().setScreen(new Coordinates(this, modsList.getScrollY()));
-			case "fps" -> () -> MinecraftClient.getInstance().setScreen(new FPS(this, modsList.getScrollY()));*/
+			case "coordinates" -> () -> MinecraftClient.getInstance().setScreen(
+					JsonConfigHelper.getInstance().coordinates.getConfigScreen(this, modsList.getScrollY())
+			);
+			case "fps" -> () -> MinecraftClient.getInstance().setScreen(
+					JsonConfigHelper.getInstance().fps.getConfigScreen(this, modsList.getScrollY())
+			);
 			case "clock" -> () -> MinecraftClient.getInstance().setScreen(
 					JsonConfigHelper.getInstance().clock.getConfigScreen(this, modsList.getScrollY())
 			);
