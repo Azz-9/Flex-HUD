@@ -1,6 +1,6 @@
 package me.Azz_9.better_hud.client.screens.widgets.configWidgets.buttons;
 
-import me.Azz_9.better_hud.client.configurableMods.mods.hud.Translatable;
+import me.Azz_9.better_hud.client.configurableMods.mods.Translatable;
 import me.Azz_9.better_hud.client.screens.TrackableChange;
 import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.better_hud.client.screens.modsList.DataGetter;

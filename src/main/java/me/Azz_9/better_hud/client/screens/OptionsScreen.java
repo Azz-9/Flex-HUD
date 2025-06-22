@@ -78,8 +78,6 @@ public class OptionsScreen extends Screen {
 
 		matrices.popMatrix();
 
-		context.drawText(textRenderer, ".", -10, 0, 0xffffffff, false); // i don't know why but i need to put this in order to the texture to be rendered with the correct opacity
-
 		//TODO trouver comment remplacer ça
 		//RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F); // Opacité à 100%
 	}
