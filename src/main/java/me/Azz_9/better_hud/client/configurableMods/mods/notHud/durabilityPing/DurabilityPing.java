@@ -1,7 +1,7 @@
 package me.Azz_9.better_hud.client.configurableMods.mods.notHud.durabilityPing;
 
+import me.Azz_9.better_hud.client.configurableMods.mods.Translatable;
 import me.Azz_9.better_hud.client.configurableMods.mods.abstractMod;
-import me.Azz_9.better_hud.client.configurableMods.mods.hud.Translatable;
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.IntSliderEntry;

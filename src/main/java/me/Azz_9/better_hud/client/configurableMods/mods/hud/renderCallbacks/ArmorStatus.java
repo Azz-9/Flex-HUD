@@ -2,9 +2,9 @@ package me.Azz_9.better_hud.client.configurableMods.mods.hud.renderCallbacks;
 
 import me.Azz_9.better_hud.client.Better_hudClient;
 import me.Azz_9.better_hud.client.configurableMods.JsonConfigHelper;
+import me.Azz_9.better_hud.client.configurableMods.mods.Translatable;
 import me.Azz_9.better_hud.client.configurableMods.mods.hud.AbstractHudElement;
 import me.Azz_9.better_hud.client.configurableMods.mods.hud.DisplayMode;
-import me.Azz_9.better_hud.client.configurableMods.mods.hud.Translatable;
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;

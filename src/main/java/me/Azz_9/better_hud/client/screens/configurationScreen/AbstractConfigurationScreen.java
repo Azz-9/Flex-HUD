@@ -81,6 +81,9 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 		}
 
 		int textColor = 0xffffffff;
+		int backgroundColor = 0x80000000;
+		int padding = 2;
+		context.fill(this.width / 2 - textRenderer.getWidth(title) / 2 - padding, 7 - padding, this.width / 2 + textRenderer.getWidth(title) / 2 + padding, 7 + textRenderer.fontHeight, backgroundColor);
 		context.drawCenteredTextWithShadow(textRenderer, title, this.width / 2, 7, textColor);
 
 		configList.render(context, mouseX, mouseY, deltaTicks);

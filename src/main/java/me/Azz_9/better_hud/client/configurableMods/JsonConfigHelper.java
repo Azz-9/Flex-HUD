@@ -23,6 +23,7 @@ public class JsonConfigHelper {
 	public Clock clock = new Clock(76.112, 0.443);
 	public Fps fps = new Fps(0.234, 0.443);
 	public Coordinates coordinates = new Coordinates(0.234, 3.104);
+	public Direction direction = new Direction(37.471, 0.000);
 	//others
 	public WeatherChanger weatherChanger = new WeatherChanger();
 	public TimeChanger timeChanger = new TimeChanger();
@@ -70,7 +71,8 @@ public class JsonConfigHelper {
 				getInstance().cps,
 				getInstance().clock,
 				getInstance().fps,
-				getInstance().coordinates
+				getInstance().coordinates,
+				getInstance().direction
 		);
 	}
 }
