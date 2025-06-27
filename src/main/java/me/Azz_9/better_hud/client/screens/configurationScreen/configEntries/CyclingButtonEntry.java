@@ -1,18 +1,20 @@
 package me.Azz_9.better_hud.client.screens.configurationScreen.configEntries;
 
-import me.Azz_9.better_hud.client.configurableMods.mods.Translatable;
+import me.Azz_9.better_hud.client.configurableModules.modules.Translatable;
 import me.Azz_9.better_hud.client.screens.TrackableChange;
 import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.better_hud.client.screens.configurationScreen.ScrollableConfigList;
-import me.Azz_9.better_hud.client.screens.modsList.DataGetter;
-import me.Azz_9.better_hud.client.screens.widgets.configWidgets.buttons.ConfigCyclingButtonWidget;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.DataGetter;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.buttons.ConfigCyclingButtonWidget;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.text.Text;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class CyclingButtonEntry<E extends Enum<E> & Translatable> extends ScrollableConfigList.AbstractConfigEntry {
 	private final ConfigCyclingButtonWidget<?, E> cyclingButtonWidget;
@@ -25,10 +27,11 @@ public class CyclingButtonEntry<E extends Enum<E> & Translatable> extends Scroll
 			Consumer<E> onValueChange,
 			int resetButtonSize,
 			Text text,
-			T disableWhen
+			T disableWhen,
+			Function<E, Tooltip> getTooltip
 	) {
 		super(resetButtonSize, text);
-		cyclingButtonWidget = new ConfigCyclingButtonWidget<>(cyclingButtonWidth, cyclingButtonHeight, initialValue, defaultValue, onValueChange, observers, disableWhen);
+		cyclingButtonWidget = new ConfigCyclingButtonWidget<>(cyclingButtonWidth, cyclingButtonHeight, initialValue, defaultValue, onValueChange, observers, disableWhen, getTooltip);
 		setResetButtonPressAction((btn) -> cyclingButtonWidget.setToDefaultState());
 
 		cyclingButtonWidget.addObserver((Observer) this.resetButtonWidget);
@@ -81,6 +84,7 @@ public class CyclingButtonEntry<E extends Enum<E> & Translatable> extends Scroll
 		};
 		private ScrollableConfigList.AbstractConfigEntry dependency = null;
 		private Object disableWhen;
+		private Function<E, Tooltip> getTooltip = null;
 
 		public CyclingButtonEntry.Builder<E> setCyclingButtonWidth(int width) {
 			this.cyclingButtonWidth = width;
@@ -114,6 +118,11 @@ public class CyclingButtonEntry<E extends Enum<E> & Translatable> extends Scroll
 			return this;
 		}
 
+		public CyclingButtonEntry.Builder<E> setGetTooltip(Function<E, Tooltip> getTooltip) {
+			this.getTooltip = getTooltip;
+			return this;
+		}
+
 		@Override
 		public CyclingButtonEntry<E> build() {
 			CyclingButtonEntry<E> entry = new CyclingButtonEntry<>(
@@ -122,7 +131,8 @@ public class CyclingButtonEntry<E extends Enum<E> & Translatable> extends Scroll
 					onValueChange,
 					resetButtonSize,
 					text,
-					disableWhen
+					disableWhen,
+					getTooltip
 			);
 			if (dependency != null) {
 				dependency.addObserver(entry);

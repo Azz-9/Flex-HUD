@@ -1,6 +1,6 @@
 package me.Azz_9.better_hud.client.screens;
 
-import me.Azz_9.better_hud.client.configurableMods.JsonConfigHelper;
+import me.Azz_9.better_hud.client.configurableModules.JsonConfigHelper;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -19,7 +19,7 @@ public abstract class AbstractCallbackScreen extends AbstractBackNavigableScreen
 	private ButtonWidget saveButton;
 
 	private boolean callbackScreen;
-	private List<TrackableChange> trackableWidgets;
+	private final List<TrackableChange> trackableWidgets;
 
 	protected AbstractCallbackScreen(Text title, Screen parent, Text callbackTitle, Text callbackContent) {
 		super(title, parent);
@@ -70,7 +70,7 @@ public abstract class AbstractCallbackScreen extends AbstractBackNavigableScreen
 						buttonsWidth,
 						buttonsHeight
 				).build();
-		saveButton.active = false;
+		updateSaveButton();
 
 
 		this.addDrawableChild(callbackDiscardButton);
@@ -157,6 +157,20 @@ public abstract class AbstractCallbackScreen extends AbstractBackNavigableScreen
 
 	public void setSaveButtonActive(boolean active) {
 		saveButton.active = active;
+	}
+
+	public void updateSaveButton() {
+		boolean foundAChange = false;
+		for (TrackableChange widget : getTrackableWidgets()) {
+			if (widget.hasChanged()) {
+				foundAChange = true;
+			}
+			if (!widget.isValid()) {
+				saveButton.active = false;
+				return;
+			}
+		}
+		saveButton.active = foundAChange;
 	}
 
 	protected abstract void disableAllChildren();

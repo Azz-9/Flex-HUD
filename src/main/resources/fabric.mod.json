@@ -18,8 +18,8 @@
 		"client": [
 			"me.Azz_9.better_hud.client.Better_hudClient"
 		],
-		"main": [
-			"me.Azz_9.better_hud.Better_hud"
+		"modmenu": [
+			"me.Azz_9.better_hud.compat.ModMenuCompat"
 		]
 	},
 

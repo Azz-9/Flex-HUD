@@ -1,6 +1,8 @@
 package me.Azz_9.better_hud.client.screens;
 
-import me.Azz_9.better_hud.client.screens.modsList.ModsListScreen;
+import me.Azz_9.better_hud.client.Better_hudClient;
+import me.Azz_9.better_hud.client.screens.modulesList.ModulesListScreen;
+import me.Azz_9.better_hud.client.screens.moveModulesScreen.MoveModulesScreen;
 import me.Azz_9.better_hud.client.screens.widgets.buttons.TexturedButtonWidget;
 import me.Azz_9.better_hud.client.utils.EaseUtils;
 import net.minecraft.client.MinecraftClient;
@@ -16,34 +18,37 @@ import org.joml.Matrix3x2fStack;
 import static me.Azz_9.better_hud.client.Better_hudClient.MOD_ID;
 import static me.Azz_9.better_hud.client.Better_hudClient.openOptionScreenKeyBind;
 
-public class OptionsScreen extends Screen {
+public class OptionsScreen extends AbstractBackNavigableScreen {
 	private long initTimestamp;
 
 	public OptionsScreen() {
-		super(Text.translatable("better_hud.options_screen"));
+		super(Text.translatable("better_hud.options_screen"), null);
+	}
+
+	public OptionsScreen(Screen parent) {
+		super(Text.translatable("better_hud.options_screen"), parent);
 	}
 
 	@Override
 	protected void init() {
 		initTimestamp = System.currentTimeMillis();
 
-		ButtonWidget modsButton = ButtonWidget.builder(Text.translatable("better_hud.options_screen.mods"),
-						(btn) -> MinecraftClient.getInstance().setScreen(new ModsListScreen(this))
+		ButtonWidget modsButton = ButtonWidget.builder(Text.translatable("better_hud.options_screen.modules"),
+						(btn) -> MinecraftClient.getInstance().setScreen(new ModulesListScreen(this))
 				).dimensions(width / 2 - 60, height / 2 - 10, 120, 20)
 				.build();
-
-		TexturedButtonWidget moveButton = new TexturedButtonWidget(width / 2 - 10 + 80, height / 2 - 10, 20, 20,
-				new ButtonTextures(Identifier.of(MOD_ID, "widgets/buttons/open_move_elements_screen/unfocused.png"),
-						Identifier.of(MOD_ID, "widgets/buttons/open_move_elements_screen/focused.png")),
-				(btn) -> {
-					System.out.println("move button clicked");
-					//MinecraftClient.getInstance().setScreen(new MoveElementsScreen(this));
-					//Better_hudClient.isEditing = true;
-				});
-
-
 		this.addDrawableChild(modsButton);
-		this.addDrawableChild(moveButton);
+
+		if (MinecraftClient.getInstance().world != null) {
+			TexturedButtonWidget moveButton = new TexturedButtonWidget(width / 2 - 10 + 80, height / 2 - 10, 20, 20,
+					new ButtonTextures(Identifier.of(MOD_ID, "widgets/buttons/open_move_elements_screen/unfocused.png"),
+							Identifier.of(MOD_ID, "widgets/buttons/open_move_elements_screen/focused.png")),
+					(btn) -> {
+						MinecraftClient.getInstance().setScreen(new MoveModulesScreen(this));
+						Better_hudClient.isInMoveElementScreen = true;
+					});
+			this.addDrawableChild(moveButton);
+		}
 	}
 
 	@Override
@@ -78,7 +83,6 @@ public class OptionsScreen extends Screen {
 
 		matrices.popMatrix();
 
-		//TODO trouver comment remplacer ça
 		//RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F); // Opacité à 100%
 	}
 

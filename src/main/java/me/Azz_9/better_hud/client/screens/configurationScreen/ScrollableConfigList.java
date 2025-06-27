@@ -2,9 +2,9 @@ package me.Azz_9.better_hud.client.screens.configurationScreen;
 
 import me.Azz_9.better_hud.client.screens.AbstractSmoothScrollableList;
 import me.Azz_9.better_hud.client.screens.TrackableChange;
-import me.Azz_9.better_hud.client.screens.modsList.DataGetter;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.DataGetter;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.buttons.ConfigResetButtonWidget;
 import me.Azz_9.better_hud.client.screens.widgets.buttons.TexturedButtonWidget;
-import me.Azz_9.better_hud.client.screens.widgets.configWidgets.buttons.ConfigResetButtonWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;

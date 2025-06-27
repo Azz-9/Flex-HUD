@@ -1,7 +1,7 @@
 package me.Azz_9.better_hud.client.mixin.weatherChanger;
 
-import me.Azz_9.better_hud.client.configurableMods.JsonConfigHelper;
-import me.Azz_9.better_hud.client.configurableMods.mods.notHud.TimeChanger;
+import me.Azz_9.better_hud.client.configurableModules.JsonConfigHelper;
+import me.Azz_9.better_hud.client.configurableModules.modules.notHud.TimeChanger;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.world.ClientWorld;

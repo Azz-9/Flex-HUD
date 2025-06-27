@@ -1,11 +1,10 @@
 package me.Azz_9.better_hud.client.screens.configurationScreen;
 
 import me.Azz_9.better_hud.client.screens.AbstractCallbackScreen;
-import me.Azz_9.better_hud.client.screens.TrackableChange;
-import me.Azz_9.better_hud.client.screens.modsList.DataGetter;
-import me.Azz_9.better_hud.client.screens.modsList.ModsListScreen;
-import me.Azz_9.better_hud.client.screens.widgets.configWidgets.buttons.colorSelector.ColorBindable;
-import me.Azz_9.better_hud.client.screens.widgets.configWidgets.buttons.colorSelector.ColorSelector;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.DataGetter;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector.ColorBindable;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector.ColorSelector;
+import me.Azz_9.better_hud.client.screens.modulesList.ModulesListScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -69,8 +68,8 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 	@Override
 	public void close() {
 		super.close();
-		if (PARENT instanceof ModsListScreen modsListScreen) {
-			modsListScreen.getModsList().setScrollY(parentScrollAmount);
+		if (PARENT instanceof ModulesListScreen modulesListScreen) {
+			modulesListScreen.getModulesList().setScrollY(parentScrollAmount);
 		}
 	}
 
@@ -100,21 +99,14 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 
 	@Override
 	public void renderBackground(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+		if (MinecraftClient.getInstance().world == null) {
+			super.renderBackground(context, mouseX, mouseY, deltaTicks);
+		}
 	}
 
 	@Override
 	public void onChange(DataGetter<?> dataGetter) {
-		boolean foundAChange = false;
-		for (TrackableChange widget : getTrackableWidgets()) {
-			if (widget.hasChanged()) {
-				foundAChange = true;
-			}
-			if (!widget.isValid()) {
-				setSaveButtonActive(false);
-				return;
-			}
-		}
-		setSaveButtonActive(foundAChange);
+		updateSaveButton();
 	}
 
 	@Override

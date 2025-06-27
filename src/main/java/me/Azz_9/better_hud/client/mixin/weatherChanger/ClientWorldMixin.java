@@ -1,7 +1,7 @@
 package me.Azz_9.better_hud.client.mixin.weatherChanger;
 
-import me.Azz_9.better_hud.client.configurableMods.JsonConfigHelper;
-import me.Azz_9.better_hud.client.configurableMods.mods.notHud.WeatherChanger;
+import me.Azz_9.better_hud.client.configurableModules.JsonConfigHelper;
+import me.Azz_9.better_hud.client.configurableModules.modules.notHud.WeatherChanger;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKey;

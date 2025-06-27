@@ -1,6 +1,6 @@
 package me.Azz_9.better_hud.client.mixin.durabilityPing;
 
-import me.Azz_9.better_hud.client.configurableMods.mods.notHud.durabilityPing.ItemDurabilityLostCallback;
+import me.Azz_9.better_hud.client.configurableModules.modules.notHud.durabilityPing.ItemDurabilityLostCallback;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

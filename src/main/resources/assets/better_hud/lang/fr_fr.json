@@ -2,7 +2,7 @@
 	"better_hud.controls.open_menu": "Ouvrir le menu",
 
 
-	"better_hud.configuration_screen": "Configuration des mods",
+	"better_hud.configuration_screen": "Configuration des modules",
 	"better_hud.configuration_screen.searchbar_placeholder": "Rechercher...",
 	"better_hud.configuration_screen.columns": "Colonnes",
 	"better_hud.configuration_screen.done": "Terminé",
@@ -10,7 +10,7 @@
 	"better_hud.move_elements_screen": "Déplacer les éléments",
 
 	"better_hud.options_screen": "Options",
-	"better_hud.options_screen.mods": "Mods",
+	"better_hud.options_screen.modules": "Modules",
 
 	"better_hud.color_entry_widget": "Entrée de couleur",
 	"better_hud.gradient_widget": "Dégradé de couleur",
@@ -23,10 +23,9 @@
 	"better_hud.help_widget": "Bouton d'aide",
 	"better_hud.help_widget.line1": "CTRL + Z : annuler",
 	"better_hud.help_widget.line2": "CTRL + Y / CTRL + SHIFT + Z : rétablir",
-	"better_hud.help_widget.line3": "Maintenez SHIFT enfoncé tout en déplaçant",
-	"better_hud.help_widget.line4": "un élément pour empêcher l'alignement automatique",
-	"better_hud.help_widget.line5": "Maintenez SHIFT enfoncé tout en redimensionnant",
-	"better_hud.help_widget.line6": "un élément pour activer l'alignement automatique",
+	"better_hud.help_widget.line3": "Maintenez SHIFT enfoncé tout en déplaçant un élément pour empêcher l'alignement automatique",
+	"better_hud.help_widget.line4": "Maintenez CTRL enfoncé tout en déplaçant un élément pour empêcher l'alignement automatique avec les autres éléments",
+	"better_hud.help_widget.line5": "Maintenez SHIFT enfoncé tout en redimensionnant un élément pour activer l'alignement automatique",
 
 	"better_hud.enum.display_mode.horizontal": "Horizontal",
 	"better_hud.enum.display_mode.vertical": "Vertical",
@@ -39,6 +38,10 @@
 	"better_hud.enum.ping_type.sound": "Son",
 	"better_hud.enum.ping_type.message": "Message",
 	"better_hud.enum.ping_type.both": "Les deux",
+	"better_hud.enum.speedometer.units.knots": "nœuds",
+	"better_hud.enum.speedometer.units.kph": "km/h",
+	"better_hud.enum.speedometer.units.mph": "mi/h",
+	"better_hud.enum.speedometer.units.mps": "m/s",
 
 
 	"better_hud.global.config.quit_and_discard": "Quitter & annuler les modifications",
@@ -56,6 +59,7 @@
 	"better_hud.global.config.text_color": "Couleur du texte",
 	"better_hud.global.config.show_background": "Afficher l'arrière-plan",
 	"better_hud.global.config.background_color": "Couleur de l'arrière-plan",
+	"better_hud.global.config.hide_in_f3": "Cacher dans le menu F3",
 
 	"better_hud.armor_status": "État de l'armure",
 	"better_hud.armor_status.config.enable": "Afficher l'état de l'armure",
@@ -93,11 +97,12 @@
 	"better_hud.day_counter": "Compte-jours",
 	"better_hud.day_counter.config.enable": "Afficher le compte-jours",
 
-	"better_hud.direction": "Direction",
-	"better_hud.direction.config.enable": "Afficher la direction",
-	"better_hud.direction.config.show_marker": "Afficher le marqueur",
-	"better_hud.direction.config.show_intermediate_point": "Afficher les points intermédiaires",
-	"better_hud.direction.config.show_xaeros_map_waypoints": "Afficher les waypoints de Xaero's map",
+	"better_hud.compass": "Boussole",
+	"better_hud.compass.config.enable": "Afficher la boussole",
+	"better_hud.compass.config.show_marker": "Afficher le marqueur",
+	"better_hud.compass.config.show_intermediate_point": "Afficher les points intermédiaires",
+	"better_hud.compass.config.show_xaeros_map_waypoints": "Afficher les waypoints de Xaero's map",
+	"better_hud.compass.config.override_locator_bar": "Remplacer la barre de localisation",
 
 	"better_hud.durability_ping": "Ping de durabilité",
 	"better_hud.durability_ping.config.enable": "Activer le ping de durabilité",
@@ -127,11 +132,13 @@
 	"better_hud.server_address": "Adresse du serveur",
 	"better_hud.server_address.config.enable": "Afficher l'adresse du serveur",
 	"better_hud.server_address.config.hide_when_offline": "Masquer lorsque vous êtes hors ligne",
+	"better_hud.server_address.config.show_server_icon": "Afficher l'icône du serveur",
 
 	"better_hud.speedometer": "Compteur de vitesse",
 	"better_hud.speedometer.config.enable": "Afficher le compteur de vitesse",
 	"better_hud.speedometer.config.number_of_digits": "Nombre de décimales",
 	"better_hud.speedometer.config.selected_unit": "Unité sélectionnée",
+	"better_hud.speedometer.config.use_knot_when_in_boat": "Vitesse en nœuds en étant dans un bateau",
 	"better_hud.speedometer.config.tooltip.mps": "Mètres par seconde (m/s)",
 	"better_hud.speedometer.config.tooltip.kph": "Kilomètres par heure (km/h)",
 	"better_hud.speedometer.config.tooltip.mph": "Milles par heure (mi/h)",
@@ -148,6 +155,12 @@
 	"better_hud.shrieker_warning_level": "Niveau d'alerte des hurleurs",
 	"better_hud.shrieker_warning_level.config.enable": "Afficher le niveau d'alerte des hurleurs",
 	"better_hud.shrieker_warning_level.config.show_when_in_deep_dark": "Afficher uniquement dans un biome deep dark",
+
+	"better_hud.crosshair": "Viseur",
+	"better_hud.crosshair.config.enable": "Activer le viseur customisé",
+
+	"better_hud.bossbar": "Barre de boss",
+	"better_hud.bossbar.config.enable": "Afficher la barre de boss",
 
 
 	"better_hud.coordinates.hud.direction.south": "Sud",
@@ -167,14 +180,14 @@
 	"better_hud.coordinates.hud.direction_abbr.east": "E",
 	"better_hud.coordinates.hud.direction_abbr.south_east": "SE",
 
-	"better_hud.direction.hud.direction_abbr.south": "S",
-	"better_hud.direction.hud.direction_abbr.south_west": "SO",
-	"better_hud.direction.hud.direction_abbr.west": "O",
-	"better_hud.direction.hud.direction_abbr.north_west": "NO",
-	"better_hud.direction.hud.direction_abbr.north": "N",
-	"better_hud.direction.hud.direction_abbr.north_east": "NE",
-	"better_hud.direction.hud.direction_abbr.east": "E",
-	"better_hud.direction.hud.direction_abbr.south_east": "SE",
+	"better_hud.compass.hud.direction_abbr.south": "S",
+	"better_hud.compass.hud.direction_abbr.south_west": "SO",
+	"better_hud.compass.hud.direction_abbr.west": "O",
+	"better_hud.compass.hud.direction_abbr.north_west": "NO",
+	"better_hud.compass.hud.direction_abbr.north": "N",
+	"better_hud.compass.hud.direction_abbr.north_east": "NE",
+	"better_hud.compass.hud.direction_abbr.east": "E",
+	"better_hud.compass.hud.direction_abbr.south_east": "SE",
 
 	"better_hud.day_counter.hud.prefix": "jour",
 
@@ -187,11 +200,6 @@
 	"better_hud.reach.hud.unit": "blocs",
 
 	"better_hud.shrieker_warning_level.hud.prefix": "Niveau d'alerte",
-
-	"better_hud.speedometer.hud.units.knots": "nœuds",
-	"better_hud.speedometer.hud.units.kph": "km/h",
-	"better_hud.speedometer.hud.units.mph": "mi/h",
-	"better_hud.speedometer.hud.units.mps": "m/s",
 
 	"better_hud.durability_ping.message": "durabilité faible!"
 }

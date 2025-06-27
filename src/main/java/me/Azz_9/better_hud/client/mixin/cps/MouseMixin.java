@@ -1,5 +1,6 @@
 package me.Azz_9.better_hud.client.mixin.cps;
 
+import me.Azz_9.better_hud.client.configurableModules.JsonConfigHelper;
 import me.Azz_9.better_hud.client.utils.cps.KeyHandler;
 import net.minecraft.client.Mouse;
 import org.spongepowered.asm.mixin.Mixin;
@@ -12,6 +13,8 @@ public abstract class MouseMixin {
 
 	@Inject(method = "onMouseButton", at = @At(value = "HEAD"))
 	private void onMouseButton(long window, int button, int action, int mods, CallbackInfo ci) {
-		KeyHandler.onKey(button, action);
+		if (JsonConfigHelper.getInstance().isEnabled) {
+			KeyHandler.onKey(button, action);
+		}
 	}
 }

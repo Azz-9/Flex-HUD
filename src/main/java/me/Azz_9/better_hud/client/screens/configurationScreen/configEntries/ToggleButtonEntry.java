@@ -3,8 +3,8 @@ package me.Azz_9.better_hud.client.screens.configurationScreen.configEntries;
 import me.Azz_9.better_hud.client.screens.TrackableChange;
 import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.better_hud.client.screens.configurationScreen.ScrollableConfigList;
-import me.Azz_9.better_hud.client.screens.modsList.DataGetter;
-import me.Azz_9.better_hud.client.screens.widgets.configWidgets.buttons.ConfigToggleButtonWidget;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.DataGetter;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.buttons.ConfigToggleButtonWidget;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
@@ -128,4 +128,51 @@ public class ToggleButtonEntry extends ScrollableConfigList.AbstractConfigEntry 
 			return entry;
 		}
 	}
+
+	//TODO mais en vrai j'ai la flemme de fou mdrr
+	/*public static class Builder2 extends AbstractBuilder {
+		private int toggleButtonWidth;
+		private int toggleButtonHeight = 20;
+		private ConfigBoolean variable;
+		private ScrollableConfigList.AbstractConfigEntry dependency = null;
+		private Object disableWhen;
+
+		public Builder2 setToggleButtonWidth(int width) {
+			this.toggleButtonWidth = width;
+			return this;
+		}
+
+		public Builder2 setToggleButtonSize(int width, int height) {
+			this.toggleButtonWidth = width;
+			this.toggleButtonHeight = height;
+			return this;
+		}
+
+		public Builder2 setVariable(ConfigBoolean variable) {
+			this.variable = variable;
+			return this;
+		}
+
+		public <T> Builder2 setDependency(ScrollableConfigList.AbstractConfigEntry entry, T disableWhen) {
+			dependency = entry;
+			this.disableWhen = disableWhen;
+			return this;
+		}
+
+		@Override
+		public ToggleButtonEntry build() {
+			ToggleButtonEntry entry = new ToggleButtonEntry(
+					toggleButtonWidth, toggleButtonHeight,
+					variable,
+					resetButtonSize,
+					text,
+					disableWhen
+			);
+			if (dependency != null) {
+				dependency.addObserver(entry);
+				entry.onChange(dependency.getDataGetter());
+			}
+			return entry;
+		}
+	}*/
 }

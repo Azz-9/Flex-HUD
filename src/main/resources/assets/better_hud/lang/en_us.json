@@ -2,7 +2,7 @@
 	"better_hud.controls.open_menu": "Open menu",
 
 
-	"better_hud.configuration_screen": "Mods configuration",
+	"better_hud.configuration_screen": "Modules configuration",
 	"better_hud.configuration_screen.searchbar_placeholder": "Search...",
 	"better_hud.configuration_screen.columns": "Columns",
 	"better_hud.configuration_screen.done": "Done",
@@ -10,7 +10,7 @@
 	"better_hud.move_elements_screen": "Move elements",
 
 	"better_hud.options_screen": "Options",
-	"better_hud.options_screen.mods": "Mods",
+	"better_hud.options_screen.modules": "Modules",
 
 	"better_hud.color_entry_widget": "Color entry",
 	"better_hud.gradient_widget": "Color gradient",
@@ -23,10 +23,9 @@
 	"better_hud.help_widget": "Help button",
 	"better_hud.help_widget.line1": "CTRL + Z : undo",
 	"better_hud.help_widget.line2": "CTRL + Y / CTRL + SHIFT + Z : redo",
-	"better_hud.help_widget.line3": "Press SHIFT while moving an",
-	"better_hud.help_widget.line4": "element to prevent snapping",
-	"better_hud.help_widget.line5": "Press SHIFT while scaling an",
-	"better_hud.help_widget.line6": "element to snap",
+	"better_hud.help_widget.line3": "Press SHIFT while moving an element to prevent snapping",
+	"better_hud.help_widget.line4": "Press CTRL while moving an element to prevent snapping with other elements",
+	"better_hud.help_widget.line5": "Press SHIFT while scaling an element to snap",
 
 	"better_hud.enum.display_mode.horizontal": "Horizontal",
 	"better_hud.enum.display_mode.vertical": "Vertical",
@@ -39,6 +38,10 @@
 	"better_hud.enum.ping_type.sound": "Sound",
 	"better_hud.enum.ping_type.message": "Message",
 	"better_hud.enum.ping_type.both": "Both",
+	"better_hud.enum.speedometer.units.knots": "knots",
+	"better_hud.enum.speedometer.units.kph": "km/h",
+	"better_hud.enum.speedometer.units.mph": "mph",
+	"better_hud.enum.speedometer.units.mps": "m/s",
 
 
 	"better_hud.global.config.quit_and_discard": "Quit & discard changes",
@@ -56,6 +59,7 @@
 	"better_hud.global.config.text_color": "Text color",
 	"better_hud.global.config.show_background": "Show background",
 	"better_hud.global.config.background_color": "Background color",
+	"better_hud.global.config.hide_in_f3": "Hide in F3 menu",
 
 	"better_hud.armor_status": "Armor status",
 	"better_hud.armor_status.config.enable": "Show armor status",
@@ -93,11 +97,12 @@
 	"better_hud.day_counter": "Day Counter",
 	"better_hud.day_counter.config.enable": "Show day counter",
 
-	"better_hud.direction": "Direction",
-	"better_hud.direction.config.enable": "Show direction",
-	"better_hud.direction.config.show_marker": "Show marker",
-	"better_hud.direction.config.show_intermediate_point": "Show intermediate points",
-	"better_hud.direction.config.show_xaeros_map_waypoints": "Show Xaero's map waypoints",
+	"better_hud.compass": "Compass",
+	"better_hud.compass.config.enable": "Show compass",
+	"better_hud.compass.config.show_marker": "Show marker",
+	"better_hud.compass.config.show_intermediate_point": "Show intermediate points",
+	"better_hud.compass.config.show_xaeros_map_waypoints": "Show Xaero's map waypoints",
+	"better_hud.compass.config.override_locator_bar": "Override locator bar",
 
 	"better_hud.durability_ping": "Durability Ping",
 	"better_hud.durability_ping.config.enable": "Enable durability ping",
@@ -127,11 +132,13 @@
 	"better_hud.server_address": "Server address",
 	"better_hud.server_address.config.enable": "Show server address",
 	"better_hud.server_address.config.hide_when_offline": "Hide ping when offline",
+	"better_hud.server_address.config.show_server_icon": "Show server icon",
 
 	"better_hud.speedometer": "Speedometer",
 	"better_hud.speedometer.config.enable": "Show speedometer",
 	"better_hud.speedometer.config.number_of_digits": "Number of digits",
 	"better_hud.speedometer.config.selected_unit": "Selected unit",
+	"better_hud.speedometer.config.use_knot_when_in_boat": "Speed in knot while in a boat",
 	"better_hud.speedometer.config.tooltip.mps": "Meters per second (m/s)",
 	"better_hud.speedometer.config.tooltip.kph": "Kilometers per hour (km/h)",
 	"better_hud.speedometer.config.tooltip.mph": "Miles per hour (mph)",
@@ -148,6 +155,12 @@
 	"better_hud.shrieker_warning_level": "Shrieker warning level",
 	"better_hud.shrieker_warning_level.config.enable": "Show shrieker warning level",
 	"better_hud.shrieker_warning_level.config.show_when_in_deep_dark": "Only show when in deep dark",
+
+	"better_hud.crosshair": "Crosshair",
+	"better_hud.crosshair.config.enable": "Enable custom crosshair",
+
+	"better_hud.bossbar": "Boss bar",
+	"better_hud.bossbar.config.enable": "Show boss bar",
 
 
 	"better_hud.coordinates.hud.direction.south": "South",
@@ -167,14 +180,14 @@
 	"better_hud.coordinates.hud.direction_abbr.east": "E",
 	"better_hud.coordinates.hud.direction_abbr.south_east": "SE",
 
-	"better_hud.direction.hud.direction_abbr.south": "S",
-	"better_hud.direction.hud.direction_abbr.south_west": "SW",
-	"better_hud.direction.hud.direction_abbr.west": "W",
-	"better_hud.direction.hud.direction_abbr.north_west": "NW",
-	"better_hud.direction.hud.direction_abbr.north": "N",
-	"better_hud.direction.hud.direction_abbr.north_east": "NE",
-	"better_hud.direction.hud.direction_abbr.east": "E",
-	"better_hud.direction.hud.direction_abbr.south_east": "SE",
+	"better_hud.compass.hud.direction_abbr.south": "S",
+	"better_hud.compass.hud.direction_abbr.south_west": "SW",
+	"better_hud.compass.hud.direction_abbr.west": "W",
+	"better_hud.compass.hud.direction_abbr.north_west": "NW",
+	"better_hud.compass.hud.direction_abbr.north": "N",
+	"better_hud.compass.hud.direction_abbr.north_east": "NE",
+	"better_hud.compass.hud.direction_abbr.east": "E",
+	"better_hud.compass.hud.direction_abbr.south_east": "SE",
 
 	"better_hud.day_counter.hud.prefix": "Day",
 
@@ -187,11 +200,6 @@
 	"better_hud.reach.hud.unit": "blocks",
 
 	"better_hud.shrieker_warning_level.hud.prefix": "Warning level",
-
-	"better_hud.speedometer.hud.units.knots": "knots",
-	"better_hud.speedometer.hud.units.kph": "km/h",
-	"better_hud.speedometer.hud.units.mph": "mph",
-	"better_hud.speedometer.hud.units.mps": "m/s",
 
 	"better_hud.durability_ping.message": "durability low!"
 }
