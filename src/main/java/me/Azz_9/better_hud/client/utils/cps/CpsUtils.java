@@ -10,13 +10,13 @@ public class CpsUtils {
 	private static final Deque<Long> rightClickTimestamps = new LinkedList<>();
 
 	public static void onAttackKeyPress() {
-		if (JsonConfigHelper.getInstance().cps.showLeftClick) {
+		if (JsonConfigHelper.getInstance().cps.showLeftClick.getValue()) {
 			leftClickTimestamps.add(System.currentTimeMillis());
 		}
 	}
 
 	public static void onUseKeyPress() {
-		if (JsonConfigHelper.getInstance().cps.showRightClick) {
+		if (JsonConfigHelper.getInstance().cps.showRightClick.getValue()) {
 			rightClickTimestamps.add(System.currentTimeMillis());
 		}
 	}

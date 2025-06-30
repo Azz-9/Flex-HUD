@@ -1,6 +1,9 @@
 package me.Azz_9.better_hud.client.configurableModules.modules.hud;
 
+import me.Azz_9.better_hud.client.configurableModules.JsonConfigHelper;
 import me.Azz_9.better_hud.client.configurableModules.modules.AbstractModule;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 import me.Azz_9.better_hud.client.utils.ChromaColorUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -15,26 +18,34 @@ public abstract class AbstractHudElement extends AbstractModule implements Movab
 	public AnchorPosition anchorX, anchorY;
 	public float scale = 1.0f;
 
-	public boolean shadow = true;
-	public boolean chromaColor = false;
-	public int color = 0xffffff;
-	public boolean drawBackground = false;
-	public int backgroundColor = 0x313131;
-	public boolean hideInF3 = true;
+	public ConfigBoolean shadow = new ConfigBoolean(true, "better_hud.global.config.text_shadow");
+	public ConfigBoolean chromaColor = new ConfigBoolean(false, "better_hud.global.config.chroma_text_color");
+	public ConfigInteger color = new ConfigInteger(0xffffff, "better_hud.global.config.text_color");
+	public ConfigBoolean drawBackground = new ConfigBoolean(false, "better_hud.global.config.show_background");
+	public ConfigInteger backgroundColor = new ConfigInteger(0x313131, "better_hud.global.config.background_color");
+	public ConfigBoolean hideInF3 = new ConfigBoolean(true, "better_hud.global.config.hide_in_f3");
 
 	protected transient int height, width;
 
 	public AbstractHudElement(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
+		super();
 		this.offsetX = defaultOffsetX;
 		this.offsetY = defaultOffsetY;
 		this.anchorX = defaultAnchorX;
 		this.anchorY = defaultAnchorY;
 	}
 
-	public void init() {
+	public abstract void render(DrawContext context, RenderTickCounter tickCounter);
+
+	protected boolean shouldNotRender() {
+		return !JsonConfigHelper.getInstance().isEnabled || !this.enabled.getValue() || (this.hideInF3.getValue() && MinecraftClient.getInstance().getDebugHud().shouldShowDebugHud());
 	}
 
-	public abstract void render(DrawContext context, RenderTickCounter tickCounter);
+	protected void drawBackground(DrawContext context) {
+		if (drawBackground.getValue() && width != 0 && height != 0) {
+			context.fill(-BACKGROUND_PADDING, -BACKGROUND_PADDING, width + BACKGROUND_PADDING, height + BACKGROUND_PADDING, 0x7f000000 | backgroundColor.getValue());
+		}
+	}
 
 	protected void updateWidth(String text) {
 		int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(text);
@@ -104,14 +115,14 @@ public abstract class AbstractHudElement extends AbstractModule implements Movab
 
 	@Override
 	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
+		this.enabled.setValue(enabled);
 	}
 
 	protected int getColor() {
-		if (chromaColor) {
+		if (chromaColor.getValue()) {
 			return ChromaColorUtils.getColor();
 		}
-		return color | 0xff000000;
+		return color.getValue() | 0xff000000;
 	}
 
 	public enum AnchorPosition {

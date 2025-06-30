@@ -159,6 +159,11 @@ public abstract class AbstractCallbackScreen extends AbstractBackNavigableScreen
 		saveButton.active = active;
 	}
 
+	public void setCancelAndSaveButtonsVisibility(boolean visible) {
+		cancelButton.visible = visible;
+		saveButton.visible = visible;
+	}
+
 	public void updateSaveButton() {
 		boolean foundAChange = false;
 		for (TrackableChange widget : getTrackableWidgets()) {
@@ -173,7 +178,13 @@ public abstract class AbstractCallbackScreen extends AbstractBackNavigableScreen
 		saveButton.active = foundAChange;
 	}
 
-	protected abstract void disableAllChildren();
+	protected void disableAllChildren() {
+		cancelButton.active = false;
+		saveButton.active = false;
+	}
 
-	protected abstract void enableAllChildren();
+	protected void enableAllChildren() {
+		cancelButton.active = true;
+		updateSaveButton();
+	}
 }

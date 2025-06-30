@@ -4,6 +4,8 @@ import me.Azz_9.better_hud.client.configurableModules.modules.AbstractModule;
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.IntSliderEntry;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
@@ -11,11 +13,12 @@ import net.minecraft.text.Text;
 import java.time.LocalTime;
 
 public class TimeChanger extends AbstractModule {
-	public int selectedTime = 6000;
-	public boolean useRealTime = false;
+	public ConfigInteger selectedTime = new ConfigInteger(6000, "better_hud.time_changer.config.selected_time", 0, 24000);
+	public ConfigBoolean useRealTime = new ConfigBoolean(false, "better_hud.time_changer.config.use_real_time");
 
 	public TimeChanger() {
-		this.enabled = false;
+		this.enabled.setDefaultValue(false);
+		this.enabled.setValue(false);
 	}
 
 	@Override
@@ -44,14 +47,14 @@ public class TimeChanger extends AbstractModule {
 	}
 
 	@Override
-	public AbstractConfigurationScreen getConfigScreen(Screen parent, double parentScrollAmount) {
-		return new AbstractConfigurationScreen(getName(), parent, parentScrollAmount) {
+	public AbstractConfigurationScreen getConfigScreen(Screen parent) {
+		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
 				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
-					buttonWidth = 225;
-				} else {
 					buttonWidth = 200;
+				} else {
+					buttonWidth = 155;
 				}
 
 				super.init();
@@ -59,27 +62,16 @@ public class TimeChanger extends AbstractModule {
 				this.addAllEntries(
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(enabled)
-								.setDefaultValue(false)
-								.setOnToggle(toggled -> enabled = toggled)
-								.setText(Text.translatable("better_hud.time_changer.config.enable"))
+								.setVariable(enabled)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(useRealTime)
-								.setDefaultValue(false)
-								.setOnToggle(toggled -> useRealTime = toggled)
-								.setText(Text.translatable("better_hud.time_changer.config.use_real_time"))
+								.setVariable(useRealTime)
 								.build(),
 						new IntSliderEntry.Builder()
 								.setIntSliderWidth(80)
-								.setValue(selectedTime)
-								.setMin(0)
-								.setMax(24000)
+								.setVariable(selectedTime)
 								.setStep(1000)
-								.setDefaultValue(6000)
-								.setOnValueChange(value -> selectedTime = value)
-								.setText(Text.translatable("better_hud.time_changer.config.selected_time"))
 								.build()
 				);
 			}

@@ -1,6 +1,5 @@
 package me.Azz_9.better_hud.client.configurableModules.modules.hud.custom;
 
-import me.Azz_9.better_hud.client.configurableModules.JsonConfigHelper;
 import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractHudElement;
 import me.Azz_9.better_hud.client.configurableModules.modules.hud.DisplayMode;
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
@@ -8,6 +7,9 @@ import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.Colo
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.IntFieldEntry;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -28,13 +30,13 @@ import java.util.Map;
 import static java.util.Map.entry;
 
 public class Coordinates extends AbstractHudElement {
-	private boolean showY = true;
-	private int numberOfDigits = 0;
-	private boolean showBiome = true;
-	private boolean biomeSpecificColor = true;
-	private boolean showDirection = true;
-	private boolean directionAbreviation = true;
-	private DisplayMode displayMode = DisplayMode.VERTICAL;
+	private ConfigBoolean showY = new ConfigBoolean(true, "better_hud.coordinates.config.show_y");
+	private ConfigInteger numberOfDigits = new ConfigInteger(0, "better_hud.coordinates.config.number_of_digits", 0, 14);
+	private ConfigBoolean showBiome = new ConfigBoolean(true, "better_hud.coordinates.config.show_biome");
+	private ConfigBoolean biomeSpecificColor = new ConfigBoolean(true, "better_hud.coordinates.config.custom_biome_color");
+	private ConfigBoolean showDirection = new ConfigBoolean(true, "better_hud.coordinates.config.show_direction");
+	private ConfigBoolean directionAbreviation = new ConfigBoolean(true, "better_hud.coordinates.config.direction_abbreviation");
+	private ConfigEnum<DisplayMode> displayMode = new ConfigEnum<>(DisplayMode.VERTICAL, "better_hud.coordinates.config.orientation");
 	public static List<Long> times = new LinkedList<>();
 
 	//biome colors for coordinates overlay
@@ -42,6 +44,11 @@ public class Coordinates extends AbstractHudElement {
 
 	public Coordinates(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+	}
+
+	@Override
+	public void init() {
+		this.enabled.setConfigTextTranslationKey("better_hud.coordinates.config.enable");
 	}
 
 	@Override
@@ -60,7 +67,7 @@ public class Coordinates extends AbstractHudElement {
 
 		MinecraftClient client = MinecraftClient.getInstance();
 
-		if (!JsonConfigHelper.getInstance().isEnabled || !this.enabled || client == null || (this.hideInF3 && client.getDebugHud().shouldShowDebugHud()) || client.player == null) {
+		if (shouldNotRender() || client.player == null) {
 			return;
 		}
 
@@ -71,45 +78,42 @@ public class Coordinates extends AbstractHudElement {
 		matrices.translate(Math.round(getX()), Math.round(getY()));
 		matrices.scale(this.scale, this.scale);
 
-		// render background using calculated width and height from the previous render
-		if (drawBackground) {
-			context.fill(-BACKGROUND_PADDING, -BACKGROUND_PADDING, width + BACKGROUND_PADDING, height + BACKGROUND_PADDING, 0x7f000000 | backgroundColor);
-		}
+		drawBackground(context);
 
 		// reset height and width
 		this.height = 0;
 		this.width = 0;
 
 		// Get the truncated coordinates with the correct number of digits
-		String xCoords = "X: " + BigDecimal.valueOf(player.getX()).setScale(this.numberOfDigits, RoundingMode.DOWN);
-		String yCoords = "Y: " + BigDecimal.valueOf(player.getY()).setScale(this.numberOfDigits, RoundingMode.DOWN);
-		String zCoords = "Z: " + BigDecimal.valueOf(player.getZ()).setScale(this.numberOfDigits, RoundingMode.DOWN);
+		String xCoords = "X: " + BigDecimal.valueOf(player.getX()).setScale(this.numberOfDigits.getValue(), RoundingMode.FLOOR);
+		String yCoords = "Y: " + BigDecimal.valueOf(player.getY()).setScale(this.numberOfDigits.getValue(), RoundingMode.FLOOR);
+		String zCoords = "Z: " + BigDecimal.valueOf(player.getZ()).setScale(this.numberOfDigits.getValue(), RoundingMode.FLOOR);
 
-		if (this.displayMode == DisplayMode.VERTICAL) {
+		if (this.displayMode.getValue() == DisplayMode.VERTICAL) {
 
 			int hudX = 0;
 			int hudY = 0;
 
-			context.drawText(client.textRenderer, xCoords, hudX, hudY, getColor(), this.shadow);
+			context.drawText(client.textRenderer, xCoords, hudX, hudY, getColor(), this.shadow.getValue());
 			updateWidth(xCoords);
-			if (this.showY) {
+			if (this.showY.getValue()) {
 				hudY += 10;
-				context.drawText(client.textRenderer, yCoords, hudX, hudY, getColor(), this.shadow);
+				context.drawText(client.textRenderer, yCoords, hudX, hudY, getColor(), this.shadow.getValue());
 				updateWidth(yCoords);
 			}
 			hudY += 10;
-			context.drawText(client.textRenderer, zCoords, hudX, hudY, getColor(), this.shadow);
+			context.drawText(client.textRenderer, zCoords, hudX, hudY, getColor(), this.shadow.getValue());
 			updateWidth(zCoords);
 
-			if (this.showBiome) {
+			if (this.showBiome.getValue()) {
 				hudY += 10;
 				renderBiome(context, hudX, hudY);
 			}
 			this.height = hudY + 10;
 
-			if (this.showDirection) {
+			if (this.showDirection.getValue()) {
 				int widestCoords = Math.max(client.textRenderer.getWidth(xCoords), client.textRenderer.getWidth(yCoords));
-				if (this.showY) {
+				if (this.showY.getValue()) {
 					widestCoords = Math.max(widestCoords, client.textRenderer.getWidth(zCoords));
 				}
 				hudX = 24 + widestCoords;
@@ -119,50 +123,50 @@ public class Coordinates extends AbstractHudElement {
 				String axisX = direction[2];
 				String axisZ = direction[3];
 
-				if (this.directionAbreviation) {
+				if (this.directionAbreviation.getValue()) {
 					facing = direction[1];
 				} else {
 					facing = direction[0];
 				}
 
 
-				context.drawText(client.textRenderer, axisX, hudX, hudY, getColor(), this.shadow);
+				context.drawText(client.textRenderer, axisX, hudX, hudY, getColor(), this.shadow.getValue());
 				updateWidth(axisX, hudX);
-				if (this.showY) {
+				if (this.showY.getValue()) {
 					hudY += 10;
-					context.drawText(client.textRenderer, facing, hudX, hudY, getColor(), this.shadow);
+					context.drawText(client.textRenderer, facing, hudX, hudY, getColor(), this.shadow.getValue());
 					updateWidth(facing, hudX);
 				} else {
-					context.drawText(client.textRenderer, facing, hudX + 8, hudY + 5, getColor(), this.shadow);
+					context.drawText(client.textRenderer, facing, hudX + 8, hudY + 5, getColor(), this.shadow.getValue());
 					updateWidth(facing, hudX + 8);
 				}
 				hudY += 10;
-				context.drawText(client.textRenderer, axisZ, hudX, hudY, getColor(), this.shadow);
+				context.drawText(client.textRenderer, axisZ, hudX, hudY, getColor(), this.shadow.getValue());
 				updateWidth(axisZ, hudX);
 			}
 
 		} else {
 			StringBuilder text = new StringBuilder();
 			text.append(xCoords);
-			if (this.showY) {
+			if (this.showY.getValue()) {
 				text.append("; ").append(yCoords);
 			}
 			text.append("; ").append(zCoords);
 			text.insert(0, "(");
 			text.append(")");
-			if (this.showDirection) {
+			if (this.showDirection.getValue()) {
 				text.append(" ");
-				if (this.directionAbreviation) {
+				if (this.directionAbreviation.getValue()) {
 					text.append(getDirection(player)[1]);
 				} else {
 					text.append(getDirection(player)[0]);
 				}
 			}
 
-			context.drawText(client.textRenderer, text.toString(), 0, 0, getColor(), this.shadow);
+			context.drawText(client.textRenderer, text.toString(), 0, 0, getColor(), this.shadow.getValue());
 			updateWidth(text.toString());
 			this.height = client.textRenderer.fontHeight;
-			if (this.showBiome) {
+			if (this.showBiome.getValue()) {
 				renderBiome(context, 0, 10);
 				this.height += 10;
 			}
@@ -219,16 +223,16 @@ public class Coordinates extends AbstractHudElement {
 
 		RegistryKey<Biome> biomeKey = client.world.getBiome(p.getBlockPos()).getKey().orElse(null);
 		String biomeName = client.world.getBiome(p.getBlockPos()).getIdAsString().replace("minecraft:", "");
-		drawContext.drawText(client.textRenderer, "Biome: ", hudX, hudY, getColor(), this.shadow);
+		drawContext.drawText(client.textRenderer, "Biome: ", hudX, hudY, getColor(), this.shadow.getValue());
 		hudX += client.textRenderer.getWidth("Biome: ");
-		int textColor = (biomeSpecificColor ? BIOME_COLORS.getOrDefault(biomeKey, 0xffffffff) : getColor());
-		drawContext.drawText(client.textRenderer, biomeName, hudX, hudY, textColor, this.shadow);
+		int textColor = (biomeSpecificColor.getValue() ? BIOME_COLORS.getOrDefault(biomeKey, 0xffffffff) : getColor());
+		drawContext.drawText(client.textRenderer, biomeName, hudX, hudY, textColor, this.shadow.getValue());
 		updateWidth("Biome: " + biomeName);
 	}
 
 	@Override
-	public AbstractConfigurationScreen getConfigScreen(Screen parent, double parentScrollAmount) {
-		return new AbstractConfigurationScreen(getName(), parent, parentScrollAmount) {
+	public AbstractConfigurationScreen getConfigScreen(Screen parent) {
+		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
 				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
@@ -242,115 +246,71 @@ public class Coordinates extends AbstractHudElement {
 				this.addAllEntries(
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(enabled)
-								.setDefaultValue(true)
-								.setOnToggle((toggled) -> enabled = toggled)
-								.setText(Text.translatable("better_hud.coordinates.config.enable"))
+								.setVariable(enabled)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(shadow)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> shadow = toggled)
-								.setText(Text.translatable("better_hud.global.config.text_shadow"))
+								.setVariable(shadow)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(chromaColor)
-								.setDefaultValue(false)
-								.setOnToggle(toggled -> chromaColor = toggled)
-								.setText(Text.translatable("better_hud.global.config.chroma_text_color"))
+								.setVariable(chromaColor)
 								.build()
 				);
 				this.addAllEntries(
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
-								.setColor(color)
-								.setDefaultColor(0xffffff)
-								.setOnColorChange(newColor -> color = newColor)
+								.setVariable(color)
 								.setDependency(this.getConfigList().getLastEntry(), true)
-								.setText(Text.translatable("better_hud.global.config.text_color"))
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(drawBackground)
-								.setDefaultValue(false)
-								.setOnToggle(toggled -> drawBackground = toggled)
-								.setText(Text.translatable("better_hud.global.config.show_background"))
+								.setVariable(drawBackground)
 								.build()
 				);
 				this.addAllEntries(
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
-								.setColor(backgroundColor)
-								.setDefaultColor(0x313131)
-								.setOnColorChange(newColor -> backgroundColor = newColor)
+								.setVariable(backgroundColor)
 								.setDependency(this.getConfigList().getLastEntry(), false)
-								.setText(Text.translatable("better_hud.global.config.background_color"))
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(hideInF3)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> hideInF3 = toggled)
-								.setText(Text.translatable("better_hud.global.config.hide_in_f3"))
+								.setVariable(hideInF3)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(showY)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> showY = toggled)
-								.setText(Text.translatable("better_hud.coordinates.config.show_y"))
+								.setVariable(showY)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(showBiome)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> showBiome = toggled)
-								.setText(Text.translatable("better_hud.coordinates.config.show_biome"))
+								.setVariable(showBiome)
 								.build()
 				);
 				this.addAllEntries(
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(biomeSpecificColor)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> biomeSpecificColor = toggled)
+								.setVariable(biomeSpecificColor)
 								.setDependency(this.getConfigList().getLastEntry(), false)
-								.setText(Text.translatable("better_hud.coordinates.config.custom_biome_color"))
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(showDirection)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> showDirection = toggled)
-								.setText(Text.translatable("better_hud.coordinates.config.show_direction"))
+								.setVariable(showDirection)
 								.build()
 				);
 				this.addAllEntries(
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(directionAbreviation)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> directionAbreviation = toggled)
+								.setVariable(directionAbreviation)
 								.setDependency(this.getConfigList().getLastEntry(), false)
-								.setText(Text.translatable("better_hud.coordinates.config.direction_abbreviation"))
 								.build(),
 						new IntFieldEntry.Builder()
 								.setIntFieldWidth(20)
-								.setValue(numberOfDigits)
-								.setMin(0)
-								.setMax(14)
-								.setDefaultValue(0)
-								.setOnValueChange(value -> numberOfDigits = value)
-								.setText(Text.translatable("better_hud.coordinates.config.number_of_digits"))
+								.setVariable(numberOfDigits)
 								.build(),
 						new CyclingButtonEntry.Builder<DisplayMode>()
 								.setCyclingButtonWidth(80)
-								.setValue(displayMode)
-								.setDefaultValue(DisplayMode.VERTICAL)
-								.setOnValueChange(value -> displayMode = value)
-								.setText(Text.translatable("better_hud.coordinates.config.orientation"))
+								.setVariable(displayMode)
 								.build()
 				);
 			}

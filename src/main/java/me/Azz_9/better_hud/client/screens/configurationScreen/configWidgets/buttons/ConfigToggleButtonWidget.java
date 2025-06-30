@@ -2,6 +2,7 @@ package me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.but
 
 import me.Azz_9.better_hud.client.screens.TrackableChange;
 import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.ResetAware;
 import net.minecraft.client.MinecraftClient;
@@ -13,20 +14,18 @@ import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 import static me.Azz_9.better_hud.client.Better_hudClient.MOD_ID;
 
 public class ConfigToggleButtonWidget<T> extends ToggleButtonWidget implements TrackableChange, DataGetter<Boolean>, ResetAware {
-	private final Consumer<Boolean> ON_TOGGLE;
+	private ConfigBoolean variable;
 	private final boolean INITIAL_STATE;
 	private final List<Observer> observers;
 	private final T disableWhen;
-	private final boolean defaultValue;
 
-	public ConfigToggleButtonWidget(int width, int height, boolean toggled, boolean defaultValue, Consumer<Boolean> onToggle, List<Observer> observers, T disableWhen) {
-		super(0, 0, width, height, toggled);
-		this.ON_TOGGLE = onToggle;
+	public ConfigToggleButtonWidget(int width, int height, ConfigBoolean variable, List<Observer> observers, T disableWhen) {
+		super(0, 0, width, height, variable.getValue());
+		this.variable = variable;
 		this.INITIAL_STATE = toggled;
 		this.textures = new ButtonTextures(
 				Identifier.of(MOD_ID, "widgets/buttons/toggle/unfocused_enabled.png"),
@@ -36,7 +35,6 @@ public class ConfigToggleButtonWidget<T> extends ToggleButtonWidget implements T
 		);
 		this.observers = observers;
 		this.disableWhen = disableWhen;
-		this.defaultValue = defaultValue;
 	}
 
 	@Override
@@ -77,7 +75,7 @@ public class ConfigToggleButtonWidget<T> extends ToggleButtonWidget implements T
 
 	public void onClickAction() {
 		this.toggled = !this.toggled;
-		ON_TOGGLE.accept(this.toggled);
+		variable.setValue(toggled);
 
 		for (Observer observer : observers) {
 			observer.onChange(this);
@@ -86,8 +84,8 @@ public class ConfigToggleButtonWidget<T> extends ToggleButtonWidget implements T
 
 	@Override
 	public void setToDefaultState() {
-		toggled = defaultValue;
-		ON_TOGGLE.accept(defaultValue);
+		toggled = variable.getDefaultValue();
+		variable.setToDefault();
 
 		for (Observer observer : observers) {
 			observer.onChange(this);
@@ -101,11 +99,7 @@ public class ConfigToggleButtonWidget<T> extends ToggleButtonWidget implements T
 
 	@Override
 	public void cancel() {
-		ON_TOGGLE.accept(INITIAL_STATE);
-	}
-
-	public Consumer<Boolean> getON_TOGGLE() {
-		return ON_TOGGLE;
+		variable.setValue(INITIAL_STATE);
 	}
 
 	public T getDisableWhen() {
@@ -124,7 +118,7 @@ public class ConfigToggleButtonWidget<T> extends ToggleButtonWidget implements T
 
 	@Override
 	public boolean isCurrentValueDefault() {
-		return toggled == defaultValue;
+		return toggled == variable.getDefaultValue();
 	}
 
 	public void addObserver(Observer observer) {

@@ -20,6 +20,9 @@
 
 	"better_hud.text_field": "Champ de texte",
 
+	"better_hud.open_editor": "Ouvrir l'éditeur",
+	"better_hud.crosshair_editor": "Editeur de viseur",
+
 	"better_hud.help_widget": "Bouton d'aide",
 	"better_hud.help_widget.line1": "CTRL + Z : annuler",
 	"better_hud.help_widget.line2": "CTRL + Y / CTRL + SHIFT + Z : rétablir",
@@ -158,6 +161,8 @@
 
 	"better_hud.crosshair": "Viseur",
 	"better_hud.crosshair.config.enable": "Activer le viseur customisé",
+	"better_hud.crosshair.config.custom_texture": "Texture customisée",
+	"better_hud.crosshair.config.disable_blending": "Désactiver le fondu",
 
 	"better_hud.bossbar": "Barre de boss",
 	"better_hud.bossbar.config.enable": "Afficher la barre de boss",

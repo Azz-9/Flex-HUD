@@ -14,7 +14,7 @@ public class CrosshairMixin {
 
 	@Inject(method = "renderCrosshair", at = @At("HEAD"), cancellable = true)
 	private void renderCrosshair(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
-		if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().crosshair.enabled) {
+		if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().crosshair.enabled.getValue()) {
 			ci.cancel();
 		}
 	}

@@ -59,6 +59,8 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 	private int onClickBottom;
 	private int onClickX;
 	private int onClickY;
+	private AbstractHudElement.AnchorPosition onClickAnchorX;
+	private AbstractHudElement.AnchorPosition onClickAnchorY;
 	private float onClickScale;
 	private boolean shouldDrawScaleValue = false;
 
@@ -109,7 +111,7 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 		int newWidth = Math.round(HUD_ELEMENT.getWidth() * HUD_ELEMENT.getScale());
 		int newHeight = Math.round(HUD_ELEMENT.getHeight() * HUD_ELEMENT.getScale());
 		if (this.width != newWidth || this.height != newHeight) {
-			setDimensions(Math.round(HUD_ELEMENT.getWidth() * HUD_ELEMENT.getScale()), Math.round(HUD_ELEMENT.getHeight() * HUD_ELEMENT.getScale()));
+			setDimensions((int) Math.ceil(HUD_ELEMENT.getWidth() * HUD_ELEMENT.getScale()), (int) Math.ceil(HUD_ELEMENT.getHeight() * HUD_ELEMENT.getScale()));
 			updateCrossPosition();
 			updateCogwheelPosition();
 		}
@@ -308,6 +310,8 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 			isDraggingScalehandle = true;
 			onClickRight = HUD_ELEMENT.getWidth() + getX();
 			onClickBottom = HUD_ELEMENT.getHeight() + getY();
+			onClickAnchorX = HUD_ELEMENT.getAnchorX();
+			onClickAnchorY = HUD_ELEMENT.getAnchorY();
 		} else if (isCrossHovered(mouseX, mouseY)) {
 			PARENT.undoManager.addAction(new DisableAction(this));
 			setEnabled(false);
@@ -417,31 +421,8 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 		y = Math.clamp(y, 0, Math.max(screenHeight - HUD_ELEMENT.getHeight() * HUD_ELEMENT.getScale(), 0));
 
 		this.setPosition((int) Math.round(x), (int) Math.round(y));
-
-		AbstractHudElement.AnchorPosition anchorX;
-		AbstractHudElement.AnchorPosition anchorY;
-
-		if (x < screenWidth * 0.25) {
-			anchorX = AbstractHudElement.AnchorPosition.START;
-		} else if (x > screenWidth * 0.75) {
-			anchorX = AbstractHudElement.AnchorPosition.END;
-			x = x - screenWidth;
-		} else {
-			anchorX = AbstractHudElement.AnchorPosition.CENTER;
-			x = x - screenWidth / 2.0;
-		}
-
-		if (y < screenHeight * 0.25) {
-			anchorY = AbstractHudElement.AnchorPosition.START;
-		} else if (y > screenHeight * 0.75) {
-			anchorY = AbstractHudElement.AnchorPosition.END;
-			y = y - screenHeight;
-		} else {
-			anchorY = AbstractHudElement.AnchorPosition.CENTER;
-			y = y - screenHeight / 2.0;
-		}
-
-		HUD_ELEMENT.setPos(x, y, anchorX, anchorY);
+		HUD_ELEMENT.setX(x);
+		HUD_ELEMENT.setY(y);
 		this.PARENT.onWidgetChange();
 
 		updateCrossPosition();
@@ -556,28 +537,58 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 
 	public void setScaleAndMove(float scale) {
 		scale = Math.clamp(scale, MIN_SCALE, MAX_SCALE);
-		int screenWidth = MinecraftClient.getInstance().getWindow().getScaledWidth();
-		int screenHeight = MinecraftClient.getInstance().getWindow().getScaledHeight();
 
 		switch (handlePosition) {
 			case TOP_RIGHT -> {
-				double newY = onClickY - (HUD_ELEMENT.getHeight() * scale) + (HUD_ELEMENT.getHeight() * onClickScale);
-				if (newY < 0 || newY > screenHeight - HUD_ELEMENT.getHeight() * scale)
+				double newY;
+				if (onClickAnchorY == AbstractHudElement.AnchorPosition.CENTER)
+					newY = onClickY - (HUD_ELEMENT.getHeight() * scale / 2.0) + (HUD_ELEMENT.getHeight() * onClickScale / 2.0);
+				else
+					newY = onClickY - (HUD_ELEMENT.getHeight() * scale) + (HUD_ELEMENT.getHeight() * onClickScale);
+
+				if (newY < 0)
 					return;
+
 				moveTo(HUD_ELEMENT.getX(), newY);
 			}
 			case BOTTOM_LEFT -> {
-				double newX = onClickX - (HUD_ELEMENT.getWidth() * scale) + (HUD_ELEMENT.getWidth() * onClickScale);
-				if (newX < 0 || newX > screenWidth - HUD_ELEMENT.getWidth() * scale)
+				double newX;
+				if (onClickAnchorX == AbstractHudElement.AnchorPosition.CENTER)
+					newX = onClickX - (HUD_ELEMENT.getWidth() * scale / 2.0) + (HUD_ELEMENT.getWidth() * onClickScale / 2.0);
+				else
+					newX = onClickX - (HUD_ELEMENT.getWidth() * scale) + (HUD_ELEMENT.getWidth() * onClickScale);
+
+				if (newX < 0)
 					return;
+
 				moveTo(newX, HUD_ELEMENT.getY());
 			}
 			case TOP_LEFT -> {
-				double newX = onClickX - (HUD_ELEMENT.getWidth() * scale) + (HUD_ELEMENT.getWidth() * onClickScale);
-				double newY = onClickY - (HUD_ELEMENT.getHeight() * scale) + (HUD_ELEMENT.getHeight() * onClickScale);
-				if ((newX < 0 || newX > screenWidth - HUD_ELEMENT.getWidth() * scale) || (newY < 0 || newY > screenHeight - HUD_ELEMENT.getHeight() * scale))
+				double newX;
+				double newY;
+				if (onClickAnchorY == AbstractHudElement.AnchorPosition.CENTER)
+					newY = onClickY - (HUD_ELEMENT.getHeight() * scale / 2.0) + (HUD_ELEMENT.getHeight() * onClickScale / 2.0);
+				else
+					newY = onClickY - (HUD_ELEMENT.getHeight() * scale) + (HUD_ELEMENT.getHeight() * onClickScale);
+
+				if (onClickAnchorX == AbstractHudElement.AnchorPosition.CENTER)
+					newX = onClickX - (HUD_ELEMENT.getWidth() * scale / 2.0) + (HUD_ELEMENT.getWidth() * onClickScale / 2.0);
+				else
+					newX = onClickX - (HUD_ELEMENT.getWidth() * scale) + (HUD_ELEMENT.getWidth() * onClickScale);
+
+				if (newX < 0 || newY < 0)
 					return;
+
 				moveTo(newX, newY);
+			}
+			case BOTTOM_RIGHT -> {
+				double newX;
+				double newY;
+				if (onClickAnchorY == AbstractHudElement.AnchorPosition.CENTER)
+					newY = onClickY - (HUD_ELEMENT.getHeight() * scale / 2.0) + (HUD_ELEMENT.getHeight() * onClickScale / 2.0);
+				else
+					newY = onClickY;
+
 			}
 		}
 		setScale(scale);

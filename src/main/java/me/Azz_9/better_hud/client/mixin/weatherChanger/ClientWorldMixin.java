@@ -20,8 +20,8 @@ public abstract class ClientWorldMixin extends World {
 
 	@Override
 	public float getRainGradient(float delta) {
-		if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().weatherChanger.enabled) {
-			if (JsonConfigHelper.getInstance().weatherChanger.selectedWeather.equals(WeatherChanger.Weather.CLEAR)) {
+		if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().weatherChanger.enabled.getValue()) {
+			if (JsonConfigHelper.getInstance().weatherChanger.selectedWeather.getValue().equals(WeatherChanger.Weather.CLEAR)) {
 				return 0f;
 			} else return 1f;
 		}
@@ -30,8 +30,8 @@ public abstract class ClientWorldMixin extends World {
 
 	@Override
 	public float getThunderGradient(float delta) {
-		if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().weatherChanger.enabled) {
-			if (JsonConfigHelper.getInstance().weatherChanger.selectedWeather.equals(WeatherChanger.Weather.THUNDER)) {
+		if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().weatherChanger.enabled.getValue()) {
+			if (JsonConfigHelper.getInstance().weatherChanger.selectedWeather.getValue().equals(WeatherChanger.Weather.THUNDER)) {
 				return 1f;
 			} else return 0f;
 		}

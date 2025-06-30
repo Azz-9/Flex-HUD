@@ -9,9 +9,5 @@ public interface Configurable {
 
 	String getID();
 
-	AbstractConfigurationScreen getConfigScreen(Screen parent, double parentScrollAmount);
-
-	default AbstractConfigurationScreen getConfigScreen(Screen parent) {
-		return getConfigScreen(parent, 0);
-	}
+	AbstractConfigurationScreen getConfigScreen(Screen parent);
 }

@@ -2,6 +2,7 @@ package me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.fie
 
 import me.Azz_9.better_hud.client.screens.TrackableChange;
 import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigString;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.ResetAware;
 import net.minecraft.client.font.TextRenderer;
@@ -10,31 +11,28 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class ConfigTextFieldWidget<T> extends TextFieldWidget implements TrackableChange, DataGetter<String>, ResetAware {
 	private final String INITIAL_VALUE;
-	private final Consumer<String> ON_CHANGE;
+	private final ConfigString variable;
 	private final Predicate<String> IS_VALID;
-	private final String DEFAULT_VALUE;
 	private final List<Observer> observers;
 	private final T disableWhen;
 
-	public ConfigTextFieldWidget(TextRenderer textRenderer, int width, int height, String currentValue, String defaultValue, Consumer<String> onChange, List<Observer> observers, T disableWhen, Predicate<String> isValid) {
+	public ConfigTextFieldWidget(TextRenderer textRenderer, int width, int height, ConfigString variable, List<Observer> observers, T disableWhen, Predicate<String> isValid) {
 		super(textRenderer, width, height, Text.translatable("better_hud.text_field"));
-		this.INITIAL_VALUE = currentValue;
-		this.ON_CHANGE = onChange;
+		this.INITIAL_VALUE = variable.getValue();
+		this.variable = variable;
 		this.IS_VALID = isValid;
-		this.DEFAULT_VALUE = defaultValue;
 		this.observers = observers;
 		this.disableWhen = disableWhen;
 
-		setText(currentValue);
+		setText(variable.getValue());
 
 		setChangedListener(text -> {
 			if (isValid()) {
-				ON_CHANGE.accept(text);
+				variable.setValue(text);
 				setEditableColor(0xffffffff);
 			} else {
 				setEditableColor((Formatting.RED.getColorValue() != null ? Formatting.RED.getColorValue() : 0xfc5454) | 0xff000000);
@@ -48,7 +46,8 @@ public class ConfigTextFieldWidget<T> extends TextFieldWidget implements Trackab
 
 	@Override
 	public void setToDefaultState() {
-		setText(DEFAULT_VALUE);
+		variable.setToDefault();
+		setText(variable.getValue());
 	}
 
 	@Override
@@ -58,7 +57,7 @@ public class ConfigTextFieldWidget<T> extends TextFieldWidget implements Trackab
 
 	@Override
 	public void cancel() {
-		ON_CHANGE.accept(INITIAL_VALUE);
+		variable.setValue(INITIAL_VALUE);
 	}
 
 	@Override
@@ -68,7 +67,7 @@ public class ConfigTextFieldWidget<T> extends TextFieldWidget implements Trackab
 
 	@Override
 	public boolean isCurrentValueDefault() {
-		return getText().equals(DEFAULT_VALUE);
+		return getText().equals(variable.getDefaultValue());
 	}
 
 	@Override

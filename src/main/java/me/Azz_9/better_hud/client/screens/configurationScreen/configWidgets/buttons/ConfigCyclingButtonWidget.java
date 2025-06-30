@@ -3,6 +3,7 @@ package me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.but
 import me.Azz_9.better_hud.client.configurableModules.modules.Translatable;
 import me.Azz_9.better_hud.client.screens.TrackableChange;
 import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.ResetAware;
 import net.minecraft.client.gui.DrawContext;
@@ -13,32 +14,27 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class ConfigCyclingButtonWidget<T, E extends Enum<E> & Translatable> extends ButtonWidget implements TrackableChange, DataGetter<E>, ResetAware {
-	private final Consumer<E> ON_CHANGE;
 	private final E INITIAL_STATE;
 	private final List<Observer> observers;
 	private final T disableWhen;
 	private final E[] values;
-	private E currentValue;
-	private final E defaultValue;
+	private ConfigEnum<E> variable;
 	private Function<E, Tooltip> getTooltip;
 
-	public ConfigCyclingButtonWidget(int width, int height, E currentValue, E defaultValue, Consumer<E> onChange, List<Observer> observers, T disableWhen, @Nullable Function<E, Tooltip> getTooltip) {
-		super(0, 0, width, height, Text.translatable(currentValue.getTranslationKey()), (btn) -> {
+	public ConfigCyclingButtonWidget(int width, int height, ConfigEnum<E> variable, List<Observer> observers, T disableWhen, @Nullable Function<E, Tooltip> getTooltip) {
+		super(0, 0, width, height, Text.translatable(variable.getValue().getTranslationKey()), (btn) -> {
 		}, DEFAULT_NARRATION_SUPPLIER);
-		this.ON_CHANGE = onChange;
-		this.INITIAL_STATE = currentValue;
+		this.INITIAL_STATE = variable.getValue();
 		this.observers = observers;
 		this.disableWhen = disableWhen;
-		this.values = currentValue.getDeclaringClass().getEnumConstants();
-		this.currentValue = currentValue;
-		this.defaultValue = defaultValue;
+		this.variable = variable;
+		this.values = variable.getValue().getDeclaringClass().getEnumConstants();
 		this.getTooltip = getTooltip;
 
-		if (getTooltip != null) this.setTooltip(getTooltip.apply(currentValue));
+		if (getTooltip != null) this.setTooltip(getTooltip.apply(variable.getValue()));
 	}
 
 	@Override
@@ -54,7 +50,7 @@ public class ConfigCyclingButtonWidget<T, E extends Enum<E> & Translatable> exte
 	public void onClick(double mouseX, double mouseY) {
 		super.onClick(mouseX, mouseY);
 
-		int index = (currentValue.ordinal() + 1) % values.length;
+		int index = (variable.getValue().ordinal() + 1) % values.length;
 
 		setValue(values[index]);
 	}
@@ -70,22 +66,22 @@ public class ConfigCyclingButtonWidget<T, E extends Enum<E> & Translatable> exte
 
 	@Override
 	public void setToDefaultState() {
-		setValue(defaultValue);
+		setValue(variable.getDefaultValue());
 	}
 
 	@Override
 	public boolean hasChanged() {
-		return !currentValue.equals(INITIAL_STATE);
+		return !variable.getValue().equals(INITIAL_STATE);
 	}
 
 	@Override
 	public void cancel() {
-		ON_CHANGE.accept(INITIAL_STATE);
+		variable.setValue(INITIAL_STATE);
 	}
 
 	@Override
 	public E getData() {
-		return currentValue;
+		return variable.getValue();
 	}
 
 	public T getDisableWhen() {
@@ -93,10 +89,9 @@ public class ConfigCyclingButtonWidget<T, E extends Enum<E> & Translatable> exte
 	}
 
 	public void setValue(E value) {
-		currentValue = value;
+		variable.setValue(value);
 		setMessage(Text.translatable(value.getTranslationKey()));
 		if (getTooltip != null) setTooltip(getTooltip.apply(value));
-		ON_CHANGE.accept(value);
 
 		for (Observer observer : observers) {
 			observer.onChange(this);
@@ -105,7 +100,7 @@ public class ConfigCyclingButtonWidget<T, E extends Enum<E> & Translatable> exte
 
 	@Override
 	public boolean isCurrentValueDefault() {
-		return currentValue.equals(defaultValue);
+		return variable.getValue().equals(variable.getDefaultValue());
 	}
 
 	public void addObserver(Observer observer) {

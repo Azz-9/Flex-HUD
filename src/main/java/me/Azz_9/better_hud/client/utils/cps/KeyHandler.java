@@ -37,7 +37,7 @@ public class KeyHandler {
 		int attackKeyCode = KeyBindingHelper.getBoundKeyOf(MinecraftClient.getInstance().options.attackKey).getCode();
 		int useKeyCode = KeyBindingHelper.getBoundKeyOf(MinecraftClient.getInstance().options.useKey).getCode();
 
-		if ((button != attackKeyCode && button != useKeyCode) || (button == attackKeyCode && !JsonConfigHelper.getInstance().cps.showLeftClick) || (button == useKeyCode && !JsonConfigHelper.getInstance().cps.showRightClick)) {
+		if ((button != attackKeyCode && button != useKeyCode) || (button == attackKeyCode && !JsonConfigHelper.getInstance().cps.showLeftClick.getValue()) || (button == useKeyCode && !JsonConfigHelper.getInstance().cps.showRightClick.getValue())) {
 			isAttackKeyPressed = false;
 			isUseKeyPressed = false;
 			return;

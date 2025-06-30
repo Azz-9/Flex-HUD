@@ -3,6 +3,7 @@ package me.Azz_9.better_hud.client.screens.configurationScreen.configEntries;
 import me.Azz_9.better_hud.client.screens.TrackableChange;
 import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.better_hud.client.screens.configurationScreen.ScrollableConfigList;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigString;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.fields.ConfigTextFieldWidget;
 import net.minecraft.client.MinecraftClient;
@@ -12,7 +13,6 @@ import net.minecraft.client.gui.Selectable;
 import net.minecraft.text.Text;
 
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class StringFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
@@ -21,20 +21,16 @@ public class StringFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 	private <T> StringFieldEntry(
 			int textFieldWidth,
 			int textFieldHeight,
-			String value,
-			String defaultValue,
-			Consumer<String> onValueChange,
+			ConfigString variable,
 			Predicate<String> isValid,
 			int resetButtonSize,
-			Text text,
 			T disableWhen
 	) {
-		super(resetButtonSize, text);
+		super(resetButtonSize, Text.translatable(variable.getConfigTextTranslationKey()));
 		textFieldWidget = new ConfigTextFieldWidget<>(
 				MinecraftClient.getInstance().textRenderer,
 				textFieldWidth, textFieldHeight,
-				value, defaultValue,
-				onValueChange,
+				variable,
 				observers,
 				disableWhen,
 				isValid
@@ -86,37 +82,24 @@ public class StringFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 	public static class Builder extends AbstractBuilder {
 		private int textFieldWidth;
 		private int textFieldHeight = 20;
-		private String value;
-		private String defaultValue;
-		private Consumer<String> onValueChange = t -> {
-		};
+		private ConfigString variable;
 		private Predicate<String> isValid = s -> true;
 		private ScrollableConfigList.AbstractConfigEntry dependency = null;
 		private Object disableWhen;
 
-		public Builder setIntFieldWidth(int width) {
+		public Builder setStringFieldWidth(int width) {
 			this.textFieldWidth = width;
 			return this;
 		}
 
-		public Builder setIntFieldSize(int width, int height) {
+		public Builder setStringFieldSize(int width, int height) {
 			this.textFieldWidth = width;
 			this.textFieldHeight = height;
 			return this;
 		}
 
-		public Builder setValue(String value) {
-			this.value = value;
-			return this;
-		}
-
-		public Builder setDefaultValue(String defaultValue) {
-			this.defaultValue = defaultValue;
-			return this;
-		}
-
-		public Builder setOnValueChange(Consumer<String> onValueChange) {
-			this.onValueChange = onValueChange;
+		public Builder setVariable(ConfigString variable) {
+			this.variable = variable;
 			return this;
 		}
 
@@ -135,11 +118,9 @@ public class StringFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 		public StringFieldEntry build() {
 			StringFieldEntry entry = new StringFieldEntry(
 					textFieldWidth, textFieldHeight,
-					value, defaultValue,
-					onValueChange,
+					variable,
 					isValid,
 					resetButtonSize,
-					text,
 					disableWhen
 			);
 			if (dependency != null) {

@@ -15,7 +15,7 @@ public class Module {
 	public AbstractConfigurationScreen configScreen;
 	public ButtonWidget button;
 
-	public Module(String name, String id, AbstractConfigurationScreen configScreen, int buttonWidth, int buttonHeight) {
+	public Module(String name, String id, AbstractConfigurationScreen configScreen, int buttonWidth, int buttonHeight, ModulesListScreen parent) {
 		if (name == null) {
 			this.setAllNull();
 		} else {
@@ -23,7 +23,10 @@ public class Module {
 			this.id = id;
 			this.icon = Identifier.of(MOD_ID, "modules_icons/" + id + ".png");
 			this.configScreen = configScreen;
-			this.button = ButtonWidget.builder(Text.literal(name), (btn) -> MinecraftClient.getInstance().setScreen(configScreen))
+			this.button = ButtonWidget.builder(Text.literal(name), (btn) -> {
+						configScreen.setParentScrollAmount(parent.getModulesList().getScrollY());
+						MinecraftClient.getInstance().setScreen(configScreen);
+					})
 					.size(buttonWidth, buttonHeight)
 					.build();
 		}

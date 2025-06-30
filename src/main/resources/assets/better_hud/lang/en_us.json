@@ -20,6 +20,9 @@
 
 	"better_hud.text_field": "Text Field",
 
+	"better_hud.open_editor": "Open editor",
+	"better_hud.crosshair_editor": "Crosshair editor",
+
 	"better_hud.help_widget": "Help button",
 	"better_hud.help_widget.line1": "CTRL + Z : undo",
 	"better_hud.help_widget.line2": "CTRL + Y / CTRL + SHIFT + Z : redo",
@@ -158,6 +161,8 @@
 
 	"better_hud.crosshair": "Crosshair",
 	"better_hud.crosshair.config.enable": "Enable custom crosshair",
+	"better_hud.crosshair.config.custom_texture": "Custom texture",
+	"better_hud.crosshair.config.disable_blending": "Disable blending",
 
 	"better_hud.bossbar": "Boss bar",
 	"better_hud.bossbar.config.enable": "Show boss bar",

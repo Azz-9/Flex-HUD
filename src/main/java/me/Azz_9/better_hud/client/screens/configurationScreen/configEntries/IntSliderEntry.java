@@ -3,6 +3,7 @@ package me.Azz_9.better_hud.client.screens.configurationScreen.configEntries;
 import me.Azz_9.better_hud.client.screens.TrackableChange;
 import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.better_hud.client.screens.configurationScreen.ScrollableConfigList;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.slider.ConfigIntSliderWidget;
 import net.minecraft.client.gui.DrawContext;
@@ -11,7 +12,6 @@ import net.minecraft.client.gui.Selectable;
 import net.minecraft.text.Text;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public class IntSliderEntry extends ScrollableConfigList.AbstractConfigEntry {
 	private final ConfigIntSliderWidget<?> sliderWidget;
@@ -19,18 +19,13 @@ public class IntSliderEntry extends ScrollableConfigList.AbstractConfigEntry {
 	private <T> IntSliderEntry(
 			int intSliderWidth,
 			int intSliderHeight,
-			int value,
-			int defaultValue,
-			int min,
-			int max,
+			ConfigInteger variable,
 			Integer step,
-			Consumer<Integer> onChange,
 			int resetButtonSize,
-			Text text,
 			T disableWhen
 	) {
-		super(resetButtonSize, text);
-		sliderWidget = new ConfigIntSliderWidget<>(intSliderWidth, intSliderHeight, value, defaultValue, step, min, max, onChange, observers, disableWhen);
+		super(resetButtonSize, Text.translatable(variable.getConfigTextTranslationKey()));
+		sliderWidget = new ConfigIntSliderWidget<>(intSliderWidth, intSliderHeight, variable, step, observers, disableWhen);
 		setResetButtonPressAction((btn) -> sliderWidget.setToDefaultState());
 
 		sliderWidget.addObserver((Observer) this.resetButtonWidget);
@@ -77,13 +72,8 @@ public class IntSliderEntry extends ScrollableConfigList.AbstractConfigEntry {
 	public static class Builder extends AbstractBuilder {
 		private int intSliderWidth;
 		private int intSliderHeight = 20;
-		private int value;
-		private int defaultValue;
-		private int min;
-		private int max;
+		private ConfigInteger variable;
 		private Integer step = null;
-		private Consumer<Integer> onValueChange = t -> {
-		};
 		private ScrollableConfigList.AbstractConfigEntry dependency = null;
 		private Object disableWhen;
 
@@ -98,33 +88,13 @@ public class IntSliderEntry extends ScrollableConfigList.AbstractConfigEntry {
 			return this;
 		}
 
-		public IntSliderEntry.Builder setValue(int value) {
-			this.value = value;
-			return this;
-		}
-
-		public IntSliderEntry.Builder setDefaultValue(int defaultValue) {
-			this.defaultValue = defaultValue;
-			return this;
-		}
-
-		public IntSliderEntry.Builder setMin(int min) {
-			this.min = min;
-			return this;
-		}
-
-		public IntSliderEntry.Builder setMax(int max) {
-			this.max = max;
+		public IntSliderEntry.Builder setVariable(ConfigInteger variable) {
+			this.variable = variable;
 			return this;
 		}
 
 		public IntSliderEntry.Builder setStep(int step) {
 			this.step = step;
-			return this;
-		}
-
-		public IntSliderEntry.Builder setOnValueChange(Consumer<Integer> onValueChange) {
-			this.onValueChange = onValueChange;
 			return this;
 		}
 
@@ -138,11 +108,9 @@ public class IntSliderEntry extends ScrollableConfigList.AbstractConfigEntry {
 		public IntSliderEntry build() {
 			IntSliderEntry entry = new IntSliderEntry(
 					intSliderWidth, intSliderHeight,
-					value, defaultValue, min, max,
+					variable,
 					step,
-					onValueChange,
 					resetButtonSize,
-					text,
 					disableWhen
 			);
 			if (dependency != null) {

@@ -28,8 +28,8 @@ public class ClockUtils {
 	}
 
 	public static void updateTime() {
-		String textFormat = JsonConfigHelper.getInstance().clock.textFormat.toLowerCase();
-		if (JsonConfigHelper.getInstance().clock.isTwentyFourHourFormat) {
+		String textFormat = JsonConfigHelper.getInstance().clock.textFormat.getValue().toLowerCase();
+		if (JsonConfigHelper.getInstance().clock.isTwentyFourHourFormat.getValue()) {
 			textFormat = textFormat.replace("hh", "HH").replace("h", "HH");
 		} else {
 			textFormat += " a";

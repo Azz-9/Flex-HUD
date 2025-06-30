@@ -26,11 +26,11 @@ public class SpeedUtils {
 			);
 			speed = Math.sqrt(Math.pow(currentVector.x, 2) + Math.pow(currentVector.y, 2) + Math.pow(currentVector.z, 2)) * 20; // speed in blocks per seconds
 
-			if (JsonConfigHelper.getInstance().speedometer.units == Speedometer.SpeedometerUnits.KNOT || (JsonConfigHelper.getInstance().speedometer.useKnotInBoat && player.getVehicle() instanceof BoatEntity)) {
+			if (JsonConfigHelper.getInstance().speedometer.units.getValue() == Speedometer.SpeedometerUnits.KNOT || (JsonConfigHelper.getInstance().speedometer.useKnotInBoat.getValue() && player.getVehicle() instanceof BoatEntity)) {
 				speed = speed * 1.9438452492;
-			} else if (JsonConfigHelper.getInstance().speedometer.units == Speedometer.SpeedometerUnits.KPH) {
+			} else if (JsonConfigHelper.getInstance().speedometer.units.getValue() == Speedometer.SpeedometerUnits.KPH) {
 				speed = speed * 3.6;
-			} else if (JsonConfigHelper.getInstance().speedometer.units == Speedometer.SpeedometerUnits.MPH) {
+			} else if (JsonConfigHelper.getInstance().speedometer.units.getValue() == Speedometer.SpeedometerUnits.MPH) {
 				speed = speed * 2.2369362921;
 			} // no need MPS because the speed is already in meters per seconds
 

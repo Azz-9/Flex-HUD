@@ -3,6 +3,7 @@ package me.Azz_9.better_hud.client.screens.configurationScreen.configEntries;
 import me.Azz_9.better_hud.client.screens.TrackableChange;
 import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.better_hud.client.screens.configurationScreen.ScrollableConfigList;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.fields.ConfigIntFieldWidget;
 import me.Azz_9.better_hud.client.screens.widgets.buttons.TexturedButtonWidget;
@@ -15,7 +16,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 import static me.Azz_9.better_hud.client.Better_hudClient.MOD_ID;
 
@@ -29,22 +29,15 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 	private <T> IntFieldEntry(
 			int intFieldWidth,
 			int intFieldHeight,
-			int value,
-			int defaultValue,
-			Integer min,
-			Integer max,
-			Consumer<Integer> onValueChange,
+			ConfigInteger variable,
 			int resetButtonSize,
-			Text text,
 			T disableWhen
 	) {
-		super(resetButtonSize, text);
+		super(resetButtonSize, Text.translatable(variable.getConfigTextTranslationKey()));
 		intFieldWidget = new ConfigIntFieldWidget<>(
 				MinecraftClient.getInstance().textRenderer,
 				intFieldWidth, intFieldHeight,
-				value, defaultValue,
-				min, max,
-				onValueChange,
+				variable,
 				observers,
 				disableWhen
 		);
@@ -116,12 +109,7 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 	public static class Builder extends AbstractBuilder {
 		private int intFieldWidth;
 		private int intFieldHeight = 20;
-		private int value;
-		private int defaultValue;
-		private Integer min = null;
-		private Integer max = null;
-		private Consumer<Integer> onValueChange = t -> {
-		};
+		private ConfigInteger variable;
 		private ScrollableConfigList.AbstractConfigEntry dependency = null;
 		private Object disableWhen;
 
@@ -136,28 +124,8 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 			return this;
 		}
 
-		public Builder setValue(int value) {
-			this.value = value;
-			return this;
-		}
-
-		public Builder setDefaultValue(int defaultValue) {
-			this.defaultValue = defaultValue;
-			return this;
-		}
-
-		public Builder setMin(int min) {
-			this.min = min;
-			return this;
-		}
-
-		public Builder setMax(int max) {
-			this.max = max;
-			return this;
-		}
-
-		public Builder setOnValueChange(Consumer<Integer> onValueChange) {
-			this.onValueChange = onValueChange;
+		public Builder setVariable(ConfigInteger variable) {
+			this.variable = variable;
 			return this;
 		}
 
@@ -171,10 +139,8 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 		public IntFieldEntry build() {
 			IntFieldEntry entry = new IntFieldEntry(
 					intFieldWidth, intFieldHeight,
-					value, defaultValue, min, max,
-					onValueChange,
+					variable,
 					resetButtonSize,
-					text,
 					disableWhen
 			);
 			if (dependency != null) {

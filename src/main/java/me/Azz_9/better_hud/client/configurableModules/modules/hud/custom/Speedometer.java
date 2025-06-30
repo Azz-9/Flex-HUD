@@ -1,6 +1,5 @@
 package me.Azz_9.better_hud.client.configurableModules.modules.hud.custom;
 
-import me.Azz_9.better_hud.client.configurableModules.JsonConfigHelper;
 import me.Azz_9.better_hud.client.configurableModules.modules.Translatable;
 import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractHudElement;
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
@@ -8,6 +7,9 @@ import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.Colo
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.IntFieldEntry;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 import me.Azz_9.better_hud.client.utils.speedometer.SpeedUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -23,19 +25,21 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Speedometer extends AbstractHudElement {
-	private int digits = 1;
-	public SpeedometerUnits units = SpeedometerUnits.MPS;
-	public boolean useKnotInBoat = false;
+	private ConfigInteger digits = new ConfigInteger(1, "better_hud.speedometer.config.number_of_digits", 0, 16);
+	public ConfigEnum<SpeedometerUnits> units = new ConfigEnum<>(SpeedometerUnits.MPS, "better_hud.speedometer.config.selected_unit");
+	public ConfigBoolean useKnotInBoat = new ConfigBoolean(false, "better_hud.speedometer.config.use_knot_when_in_boat");
 	public static List<Long> times = new LinkedList<>();
 
 	public Speedometer(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
-		this.enabled = false;
+		this.enabled.setDefaultValue(false);
+		this.enabled.setValue(false);
 	}
 
 	@Override
 	public void init() {
 		this.height = MinecraftClient.getInstance().textRenderer.fontHeight;
+		this.enabled.setConfigTextTranslationKey("better_hud.speedometer.config.enable");
 	}
 
 	@Override
@@ -54,7 +58,7 @@ public class Speedometer extends AbstractHudElement {
 
 		MinecraftClient client = MinecraftClient.getInstance();
 
-		if (!JsonConfigHelper.getInstance().isEnabled || !this.enabled || client == null || (this.hideInF3 && client.getDebugHud().shouldShowDebugHud()) || client.player == null) {
+		if (shouldNotRender()) {
 			return;
 		}
 
@@ -65,12 +69,9 @@ public class Speedometer extends AbstractHudElement {
 		matrices.translate(Math.round(getX()), Math.round(getY()));
 		matrices.scale(this.scale, this.scale);
 
-		// render background using calculated width and height from the previous render
-		if (drawBackground) {
-			context.fill(-BACKGROUND_PADDING, -BACKGROUND_PADDING, width + BACKGROUND_PADDING, height + BACKGROUND_PADDING, 0x7f000000 | backgroundColor);
-		}
+		drawBackground(context);
 
-		context.drawText(client.textRenderer, formattedSpeed, 0, 0, getColor(), this.shadow);
+		context.drawText(client.textRenderer, formattedSpeed, 0, 0, getColor(), this.shadow.getValue());
 
 		setWidth(formattedSpeed);
 
@@ -84,12 +85,12 @@ public class Speedometer extends AbstractHudElement {
 	}
 
 	@Override
-	public AbstractConfigurationScreen getConfigScreen(Screen parent, double parentScrollAmount) {
-		return new AbstractConfigurationScreen(getName(), parent, parentScrollAmount) {
+	public AbstractConfigurationScreen getConfigScreen(Screen parent) {
+		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
 				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
-					buttonWidth = 190;
+					buttonWidth = 250;
 				} else {
 					buttonWidth = 170;
 				}
@@ -99,80 +100,49 @@ public class Speedometer extends AbstractHudElement {
 				this.addAllEntries(
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(enabled)
-								.setDefaultValue(false)
-								.setOnToggle((toggled) -> enabled = toggled)
-								.setText(Text.translatable("better_hud.speedometer.config.enable"))
+								.setVariable(enabled)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(shadow)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> shadow = toggled)
-								.setText(Text.translatable("better_hud.global.config.text_shadow"))
+								.setVariable(shadow)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(chromaColor)
-								.setDefaultValue(false)
-								.setOnToggle(toggled -> chromaColor = toggled)
-								.setText(Text.translatable("better_hud.global.config.chroma_text_color"))
+								.setVariable(chromaColor)
 								.build()
 				);
 				this.addAllEntries(
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
-								.setColor(color)
-								.setDefaultColor(0xffffff)
-								.setOnColorChange(newColor -> color = newColor)
+								.setVariable(color)
 								.setDependency(this.getConfigList().getLastEntry(), true)
-								.setText(Text.translatable("better_hud.global.config.text_color"))
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(drawBackground)
-								.setDefaultValue(false)
-								.setOnToggle(toggled -> drawBackground = toggled)
-								.setText(Text.translatable("better_hud.global.config.show_background"))
+								.setVariable(drawBackground)
 								.build()
 				);
 				this.addAllEntries(
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
-								.setColor(backgroundColor)
-								.setDefaultColor(0x313131)
-								.setOnColorChange(newColor -> backgroundColor = newColor)
+								.setVariable(backgroundColor)
 								.setDependency(this.getConfigList().getLastEntry(), false)
-								.setText(Text.translatable("better_hud.global.config.background_color"))
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(hideInF3)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> hideInF3 = toggled)
-								.setText(Text.translatable("better_hud.global.config.hide_in_f3"))
+								.setVariable(hideInF3)
 								.build(),
 						new IntFieldEntry.Builder()
 								.setIntFieldWidth(20)
-								.setValue(digits)
-								.setMin(0)
-								.setMax(16)
-								.setDefaultValue(1)
-								.setOnValueChange(value -> digits = value)
-								.setText(Text.translatable("better_hud.speedometer.config.number_of_digits"))
+								.setVariable(digits)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(useKnotInBoat)
-								.setDefaultValue(false)
-								.setOnToggle(toggled -> useKnotInBoat = toggled)
-								.setText(Text.translatable("better_hud.speedometer.config.use_knot_when_in_boat"))
+								.setVariable(useKnotInBoat)
 								.build(),
 						new CyclingButtonEntry.Builder<SpeedometerUnits>()
 								.setCyclingButtonWidth(80)
-								.setValue(units)
-								.setDefaultValue(SpeedometerUnits.MPS)
-								.setOnValueChange(value -> units = value)
+								.setVariable(units)
 								.setGetTooltip(
 										value -> switch (value) {
 											case KPH ->
@@ -184,7 +154,6 @@ public class Speedometer extends AbstractHudElement {
 											default -> null;
 										}
 								)
-								.setText(Text.translatable("better_hud.speedometer.config.selected_unit"))
 								.build()
 				);
 			}
@@ -192,13 +161,13 @@ public class Speedometer extends AbstractHudElement {
 	}
 
 	private String getString(PlayerEntity player) {
-		String format = "%." + this.digits + "f";
+		String format = "%." + this.digits.getValue() + "f";
 		String formattedSpeed = String.format(format, SpeedUtils.getSpeed());
 
-		if (this.units == SpeedometerUnits.KNOT || (this.useKnotInBoat && player.getVehicle() instanceof BoatEntity)) {
+		if (this.units.getValue() == SpeedometerUnits.KNOT || (this.useKnotInBoat.getValue() && player.getVehicle() instanceof BoatEntity)) {
 			formattedSpeed += " " + Text.translatable(SpeedometerUnits.KNOT.getTranslationKey()).getString();
 		} else {
-			formattedSpeed += " " + Text.translatable(this.units.getTranslationKey()).getString();
+			formattedSpeed += " " + Text.translatable(this.units.getValue().getTranslationKey()).getString();
 		}
 		return formattedSpeed;
 	}

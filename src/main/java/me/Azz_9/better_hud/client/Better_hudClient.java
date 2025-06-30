@@ -50,15 +50,15 @@ public class Better_hudClient implements ClientModInitializer {
 		LOGGER.info("Xaeros Minimap {}found !", XaeroCompat.isXaerosMinimapLoaded() ? "" : "not ");
 
 		ItemDurabilityLostCallback.EVENT.register((stack, damage) -> {
-			if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().durabilityPing.enabled) {
+			if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().durabilityPing.enabled.getValue()) {
 				DurabilityPing durabilityPing = JsonConfigHelper.getInstance().durabilityPing;
 				if (durabilityPing.isDurabilityUnderThreshold(stack)) {
-					if (durabilityPing.checkElytraOnly) {
+					if (durabilityPing.checkElytraOnly.getValue()) {
 						if (DurabilityPing.isElytra(stack)) {
 							durabilityPing.pingPlayer(stack);
 						}
 					} else if (DurabilityPing.isArmorPiece(stack)) {
-						if (durabilityPing.checkArmorPieces) {
+						if (durabilityPing.checkArmorPieces.getValue()) {
 							durabilityPing.pingPlayer(stack);
 						}
 					} else {
@@ -69,7 +69,7 @@ public class Better_hudClient implements ClientModInitializer {
 		});
 
 		AttackEntityCallback.EVENT.register((player, world, hand, pos, face) -> {
-			if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().reach.enabled) {
+			if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().reach.enabled.getValue()) {
 				ReachUtils.calculateReach(player, pos);
 			}
 			return ActionResult.PASS;
@@ -78,11 +78,11 @@ public class Better_hudClient implements ClientModInitializer {
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			if (JsonConfigHelper.getInstance().isEnabled) {
 				ChromaColorUtils.updateColor();
-				if (JsonConfigHelper.getInstance().clock.enabled) ClockUtils.updateTime();
-				if (JsonConfigHelper.getInstance().memoryUsage.enabled) MemoryUsageUtils.updateMemoryUsage();
-				if (JsonConfigHelper.getInstance().speedometer.enabled) SpeedUtils.calculateSpeed();
+				if (JsonConfigHelper.getInstance().clock.enabled.getValue()) ClockUtils.updateTime();
+				if (JsonConfigHelper.getInstance().memoryUsage.enabled.getValue()) MemoryUsageUtils.updateMemoryUsage();
+				if (JsonConfigHelper.getInstance().speedometer.enabled.getValue()) SpeedUtils.calculateSpeed();
 
-				if (JsonConfigHelper.getInstance().compass.showXaerosMapWaypoints && XaeroCompat.isXaerosMinimapLoaded()) {
+				if (JsonConfigHelper.getInstance().compass.showXaerosMapWaypoints.getValue() && XaeroCompat.isXaerosMinimapLoaded()) {
 					if (joinedWorld && !XaeroCompat.available) {
 						XaeroCompat.init();
 					}
@@ -106,6 +106,7 @@ public class Better_hudClient implements ClientModInitializer {
 						);
 					}
 
+					JsonConfigHelper.getInstance().crosshair.init();
 					HudElementRegistry.attachElementAfter(
 							VanillaHudElements.CROSSHAIR,
 							Identifier.of(MOD_ID, "custom_crosshair"),
@@ -125,7 +126,7 @@ public class Better_hudClient implements ClientModInitializer {
 						FaviconUtils.registerServerIcon(client.getCurrentServerEntry().getFavicon());
 					}
 				}
-				if (JsonConfigHelper.getInstance().compass.showXaerosMapWaypoints && XaeroCompat.isXaerosMinimapLoaded()) {
+				if (JsonConfigHelper.getInstance().compass.showXaerosMapWaypoints.getValue() && XaeroCompat.isXaerosMinimapLoaded()) {
 					XaeroCompat.init();
 					joinedWorld = true;
 				}
@@ -133,7 +134,7 @@ public class Better_hudClient implements ClientModInitializer {
 		});
 
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
-			if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().compass.showXaerosMapWaypoints && XaeroCompat.isXaerosMinimapLoaded()) {
+			if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().compass.showXaerosMapWaypoints.getValue() && XaeroCompat.isXaerosMinimapLoaded()) {
 				joinedWorld = false;
 				XaeroCompat.available = false;
 			}

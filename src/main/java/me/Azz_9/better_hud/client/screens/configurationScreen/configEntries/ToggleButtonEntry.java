@@ -3,6 +3,7 @@ package me.Azz_9.better_hud.client.screens.configurationScreen.configEntries;
 import me.Azz_9.better_hud.client.screens.TrackableChange;
 import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.better_hud.client.screens.configurationScreen.ScrollableConfigList;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.buttons.ConfigToggleButtonWidget;
 import net.minecraft.client.gui.DrawContext;
@@ -11,7 +12,6 @@ import net.minecraft.client.gui.Selectable;
 import net.minecraft.text.Text;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public class ToggleButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 	private final ConfigToggleButtonWidget<?> toggleButtonWidget;
@@ -19,15 +19,12 @@ public class ToggleButtonEntry extends ScrollableConfigList.AbstractConfigEntry 
 	private <T> ToggleButtonEntry(
 			int toggleButtonWidth,
 			int toggleButtonHeight,
-			boolean toggled,
-			boolean defaultValue,
-			Consumer<Boolean> onToggle,
+			ConfigBoolean variable,
 			int resetButtonSize,
-			Text text,
 			T disableWhen
 	) {
-		super(resetButtonSize, text);
-		toggleButtonWidget = new ConfigToggleButtonWidget<>(toggleButtonWidth, toggleButtonHeight, toggled, defaultValue, onToggle, observers, disableWhen);
+		super(resetButtonSize, Text.translatable(variable.getConfigTextTranslationKey()));
+		toggleButtonWidget = new ConfigToggleButtonWidget<>(toggleButtonWidth, toggleButtonHeight, variable, observers, disableWhen);
 		setResetButtonPressAction((btn) -> toggleButtonWidget.setToDefaultState());
 
 		toggleButtonWidget.addObserver((Observer) this.resetButtonWidget);
@@ -73,10 +70,7 @@ public class ToggleButtonEntry extends ScrollableConfigList.AbstractConfigEntry 
 	public static class Builder extends AbstractBuilder {
 		private int toggleButtonWidth;
 		private int toggleButtonHeight = 20;
-		private boolean toggled;
-		private boolean defaultValue = false;
-		private Consumer<Boolean> onToggle = t -> {
-		};
+		private ConfigBoolean variable;
 		private ScrollableConfigList.AbstractConfigEntry dependency = null;
 		private Object disableWhen;
 
@@ -91,18 +85,8 @@ public class ToggleButtonEntry extends ScrollableConfigList.AbstractConfigEntry 
 			return this;
 		}
 
-		public Builder setToggled(boolean toggled) {
-			this.toggled = toggled;
-			return this;
-		}
-
-		public Builder setDefaultValue(boolean defaultValue) {
-			this.defaultValue = defaultValue;
-			return this;
-		}
-
-		public Builder setOnToggle(Consumer<Boolean> onToggle) {
-			this.onToggle = onToggle;
+		public Builder setVariable(ConfigBoolean variable) {
+			this.variable = variable;
 			return this;
 		}
 
@@ -116,9 +100,8 @@ public class ToggleButtonEntry extends ScrollableConfigList.AbstractConfigEntry 
 		public ToggleButtonEntry build() {
 			ToggleButtonEntry entry = new ToggleButtonEntry(
 					toggleButtonWidth, toggleButtonHeight,
-					toggled, defaultValue, onToggle,
+					variable,
 					resetButtonSize,
-					text,
 					disableWhen
 			);
 			if (dependency != null) {
@@ -128,51 +111,4 @@ public class ToggleButtonEntry extends ScrollableConfigList.AbstractConfigEntry 
 			return entry;
 		}
 	}
-
-	//TODO mais en vrai j'ai la flemme de fou mdrr
-	/*public static class Builder2 extends AbstractBuilder {
-		private int toggleButtonWidth;
-		private int toggleButtonHeight = 20;
-		private ConfigBoolean variable;
-		private ScrollableConfigList.AbstractConfigEntry dependency = null;
-		private Object disableWhen;
-
-		public Builder2 setToggleButtonWidth(int width) {
-			this.toggleButtonWidth = width;
-			return this;
-		}
-
-		public Builder2 setToggleButtonSize(int width, int height) {
-			this.toggleButtonWidth = width;
-			this.toggleButtonHeight = height;
-			return this;
-		}
-
-		public Builder2 setVariable(ConfigBoolean variable) {
-			this.variable = variable;
-			return this;
-		}
-
-		public <T> Builder2 setDependency(ScrollableConfigList.AbstractConfigEntry entry, T disableWhen) {
-			dependency = entry;
-			this.disableWhen = disableWhen;
-			return this;
-		}
-
-		@Override
-		public ToggleButtonEntry build() {
-			ToggleButtonEntry entry = new ToggleButtonEntry(
-					toggleButtonWidth, toggleButtonHeight,
-					variable,
-					resetButtonSize,
-					text,
-					disableWhen
-			);
-			if (dependency != null) {
-				dependency.addObserver(entry);
-				entry.onChange(dependency.getDataGetter());
-			}
-			return entry;
-		}
-	}*/
 }

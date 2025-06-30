@@ -2,6 +2,7 @@ package me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.sli
 
 import me.Azz_9.better_hud.client.screens.TrackableChange;
 import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.ResetAware;
 import net.minecraft.client.gui.DrawContext;
@@ -10,28 +11,21 @@ import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.text.Text;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public class ConfigIntSliderWidget<T> extends SliderWidget implements TrackableChange, DataGetter<Integer>, ResetAware {
 	private final Integer STEP;
-	private final int MIN_VALUE;
-	private final int MAX_VALUE;
 	private final int INITIAL_STATE;
-	private final Consumer<Integer> ON_CHANGE;
+	private final ConfigInteger variable;
 	private final List<Observer> observers;
 	private final T disableWhen;
-	private final int defaultValue;
 
-	public ConfigIntSliderWidget(int width, int height, int value, int defaultValue, Integer step, int minValue, int maxValue, Consumer<Integer> onChange, List<Observer> observers, T disableWhen) {
-		super(0, 0, width, height, Text.of(String.valueOf(value)), (double) (value - minValue) / (maxValue - minValue));
+	public ConfigIntSliderWidget(int width, int height, ConfigInteger variable, Integer step, List<Observer> observers, T disableWhen) {
+		super(0, 0, width, height, Text.of(String.valueOf(variable.getValue())), (double) (variable.getValue() - variable.getMin()) / (variable.getMax() - variable.getMin()));
 		this.STEP = step;
-		this.MIN_VALUE = minValue;
-		this.MAX_VALUE = maxValue;
-		this.INITIAL_STATE = value;
-		this.ON_CHANGE = onChange;
+		this.INITIAL_STATE = variable.getValue();
+		this.variable = variable;
 		this.observers = observers;
 		this.disableWhen = disableWhen;
-		this.defaultValue = defaultValue;
 	}
 
 	@Override
@@ -48,17 +42,17 @@ public class ConfigIntSliderWidget<T> extends SliderWidget implements TrackableC
 	}
 
 	private double getNormalizedValue(int value) {
-		return (double) (value - MIN_VALUE) / (MAX_VALUE - MIN_VALUE);
+		return (double) (value - variable.getMin()) / (variable.getMax() - variable.getMin());
 	}
 
 	private int getRelativeValue() {
-		return (int) Math.round(value * (MAX_VALUE - MIN_VALUE) + MIN_VALUE);
+		return (int) Math.round(value * (variable.getMax() - variable.getMin()) + variable.getMin());
 	}
 
 	@Override
 	public void setToDefaultState() {
-		value = getNormalizedValue(defaultValue);
-		ON_CHANGE.accept(defaultValue);
+		value = getNormalizedValue(variable.getDefaultValue());
+		variable.setToDefault();
 		updateMessage();
 
 		for (Observer observer : observers) {
@@ -73,7 +67,7 @@ public class ConfigIntSliderWidget<T> extends SliderWidget implements TrackableC
 
 	@Override
 	public void cancel() {
-		ON_CHANGE.accept(INITIAL_STATE);
+		variable.setValue(INITIAL_STATE);
 	}
 
 	@Override
@@ -92,10 +86,10 @@ public class ConfigIntSliderWidget<T> extends SliderWidget implements TrackableC
 			// Snap to the nearest multiple of STEP
 			int rawValue = getRelativeValue();
 			int snappedValue = Math.round((float) rawValue / STEP) * STEP;
-			this.value = (snappedValue - MIN_VALUE) / (double) (MAX_VALUE - MIN_VALUE);
+			this.value = (snappedValue - variable.getMin()) / (double) (variable.getMax() - variable.getMin());
 		}
 
-		ON_CHANGE.accept(getRelativeValue());
+		variable.setValue(getRelativeValue());
 
 		for (Observer observer : observers) {
 			observer.onChange(this);
@@ -108,7 +102,7 @@ public class ConfigIntSliderWidget<T> extends SliderWidget implements TrackableC
 
 	@Override
 	public boolean isCurrentValueDefault() {
-		return getRelativeValue() == defaultValue;
+		return getRelativeValue() == variable.getDefaultValue();
 	}
 
 	public void addObserver(Observer observer) {

@@ -1,5 +1,6 @@
 package me.Azz_9.better_hud.client.configurableModules.modules.hud.vanilla;
 
+import me.Azz_9.better_hud.client.Better_hudClient;
 import me.Azz_9.better_hud.client.configurableModules.JsonConfigHelper;
 import me.Azz_9.better_hud.client.configurableModules.modules.AbstractModule;
 import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractHudElement;
@@ -7,6 +8,7 @@ import me.Azz_9.better_hud.client.configurableModules.modules.hud.MovableModule;
 import me.Azz_9.better_hud.client.mixin.bossBar.BossBarAccessor;
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
@@ -51,19 +53,48 @@ public class BossBar extends AbstractModule implements MovableModule {
 	public double offsetX, offsetY;
 	public AbstractHudElement.AnchorPosition anchorX, anchorY;
 	public float scale = 1.0f;
-	public boolean hideInF3 = true;
+	public ConfigBoolean hideInF3 = new ConfigBoolean(true, "better_hud.global.config.hide_in_f3");
 
+	public BossBar(double offsetX, double offsetY, AbstractHudElement.AnchorPosition anchorX, AbstractHudElement.AnchorPosition anchorY) {
+		this.offsetX = offsetX;
+		this.offsetY = offsetY;
+		this.anchorX = anchorX;
+		this.anchorY = anchorY;
+	}
 
 	public void init() {
 		this.width = 182;
 		int textAndBarHeight = (BOSS_BAR_GAP + MinecraftClient.getInstance().textRenderer.fontHeight);
 		this.height = (int) ((MinecraftClient.getInstance().getWindow().getScaledHeight() / 5.0) / textAndBarHeight) * textAndBarHeight;
+
+		this.enabled.setConfigTextTranslationKey("better_hud.bossbar.config.enable");
 	}
 
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
 		MinecraftClient client = MinecraftClient.getInstance();
 
-		if (!JsonConfigHelper.getInstance().isEnabled || !this.enabled || client == null || (this.hideInF3 && client.getDebugHud().shouldShowDebugHud())) {
+		if (Better_hudClient.isInMoveElementScreen) {
+			Matrix3x2fStack matrices = context.getMatrices();
+			matrices.pushMatrix();
+			matrices.translate(getX(), getY());
+			matrices.scale(scale, scale);
+
+			int bossBarWidth = width;
+			int bossBarHeight = 5;
+
+			context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, BACKGROUND_TEXTURES[0], bossBarWidth, bossBarHeight, 0, 0, 0, 9, bossBarWidth, bossBarHeight);
+			context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, PROGRESS_TEXTURES[0], bossBarWidth, bossBarHeight, 0, 0, 0, 9, bossBarWidth, bossBarHeight);
+
+			Text text = Text.of("Boss bar");
+			int textX = (bossBarWidth - client.textRenderer.getWidth(text)) / 2;
+			int textY = 0;
+			context.drawTextWithShadow(client.textRenderer, text, textX, textY, 0xffffffff);
+
+			matrices.popMatrix();
+			return;
+		}
+
+		if (shouldNotRender()) {
 			return;
 		}
 
@@ -99,6 +130,10 @@ public class BossBar extends AbstractModule implements MovableModule {
 		}
 
 		matrices.popMatrix();
+	}
+
+	private boolean shouldNotRender() {
+		return !JsonConfigHelper.getInstance().isEnabled || !this.enabled.getValue() || (this.hideInF3.getValue() && MinecraftClient.getInstance().getDebugHud().shouldShowDebugHud());
 	}
 
 	private void renderBossBar(DrawContext context, int x, int y, int width, int height, net.minecraft.entity.boss.BossBar bossBar) {
@@ -182,30 +217,28 @@ public class BossBar extends AbstractModule implements MovableModule {
 
 	@Override
 	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
+		this.enabled.setValue(enabled);
 	}
 
 	@Override
-	public AbstractConfigurationScreen getConfigScreen(Screen parent, double parentScrollAmount) {
-		return new AbstractConfigurationScreen(getName(), parent, parentScrollAmount) {
+	public AbstractConfigurationScreen getConfigScreen(Screen parent) {
+		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
 				super.init();
 
+				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+					buttonWidth = 160;
+				}
+
 				this.addAllEntries(
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(enabled)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> enabled = toggled)
-								.setText(Text.translatable("better_hud.bossbar.config.enable"))
+								.setVariable(enabled)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(hideInF3)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> hideInF3 = toggled)
-								.setText(Text.translatable("better_hud.global.config.hide_in_f3"))
+								.setVariable(hideInF3)
 								.build()
 				);
 			}

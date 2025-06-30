@@ -1,11 +1,19 @@
 package me.Azz_9.better_hud.client.configurableModules.modules;
 
 import me.Azz_9.better_hud.client.configurableModules.Configurable;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 
 public abstract class AbstractModule implements Configurable {
-	public boolean enabled = true;
+	public ConfigBoolean enabled;
+
+	public AbstractModule() {
+		this.enabled = new ConfigBoolean(true, "enabled");
+	}
 
 	public boolean isEnabled() {
-		return enabled;
+		return enabled.getValue();
+	}
+
+	public void init() {
 	}
 }

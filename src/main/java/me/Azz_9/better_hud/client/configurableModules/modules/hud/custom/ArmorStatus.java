@@ -1,7 +1,6 @@
 package me.Azz_9.better_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.better_hud.client.Better_hudClient;
-import me.Azz_9.better_hud.client.configurableModules.JsonConfigHelper;
 import me.Azz_9.better_hud.client.configurableModules.modules.Translatable;
 import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractHudElement;
 import me.Azz_9.better_hud.client.configurableModules.modules.hud.DisplayMode;
@@ -9,6 +8,8 @@ import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurat
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -23,16 +24,25 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ArmorStatus extends AbstractHudElement {
-	private boolean showHelmet = true, showChestplate = true, showLeggings = true, showBoots = true;
-	private boolean showHeldItem = true, showOffHandItem = true;
-	private boolean showArrowsWhenBowInHand = true;
-	private boolean separateArrowTypes = false;
-	private DurabilityType durabilityType = DurabilityType.PERCENTAGE;
-	private DisplayMode displayMode = DisplayMode.VERTICAL;
+	private final ConfigBoolean showHelmet = new ConfigBoolean(true, "better_hud.armor_status.config.show_helmet");
+	private final ConfigBoolean showChestplate = new ConfigBoolean(true, "better_hud.armor_status.config.show_chestplate");
+	private final ConfigBoolean showLeggings = new ConfigBoolean(true, "better_hud.armor_status.config.show_leggings");
+	private final ConfigBoolean showBoots = new ConfigBoolean(true, "better_hud.armor_status.config.show_boots");
+	private final ConfigBoolean showHeldItem = new ConfigBoolean(true, "better_hud.armor_status.config.show_held_item");
+	private final ConfigBoolean showOffHandItem = new ConfigBoolean(true, "better_hud.armor_status.config.show_off_hand_item");
+	private final ConfigBoolean showArrowsWhenBowInHand = new ConfigBoolean(true, "better_hud.armor_status.config.show_arrows");
+	private final ConfigBoolean separateArrowTypes = new ConfigBoolean(false, "better_hud.armor_status.config.separate_arrow_types");
+	private final ConfigEnum<DurabilityType> durabilityType = new ConfigEnum<>(DurabilityType.PERCENTAGE, "better_hud.armor_status.config.show_durability");
+	private final ConfigEnum<DisplayMode> displayMode = new ConfigEnum<>(DisplayMode.VERTICAL, "better_hud.armor_status.config.orientation");
 	public static List<Long> times = new LinkedList<>();
 
 	public ArmorStatus(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+	}
+
+	@Override
+	public void init() {
+		enabled.setConfigTextTranslationKey("better_hud.armor_status.config.enable");
 	}
 
 	@Override
@@ -50,7 +60,7 @@ public class ArmorStatus extends AbstractHudElement {
 		long a = System.nanoTime();
 
 		MinecraftClient client = MinecraftClient.getInstance();
-		if (!JsonConfigHelper.getInstance().isEnabled || !this.enabled || client == null || (this.hideInF3 && client.getDebugHud().shouldShowDebugHud()) || client.player == null) {
+		if (shouldNotRender() || client.player == null) {
 			return;
 		}
 
@@ -61,22 +71,19 @@ public class ArmorStatus extends AbstractHudElement {
 		matrices.translate(Math.round(getX()), Math.round(getY()));
 		matrices.scale(this.scale, this.scale);
 
-		// render background using calculated width and height from the previous render
-		if (drawBackground && width != 0 && height != 0) {
-			context.fill(-BACKGROUND_PADDING, -BACKGROUND_PADDING, width + BACKGROUND_PADDING, height + BACKGROUND_PADDING, 0x7f000000 | backgroundColor);
-		}
+		drawBackground(context);
 
 		// reset height and width
-		this.height = (displayMode == DisplayMode.HORIZONTAL) ? 16 : 0;
+		this.height = (displayMode.getValue() == DisplayMode.HORIZONTAL) ? 16 : 0;
 		this.width = 0;
 
 		boolean[] booleans = new boolean[]{
-				showHelmet,
-				showChestplate,
-				showLeggings,
-				showBoots,
-				showOffHandItem,
-				showHeldItem
+				showHelmet.getValue(),
+				showChestplate.getValue(),
+				showLeggings.getValue(),
+				showBoots.getValue(),
+				showOffHandItem.getValue(),
+				showHeldItem.getValue()
 
 		};
 		ItemStack[] items;
@@ -113,7 +120,7 @@ public class ArmorStatus extends AbstractHudElement {
 				if (!stack.isEmpty()) {
 					int drawingWidth = drawItemStack(context, stack, hudX, hudY);
 
-					if (this.displayMode == DisplayMode.VERTICAL) {
+					if (this.displayMode.getValue() == DisplayMode.VERTICAL) {
 						hudY += 16 + verticalGap;
 						this.height = hudY - verticalGap;
 						this.width = Math.max(this.width, drawingWidth);
@@ -122,7 +129,7 @@ public class ArmorStatus extends AbstractHudElement {
 						this.width = hudX;
 					}
 
-					if ((i == 4 || i == 5) && this.showArrowsWhenBowInHand && (stack.getItem() == Items.BOW || stack.getItem() == Items.CROSSBOW)) {
+					if ((i == 4 || i == 5) && this.showArrowsWhenBowInHand.getValue() && (stack.getItem() == Items.BOW || stack.getItem() == Items.CROSSBOW)) {
 						drawArrowsStacks(context, hudX, hudY, horizontalGap, verticalGap);
 					}
 				}
@@ -145,44 +152,44 @@ public class ArmorStatus extends AbstractHudElement {
 		int drawingWidth = 16;
 
 		if (stack.isDamageable()) {
-			switch (this.durabilityType) {
+			switch (this.durabilityType.getValue()) {
 				case PERCENTAGE -> {
 					String text = Math.round(getDurabilityPercentage(stack)) + "%";
-					context.drawText(MinecraftClient.getInstance().textRenderer, text, x + 17, y + 4, stack.getItemBarColor() | 0xff000000, shadow);
+					context.drawText(MinecraftClient.getInstance().textRenderer, text, x + 17, y + 4, stack.getItemBarColor() | 0xff000000, shadow.getValue());
 					drawingWidth += MinecraftClient.getInstance().textRenderer.getWidth(text);
 				}
 				case VALUE -> {
 					String text = String.valueOf(getDurabilityValue(stack));
-					context.drawText(MinecraftClient.getInstance().textRenderer, text, x + 17, y + 4, stack.getItemBarColor() | 0xff000000, shadow);
+					context.drawText(MinecraftClient.getInstance().textRenderer, text, x + 17, y + 4, stack.getItemBarColor() | 0xff000000, shadow.getValue());
 					drawingWidth += MinecraftClient.getInstance().textRenderer.getWidth(text);
 				}
 			}
 
 		} else if (MinecraftClient.getInstance().player != null) {
 			String text = String.valueOf(getStackCount(stack, MinecraftClient.getInstance().player));
-			context.drawText(MinecraftClient.getInstance().textRenderer, text, x + 17, y + 4, getColor(), shadow);
+			context.drawText(MinecraftClient.getInstance().textRenderer, text, x + 17, y + 4, getColor(), shadow.getValue());
 			drawingWidth += MinecraftClient.getInstance().textRenderer.getWidth(text);
 		}
 
-		return drawingWidth;
+		return drawingWidth + (shadow.getValue() ? 1 : 0);
 	}
 
 	private void drawArrowsStacks(DrawContext context, int x, int y, int horizontalGap, int verticalGap) {
 		if (MinecraftClient.getInstance().player != null) {
 			ItemStack[] arrows;
-			if (separateArrowTypes) {
+			if (separateArrowTypes.getValue()) {
 				arrows = new ItemStack[]{new ItemStack(Items.ARROW), new ItemStack(Items.SPECTRAL_ARROW), new ItemStack(Items.TIPPED_ARROW)};
 				for (ItemStack arrowStack : arrows) {
 					context.drawItem(arrowStack, x, y);
 					String text = String.valueOf(getStackCount(arrowStack, MinecraftClient.getInstance().player));
-					context.drawText(MinecraftClient.getInstance().textRenderer, text, x + 17, y + 4, getColor(), shadow);
-					if (displayMode == DisplayMode.VERTICAL) {
+					context.drawText(MinecraftClient.getInstance().textRenderer, text, x + 17, y + 4, getColor(), shadow.getValue());
+					if (displayMode.getValue() == DisplayMode.VERTICAL) {
 						y += 16 + verticalGap;
 						this.height = y;
-						updateWidth(text, x + 17);
+						updateWidth(text, x + 17 + (shadow.getValue() ? 1 : 0));
 					} else {
 						x += 16 + horizontalGap + MinecraftClient.getInstance().textRenderer.getWidth(text);
-						this.width = x;
+						this.width = x + (shadow.getValue() ? 1 : 0);
 					}
 				}
 			} else {
@@ -193,8 +200,8 @@ public class ArmorStatus extends AbstractHudElement {
 				totalCount += getStackCount(new ItemStack(Items.SPECTRAL_ARROW), MinecraftClient.getInstance().player);
 				totalCount += getStackCount(new ItemStack(Items.TIPPED_ARROW), MinecraftClient.getInstance().player);
 				String text = String.valueOf(totalCount);
-				context.drawText(MinecraftClient.getInstance().textRenderer, text, x + 17, y + 4, getColor(), shadow);
-				updateWidth(text, x + 17);
+				context.drawText(MinecraftClient.getInstance().textRenderer, text, x + 17, y + 4, getColor(), shadow.getValue());
+				updateWidth(text, x + 17 + (shadow.getValue() ? 1 : 0));
 				this.height += 16;
 			}
 		}
@@ -222,8 +229,8 @@ public class ArmorStatus extends AbstractHudElement {
 	}
 
 	@Override
-	public AbstractConfigurationScreen getConfigScreen(Screen parent, double parentScrollAmount) {
-		return new AbstractConfigurationScreen(Text.translatable("better_hud.armor_status"), parent, parentScrollAmount) {
+	public AbstractConfigurationScreen getConfigScreen(Screen parent) {
+		return new AbstractConfigurationScreen(Text.translatable("better_hud.armor_status"), parent) {
 			@Override
 			protected void init() {
 				super.buttonWidth = 230;
@@ -233,128 +240,77 @@ public class ArmorStatus extends AbstractHudElement {
 				this.addAllEntries(
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(enabled)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> enabled = toggled)
-								.setText(Text.translatable("better_hud.armor_status.config.enable"))
+								.setVariable(enabled)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(shadow)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> shadow = toggled)
-								.setText(Text.translatable("better_hud.global.config.text_shadow"))
+								.setVariable(shadow)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(chromaColor)
-								.setDefaultValue(false)
-								.setOnToggle(toggled -> chromaColor = toggled)
-								.setText(Text.translatable("better_hud.global.config.chroma_text_color"))
+								.setVariable(chromaColor)
 								.build()
 				);
 				this.addAllEntries(
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
-								.setColor(color)
-								.setDefaultColor(0xffffff)
-								.setOnColorChange(value -> color = value)
+								.setVariable(color)
 								.setDependency(this.getConfigList().getLastEntry(), true)
-								.setText(Text.translatable("better_hud.global.config.text_color"))
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(drawBackground)
-								.setDefaultValue(false)
-								.setOnToggle(toggled -> drawBackground = toggled)
-								.setText(Text.translatable("better_hud.global.config.show_background"))
+								.setVariable(drawBackground)
 								.build()
 				);
 				this.addAllEntries(
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
-								.setColor(backgroundColor)
-								.setDefaultColor(0x313131)
-								.setOnColorChange(newColor -> backgroundColor = newColor)
+								.setVariable(backgroundColor)
 								.setDependency(this.getConfigList().getLastEntry(), false)
-								.setText(Text.translatable("better_hud.global.config.background_color"))
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(hideInF3)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> hideInF3 = toggled)
-								.setText(Text.translatable("better_hud.global.config.hide_in_f3"))
+								.setVariable(hideInF3)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(showHelmet)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> showHelmet = toggled)
-								.setText(Text.translatable("better_hud.armor_status.config.show_helmet"))
+								.setVariable(showHelmet)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(JsonConfigHelper.getInstance().armorStatus.showChestplate)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> showChestplate = toggled)
-								.setText(Text.translatable("better_hud.armor_status.config.show_chestplate"))
+								.setVariable(showChestplate)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(showLeggings)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> showLeggings = toggled)
-								.setText(Text.translatable("better_hud.armor_status.config.show_leggings"))
+								.setVariable(showLeggings)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(showBoots)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> showBoots = toggled)
-								.setText(Text.translatable("better_hud.armor_status.config.show_boots"))
+								.setVariable(showBoots)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(showHeldItem)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> showHeldItem = toggled)
-								.setText(Text.translatable("better_hud.armor_status.config.show_held_item"))
+								.setVariable(showHeldItem)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(showOffHandItem)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> showOffHandItem = toggled)
-								.setText(Text.translatable("better_hud.armor_status.config.show_off_hand_item"))
+								.setVariable(showOffHandItem)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(showArrowsWhenBowInHand)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> showArrowsWhenBowInHand = toggled)
-								.setText(Text.translatable("better_hud.armor_status.config.show_arrows"))
+								.setVariable(showArrowsWhenBowInHand)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(separateArrowTypes)
-								.setDefaultValue(false)
-								.setOnToggle(toggled -> separateArrowTypes = toggled)
-								.setText(Text.translatable("better_hud.armor_status.config.separate_arrow_types"))
+								.setVariable(separateArrowTypes)
 								.build(),
 						new CyclingButtonEntry.Builder<DurabilityType>()
 								.setCyclingButtonWidth(80)
-								.setValue(durabilityType)
-								.setDefaultValue(DurabilityType.PERCENTAGE)
-								.setOnValueChange(value -> durabilityType = value)
-								.setText(Text.translatable("better_hud.armor_status.config.show_durability"))
+								.setVariable(durabilityType)
 								.build(),
 						new CyclingButtonEntry.Builder<DisplayMode>()
 								.setCyclingButtonWidth(80)
-								.setValue(displayMode)
-								.setDefaultValue(DisplayMode.VERTICAL)
-								.setOnValueChange(value -> displayMode = value)
-								.setText(Text.translatable("better_hud.armor_status.config.orientation"))
+								.setVariable(displayMode)
 								.build()
 				);
 			}

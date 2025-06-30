@@ -1,11 +1,12 @@
 package me.Azz_9.better_hud.client.configurableModules.modules.hud.custom;
 
-import me.Azz_9.better_hud.client.configurableModules.JsonConfigHelper;
 import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractHudElement;
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.StringFieldEntry;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigString;
 import me.Azz_9.better_hud.client.utils.clock.ClockUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -21,19 +22,20 @@ import java.util.List;
 import java.util.Locale;
 
 public class Clock extends AbstractHudElement {
-	public String textFormat = "hh:mm:ss";
-	public boolean isTwentyFourHourFormat = true;
+	public ConfigString textFormat = new ConfigString("hh:mm:ss", "better_hud.clock.config.text_format");
+	public ConfigBoolean isTwentyFourHourFormat;
 	public static List<Long> times = new LinkedList<>();
 
 	public Clock(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		// get the time format depending on the locale
-		isTwentyFourHourFormat = ClockUtils.is24HourFormat(Locale.getDefault());
+		isTwentyFourHourFormat = new ConfigBoolean(ClockUtils.is24HourFormat(Locale.getDefault()), "better_hud.clock.config.24-hour_format");
 	}
 
 	@Override
 	public void init() {
 		height = MinecraftClient.getInstance().textRenderer.fontHeight;
+		this.enabled.setConfigTextTranslationKey("better_hud.clock.config.enable");
 	}
 
 	@Override
@@ -52,7 +54,7 @@ public class Clock extends AbstractHudElement {
 
 		MinecraftClient client = MinecraftClient.getInstance();
 
-		if (!JsonConfigHelper.getInstance().isEnabled || !this.enabled || client == null || (this.hideInF3 && client.getDebugHud().shouldShowDebugHud())) {
+		if (shouldNotRender()) {
 			return;
 		}
 
@@ -63,12 +65,9 @@ public class Clock extends AbstractHudElement {
 		matrices.translate(Math.round(getX()), Math.round(getY()));
 		matrices.scale(this.scale, this.scale);
 
-		// render background using calculated width and height from the previous render
-		if (drawBackground) {
-			context.fill(-BACKGROUND_PADDING, -BACKGROUND_PADDING, width + BACKGROUND_PADDING, height + BACKGROUND_PADDING, 0x7f000000 | backgroundColor);
-		}
+		drawBackground(context);
 
-		context.drawText(client.textRenderer, currentTime, 0, 0, getColor(), this.shadow);
+		context.drawText(client.textRenderer, currentTime, 0, 0, getColor(), this.shadow.getValue());
 
 		setWidth(currentTime);
 
@@ -83,8 +82,8 @@ public class Clock extends AbstractHudElement {
 
 
 	@Override
-	public AbstractConfigurationScreen getConfigScreen(Screen parent, double parentScrollAmount) {
-		return new AbstractConfigurationScreen(getName(), parent, parentScrollAmount) {
+	public AbstractConfigurationScreen getConfigScreen(Screen parent) {
+		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
 				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
@@ -96,77 +95,50 @@ public class Clock extends AbstractHudElement {
 				this.addAllEntries(
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(enabled)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> enabled = toggled)
-								.setText(Text.translatable("better_hud.clock.config.enable"))
+								.setVariable(enabled)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(shadow)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> shadow = toggled)
-								.setText(Text.translatable("better_hud.global.config.text_shadow"))
+								.setVariable(shadow)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(chromaColor)
-								.setDefaultValue(false)
-								.setOnToggle(toggled -> chromaColor = toggled)
-								.setText(Text.translatable("better_hud.global.config.chroma_text_color"))
+								.setVariable(chromaColor)
 								.build()
 				);
 				this.addAllEntries(
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
-								.setColor(color)
-								.setDefaultColor(0xffffff)
-								.setOnColorChange(value -> color = value)
+								.setVariable(color)
 								.setDependency(this.getConfigList().getLastEntry(), true)
-								.setText(Text.translatable("better_hud.global.config.text_color"))
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(drawBackground)
-								.setDefaultValue(false)
-								.setOnToggle(toggled -> drawBackground = toggled)
-								.setText(Text.translatable("better_hud.global.config.show_background"))
+								.setVariable(drawBackground)
 								.build()
 				);
 				this.addAllEntries(
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
-								.setColor(backgroundColor)
-								.setDefaultColor(0x313131)
-								.setOnColorChange(value -> backgroundColor = value)
+								.setVariable(backgroundColor)
 								.setDependency(this.getConfigList().getLastEntry(), false)
-								.setText(Text.translatable("better_hud.global.config.background_color"))
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(hideInF3)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> hideInF3 = toggled)
-								.setText(Text.translatable("better_hud.global.config.hide_in_f3"))
+								.setVariable(hideInF3)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(isTwentyFourHourFormat)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> isTwentyFourHourFormat = toggled)
-								.setText(Text.translatable("better_hud.clock.config.24-hour_format"))
+								.setVariable(isTwentyFourHourFormat)
 								.build(),
 						new StringFieldEntry.Builder()
-								.setIntFieldWidth(80)
-								.setValue(textFormat)
-								.setDefaultValue("hh:mm:ss")
-								.setOnValueChange((value) -> textFormat = value)
+								.setStringFieldWidth(80)
+								.setVariable(textFormat)
 								.setIsValid(textFormat -> {
 									if (textFormat.isBlank()) return false;
-
 									try {
 										textFormat = textFormat.toLowerCase();
-										if (isTwentyFourHourFormat) {
+										if (isTwentyFourHourFormat.getValue()) {
 											textFormat = textFormat.replace("hh", "HH").replace("h", "HH");
 										} else {
 											textFormat += " a";

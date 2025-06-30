@@ -1,11 +1,11 @@
 package me.Azz_9.better_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.better_hud.client.Better_hudClient;
-import me.Azz_9.better_hud.client.configurableModules.JsonConfigHelper;
 import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractHudElement;
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.better_hud.client.utils.FaviconUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
@@ -20,13 +20,19 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ServerAddress extends AbstractHudElement {
-	private boolean hideWhenOffline = true;
-	private boolean showServerIcon = true;
+	private ConfigBoolean hideWhenOffline = new ConfigBoolean(true, "better_hud.server_address.config.hide_when_offline");
+	private ConfigBoolean showServerIcon = new ConfigBoolean(true, "better_hud.server_address.config.show_server_icon");
 	public static List<Long> times = new LinkedList<>();
 
 	public ServerAddress(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
-		this.enabled = false;
+		this.enabled.setDefaultValue(false);
+		this.enabled.setValue(false);
+	}
+
+	@Override
+	public void init() {
+		this.enabled.setConfigTextTranslationKey("better_hud.server_address.config.enable");
 	}
 
 	@Override
@@ -45,7 +51,7 @@ public class ServerAddress extends AbstractHudElement {
 
 		MinecraftClient client = MinecraftClient.getInstance();
 
-		if (!JsonConfigHelper.getInstance().isEnabled || !this.enabled || client == null || (this.hideInF3 && client.getDebugHud().shouldShowDebugHud()) || (this.hideWhenOffline && client.getCurrentServerEntry() == null)) {
+		if (shouldNotRender()) {
 			return;
 		}
 
@@ -55,7 +61,7 @@ public class ServerAddress extends AbstractHudElement {
 
 			text = client.getCurrentServerEntry().address;
 
-		} else if (!this.hideWhenOffline) {
+		} else if (!this.hideWhenOffline.getValue()) {
 
 			text = Text.translatable("better_hud.server_address.hud.offline").getString();
 
@@ -72,17 +78,14 @@ public class ServerAddress extends AbstractHudElement {
 			matrices.translate(Math.round(getX()), Math.round(getY()));
 			matrices.scale(this.scale, this.scale);
 
-			// render background using calculated width and height from the previous render
-			if (drawBackground) {
-				context.fill(-BACKGROUND_PADDING, -BACKGROUND_PADDING, width + BACKGROUND_PADDING, height + BACKGROUND_PADDING, 0x7f000000 | backgroundColor);
-			}
+			drawBackground(context);
 
 			this.width = 0;
 			this.height = 0;
 
 			int textX = 0;
 			int textY = 0;
-			if (showServerIcon && client.getCurrentServerEntry() != null) {
+			if (showServerIcon.getValue() && client.getCurrentServerEntry() != null) {
 				int faviconSize = 14;
 				Identifier icon = FaviconUtils.getCurrentServerFavicon();
 				if (icon == null) {
@@ -95,7 +98,7 @@ public class ServerAddress extends AbstractHudElement {
 				this.height = faviconSize;
 			}
 
-			context.drawText(client.textRenderer, text, textX, textY, getColor(), this.shadow);
+			context.drawText(client.textRenderer, text, textX, textY, getColor(), this.shadow.getValue());
 
 			setWidth(text);
 			this.width += textX;
@@ -112,8 +115,13 @@ public class ServerAddress extends AbstractHudElement {
 	}
 
 	@Override
-	public AbstractConfigurationScreen getConfigScreen(Screen parent, double parentScrollAmount) {
-		return new AbstractConfigurationScreen(getName(), parent, parentScrollAmount) {
+	protected boolean shouldNotRender() {
+		return super.shouldNotRender() || (this.hideWhenOffline.getValue() && MinecraftClient.getInstance().getCurrentServerEntry() == null);
+	}
+
+	@Override
+	public AbstractConfigurationScreen getConfigScreen(Screen parent) {
+		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
 				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
@@ -125,72 +133,45 @@ public class ServerAddress extends AbstractHudElement {
 				this.addAllEntries(
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(enabled)
-								.setDefaultValue(false)
-								.setOnToggle((toggled) -> enabled = toggled)
-								.setText(Text.translatable("better_hud.server_address.config.enable"))
+								.setVariable(enabled)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(shadow)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> shadow = toggled)
-								.setText(Text.translatable("better_hud.global.config.text_shadow"))
+								.setVariable(shadow)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(chromaColor)
-								.setDefaultValue(false)
-								.setOnToggle(toggled -> chromaColor = toggled)
-								.setText(Text.translatable("better_hud.global.config.chroma_text_color"))
+								.setVariable(chromaColor)
 								.build()
 				);
 				this.addAllEntries(
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
-								.setColor(color)
-								.setDefaultColor(0xffffff)
-								.setOnColorChange(newColor -> color = newColor)
+								.setVariable(color)
 								.setDependency(this.getConfigList().getLastEntry(), true)
-								.setText(Text.translatable("better_hud.global.config.text_color"))
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(drawBackground)
-								.setDefaultValue(false)
-								.setOnToggle(toggled -> drawBackground = toggled)
-								.setText(Text.translatable("better_hud.global.config.show_background"))
+								.setVariable(drawBackground)
 								.build()
 				);
 				this.addAllEntries(
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
-								.setColor(backgroundColor)
-								.setDefaultColor(0x313131)
-								.setOnColorChange(newColor -> backgroundColor = newColor)
+								.setVariable(backgroundColor)
 								.setDependency(this.getConfigList().getLastEntry(), false)
-								.setText(Text.translatable("better_hud.global.config.background_color"))
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(hideInF3)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> hideInF3 = toggled)
-								.setText(Text.translatable("better_hud.global.config.hide_in_f3"))
+								.setVariable(hideInF3)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(hideWhenOffline)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> hideWhenOffline = toggled)
-								.setText(Text.translatable("better_hud.server_address.config.hide_when_offline"))
+								.setVariable(hideWhenOffline)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(showServerIcon)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> showServerIcon = toggled)
-								.setText(Text.translatable("better_hud.server_address.config.show_server_icon"))
+								.setVariable(showServerIcon)
 								.build()
 				);
 			}

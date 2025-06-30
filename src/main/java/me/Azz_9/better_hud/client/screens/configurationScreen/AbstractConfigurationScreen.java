@@ -15,22 +15,21 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 
 	protected int buttonWidth;
 	protected int buttonHeight;
-	private final double parentScrollAmount;
+	private double parentScrollAmount;
 
 	private ScrollableConfigList configList;
 
 	@Nullable
 	private ColorSelector colorSelector;
 
-	public AbstractConfigurationScreen(Text title, Screen parent, int buttonWidth, int buttonHeight, double parentScrollAmount) {
+	public AbstractConfigurationScreen(Text title, Screen parent, int buttonWidth, int buttonHeight) {
 		super(title, parent, Text.translatable("better_hud.global.config.callback.message_title"), Text.translatable("better_hud.global.config.callback.message_content"));
 		this.buttonWidth = buttonWidth;
 		this.buttonHeight = buttonHeight;
-		this.parentScrollAmount = parentScrollAmount;
 	}
 
-	public AbstractConfigurationScreen(Text title, Screen parent, double parentScrollAmount) {
-		this(title, parent, 150, 20, parentScrollAmount);
+	public AbstractConfigurationScreen(Text title, Screen parent) {
+		this(title, parent, 150, 20);
 	}
 
 	public void addAllEntries(ScrollableConfigList.AbstractConfigEntry... entries) {
@@ -47,6 +46,10 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 	@Override
 	public @Nullable ColorSelector getColorSelector() {
 		return colorSelector;
+	}
+
+	public void setParentScrollAmount(double parentScrollAmount) {
+		this.parentScrollAmount = parentScrollAmount;
 	}
 
 	@Override
@@ -175,12 +178,14 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 
 	@Override
 	protected void disableAllChildren() {
+		super.disableAllChildren();
 		closeColorSelector();
 		configList.active = false;
 	}
 
 	@Override
 	protected void enableAllChildren() {
+		super.enableAllChildren();
 		configList.active = true;
 	}
 }

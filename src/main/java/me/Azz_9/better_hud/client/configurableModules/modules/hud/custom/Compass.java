@@ -1,10 +1,10 @@
 package me.Azz_9.better_hud.client.configurableModules.modules.hud.custom;
 
-import me.Azz_9.better_hud.client.configurableModules.JsonConfigHelper;
 import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractHudElement;
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.better_hud.compat.XaeroCompat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
@@ -27,10 +27,10 @@ import java.util.List;
 import java.util.Objects;
 
 public class Compass extends AbstractHudElement {
-	private boolean showMarker = true;
-	private boolean showIntermediatePoint = true;
-	public boolean showXaerosMapWaypoints = true;
-	public boolean overrideLocatorBar = false;
+	private ConfigBoolean showMarker = new ConfigBoolean(true, "better_hud.compass.config.show_marker");
+	private ConfigBoolean showIntermediatePoint = new ConfigBoolean(true, "better_hud.compass.config.show_intermediate_point");
+	public ConfigBoolean showXaerosMapWaypoints = new ConfigBoolean(true, "better_hud.compass.config.show_xaeros_map_waypoints");
+	public ConfigBoolean overrideLocatorBar = new ConfigBoolean(false, "better_hud.compass.config.override_locator_bar");
 	public static List<Long> times = new LinkedList<>();
 
 	public Compass(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
@@ -40,6 +40,7 @@ public class Compass extends AbstractHudElement {
 	@Override
 	public void init() {
 		this.height = 30;
+		this.enabled.setConfigTextTranslationKey("better_hud.compass.config.enable");
 	}
 
 	@Override
@@ -57,7 +58,7 @@ public class Compass extends AbstractHudElement {
 
 		MinecraftClient client = MinecraftClient.getInstance();
 
-		if (!JsonConfigHelper.getInstance().isEnabled || !this.enabled || client == null || (this.hideInF3 && client.getDebugHud().shouldShowDebugHud()) || client.player == null) {
+		if (shouldNotRender() || client.player == null) {
 			return;
 		}
 
@@ -74,10 +75,7 @@ public class Compass extends AbstractHudElement {
 		matrices.translate(Math.round(getX()), Math.round(getY()));
 		matrices.scale(this.scale, this.scale);
 
-		// render background using calculated width and height from the previous render
-		if (drawBackground) {
-			context.fill(-BACKGROUND_PADDING, -BACKGROUND_PADDING, width + BACKGROUND_PADDING, height + BACKGROUND_PADDING, 0x7f000000 | backgroundColor);
-		}
+		drawBackground(context);
 
 		context.enableScissor(0, 0, this.width, this.height);
 
@@ -92,7 +90,7 @@ public class Compass extends AbstractHudElement {
 		drawCompassPoint(context, matrices, Text.translatable("better_hud.compass.hud.direction_abbr.south_east"), 315, yaw);
 
 		// Affichage des points intermediaires
-		if (this.showIntermediatePoint) {
+		if (this.showIntermediatePoint.getValue()) {
 			for (int i = 0; i < 8; i++) {
 				drawIntermediatePoint(context, matrices, 15 * i * 3 + 15, yaw);
 				drawIntermediatePoint(context, matrices, 15 * i * 3 + 30, yaw);
@@ -100,25 +98,25 @@ public class Compass extends AbstractHudElement {
 		}
 
 		// Affichage des waypoints Xaero's minimap
-		if (this.showXaerosMapWaypoints && XaeroCompat.isXaerosMinimapLoaded()) {
+		if (this.showXaerosMapWaypoints.getValue() && XaeroCompat.isXaerosMinimapLoaded()) {
 			drawXaerosMapWaypoints(context, matrices, yaw, tickCounter);
 		}
 
 		// Override locator bar
-		if (overrideLocatorBar) {
+		if (overrideLocatorBar.getValue()) {
 			renderLocatorBarWaypoints(context, tickCounter, matrices);
 		}
 
 		context.disableScissor();
 
 		// Affichage du marqueur de direction
-		if (this.showMarker) {
+		if (this.showMarker.getValue()) {
 			String markerText = "▼";
 
 			matrices.pushMatrix();
 			matrices.translate((this.width / 2.0f) - (client.textRenderer.getWidth(markerText) / 2.0f), 0);
 			matrices.scale(1.0f, 0.5f);
-			context.drawText(client.textRenderer, markerText, 0, 0, getColor(), this.shadow);
+			context.drawText(client.textRenderer, markerText, 0, 0, getColor(), this.shadow.getValue());
 			matrices.popMatrix();
 		}
 
@@ -147,7 +145,7 @@ public class Compass extends AbstractHudElement {
 			matrices.pushMatrix();
 			matrices.translate(positionX - pointWidth / 2.0f, 10);
 			matrices.scale(scaleFactor, scaleFactor);
-			drawContext.drawText(client.textRenderer, label, 0, 0, getColorWithFadeEffect(positionX), this.shadow);
+			drawContext.drawText(client.textRenderer, label, 0, 0, getColorWithFadeEffect(positionX), this.shadow.getValue());
 			matrices.popMatrix();
 		}
 	}
@@ -165,14 +163,14 @@ public class Compass extends AbstractHudElement {
 			matrices.pushMatrix();
 			matrices.translate(positionX - (CLIENT.textRenderer.getWidth("|") / 2.0f), 12);
 			matrices.scale(1.0f, 0.75f); // slightly smaller
-			drawContext.drawText(CLIENT.textRenderer, "|", 0, 0, getColorWithFadeEffect(positionX), this.shadow);
+			drawContext.drawText(CLIENT.textRenderer, "|", 0, 0, getColorWithFadeEffect(positionX), this.shadow.getValue());
 			matrices.popMatrix();
 
 
 			matrices.pushMatrix();
 			matrices.translate(positionX - (CLIENT.textRenderer.getWidth(String.valueOf(angle)) / 4.0f), 20);
 			matrices.scale(0.5f, 0.5f); // 2 times smaller
-			drawContext.drawText(CLIENT.textRenderer, String.valueOf(angle), 0, 0, getColorWithFadeEffect(positionX), this.shadow);
+			drawContext.drawText(CLIENT.textRenderer, String.valueOf(angle), 0, 0, getColorWithFadeEffect(positionX), this.shadow.getValue());
 			matrices.popMatrix();
 
 		}
@@ -249,7 +247,7 @@ public class Compass extends AbstractHudElement {
 		drawContext.fill(x - 2, y - 1, x + textWidth + 1, y + textHeight - 1, backgroundColor);
 
 		// Dessiner le texte par-dessus le rectangle
-		drawContext.drawText(client.textRenderer, text, x, y, textColor, this.shadow);
+		drawContext.drawText(client.textRenderer, text, x, y, textColor, this.shadow.getValue());
 	}
 
 	private int getAlpha(float CenterXOfDrawing) {
@@ -320,8 +318,8 @@ public class Compass extends AbstractHudElement {
 	}
 
 	@Override
-	public AbstractConfigurationScreen getConfigScreen(Screen parent, double parentScrollAmount) {
-		return new AbstractConfigurationScreen(getName(), parent, parentScrollAmount) {
+	public AbstractConfigurationScreen getConfigScreen(Screen parent) {
+		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
 				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
@@ -335,86 +333,53 @@ public class Compass extends AbstractHudElement {
 				this.addAllEntries(
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(enabled)
-								.setDefaultValue(true)
-								.setOnToggle((toggled) -> enabled = toggled)
-								.setText(Text.translatable("better_hud.compass.config.enable"))
+								.setVariable(enabled)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(shadow)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> shadow = toggled)
-								.setText(Text.translatable("better_hud.global.config.text_shadow"))
+								.setVariable(shadow)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(chromaColor)
-								.setDefaultValue(false)
-								.setOnToggle(toggled -> chromaColor = toggled)
-								.setText(Text.translatable("better_hud.global.config.chroma_text_color"))
+								.setVariable(chromaColor)
 								.build()
 				);
 				this.addAllEntries(
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
-								.setColor(color)
-								.setDefaultColor(0xffffff)
-								.setOnColorChange(newColor -> color = newColor)
+								.setVariable(color)
 								.setDependency(this.getConfigList().getLastEntry(), true)
-								.setText(Text.translatable("better_hud.global.config.text_color"))
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(drawBackground)
-								.setDefaultValue(false)
-								.setOnToggle(toggled -> drawBackground = toggled)
-								.setText(Text.translatable("better_hud.global.config.show_background"))
+								.setVariable(drawBackground)
 								.build()
 				);
 				this.addAllEntries(
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
-								.setColor(backgroundColor)
-								.setDefaultColor(0x313131)
-								.setOnColorChange(newColor -> backgroundColor = newColor)
+								.setVariable(backgroundColor)
 								.setDependency(this.getConfigList().getLastEntry(), false)
-								.setText(Text.translatable("better_hud.global.config.background_color"))
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(hideInF3)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> hideInF3 = toggled)
-								.setText(Text.translatable("better_hud.global.config.hide_in_f3"))
+								.setVariable(hideInF3)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(showMarker)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> showMarker = toggled)
-								.setText(Text.translatable("better_hud.compass.config.show_marker"))
+								.setVariable(showMarker)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(showIntermediatePoint)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> showIntermediatePoint = toggled)
-								.setText(Text.translatable("better_hud.compass.config.show_intermediate_point"))
+								.setVariable(showIntermediatePoint)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(showXaerosMapWaypoints)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> showXaerosMapWaypoints = toggled)
-								.setText(Text.translatable("better_hud.compass.config.show_xaeros_map_waypoints"))
+								.setVariable(showXaerosMapWaypoints)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(overrideLocatorBar)
-								.setDefaultValue(false)
-								.setOnToggle(toggled -> overrideLocatorBar = toggled)
-								.setText(Text.translatable("better_hud.compass.config.override_locator_bar"))
+								.setVariable(overrideLocatorBar)
 								.build()
 				);
 			}

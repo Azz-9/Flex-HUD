@@ -6,6 +6,9 @@ import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurat
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.IntSliderEntry;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
@@ -32,13 +35,18 @@ public class DurabilityPing extends AbstractModule {
 			Items.TURTLE_HELMET, Items.ELYTRA
 	);
 	private static Map<String, Long> lastPingTime;
-	public int threshold = 10; // percentage
-	public PingType pingType = PingType.BOTH;
-	public boolean checkArmorPieces = true;
-	public boolean checkElytraOnly = false;
+	public ConfigInteger threshold = new ConfigInteger(10, "better_hud.durability_ping.config.threshold", 0, 100); // percentage
+	public ConfigEnum<PingType> pingType = new ConfigEnum<>(PingType.BOTH, "better_hud.durability_ping.config.ping_type");
+	public ConfigBoolean checkArmorPieces = new ConfigBoolean(true, "better_hud.durability_ping.config.check_armor_pieces");
+	public ConfigBoolean checkElytraOnly = new ConfigBoolean(false, "better_hud.durability_ping.config.check_elytra_only");
 
 	public DurabilityPing() {
 		lastPingTime = new HashMap<>();
+	}
+
+	@Override
+	public void init() {
+		this.enabled.setConfigTextTranslationKey("better_hud.durability_ping.config.enable");
 	}
 
 	@Override
@@ -67,7 +75,7 @@ public class DurabilityPing extends AbstractModule {
 		double durabilityLeft = stack.getMaxDamage() - stack.getDamage();
 		double percentageLeft = (durabilityLeft / stack.getMaxDamage()) * 100.0f;
 
-		return percentageLeft < threshold;
+		return percentageLeft < threshold.getValue();
 	}
 
 	public void pingPlayer(ItemStack stack) {
@@ -82,19 +90,19 @@ public class DurabilityPing extends AbstractModule {
 			lastPingTime.put(stack.getItem().getTranslationKey(), currentTime);
 
 			// play sound, display message or both based on the selected option in the config menu
-			if (pingType != PingType.SOUND) {
+			if (pingType.getValue() != PingType.SOUND) {
 				Text message = Text.literal(stack.getItemName().getString().toLowerCase() + " ").append(Text.translatable("better_hud.durability_ping.message")).formatted(Formatting.RED); // TODO améliorer le message en fr parce que la bon
 				player.sendMessage(message, true);
 			}
-			if (pingType != PingType.MESSAGE) {
+			if (pingType.getValue() != PingType.MESSAGE) {
 				player.playSoundToPlayer(SoundEvents.BLOCK_ANVIL_LAND, SoundCategory.MASTER, 1.0f, 2.0f);
 			}
 		}
 	}
 
 	@Override
-	public AbstractConfigurationScreen getConfigScreen(Screen parent, double parentScrollAmount) {
-		return new AbstractConfigurationScreen(getName(), parent, parentScrollAmount) {
+	public AbstractConfigurationScreen getConfigScreen(Screen parent) {
+		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
 				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
@@ -108,44 +116,27 @@ public class DurabilityPing extends AbstractModule {
 				this.addAllEntries(
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(enabled)
-								.setDefaultValue(true)
-								.setOnToggle(toggled -> enabled = toggled)
-								.setText(Text.translatable("better_hud.durability_ping.config.enable"))
+								.setVariable(enabled)
 								.build(),
 						new IntSliderEntry.Builder()
 								.setIntSliderWidth(80)
-								.setValue(threshold)
-								.setMin(0)
-								.setMax(100)
+								.setVariable(threshold)
 								.setStep(10)
-								.setDefaultValue(10)
-								.setOnValueChange((value -> threshold = value))
-								.setText(Text.translatable("better_hud.durability_ping.config.threshold"))
 								.build(),
 						new CyclingButtonEntry.Builder<PingType>()
 								.setCyclingButtonWidth(80)
-								.setValue(pingType)
-								.setDefaultValue(PingType.BOTH)
-								.setOnValueChange((value) -> pingType = value)
-								.setText(Text.translatable("better_hud.durability_ping.config.ping_type"))
+								.setVariable(pingType)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(checkElytraOnly)
-								.setDefaultValue(false)
-								.setOnToggle((value) -> checkElytraOnly = value)
-								.setText(Text.translatable("better_hud.durability_ping.config.check_elytra_only"))
+								.setVariable(checkElytraOnly)
 								.build()
 				);
 				this.addAllEntries(
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(checkArmorPieces)
-								.setDefaultValue(true)
-								.setOnToggle((value) -> checkArmorPieces = value)
+								.setVariable(checkArmorPieces)
 								.setDependency(this.getConfigList().getLastEntry(), true)
-								.setText(Text.translatable("better_hud.durability_ping.config.check_armor_pieces"))
 								.build()
 				);
 			}

@@ -12,7 +12,7 @@ public abstract class InGameHudMixin {
 
 	@Inject(method = "shouldShowExperienceBar", at = @At("RETURN"), cancellable = true)
 	private void shouldShowExperienceBar(CallbackInfoReturnable<Boolean> cir) {
-		if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().compass.enabled && JsonConfigHelper.getInstance().compass.overrideLocatorBar) {
+		if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().compass.enabled.getValue() && JsonConfigHelper.getInstance().compass.overrideLocatorBar.getValue()) {
 			cir.setReturnValue(true);
 		}
 	}

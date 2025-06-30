@@ -4,6 +4,7 @@ import me.Azz_9.better_hud.client.screens.TrackableChange;
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.better_hud.client.screens.configurationScreen.ScrollableConfigList;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.buttons.ConfigColorButtonWidget;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector.ColorSelector;
@@ -14,7 +15,6 @@ import net.minecraft.client.gui.Selectable;
 import net.minecraft.text.Text;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 	private ConfigColorButtonWidget<?> colorButtonWidget;
@@ -22,15 +22,12 @@ public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 	private <T> ColorButtonEntry(
 			int colorButtonWidth,
 			int colorButtonHeight,
-			int color,
-			int defaultColor,
-			Consumer<Integer> onColorChange,
+			ConfigInteger variable,
 			int resetButtonSize,
-			Text text,
 			T disableWhen
 	) {
-		super(resetButtonSize, text);
-		colorButtonWidget = new ConfigColorButtonWidget<>(colorButtonWidth, colorButtonHeight, color, defaultColor, onColorChange, observers, disableWhen,
+		super(resetButtonSize, Text.translatable(variable.getConfigTextTranslationKey()));
+		colorButtonWidget = new ConfigColorButtonWidget<>(colorButtonWidth, colorButtonHeight, variable, observers, disableWhen,
 				(btn) -> {
 					AbstractConfigurationScreen screen = (AbstractConfigurationScreen) MinecraftClient.getInstance().currentScreen;
 					if (screen != null) {
@@ -93,10 +90,7 @@ public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 	public static class Builder extends AbstractBuilder {
 		private int colorButtonWidth;
 		private int colorButtonHeight = 20;
-		private int color;
-		private int defaultColor = 0xffffff;
-		private Consumer<Integer> onColorChange = t -> {
-		};
+		private ConfigInteger variable;
 		private ScrollableConfigList.AbstractConfigEntry dependency = null;
 		private Object disableWhen;
 
@@ -111,18 +105,8 @@ public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 			return this;
 		}
 
-		public ColorButtonEntry.Builder setColor(int color) {
-			this.color = color;
-			return this;
-		}
-
-		public ColorButtonEntry.Builder setDefaultColor(int defaultColor) {
-			this.defaultColor = defaultColor;
-			return this;
-		}
-
-		public ColorButtonEntry.Builder setOnColorChange(Consumer<Integer> onColorChange) {
-			this.onColorChange = onColorChange;
+		public ColorButtonEntry.Builder setVariable(ConfigInteger variable) {
+			this.variable = variable;
 			return this;
 		}
 
@@ -136,9 +120,8 @@ public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 		public ColorButtonEntry build() {
 			ColorButtonEntry entry = new ColorButtonEntry(
 					colorButtonWidth, colorButtonHeight,
-					color, defaultColor, onColorChange,
+					variable,
 					resetButtonSize,
-					text,
 					disableWhen
 			);
 			if (dependency != null) {

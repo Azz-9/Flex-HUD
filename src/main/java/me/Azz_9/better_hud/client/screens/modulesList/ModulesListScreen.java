@@ -27,11 +27,11 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 
 	@Override
 	protected void init() {
-		final int BUTTON_WIDTH = 160;
+		final int BUTTON_WIDTH = 140;
 		final int BUTTON_HEIGHT = 20;
 		final int ICON_WIDTH_HEIGHT = 64;
 		final int PADDING = 10;
-		final int MAX_COLUMNS = Math.min(Math.min((this.width - 30) / (BUTTON_WIDTH + PADDING), 4), MODULES_LIST.size());
+		final int MAX_COLUMNS = Math.min((this.width - 30) / (BUTTON_WIDTH + PADDING), MODULES_LIST.size());
 		int columns = Math.clamp(JsonConfigHelper.getInstance().numberOfColumns, 1, MAX_COLUMNS);
 
 		// Initialisation de la barre de recherche
@@ -103,7 +103,15 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 			Text moduleName = MODULES_LIST.get(i).getName();
 			String moduleId = MODULES_LIST.get(i).getID();
 
-			modules.add(new Module(moduleName.getString(), moduleId, MODULES_LIST.get(i).getConfigScreen(this), buttonWidth, buttonHeight));
+
+			modules.add(new Module(
+					moduleName.getString(),
+					moduleId,
+					MODULES_LIST.get(i).getConfigScreen(this),
+					buttonWidth,
+					buttonHeight,
+					this)
+			);
 
 			if ((i + 1) % columns == 0) {
 				this.modulesList.addModule(new ArrayList<>(modules)); // copie de la liste

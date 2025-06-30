@@ -16,12 +16,12 @@ public abstract class ClientWorldPropertiesMixin {
 	@Inject(at = @At("RETURN"), method = "getTimeOfDay", cancellable = true)
 	@Environment(EnvType.CLIENT)
 	public void getTimeOfDay(CallbackInfoReturnable<Long> cir) {
-		if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().timeChanger.enabled) {
+		if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().timeChanger.enabled.getValue()) {
 
-			if (JsonConfigHelper.getInstance().timeChanger.selectedTime >= 0 && !JsonConfigHelper.getInstance().timeChanger.useRealTime) {
-				cir.setReturnValue((long) JsonConfigHelper.getInstance().timeChanger.selectedTime);
+			if (JsonConfigHelper.getInstance().timeChanger.selectedTime.getValue() >= 0 && !JsonConfigHelper.getInstance().timeChanger.useRealTime.getValue()) {
+				cir.setReturnValue((long) JsonConfigHelper.getInstance().timeChanger.selectedTime.getValue());
 
-			} else if (JsonConfigHelper.getInstance().timeChanger.useRealTime) {
+			} else if (JsonConfigHelper.getInstance().timeChanger.useRealTime.getValue()) {
 				cir.setReturnValue(TimeChanger.getRealTimeAsMinecraftTime());
 
 			}

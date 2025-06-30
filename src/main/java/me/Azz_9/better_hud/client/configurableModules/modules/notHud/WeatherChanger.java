@@ -5,14 +5,21 @@ import me.Azz_9.better_hud.client.configurableModules.modules.Translatable;
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 
 public class WeatherChanger extends AbstractModule {
-	public Weather selectedWeather = Weather.CLEAR;
+	public ConfigEnum<Weather> selectedWeather = new ConfigEnum<>(Weather.CLEAR, "better_hud.weather_changer.config.selected_weather");
 
 	public WeatherChanger() {
-		this.enabled = false;
+		this.enabled.setDefaultValue(false);
+		this.enabled.setValue(false);
+	}
+
+	@Override
+	public void init() {
+		this.enabled.setConfigTextTranslationKey("better_hud.weather_changer.config.enable");
 	}
 
 	@Override
@@ -26,8 +33,8 @@ public class WeatherChanger extends AbstractModule {
 	}
 
 	@Override
-	public AbstractConfigurationScreen getConfigScreen(Screen parent, double parentScrollAmount) {
-		return new AbstractConfigurationScreen(getName(), parent, parentScrollAmount) {
+	public AbstractConfigurationScreen getConfigScreen(Screen parent) {
+		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
 				buttonWidth = 180;
@@ -37,17 +44,11 @@ public class WeatherChanger extends AbstractModule {
 				this.addAllEntries(
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setToggled(enabled)
-								.setDefaultValue(false)
-								.setOnToggle(toggled -> enabled = toggled)
-								.setText(Text.translatable("better_hud.weather_changer.config.enable"))
+								.setVariable(enabled)
 								.build(),
 						new CyclingButtonEntry.Builder<Weather>()
 								.setCyclingButtonWidth(80)
-								.setValue(selectedWeather)
-								.setDefaultValue(Weather.CLEAR)
-								.setOnValueChange(value -> selectedWeather = value)
-								.setText(Text.translatable("better_hud.weather_changer.config.selected_weather"))
+								.setVariable(selectedWeather)
 								.build()
 				);
 			}

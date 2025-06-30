@@ -14,14 +14,14 @@ public abstract class LocatorBarMixin {
 
 	@Inject(method = "renderBar", at = @At("HEAD"), cancellable = true)
 	private void renderBar(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
-		if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().compass.enabled && JsonConfigHelper.getInstance().compass.overrideLocatorBar) {
+		if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().compass.enabled.getValue() && JsonConfigHelper.getInstance().compass.overrideLocatorBar.getValue()) {
 			ci.cancel();
 		}
 	}
 
 	@Inject(method = "renderAddons", at = @At("HEAD"), cancellable = true)
 	private void renderAddons(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
-		if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().compass.enabled && JsonConfigHelper.getInstance().compass.overrideLocatorBar) {
+		if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().compass.enabled.getValue() && JsonConfigHelper.getInstance().compass.overrideLocatorBar.getValue()) {
 			ci.cancel();
 		}
 	}
