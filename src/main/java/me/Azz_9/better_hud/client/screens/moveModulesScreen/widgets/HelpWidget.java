@@ -24,8 +24,11 @@ public class HelpWidget extends ClickableWidget {
 	private long timestamp;
 	private boolean isFadingOut = false;
 
-	public HelpWidget(int x, int y, int width, int height) {
+	private Text[] helpLines;
+
+	public HelpWidget(int x, int y, int width, int height, Text[] helpLines) {
 		super(x, y, width, height, Text.translatable("better_hud.help_widget"));
+		this.helpLines = helpLines;
 	}
 
 	@Override
@@ -50,14 +53,6 @@ public class HelpWidget extends ClickableWidget {
 			alpha = (int) (251 * easedProgress) + 4;
 
 			TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-
-			Text[] helpLines = {
-					Text.translatable("better_hud.help_widget.line1"),
-					Text.translatable("better_hud.help_widget.line2"),
-					Text.translatable("better_hud.help_widget.line3"),
-					Text.translatable("better_hud.help_widget.line4"),
-					Text.translatable("better_hud.help_widget.line5"),
-			};
 
 			int padding = 4;
 			int marginBottom = 6;

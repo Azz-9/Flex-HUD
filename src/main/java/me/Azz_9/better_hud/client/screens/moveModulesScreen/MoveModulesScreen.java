@@ -22,6 +22,8 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 
 	public UndoManager undoManager = new UndoManager();
 
+	private boolean firstFrame = true;
+
 	public MoveModulesScreen(Screen parent) {
 		super(Text.translatable("better_hud.move_elements_screen"), parent, Text.translatable("better_hud.global.config.callback.message_title"), Text.translatable("better_hud.global.config.callback.message_content"));
 	}
@@ -35,7 +37,13 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 
 		int helpWidgetPadding = 4;
 		int helpWidgetSize = 20;
-		helpWidget = new HelpWidget(helpWidgetPadding, this.height - helpWidgetPadding - helpWidgetSize, helpWidgetSize, helpWidgetSize);
+		helpWidget = new HelpWidget(helpWidgetPadding, this.height - helpWidgetPadding - helpWidgetSize, helpWidgetSize, helpWidgetSize, new Text[]{
+				Text.translatable("better_hud.help_widget.line1"),
+				Text.translatable("better_hud.help_widget.line2"),
+				Text.translatable("better_hud.help_widget.line3"),
+				Text.translatable("better_hud.help_widget.line4"),
+				Text.translatable("better_hud.help_widget.line5"),
+		});
 
 		this.addDrawableChild(helpWidget);
 
@@ -51,11 +59,16 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+		if (firstFrame) {
+			getMovableWidgets().forEach(MovableWidget::updateDimensionAndPosition);
+			firstFrame = false;
+		}
+
 		if (renderCallback(context, mouseX, mouseY, deltaTicks)) {
 			return;
 		}
 
-		movableWidgets.forEach(widget -> widget.render(context, mouseX, mouseY, deltaTicks));
+		movableWidgets.forEach(widget -> widget.render(context, deltaTicks));
 
 		helpWidget.render(context, mouseX, mouseY, deltaTicks);
 	}
@@ -81,6 +94,11 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 	protected void enableAllChildren() {
 		helpWidget.active = true;
 		movableWidgets.forEach(widget -> widget.active = true);
+	}
+
+	@Override
+	public void mouseMoved(double mouseX, double mouseY) {
+		movableWidgets.forEach(widget -> widget.mouseMoved(mouseX, mouseY));
 	}
 
 	@Override

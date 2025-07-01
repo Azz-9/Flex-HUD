@@ -72,7 +72,7 @@ public class Compass extends AbstractHudElement {
 
 		Matrix3x2fStack matrices = context.getMatrices();
 		matrices.pushMatrix();
-		matrices.translate(Math.round(getX()), Math.round(getY()));
+		matrices.translate(getRoundedX(), getRoundedY());
 		matrices.scale(this.scale, this.scale);
 
 		drawBackground(context);

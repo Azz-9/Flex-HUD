@@ -20,6 +20,7 @@ import java.util.List;
 public class Cps extends AbstractHudElement {
 	public ConfigBoolean showLeftClick = new ConfigBoolean(true, "better_hud.cps.config.show_left_click");
 	public ConfigBoolean showRightClick = new ConfigBoolean(true, "better_hud.cps.config.show_right_click");
+	public ConfigBoolean showSuffix = new ConfigBoolean(true, "better_hud.cps.config.show_suffix");
 	public static List<Long> times = new LinkedList<>();
 
 	public Cps(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
@@ -67,16 +68,20 @@ public class Cps extends AbstractHudElement {
 			}
 		}
 
+		if (showSuffix.getValue()) {
+			text += " CPS";
+		}
+
+		setWidth(text);
+
 		Matrix3x2fStack matrices = context.getMatrices();
 		matrices.pushMatrix();
-		matrices.translate(Math.round(getX()), Math.round(getY()));
+		matrices.translate(getRoundedX(), getRoundedY());
 		matrices.scale(this.scale, this.scale);
 
 		drawBackground(context);
 
 		context.drawText(client.textRenderer, text, 0, 0, getColor(), this.shadow.getValue());
-
-		setWidth(text);
 
 		matrices.popMatrix();
 
@@ -145,6 +150,10 @@ public class Cps extends AbstractHudElement {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(showRightClick)
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(showSuffix)
 								.build()
 				);
 			}

@@ -16,8 +16,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.text.Text;
 import org.joml.Matrix3x2fStack;
 
@@ -25,7 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Speedometer extends AbstractHudElement {
-	private ConfigInteger digits = new ConfigInteger(1, "better_hud.speedometer.config.number_of_digits", 0, 16);
+	public ConfigInteger digits = new ConfigInteger(1, "better_hud.speedometer.config.number_of_digits", 0, 16);
 	public ConfigEnum<SpeedometerUnits> units = new ConfigEnum<>(SpeedometerUnits.MPS, "better_hud.speedometer.config.selected_unit");
 	public ConfigBoolean useKnotInBoat = new ConfigBoolean(false, "better_hud.speedometer.config.use_knot_when_in_boat");
 	public static List<Long> times = new LinkedList<>();
@@ -62,18 +60,18 @@ public class Speedometer extends AbstractHudElement {
 			return;
 		}
 
-		String formattedSpeed = getString(client.player);
+		String formattedSpeed = SpeedUtils.getFormattedSpeed();
+
+		setWidth(formattedSpeed);
 
 		Matrix3x2fStack matrices = context.getMatrices();
 		matrices.pushMatrix();
-		matrices.translate(Math.round(getX()), Math.round(getY()));
+		matrices.translate(getRoundedX(), getRoundedY());
 		matrices.scale(this.scale, this.scale);
 
 		drawBackground(context);
 
 		context.drawText(client.textRenderer, formattedSpeed, 0, 0, getColor(), this.shadow.getValue());
-
-		setWidth(formattedSpeed);
 
 		matrices.popMatrix();
 
@@ -158,18 +156,6 @@ public class Speedometer extends AbstractHudElement {
 				);
 			}
 		};
-	}
-
-	private String getString(PlayerEntity player) {
-		String format = "%." + this.digits.getValue() + "f";
-		String formattedSpeed = String.format(format, SpeedUtils.getSpeed());
-
-		if (this.units.getValue() == SpeedometerUnits.KNOT || (this.useKnotInBoat.getValue() && player.getVehicle() instanceof BoatEntity)) {
-			formattedSpeed += " " + Text.translatable(SpeedometerUnits.KNOT.getTranslationKey()).getString();
-		} else {
-			formattedSpeed += " " + Text.translatable(this.units.getValue().getTranslationKey()).getString();
-		}
-		return formattedSpeed;
 	}
 
 	public enum SpeedometerUnits implements Translatable {

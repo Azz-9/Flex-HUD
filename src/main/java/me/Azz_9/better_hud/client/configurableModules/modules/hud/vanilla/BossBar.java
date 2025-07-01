@@ -76,7 +76,7 @@ public class BossBar extends AbstractModule implements MovableModule {
 		if (Better_hudClient.isInMoveElementScreen) {
 			Matrix3x2fStack matrices = context.getMatrices();
 			matrices.pushMatrix();
-			matrices.translate(getX(), getY());
+			matrices.translate(getRoundedX(), getRoundedY());
 			matrices.scale(scale, scale);
 
 			int bossBarWidth = width;
@@ -105,7 +105,7 @@ public class BossBar extends AbstractModule implements MovableModule {
 
 		Matrix3x2fStack matrices = context.getMatrices();
 		matrices.pushMatrix();
-		matrices.translate(getX(), getY());
+		matrices.translate(getRoundedX(), getRoundedY());
 		matrices.scale(scale, scale);
 
 		int bossBarWidth = width;

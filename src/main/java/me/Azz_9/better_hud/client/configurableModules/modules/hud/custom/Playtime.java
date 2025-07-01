@@ -57,16 +57,16 @@ public class Playtime extends AbstractHudElement {
 			elapsedTime = Text.translatable("better_hud.playtime.hud.prefix").getString() + ": " + elapsedTime;
 		}
 
+		setWidth(elapsedTime);
+
 		Matrix3x2fStack matrices = context.getMatrices();
 		matrices.pushMatrix();
-		matrices.translate(Math.round(getX()), Math.round(getY()));
+		matrices.translate(getRoundedX(), getRoundedY());
 		matrices.scale(this.scale, this.scale);
 
 		drawBackground(context);
 
 		context.drawText(client.textRenderer, elapsedTime, 0, 0, getColor(), this.shadow.getValue());
-
-		setWidth(elapsedTime);
 
 		matrices.popMatrix();
 

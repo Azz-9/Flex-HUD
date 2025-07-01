@@ -2,6 +2,8 @@ package me.Azz_9.better_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractHudElement;
 import me.Azz_9.better_hud.client.configurableModules.modules.hud.DisplayMode;
+import me.Azz_9.better_hud.client.configurableModules.modules.hud.renderable.Renderable;
+import me.Azz_9.better_hud.client.configurableModules.modules.hud.renderable.RenderableText;
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
@@ -23,6 +25,7 @@ import org.joml.Matrix3x2fStack;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -73,12 +76,7 @@ public class Coordinates extends AbstractHudElement {
 
 		PlayerEntity player = client.player;
 
-		Matrix3x2fStack matrices = context.getMatrices();
-		matrices.pushMatrix();
-		matrices.translate(Math.round(getX()), Math.round(getY()));
-		matrices.scale(this.scale, this.scale);
-
-		drawBackground(context);
+		List<Renderable> renderables = new ArrayList<>();
 
 		// reset height and width
 		this.height = 0;
@@ -94,20 +92,20 @@ public class Coordinates extends AbstractHudElement {
 			int hudX = 0;
 			int hudY = 0;
 
-			context.drawText(client.textRenderer, xCoords, hudX, hudY, getColor(), this.shadow.getValue());
+			renderables.add(new RenderableText(hudX, hudY, Text.of(xCoords), getColor(), this.shadow.getValue()));
 			updateWidth(xCoords);
 			if (this.showY.getValue()) {
 				hudY += 10;
-				context.drawText(client.textRenderer, yCoords, hudX, hudY, getColor(), this.shadow.getValue());
+				renderables.add(new RenderableText(hudX, hudY, Text.of(yCoords), getColor(), this.shadow.getValue()));
 				updateWidth(yCoords);
 			}
 			hudY += 10;
-			context.drawText(client.textRenderer, zCoords, hudX, hudY, getColor(), this.shadow.getValue());
+			renderables.add(new RenderableText(hudX, hudY, Text.of(zCoords), getColor(), this.shadow.getValue()));
 			updateWidth(zCoords);
 
 			if (this.showBiome.getValue()) {
 				hudY += 10;
-				renderBiome(context, hudX, hudY);
+				renderBiome(hudX, hudY, renderables);
 			}
 			this.height = hudY + 10;
 
@@ -130,18 +128,18 @@ public class Coordinates extends AbstractHudElement {
 				}
 
 
-				context.drawText(client.textRenderer, axisX, hudX, hudY, getColor(), this.shadow.getValue());
+				renderables.add(new RenderableText(hudX, hudY, Text.of(axisX), getColor(), this.shadow.getValue()));
 				updateWidth(axisX, hudX);
 				if (this.showY.getValue()) {
 					hudY += 10;
-					context.drawText(client.textRenderer, facing, hudX, hudY, getColor(), this.shadow.getValue());
+					renderables.add(new RenderableText(hudX, hudY, Text.of(facing), getColor(), this.shadow.getValue()));
 					updateWidth(facing, hudX);
 				} else {
-					context.drawText(client.textRenderer, facing, hudX + 8, hudY + 5, getColor(), this.shadow.getValue());
+					renderables.add(new RenderableText(hudX + 8, hudY + 5, Text.of(facing), getColor(), this.shadow.getValue()));
 					updateWidth(facing, hudX + 8);
 				}
 				hudY += 10;
-				context.drawText(client.textRenderer, axisZ, hudX, hudY, getColor(), this.shadow.getValue());
+				renderables.add(new RenderableText(hudX, hudY, Text.of(axisZ), getColor(), this.shadow.getValue()));
 				updateWidth(axisZ, hudX);
 			}
 
@@ -163,14 +161,25 @@ public class Coordinates extends AbstractHudElement {
 				}
 			}
 
-			context.drawText(client.textRenderer, text.toString(), 0, 0, getColor(), this.shadow.getValue());
+			renderables.add(new RenderableText(0, 0, Text.of(text.toString()), getColor(), this.shadow.getValue()));
 			updateWidth(text.toString());
 			this.height = client.textRenderer.fontHeight;
 			if (this.showBiome.getValue()) {
-				renderBiome(context, 0, 10);
+				renderBiome(0, 10, renderables);
 				this.height += 10;
 			}
 
+		}
+
+		Matrix3x2fStack matrices = context.getMatrices();
+		matrices.pushMatrix();
+		matrices.translate(getRoundedX(), getRoundedY());
+		matrices.scale(this.scale, this.scale);
+
+		drawBackground(context);
+
+		for (Renderable renderable : renderables) {
+			renderable.render(context, tickCounter);
 		}
 
 		matrices.popMatrix();
@@ -213,7 +222,7 @@ public class Coordinates extends AbstractHudElement {
 
 	}
 
-	private void renderBiome(DrawContext drawContext, int hudX, int hudY) {
+	private void renderBiome(int hudX, int hudY, List<Renderable> renderables) {
 		MinecraftClient client = MinecraftClient.getInstance();
 		PlayerEntity p = client.player;
 
@@ -223,10 +232,10 @@ public class Coordinates extends AbstractHudElement {
 
 		RegistryKey<Biome> biomeKey = client.world.getBiome(p.getBlockPos()).getKey().orElse(null);
 		String biomeName = client.world.getBiome(p.getBlockPos()).getIdAsString().replace("minecraft:", "");
-		drawContext.drawText(client.textRenderer, "Biome: ", hudX, hudY, getColor(), this.shadow.getValue());
+		renderables.add(new RenderableText(hudX, hudY, Text.of("Biome: "), getColor(), this.shadow.getValue()));
 		hudX += client.textRenderer.getWidth("Biome: ");
 		int textColor = (biomeSpecificColor.getValue() ? BIOME_COLORS.getOrDefault(biomeKey, 0xffffffff) : getColor());
-		drawContext.drawText(client.textRenderer, biomeName, hudX, hudY, textColor, this.shadow.getValue());
+		renderables.add(new RenderableText(hudX, hudY, Text.of(biomeName), textColor, this.shadow.getValue()));
 		updateWidth("Biome: " + biomeName);
 	}
 

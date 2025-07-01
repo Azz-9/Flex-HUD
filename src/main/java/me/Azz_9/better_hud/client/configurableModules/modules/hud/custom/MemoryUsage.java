@@ -52,16 +52,16 @@ public class MemoryUsage extends AbstractHudElement {
 
 		String text = "Mem: " + MemoryUsageUtils.getMemoryUsage() + "%";
 
+		setWidth(text);
+
 		Matrix3x2fStack matrices = context.getMatrices();
 		matrices.pushMatrix();
-		matrices.translate(Math.round(getX()), Math.round(getY()));
+		matrices.translate(getRoundedX(), getRoundedY());
 		matrices.scale(this.scale, this.scale);
 
 		drawBackground(context);
 
 		context.drawText(client.textRenderer, text, 0, 0, getColor(), this.shadow.getValue());
-
-		setWidth(text);
 
 		matrices.popMatrix();
 

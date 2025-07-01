@@ -63,7 +63,7 @@ public class JsonConfigHelper {
 			try (FileReader reader = new FileReader(CONFIG_FILE)) {
 				return GSON.fromJson(reader, JsonConfigHelper.class);
 			} catch (IOException e) {
-				Better_hudClient.LOGGER.error("Failed to load config");
+				Better_hudClient.LOGGER.error("Failed to load config {}", e.getMessage());
 			}
 		}
 		return new JsonConfigHelper(); // Si le fichier n'existe pas, retourner la configuration par défaut
@@ -74,7 +74,7 @@ public class JsonConfigHelper {
 		try (FileWriter writer = new FileWriter(CONFIG_FILE)) {
 			GSON.toJson(getInstance(), writer);
 		} catch (IOException e) {
-			Better_hudClient.LOGGER.error("Failed to save config");
+			Better_hudClient.LOGGER.error("Failed to save config {}", e.getMessage());
 		}
 	}
 

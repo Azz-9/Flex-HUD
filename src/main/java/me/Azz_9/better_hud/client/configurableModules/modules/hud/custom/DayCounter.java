@@ -52,16 +52,16 @@ public class DayCounter extends AbstractHudElement {
 		long time = client.world.getTimeOfDay() / 24000;
 		Text text = Text.translatable("better_hud.day_counter.hud.prefix").append(" " + (int) time);
 
+		setWidth(text.getString());
+
 		Matrix3x2fStack matrices = context.getMatrices();
 		matrices.pushMatrix();
-		matrices.translate(Math.round(getX()), Math.round(getY()));
+		matrices.translate(getRoundedX(), getRoundedY());
 		matrices.scale(this.scale, this.scale);
 
 		drawBackground(context);
 
 		context.drawText(client.textRenderer, text, 0, 0, getColor(), this.shadow.getValue());
-
-		setWidth(text.getString());
 
 		matrices.popMatrix();
 

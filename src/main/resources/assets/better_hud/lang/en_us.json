@@ -96,6 +96,7 @@
 	"better_hud.cps.config.enable": "Show CPS",
 	"better_hud.cps.config.show_left_click": "Show left click CPS",
 	"better_hud.cps.config.show_right_click": "Show right click CPS",
+	"better_hud.cps.config.show_suffix": "Show suffix",
 
 	"better_hud.day_counter": "Day Counter",
 	"better_hud.day_counter.config.enable": "Show day counter",

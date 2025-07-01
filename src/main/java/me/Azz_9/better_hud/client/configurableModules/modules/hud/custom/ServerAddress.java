@@ -73,36 +73,35 @@ public class ServerAddress extends AbstractHudElement {
 
 		if (!text.isEmpty()) {
 
-			Matrix3x2fStack matrices = context.getMatrices();
-			matrices.pushMatrix();
-			matrices.translate(Math.round(getX()), Math.round(getY()));
-			matrices.scale(this.scale, this.scale);
-
-			drawBackground(context);
-
 			this.width = 0;
 			this.height = 0;
 
 			int textX = 0;
 			int textY = 0;
+			int faviconSize = 14;
+			Identifier icon = null;
 			if (showServerIcon.getValue() && client.getCurrentServerEntry() != null) {
-				int faviconSize = 14;
-				Identifier icon = FaviconUtils.getCurrentServerFavicon();
+				icon = FaviconUtils.getCurrentServerFavicon();
 				if (icon == null) {
 					icon = Identifier.of("minecraft", "textures/misc/unknown_server.png");
 				}
-				context.drawTexture(RenderPipelines.GUI_TEXTURED, icon, 0, 0, 0, 0, faviconSize, faviconSize, faviconSize, faviconSize);
 
 				textX = faviconSize + 2;
 				textY = (faviconSize - client.textRenderer.fontHeight) / 2;
 				this.height = faviconSize;
+				setWidth(text);
+				this.width += textX;
 			}
 
-			context.drawText(client.textRenderer, text, textX, textY, getColor(), this.shadow.getValue());
+			Matrix3x2fStack matrices = context.getMatrices();
+			matrices.pushMatrix();
+			matrices.translate(getRoundedX(), getRoundedY());
+			matrices.scale(this.scale, this.scale);
 
-			setWidth(text);
-			this.width += textX;
-			this.height = Math.max(client.textRenderer.fontHeight, this.height);
+			drawBackground(context);
+
+			context.drawTexture(RenderPipelines.GUI_TEXTURED, icon, 0, 0, 0, 0, faviconSize, faviconSize, faviconSize, faviconSize);
+			context.drawText(client.textRenderer, text, textX, textY, getColor(), this.shadow.getValue());
 
 			matrices.popMatrix();
 		}

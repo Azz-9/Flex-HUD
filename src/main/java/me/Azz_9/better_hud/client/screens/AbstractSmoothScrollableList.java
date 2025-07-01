@@ -9,7 +9,7 @@ public abstract class AbstractSmoothScrollableList<E extends ElementListWidget.E
 	private double targetScroll;     // Target scroll amount (set by mouse wheel)
 	private double currentScroll;    // Interpolated scroll amount (used for rendering)
 	private final double SCROLL_SPEED = 25.0; // Pixels per notch
-	private final double SCROLL_EASING = 0.25; // Interpolation factor
+	private long lastUpdateTime = System.nanoTime();
 
 	public AbstractSmoothScrollableList(MinecraftClient minecraftClient, int width, int height, int y, int itemHeight) {
 		super(minecraftClient, width, height, y, itemHeight);
@@ -33,12 +33,15 @@ public abstract class AbstractSmoothScrollableList<E extends ElementListWidget.E
 
 	@Override
 	protected void renderList(DrawContext context, int mouseX, int mouseY, float delta) {
-		// Smoothly interpolate scroll position
-		currentScroll = MathHelper.lerp(SCROLL_EASING, currentScroll, targetScroll);
+		long currentTime = System.nanoTime();
+		double deltaSeconds = (currentTime - lastUpdateTime) / 1_000_000_000.0; // Convertir en secondes
+		lastUpdateTime = currentTime;
 
-		// Update scrollAmount used by ElementListWidget
+		double alpha = 1.0 - Math.exp(-SCROLL_SPEED * deltaSeconds);
+
+		currentScroll += (targetScroll - currentScroll) * alpha;
+
 		super.setScrollY(currentScroll);
-
 		super.renderList(context, mouseX, mouseY, delta);
 	}
 

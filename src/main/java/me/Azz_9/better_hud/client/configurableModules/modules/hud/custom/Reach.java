@@ -61,16 +61,16 @@ public class Reach extends AbstractHudElement {
 		String formattedSpeed = String.format(format, ReachUtils.getReach());
 		Text text = Text.literal(formattedSpeed).append(" ").append(Text.translatable("better_hud.reach.hud.unit"));
 
+		setWidth(text.getString());
+
 		Matrix3x2fStack matrices = context.getMatrices();
 		matrices.pushMatrix();
-		matrices.translate(Math.round(getX()), Math.round(getY()));
+		matrices.translate(getRoundedX(), getRoundedY());
 		matrices.scale(this.scale, this.scale);
 
 		drawBackground(context);
 
 		context.drawText(client.textRenderer, Text.of(text), 0, 0, getColor(), this.shadow.getValue());
-
-		setWidth(text.getString());
 
 		matrices.popMatrix();
 

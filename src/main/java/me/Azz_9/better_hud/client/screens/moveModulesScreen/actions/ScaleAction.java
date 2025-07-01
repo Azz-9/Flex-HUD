@@ -21,15 +21,11 @@ public class ScaleAction implements Action {
 
 	@Override
 	public void redo() {
-		widget.setScale(newScale);
-		widget.moveTo(newX, newY);
-		widget.updateScalePosition();
+		widget.setScaleAndMove(newScale);
 	}
 
 	@Override
 	public void undo() {
-		widget.setScale(oldScale);
-		widget.moveTo(oldX, oldY);
-		widget.updateScalePosition();
+		widget.setScaleAndMove(oldScale);
 	}
 }

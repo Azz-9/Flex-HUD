@@ -60,16 +60,16 @@ public class Clock extends AbstractHudElement {
 
 		String currentTime = ClockUtils.getFormattedTime();
 
+		setWidth(currentTime);
+
 		Matrix3x2fStack matrices = context.getMatrices();
 		matrices.pushMatrix();
-		matrices.translate(Math.round(getX()), Math.round(getY()));
+		matrices.translate(getRoundedX(), getRoundedY());
 		matrices.scale(this.scale, this.scale);
 
 		drawBackground(context);
 
 		context.drawText(client.textRenderer, currentTime, 0, 0, getColor(), this.shadow.getValue());
-
-		setWidth(currentTime);
 
 		matrices.popMatrix();
 

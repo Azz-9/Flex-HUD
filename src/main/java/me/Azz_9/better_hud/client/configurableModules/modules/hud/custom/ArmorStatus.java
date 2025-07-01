@@ -4,6 +4,9 @@ import me.Azz_9.better_hud.client.Better_hudClient;
 import me.Azz_9.better_hud.client.configurableModules.modules.Translatable;
 import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractHudElement;
 import me.Azz_9.better_hud.client.configurableModules.modules.hud.DisplayMode;
+import me.Azz_9.better_hud.client.configurableModules.modules.hud.renderable.Renderable;
+import me.Azz_9.better_hud.client.configurableModules.modules.hud.renderable.RenderableItem;
+import me.Azz_9.better_hud.client.configurableModules.modules.hud.renderable.RenderableText;
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
@@ -66,13 +69,6 @@ public class ArmorStatus extends AbstractHudElement {
 
 		PlayerEntity player = client.player;
 
-		Matrix3x2fStack matrices = context.getMatrices();
-		matrices.pushMatrix();
-		matrices.translate(Math.round(getX()), Math.round(getY()));
-		matrices.scale(this.scale, this.scale);
-
-		drawBackground(context);
-
 		// reset height and width
 		this.height = (displayMode.getValue() == DisplayMode.HORIZONTAL) ? 16 : 0;
 		this.width = 0;
@@ -113,12 +109,14 @@ public class ArmorStatus extends AbstractHudElement {
 		int horizontalGap = 4;
 		int verticalGap = 1;
 
+		List<Renderable> renderables = new LinkedList<>();
+
 		for (int i = 0; i < booleans.length; i++) {
 			if (booleans[i]) {
 				ItemStack stack = items[i];
 
 				if (!stack.isEmpty()) {
-					int drawingWidth = drawItemStack(context, stack, hudX, hudY);
+					int drawingWidth = drawItemStack(stack, hudX, hudY, renderables);
 
 					if (this.displayMode.getValue() == DisplayMode.VERTICAL) {
 						hudY += 16 + verticalGap;
@@ -130,10 +128,21 @@ public class ArmorStatus extends AbstractHudElement {
 					}
 
 					if ((i == 4 || i == 5) && this.showArrowsWhenBowInHand.getValue() && (stack.getItem() == Items.BOW || stack.getItem() == Items.CROSSBOW)) {
-						drawArrowsStacks(context, hudX, hudY, horizontalGap, verticalGap);
+						drawArrowsStacks(hudX, hudY, horizontalGap, verticalGap, renderables);
 					}
 				}
 			}
+		}
+
+		Matrix3x2fStack matrices = context.getMatrices();
+		matrices.pushMatrix();
+		matrices.translate(getRoundedX(), getRoundedY());
+		matrices.scale(this.scale, this.scale);
+
+		drawBackground(context);
+
+		for (Renderable renderable : renderables) {
+			renderable.render(context, tickCounter);
 		}
 
 		matrices.popMatrix();
@@ -147,42 +156,42 @@ public class ArmorStatus extends AbstractHudElement {
 	}
 
 	//return width
-	private int drawItemStack(DrawContext context, ItemStack stack, int x, int y) {
-		context.drawItem(stack, x, y);
+	private int drawItemStack(ItemStack stack, int x, int y, List<Renderable> renderables) {
+		renderables.add(new RenderableItem(x, y, stack));
 		int drawingWidth = 16;
 
 		if (stack.isDamageable()) {
 			switch (this.durabilityType.getValue()) {
 				case PERCENTAGE -> {
 					String text = Math.round(getDurabilityPercentage(stack)) + "%";
-					context.drawText(MinecraftClient.getInstance().textRenderer, text, x + 17, y + 4, stack.getItemBarColor() | 0xff000000, shadow.getValue());
+					renderables.add(new RenderableText(x + 17, y + 4, Text.of(text), stack.getItemBarColor() | 0xff000000, shadow.getValue()));
 					drawingWidth += MinecraftClient.getInstance().textRenderer.getWidth(text);
 				}
 				case VALUE -> {
 					String text = String.valueOf(getDurabilityValue(stack));
-					context.drawText(MinecraftClient.getInstance().textRenderer, text, x + 17, y + 4, stack.getItemBarColor() | 0xff000000, shadow.getValue());
+					renderables.add(new RenderableText(x + 17, y + 4, Text.of(text), stack.getItemBarColor() | 0xff000000, shadow.getValue()));
 					drawingWidth += MinecraftClient.getInstance().textRenderer.getWidth(text);
 				}
 			}
 
 		} else if (MinecraftClient.getInstance().player != null) {
 			String text = String.valueOf(getStackCount(stack, MinecraftClient.getInstance().player));
-			context.drawText(MinecraftClient.getInstance().textRenderer, text, x + 17, y + 4, getColor(), shadow.getValue());
+			renderables.add(new RenderableText(x + 17, y + 4, Text.of(text), getColor(), shadow.getValue()));
 			drawingWidth += MinecraftClient.getInstance().textRenderer.getWidth(text);
 		}
 
 		return drawingWidth + (shadow.getValue() ? 1 : 0);
 	}
 
-	private void drawArrowsStacks(DrawContext context, int x, int y, int horizontalGap, int verticalGap) {
+	private void drawArrowsStacks(int x, int y, int horizontalGap, int verticalGap, List<Renderable> renderables) {
 		if (MinecraftClient.getInstance().player != null) {
 			ItemStack[] arrows;
 			if (separateArrowTypes.getValue()) {
 				arrows = new ItemStack[]{new ItemStack(Items.ARROW), new ItemStack(Items.SPECTRAL_ARROW), new ItemStack(Items.TIPPED_ARROW)};
 				for (ItemStack arrowStack : arrows) {
-					context.drawItem(arrowStack, x, y);
+					renderables.add(new RenderableItem(x, y, arrowStack));
 					String text = String.valueOf(getStackCount(arrowStack, MinecraftClient.getInstance().player));
-					context.drawText(MinecraftClient.getInstance().textRenderer, text, x + 17, y + 4, getColor(), shadow.getValue());
+					renderables.add(new RenderableText(x + 17, y + 4, Text.of(text), getColor(), shadow.getValue()));
 					if (displayMode.getValue() == DisplayMode.VERTICAL) {
 						y += 16 + verticalGap;
 						this.height = y;
@@ -194,13 +203,13 @@ public class ArmorStatus extends AbstractHudElement {
 				}
 			} else {
 				ItemStack arrowStack = new ItemStack(Items.ARROW);
-				context.drawItem(arrowStack, x, y);
+				renderables.add(new RenderableItem(x, y, arrowStack));
 
 				int totalCount = getStackCount(arrowStack, MinecraftClient.getInstance().player);
 				totalCount += getStackCount(new ItemStack(Items.SPECTRAL_ARROW), MinecraftClient.getInstance().player);
 				totalCount += getStackCount(new ItemStack(Items.TIPPED_ARROW), MinecraftClient.getInstance().player);
 				String text = String.valueOf(totalCount);
-				context.drawText(MinecraftClient.getInstance().textRenderer, text, x + 17, y + 4, getColor(), shadow.getValue());
+				renderables.add(new RenderableText(x + 17, y + 4, Text.of(text), getColor(), shadow.getValue()));
 				updateWidth(text, x + 17 + (shadow.getValue() ? 1 : 0));
 				this.height += 16;
 			}

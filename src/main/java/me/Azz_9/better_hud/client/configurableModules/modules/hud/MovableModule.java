@@ -76,6 +76,14 @@ public interface MovableModule extends Configurable {
 		}
 	}
 
+	default int getRoundedX() {
+		return Math.round(getX());
+	}
+
+	default int getRoundedY() {
+		return Math.round(getY());
+	}
+
 	void setPos(double offsetX, double offsetY, AbstractHudElement.AnchorPosition anchorX, AbstractHudElement.AnchorPosition anchorY);
 
 	float getScale();
