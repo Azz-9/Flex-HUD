@@ -1,5 +1,6 @@
 package me.Azz_9.better_hud.client.screens.configurationScreen.crosshairConfigScreen.crosshairEditor;
 
+import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector.ColorSelector;
 import me.Azz_9.better_hud.client.screens.configurationScreen.crosshairConfigScreen.CrosshairButtonWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -24,6 +25,14 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 	private int x;
 	private int y;
 
+	//color button
+	private final ColorButton colorButton;
+	private final int colorButtonSize = 20;
+	private final int colorButtonX;
+	private final int colorButtonY;
+	private ColorSelector colorSelector;
+	private boolean isDraggingCursor = false;
+
 	private boolean clicked = false;
 
 	public CrosshairEditor(CrosshairButtonWidget<?> crosshairButtonWidget) {
@@ -37,6 +46,15 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 
 		this.x = (MinecraftClient.getInstance().getWindow().getScaledWidth() - width) / 2;
 		this.y = (MinecraftClient.getInstance().getWindow().getScaledHeight() - height) / 2;
+
+		this.colorButtonX = x + width + 20;
+		this.colorButtonY = y + 20;
+		this.colorButton = new ColorButton(colorButtonX, colorButtonY, colorButtonSize, colorButtonSize, () -> {
+			colorSelector.setFocused(!colorSelector.isFocused());
+		});
+		this.colorSelector = new ColorSelector(this.colorButton);
+		this.colorSelector.setPosition(colorButtonX, colorButtonY + colorButtonSize);
+		this.colorSelector.setFocused(false);
 
 		for (int pixelY = 0; pixelY < textureSize; pixelY++) {
 			for (int pixelX = 0; pixelX < textureSize; pixelX++) {
@@ -53,6 +71,12 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 			for (int x = 0; x < pixels[y].length; x++) {
 				pixels[y][x].render(context, mouseX, mouseY, deltaTicks);
 			}
+		}
+
+		colorButton.render(context, mouseX, mouseY, deltaTicks);
+
+		if (colorSelector.isFocused()) {
+			colorSelector.render(context, mouseX, mouseY, deltaTicks);
 		}
 	}
 
@@ -71,6 +95,12 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 					}
 				}
 			}
+		} else if (isMouseOverColorButton(mouseX, mouseY)) {
+			colorButton.mouseClicked(mouseX, mouseY, button);
+			return true;
+		} else if (colorSelector.isFocused() && colorSelector.mouseClicked(mouseX, mouseY, button)) {
+			isDraggingCursor = true;
+			return true;
 		}
 		return false;
 	}
@@ -85,14 +115,17 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 					}
 				}
 			}
-		}
+		} else return colorSelector.isFocused() && colorSelector.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
 		return false;
 	}
 
 	@Override
 	public boolean mouseReleased(double mouseX, double mouseY, int button) {
-		if (this.isMouseOver(mouseX, mouseY) || clicked) {
+		if ((this.isMouseOver(mouseX, mouseY) || clicked) && !isDraggingCursor) {
 			clicked = false;
+			return true;
+		} else if (colorSelector.isFocused() && colorSelector.mouseReleased(mouseX, mouseY, button)) {
+			isDraggingCursor = false;
 			return true;
 		}
 		return false;
@@ -104,6 +137,10 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 				this.pixels[y][x].setColor(pixels[y][x]);
 			}
 		}
+	}
+
+	public int getColor() {
+		return colorButton.getColor();
 	}
 
 	@Override
@@ -162,6 +199,10 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		return mouseX >= getX() && mouseX <= getRight() && mouseY >= getY() && mouseY <= getBottom();
+	}
+
+	public boolean isMouseOverColorButton(double mouseX, double mouseY) {
+		return mouseX >= colorButtonX && mouseX <= colorButtonX + colorButtonSize && mouseY >= colorButtonY && mouseY <= colorButtonY + colorButtonSize;
 	}
 
 	@Override

@@ -1,7 +1,6 @@
 package me.Azz_9.better_hud.client.screens.configurationScreen.configEntries;
 
 import me.Azz_9.better_hud.client.screens.TrackableChange;
-import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.better_hud.client.screens.configurationScreen.ScrollableConfigList;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.DataGetter;
@@ -52,8 +51,8 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 				Identifier.of(MOD_ID, "widgets/buttons/int_field/decrease/focused.png")
 		), (btn) -> this.intFieldWidget.decrease());
 
-		intFieldWidget.addObserver((Observer) this.resetButtonWidget);
-		((Observer) this.resetButtonWidget).onChange(intFieldWidget);
+		intFieldWidget.addObserver(this.resetButtonWidget);
+		this.resetButtonWidget.onChange(intFieldWidget);
 	}
 
 	@Override

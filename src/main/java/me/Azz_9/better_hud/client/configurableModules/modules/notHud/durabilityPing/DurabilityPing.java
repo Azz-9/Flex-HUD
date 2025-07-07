@@ -34,14 +34,15 @@ public class DurabilityPing extends AbstractModule {
 			Items.NETHERITE_BOOTS, Items.NETHERITE_LEGGINGS, Items.NETHERITE_CHESTPLATE, Items.NETHERITE_HELMET,
 			Items.TURTLE_HELMET, Items.ELYTRA
 	);
-	private static Map<String, Long> lastPingTime;
+	private static final Map<String, Long> lastPingTime = new HashMap<>();
 	public ConfigInteger threshold = new ConfigInteger(10, "better_hud.durability_ping.config.threshold", 0, 100); // percentage
 	public ConfigEnum<PingType> pingType = new ConfigEnum<>(PingType.BOTH, "better_hud.durability_ping.config.ping_type");
 	public ConfigBoolean checkArmorPieces = new ConfigBoolean(true, "better_hud.durability_ping.config.check_armor_pieces");
 	public ConfigBoolean checkElytraOnly = new ConfigBoolean(false, "better_hud.durability_ping.config.check_elytra_only");
 
 	public DurabilityPing() {
-		lastPingTime = new HashMap<>();
+		this.enabled.setDefaultValue(false);
+		this.enabled.setValue(false);
 	}
 
 	@Override

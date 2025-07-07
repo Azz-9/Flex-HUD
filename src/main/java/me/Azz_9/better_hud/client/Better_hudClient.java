@@ -7,6 +7,7 @@ import me.Azz_9.better_hud.client.configurableModules.modules.notHud.durabilityP
 import me.Azz_9.better_hud.client.utils.ChromaColorUtils;
 import me.Azz_9.better_hud.client.utils.FaviconUtils;
 import me.Azz_9.better_hud.client.utils.clock.ClockUtils;
+import me.Azz_9.better_hud.client.utils.compass.DimensionTracker;
 import me.Azz_9.better_hud.client.utils.memoryUsage.MemoryUsageUtils;
 import me.Azz_9.better_hud.client.utils.reach.ReachUtils;
 import me.Azz_9.better_hud.client.utils.speedometer.SpeedUtils;
@@ -83,8 +84,10 @@ public class Better_hudClient implements ClientModInitializer {
 				if (JsonConfigHelper.getInstance().speedometer.enabled.getValue()) SpeedUtils.calculateSpeed();
 
 				if (JsonConfigHelper.getInstance().compass.showXaerosMapWaypoints.getValue() && XaeroCompat.isXaerosMinimapLoaded()) {
-					if (joinedWorld && !XaeroCompat.available) {
+					if ((joinedWorld && !XaeroCompat.available) || DimensionTracker.shouldInit) {
 						XaeroCompat.init();
+					} else {
+						DimensionTracker.check();
 					}
 					XaeroCompat.updateWaypoints();
 				}
@@ -120,12 +123,17 @@ public class Better_hudClient implements ClientModInitializer {
 							JsonConfigHelper.getInstance().bossBar::render
 					);
 
-					hudModulesInitialized = true;
+					JsonConfigHelper.getInstance().durabilityPing.init();
+					JsonConfigHelper.getInstance().timeChanger.init();
+					JsonConfigHelper.getInstance().weatherChanger.init();
 
-					if (client.getCurrentServerEntry() != null) { // joined a multiplayer server
-						FaviconUtils.registerServerIcon(client.getCurrentServerEntry().getFavicon());
-					}
+					hudModulesInitialized = true;
 				}
+
+				if (client.getCurrentServerEntry() != null) { // joined a multiplayer server
+					FaviconUtils.registerServerIcon(client.getCurrentServerEntry().getFavicon());
+				}
+
 				if (JsonConfigHelper.getInstance().compass.showXaerosMapWaypoints.getValue() && XaeroCompat.isXaerosMinimapLoaded()) {
 					XaeroCompat.init();
 					joinedWorld = true;

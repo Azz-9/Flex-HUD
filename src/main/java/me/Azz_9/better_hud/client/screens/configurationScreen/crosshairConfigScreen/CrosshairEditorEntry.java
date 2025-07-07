@@ -1,7 +1,6 @@
 package me.Azz_9.better_hud.client.screens.configurationScreen.crosshairConfigScreen;
 
 import me.Azz_9.better_hud.client.screens.TrackableChange;
-import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.better_hud.client.screens.configurationScreen.ScrollableConfigList;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigIntGrid;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.DataGetter;
@@ -43,8 +42,8 @@ public class CrosshairEditorEntry extends ScrollableConfigList.AbstractConfigEnt
 		);
 		setResetButtonPressAction((btn) -> crosshairButtonWidget.setToDefaultState());
 
-		crosshairButtonWidget.addObserver((Observer) this.resetButtonWidget);
-		((Observer) this.resetButtonWidget).onChange(crosshairButtonWidget);
+		crosshairButtonWidget.addObserver(this.resetButtonWidget);
+		this.resetButtonWidget.onChange(crosshairButtonWidget);
 	}
 
 	@Override

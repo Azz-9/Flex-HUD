@@ -4,7 +4,6 @@ import me.Azz_9.better_hud.client.screens.AbstractSmoothScrollableList;
 import me.Azz_9.better_hud.client.screens.TrackableChange;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.buttons.ConfigResetButtonWidget;
-import me.Azz_9.better_hud.client.screens.widgets.buttons.TexturedButtonWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
@@ -47,7 +46,7 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 	}
 
 	public abstract static class AbstractConfigEntry extends ElementListWidget.Entry<AbstractConfigEntry> implements Observer {
-		protected TexturedButtonWidget resetButtonWidget;
+		protected ConfigResetButtonWidget resetButtonWidget;
 		protected TextWidget textWidget;
 		protected List<Observer> observers = new ArrayList<>();
 

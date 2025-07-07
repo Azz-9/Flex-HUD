@@ -40,8 +40,8 @@ public class Pixel extends ClickableWidget {
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		if (isMouseOver(mouseX, mouseY)) {
 			if (button == 0) {
-				if (color != 0xffffffff) {
-					color = 0xffffffff;
+				if (color != crosshairEditor.getColor()) {
+					color = crosshairEditor.getColor();
 					crosshairEditor.onTextureChange(pixelX, pixelY);
 				}
 			} else if (button == 1) {
