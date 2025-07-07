@@ -2,7 +2,6 @@ package me.Azz_9.better_hud.client.screens.configurationScreen.configEntries;
 
 import me.Azz_9.better_hud.client.configurableModules.modules.Translatable;
 import me.Azz_9.better_hud.client.screens.TrackableChange;
-import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.better_hud.client.screens.configurationScreen.ScrollableConfigList;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.DataGetter;
@@ -31,8 +30,8 @@ public class CyclingButtonEntry<E extends Enum<E> & Translatable> extends Scroll
 		cyclingButtonWidget = new ConfigCyclingButtonWidget<>(cyclingButtonWidth, cyclingButtonHeight, variable, observers, disableWhen, getTooltip);
 		setResetButtonPressAction((btn) -> cyclingButtonWidget.setToDefaultState());
 
-		cyclingButtonWidget.addObserver((Observer) this.resetButtonWidget);
-		((Observer) this.resetButtonWidget).onChange(cyclingButtonWidget);
+		cyclingButtonWidget.addObserver(this.resetButtonWidget);
+		this.resetButtonWidget.onChange(cyclingButtonWidget);
 	}
 
 	@Override

@@ -1,7 +1,6 @@
 package me.Azz_9.better_hud.client.screens.configurationScreen.configEntries;
 
 import me.Azz_9.better_hud.client.screens.TrackableChange;
-import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.better_hud.client.screens.configurationScreen.ScrollableConfigList;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigString;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.DataGetter;
@@ -37,8 +36,8 @@ public class StringFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 		);
 		setResetButtonPressAction((btn) -> textFieldWidget.setToDefaultState());
 
-		textFieldWidget.addObserver((Observer) this.resetButtonWidget);
-		((Observer) this.resetButtonWidget).onChange(textFieldWidget);
+		textFieldWidget.addObserver(this.resetButtonWidget);
+		this.resetButtonWidget.onChange(textFieldWidget);
 	}
 
 	@Override

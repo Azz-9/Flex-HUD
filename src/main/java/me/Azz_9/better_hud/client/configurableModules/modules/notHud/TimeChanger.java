@@ -22,6 +22,11 @@ public class TimeChanger extends AbstractModule {
 	}
 
 	@Override
+	public void init() {
+		this.enabled.setConfigTextTranslationKey("better_hud.time_changer.config.enable");
+	}
+
+	@Override
 	public String getID() {
 		return "time_changer";
 	}

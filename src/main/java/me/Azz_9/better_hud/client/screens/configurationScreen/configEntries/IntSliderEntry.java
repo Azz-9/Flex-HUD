@@ -1,7 +1,6 @@
 package me.Azz_9.better_hud.client.screens.configurationScreen.configEntries;
 
 import me.Azz_9.better_hud.client.screens.TrackableChange;
-import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.better_hud.client.screens.configurationScreen.ScrollableConfigList;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.DataGetter;
@@ -28,8 +27,8 @@ public class IntSliderEntry extends ScrollableConfigList.AbstractConfigEntry {
 		sliderWidget = new ConfigIntSliderWidget<>(intSliderWidth, intSliderHeight, variable, step, observers, disableWhen);
 		setResetButtonPressAction((btn) -> sliderWidget.setToDefaultState());
 
-		sliderWidget.addObserver((Observer) this.resetButtonWidget);
-		((Observer) this.resetButtonWidget).onChange(sliderWidget);
+		sliderWidget.addObserver(this.resetButtonWidget);
+		this.resetButtonWidget.onChange(sliderWidget);
 	}
 
 	@Override
