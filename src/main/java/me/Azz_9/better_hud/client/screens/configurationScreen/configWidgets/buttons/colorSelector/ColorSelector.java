@@ -177,6 +177,14 @@ public class ColorSelector extends ColorUpdatable implements Element, Drawable {
 		return y + height;
 	}
 
+	public int getHeight() {
+		return height;
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
 	private List<Element> getChildren() {
 		return List.of(gradientWidget, hueWidget, colorFieldWidget);
 	}

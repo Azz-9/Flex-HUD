@@ -40,7 +40,6 @@ public class Better_hudClient implements ClientModInitializer {
 
 	private static long launchTime;
 	private boolean joinedWorld;
-	//TODO
 
 	@Override
 	public void onInitializeClient() {

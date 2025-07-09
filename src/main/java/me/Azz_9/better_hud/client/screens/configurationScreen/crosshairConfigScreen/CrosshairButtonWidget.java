@@ -74,6 +74,14 @@ public class CrosshairButtonWidget<T> extends ClickableWidget implements Trackab
 		}
 	}
 
+	public void setCrosshairTexture(int[][] texture) {
+		this.variable.setValue(texture);
+
+		for (Observer observer : observers) {
+			observer.onChange(this);
+		}
+	}
+
 	@Override
 	public void onClick(double mouseX, double mouseY) {
 		onClickAction.accept(this);

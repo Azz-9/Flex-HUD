@@ -4,7 +4,7 @@
 	"version": "${version}",
 
 	"name": "Better HUD",
-	"description": "Add a bunch of hud things",
+	"description": "Adds a bunch of hud things",
 	"authors": [
 		"Azz_9"
 	],
