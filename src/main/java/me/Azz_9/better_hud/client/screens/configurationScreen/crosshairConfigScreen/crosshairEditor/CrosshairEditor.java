@@ -85,7 +85,7 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 				pixels[y][x].render(context, mouseX, mouseY, deltaTicks);
 			}
 		}
-		
+
 		colorButton.render(context, mouseX, mouseY, deltaTicks);
 
 		if (colorSelector.isFocused()) {
