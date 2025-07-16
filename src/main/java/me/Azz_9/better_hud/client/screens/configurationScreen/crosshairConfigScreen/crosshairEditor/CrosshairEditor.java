@@ -2,13 +2,18 @@ package me.Azz_9.better_hud.client.screens.configurationScreen.crosshairConfigSc
 
 import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector.ColorSelector;
 import me.Azz_9.better_hud.client.screens.configurationScreen.crosshairConfigScreen.CrosshairButtonWidget;
+import me.Azz_9.better_hud.client.screens.moveModulesScreen.actions.UndoManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.ScreenRect;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.text.Text;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.function.Consumer;
 
@@ -22,17 +27,22 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 	private int x;
 	private int y;
 
-	//color button
+	// color button
+	private final TextWidget colorText;
 	private final ColorButton colorButton;
-	private final int colorButtonSize = 20;
-	private final int colorButtonX;
-	private final int colorButtonY;
 	private ColorSelector colorSelector;
 	private boolean isDraggingCursor = false;
 
+	// clear button
+	private ButtonWidget clearButton;
+
+	// presets list
 	private CrosshairPresetsList crosshairPresetsList;
 
 	private boolean clicked = false;
+	private int[][] onClickTexture;
+
+	UndoManager undoManager = new UndoManager();
 
 	public CrosshairEditor(CrosshairButtonWidget<?> crosshairButtonWidget) {
 		this.crosshairButtonWidget = crosshairButtonWidget;
@@ -54,25 +64,41 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 			}
 		}
 
+		int asideX = this.getX() + padding * 2 + textureSize * pixelSize;
+		int asideWidth = 60;
+
 		// color button
-		int colorButtonMargin = 20;
-		this.colorButtonX = x + width + colorButtonMargin;
-		this.colorButtonY = y + colorButtonMargin;
-		this.colorButton = new ColorButton(colorButtonX, colorButtonY, colorButtonSize, colorButtonSize, () -> {
-			colorSelector.setFocused(!colorSelector.isFocused());
-		});
+		//TODO trad
+		int colorButtonBlockMargin = 20;
+		int colorButtonSize = 20;
+
+		colorText = new TextWidget(Text.of("Color"), MinecraftClient.getInstance().textRenderer);
+		colorText.setPosition(asideX, y + colorButtonBlockMargin + (colorButtonSize - MinecraftClient.getInstance().textRenderer.fontHeight) / 2);
+
+		this.colorButton = new ColorButton(
+				colorText.getRight() + 2, y + colorButtonBlockMargin,
+				colorButtonSize, colorButtonSize,
+				() -> colorSelector.setFocused(!colorSelector.isFocused())
+		);
 		this.colorSelector = new ColorSelector(this.colorButton);
-		this.colorSelector.setPosition(colorButtonX, colorButtonY + colorButtonSize);
+		this.colorSelector.setPosition(colorButton.getX(), colorButton.getBottom());
 		this.colorSelector.setFocused(false);
 
-		this.width += colorButtonMargin * 2 + colorButtonSize;
+		this.width += asideWidth + padding;
+
+		// clear button
+		//TODO trad
+		clearButton = ButtonWidget.builder(Text.of("Clear"), (btn) -> this.clearTexture())
+				.position(asideX, colorButton.getBottom() + colorButtonBlockMargin)
+				.size(asideWidth, 20)
+				.build();
 
 		// presets list
 		int listY = colorSelector.getBottom() + 10;
+		int listHeight = Math.max(16, this.getBottom() - listY - padding);
 		crosshairPresetsList = new CrosshairPresetsList(
-				colorButtonSize + colorButtonMargin * 2 - padding - 6,
-				Math.max(16, this.getBottom() - listY - padding),
-				listY, this.getX() + padding * 2 + textureSize * pixelSize, this
+				asideWidth - 6, listHeight,
+				this.getBottom() - padding - listHeight, asideX, this
 		);
 	}
 
@@ -86,11 +112,10 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 			}
 		}
 
+		colorText.render(context, mouseX, mouseY, deltaTicks);
 		colorButton.render(context, mouseX, mouseY, deltaTicks);
 
-		if (colorSelector.isFocused()) {
-			colorSelector.render(context, mouseX, mouseY, deltaTicks);
-		}
+		clearButton.render(context, mouseX, mouseY, deltaTicks);
 
 		context.drawText(
 				MinecraftClient.getInstance().textRenderer, "Presets",
@@ -99,6 +124,10 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 				0xffffffff, true
 		);
 		crosshairPresetsList.render(context, mouseX, mouseY, deltaTicks);
+
+		if (colorSelector.isFocused()) {
+			colorSelector.render(context, mouseX, mouseY, deltaTicks);
+		}
 	}
 
 	public void onTextureChange(int x, int y) {
@@ -110,19 +139,40 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 		this.updateTexture(texture);
 	}
 
+	public void clearTexture() {
+		int[][] texture = new int[this.pixels.length][this.pixels[0].length];
+		int[][] oldTexture = new int[this.pixels.length][this.pixels[0].length];
+		for (int y = 0; y < texture.length; y++) {
+			oldTexture[y] = crosshairButtonWidget.getData()[y].clone();
+		}
+		undoManager.addAction(new TextureAction(this, oldTexture, texture));
+
+		crosshairButtonWidget.setCrosshairTexture(texture);
+		this.updateTexture(texture);
+	}
+
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		if (this.isMouseOver(mouseX, mouseY)) {
-			if (isMouseOverColorButton(mouseX, mouseY)) {
-				colorButton.mouseClicked(mouseX, mouseY, button);
-				return true;
-			} else if (crosshairPresetsList.mouseClicked(mouseX, mouseY, button)) {
+		if (colorSelector.isFocused() && colorSelector.mouseClicked(mouseX, mouseY, button)) {
+			isDraggingCursor = true;
+			return true;
+		} else if (this.isMouseOver(mouseX, mouseY)) {
+			if (colorButton.mouseClicked(mouseX, mouseY, button) ||
+					clearButton.mouseClicked(mouseX, mouseY, button) ||
+					crosshairPresetsList.mouseClicked(mouseX, mouseY, button)
+			) {
 				return true;
 			}
 
 			for (int y = 0; y < pixels.length; y++) {
 				for (int x = 0; x < pixels[y].length; x++) {
-					if (pixels[y][x].mouseClicked(mouseX, mouseY, button)) {
+					if (pixels[y][x].isMouseOver(mouseX, mouseY) && (button == 1 || button == 0)) {
+						int[][] texture = new int[crosshairButtonWidget.getData().length][crosshairButtonWidget.getData()[0].length];
+						for (int i = 0; i < crosshairButtonWidget.getData().length; i++) {
+							texture[i] = crosshairButtonWidget.getData()[i].clone();
+						}
+						onClickTexture = texture;
+						pixels[y][x].mouseClicked(mouseX, mouseY, button);
 						clicked = true;
 						return true;
 					}
@@ -130,9 +180,6 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 			}
 			colorSelector.setFocused(false);
 
-			return true;
-		} else if (colorSelector.isFocused() && colorSelector.mouseClicked(mouseX, mouseY, button)) {
-			isDraggingCursor = true;
 			return true;
 		}
 		return false;
@@ -157,7 +204,11 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 	@Override
 	public boolean mouseReleased(double mouseX, double mouseY, int button) {
 		if ((this.isMouseOver(mouseX, mouseY) || clicked) && !isDraggingCursor) {
-			clicked = false;
+			if (clicked) {
+				clicked = false;
+
+				undoManager.addAction(new TextureAction(this, onClickTexture, this.crosshairButtonWidget.getData()));
+			}
 			return true;
 		} else if (colorSelector.isFocused() && colorSelector.mouseReleased(mouseX, mouseY, button)) {
 			isDraggingCursor = false;
@@ -168,6 +219,20 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
 		return crosshairPresetsList.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
+	}
+
+	@Override
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (keyCode == 87 && modifiers == GLFW.GLFW_MOD_CONTROL) { // CTRL + Z
+			undoManager.undo();
+			return true;
+		} else if ((keyCode == GLFW.GLFW_KEY_Y && modifiers == GLFW.GLFW_MOD_CONTROL) ||
+				(keyCode == 87 && modifiers == (GLFW.GLFW_MOD_CONTROL + GLFW.GLFW_MOD_SHIFT))) { // CTRL + Y or CTRL + SHIFT + Z
+			undoManager.redo();
+			return true;
+		}
+
+		return Element.super.keyPressed(keyCode, scanCode, modifiers);
 	}
 
 	public void updateTexture(int[][] texture) {
@@ -242,10 +307,6 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		return mouseX >= getX() && mouseX <= getRight() && mouseY >= getY() && mouseY <= getBottom();
-	}
-
-	public boolean isMouseOverColorButton(double mouseX, double mouseY) {
-		return mouseX >= colorButtonX && mouseX <= colorButtonX + colorButtonSize && mouseY >= colorButtonY && mouseY <= colorButtonY + colorButtonSize;
 	}
 
 	@Override

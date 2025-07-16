@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(BossBarHud.class)
-public class BossBarHudMixin {
+public abstract class BossBarHudMixin {
 
 	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
 	public void render(DrawContext context, CallbackInfo ci) {

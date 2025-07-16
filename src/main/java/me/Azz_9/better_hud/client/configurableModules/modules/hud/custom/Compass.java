@@ -5,6 +5,7 @@ import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurat
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
+import me.Azz_9.better_hud.client.utils.compass.TamedEntityUtils;
 import me.Azz_9.better_hud.compat.XaeroCompat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
@@ -12,12 +13,16 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.resource.waypoint.WaypointStyleAsset;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Position;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.waypoint.TrackedWaypoint;
 import net.minecraft.world.waypoint.Waypoint;
 import org.joml.Matrix3x2fStack;
@@ -26,11 +31,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+import static me.Azz_9.better_hud.client.Better_hudClient.MOD_ID;
+
 public class Compass extends AbstractHudElement {
 	private ConfigBoolean showMarker = new ConfigBoolean(true, "better_hud.compass.config.show_marker");
 	private ConfigBoolean showIntermediatePoint = new ConfigBoolean(true, "better_hud.compass.config.show_intermediate_point");
 	public ConfigBoolean showXaerosMapWaypoints = new ConfigBoolean(true, "better_hud.compass.config.show_xaeros_map_waypoints");
 	public ConfigBoolean overrideLocatorBar = new ConfigBoolean(false, "better_hud.compass.config.override_locator_bar");
+	public ConfigBoolean showTamedEntitiesPoint = new ConfigBoolean(false, "better_hud.compass.config.show_tamed_entities_point");
+	public ConfigBoolean showOnlyPets = new ConfigBoolean(false, "better_hud.compass.config.show_only_pets");
 	public static List<Long> times = new LinkedList<>();
 
 	public Compass(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
@@ -104,7 +113,12 @@ public class Compass extends AbstractHudElement {
 
 		// Override locator bar
 		if (overrideLocatorBar.getValue()) {
-			renderLocatorBarWaypoints(context, tickCounter, matrices);
+			renderLocatorBarWaypoints(context, matrices);
+		}
+
+		// tamed entities
+		if (showTamedEntitiesPoint.getValue()) {
+			renderTamedEntityPoint(context, tickCounter, yaw, matrices);
 		}
 
 		context.disableScissor();
@@ -177,10 +191,10 @@ public class Compass extends AbstractHudElement {
 
 	}
 
-	private float calculateAngle(double playerX, double playerZ, double waypointX, double waypointZ) {
+	private float calculateAngle(double playerX, double playerZ, double pointX, double pointZ) {
 		// Différences de coordonnées
-		double deltaX = waypointX - playerX;
-		double deltaZ = waypointZ - playerZ;
+		double deltaX = pointX - playerX;
+		double deltaZ = pointZ - playerZ;
 
 		// Calcul de l'angle en radians (atan2 gère les quadrants correctement)
 		double angleRadians = Math.atan2(deltaX, deltaZ);
@@ -265,7 +279,7 @@ public class Compass extends AbstractHudElement {
 		return ColorHelper.withAlpha(getAlpha(CenterXOfDrawing), getColor());
 	}
 
-	private void renderLocatorBarWaypoints(DrawContext context, RenderTickCounter tickCounter, Matrix3x2fStack matrices) {
+	private void renderLocatorBarWaypoints(DrawContext context, Matrix3x2fStack matrices) {
 		MinecraftClient client = MinecraftClient.getInstance();
 
 		if (client.cameraEntity == null || client.player == null) {
@@ -315,6 +329,68 @@ public class Compass extends AbstractHudElement {
 				}
 			}
 		});
+	}
+
+	private void renderTamedEntityPoint(DrawContext context, RenderTickCounter tickCounter, float yaw, Matrix3x2fStack matrices) {
+		MinecraftClient client = MinecraftClient.getInstance();
+		PlayerEntity player = client.player;
+		if (player == null) {
+			return;
+		}
+
+		for (LivingEntity entity : TamedEntityUtils.getTamedEntities()) {
+
+			int textureSize = 9;
+
+			Position lerpedPosition = player.getLerpedPos(tickCounter.getTickProgress(true));
+			Vec3d entityLerpedPos = entity.getLerpedPos(tickCounter.getTickProgress(true));
+			float angle = calculateAngle(lerpedPosition.getX(), lerpedPosition.getZ(), entityLerpedPos.x, entityLerpedPos.z);
+			float angleDifference = (angle - yaw + 540) % 360 - 180;
+
+			if (Math.abs(angleDifference) <= 120) {
+				float positionX = ((this.width / 2.0f) + (angleDifference * (context.getScaledWindowWidth() / 720.0f)));
+
+				if (entity instanceof WolfEntity || entity instanceof CatEntity) {
+					int color = 0xffffffff;
+					Identifier texture = null;
+
+					if (entity instanceof WolfEntity wolfEntity) {
+						color = wolfEntity.getCollarColor().getEntityColor();
+						texture = Identifier.of(MOD_ID, "tamed_entities_icons/wolf.png");
+					} else if (entity instanceof CatEntity catEntity) {
+						color = catEntity.getCollarColor().getEntityColor();
+						texture = Identifier.of(MOD_ID, "tamed_entities_icons/cat.png");
+					}
+					matrices.pushMatrix();
+					matrices.translate(positionX - textureSize / 2.0f, 2);
+					matrices.scale(0.75f, 0.75f);
+					context.drawTexture(RenderPipelines.GUI_TEXTURED, texture, 0, 0, 0, 0, textureSize, textureSize, textureSize, textureSize, ColorHelper.withAlpha(getAlpha(positionX), color));
+					matrices.popMatrix();
+				} else {
+					Identifier texture = null;
+					if (entity instanceof HorseEntity horseEntity && !showOnlyPets.getValue()) {
+						texture = Identifier.of(MOD_ID, "tamed_entities_icons/horse/" + horseEntity.getHorseColor().toString().toLowerCase() + ".png");
+					} else if (entity instanceof LlamaEntity llamaEntity && !showOnlyPets.getValue()) {
+						texture = Identifier.of(MOD_ID, "tamed_entities_icons/" + (entity instanceof TraderLlamaEntity ? "trader_llama/" : "llama/") + llamaEntity.getVariant().toString().toLowerCase() + ".png");
+					} else if (entity instanceof ParrotEntity parrotEntity) {
+						texture = Identifier.of(MOD_ID, "tamed_entities_icons/parrot/" + parrotEntity.getVariant().toString().toLowerCase() + ".png");
+					} else if (entity instanceof TameableEntity || !showOnlyPets.getValue()) {
+						texture = Identifier.of(MOD_ID, "tamed_entities_icons/" + Registries.ENTITY_TYPE.getId(entity.getType()).getPath() + ".png");
+					}
+
+					if (texture == null || MinecraftClient.getInstance().getResourceManager().getResource(texture).isEmpty()) {
+						return;
+					}
+
+					matrices.pushMatrix();
+					matrices.translate(positionX - textureSize / 2.0f, 2);
+					matrices.scale(0.75f, 0.75f);
+					context.drawTexture(RenderPipelines.GUI_TEXTURED, texture, 0, 0, 0, 0, textureSize, textureSize, textureSize, textureSize, ColorHelper.withAlpha(getAlpha(positionX), 0xffffff));
+					matrices.popMatrix();
+				}
+
+			}
+		}
 	}
 
 	@Override
@@ -380,6 +456,17 @@ public class Compass extends AbstractHudElement {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(overrideLocatorBar)
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(showTamedEntitiesPoint)
+								.build()
+				);
+				this.addAllEntries(
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(showOnlyPets)
+								.setDependency(this.getConfigList().getLastEntry(), false)
 								.build()
 				);
 			}

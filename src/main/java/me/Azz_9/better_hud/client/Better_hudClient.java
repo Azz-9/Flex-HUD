@@ -8,6 +8,7 @@ import me.Azz_9.better_hud.client.utils.ChromaColorUtils;
 import me.Azz_9.better_hud.client.utils.FaviconUtils;
 import me.Azz_9.better_hud.client.utils.clock.ClockUtils;
 import me.Azz_9.better_hud.client.utils.compass.DimensionTracker;
+import me.Azz_9.better_hud.client.utils.compass.TamedEntityUtils;
 import me.Azz_9.better_hud.client.utils.memoryUsage.MemoryUsageUtils;
 import me.Azz_9.better_hud.client.utils.reach.ReachUtils;
 import me.Azz_9.better_hud.client.utils.speedometer.SpeedUtils;
@@ -82,6 +83,7 @@ public class Better_hudClient implements ClientModInitializer {
 				if (JsonConfigHelper.getInstance().memoryUsage.enabled.getValue()) MemoryUsageUtils.updateMemoryUsage();
 				if (JsonConfigHelper.getInstance().speedometer.enabled.getValue()) SpeedUtils.calculateSpeed();
 
+				if (JsonConfigHelper.getInstance().compass.showTamedEntitiesPoint.getValue()) TamedEntityUtils.update();
 				if (JsonConfigHelper.getInstance().compass.showXaerosMapWaypoints.getValue() && XaeroCompat.isXaerosMinimapLoaded()) {
 					if ((joinedWorld && !XaeroCompat.available) || DimensionTracker.shouldInit) {
 						XaeroCompat.init();

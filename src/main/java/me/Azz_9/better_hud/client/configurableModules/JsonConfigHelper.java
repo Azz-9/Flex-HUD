@@ -35,6 +35,8 @@ public class JsonConfigHelper {
 	public Speedometer speedometer = new Speedometer(2, 70, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.START);
 	public Reach reach = new Reach(2, 100, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.START);
 	public Playtime playtime = new Playtime(2, 140, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.START);
+	//public ResourcePack resourcePack = new ResourcePack(0, 100, AbstractHudElement.AnchorPosition.END, AbstractHudElement.AnchorPosition.START);
+	public PotionEffect potionEffect = new PotionEffect(0, 20, AbstractHudElement.AnchorPosition.END, AbstractHudElement.AnchorPosition.START);
 	public Crosshair crosshair = new Crosshair();
 	public BossBar bossBar = new BossBar(0, 30, AbstractHudElement.AnchorPosition.CENTER, AbstractHudElement.AnchorPosition.START);
 	//others
@@ -92,7 +94,9 @@ public class JsonConfigHelper {
 				getInstance().memoryUsage,
 				getInstance().speedometer,
 				getInstance().reach,
-				getInstance().playtime
+				getInstance().playtime,
+				//getInstance().resourcePack,
+				getInstance().potionEffect
 		);
 	}
 

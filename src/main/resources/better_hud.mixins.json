@@ -16,7 +16,8 @@
 		"compass.LocatorBarMixin",
 		"cps.KeyboardMixin",
 		"crosshair.CrosshairMixin",
-		"keybind.KeyBindingMixin"
+		"keybind.KeyBindingMixin",
+		"potionEffect.PotionEffectMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

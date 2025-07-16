@@ -107,6 +107,8 @@
 	"better_hud.compass.config.show_intermediate_point": "Show intermediate points",
 	"better_hud.compass.config.show_xaeros_map_waypoints": "Show Xaero's map waypoints",
 	"better_hud.compass.config.override_locator_bar": "Override locator bar",
+	"better_hud.compass.config.show_tamed_entities_point": "Show tamed entities points",
+	"better_hud.compass.config.show_only_pets": "Show only pets",
 
 	"better_hud.durability_ping": "Durability Ping",
 	"better_hud.durability_ping.config.enable": "Enable durability ping",
@@ -167,6 +169,12 @@
 
 	"better_hud.bossbar": "Boss bar",
 	"better_hud.bossbar.config.enable": "Show boss bar",
+
+	"better_hud.ressource_pack": "Ressource pack",
+	"better_hud.ressource_pack.config.enable": "Show ressource pack",
+
+	"better_hud.potion_effect": "Potion effect",
+	"better_hud.potion_effect.config.enable": "Show potion effect",
 
 
 	"better_hud.coordinates.hud.direction.south": "South",
