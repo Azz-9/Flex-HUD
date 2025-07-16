@@ -72,9 +72,11 @@ public class AbstractCrosshairConfigScreen extends AbstractConfigurationScreen {
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (crosshairEditor != null && crosshairEditor.isFocused() && keyCode == GLFW.GLFW_KEY_ESCAPE) {
-			closeEditor();
-			return true;
+		if (crosshairEditor != null && crosshairEditor.isFocused()) {
+			if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+				closeEditor();
+				return true;
+			} else return crosshairEditor.keyPressed(keyCode, scanCode, modifiers);
 		}
 		return super.keyPressed(keyCode, scanCode, modifiers);
 	}

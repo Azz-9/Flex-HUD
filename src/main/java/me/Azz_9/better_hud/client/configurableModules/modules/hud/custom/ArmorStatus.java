@@ -229,7 +229,7 @@ public class ArmorStatus extends AbstractHudElement {
 
 		for (int i = 0; i < player.getInventory().size(); ++i) {
 			ItemStack itemStack = player.getInventory().getStack(i);
-			if (itemStack.getItem().equals(stack.getItem())) {
+			if (itemStack.getItem().equals(stack.getItem()) && itemStack.getComponents().equals(stack.getComponents())) {
 				itemCount += itemStack.getCount();
 			}
 		}

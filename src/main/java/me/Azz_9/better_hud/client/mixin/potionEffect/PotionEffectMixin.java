@@ -1,4 +1,4 @@
-package me.Azz_9.better_hud.client.mixin.crosshair;
+package me.Azz_9.better_hud.client.mixin.potionEffect;
 
 import me.Azz_9.better_hud.client.configurableModules.JsonConfigHelper;
 import net.minecraft.client.gui.DrawContext;
@@ -10,11 +10,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(InGameHud.class)
-public abstract class CrosshairMixin {
+public abstract class PotionEffectMixin {
 
-	@Inject(method = "renderCrosshair", at = @At("HEAD"), cancellable = true)
-	private void renderCrosshair(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
-		if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().crosshair.enabled.getValue()) {
+	@Inject(method = "renderStatusEffectOverlay", at = @At("HEAD"), cancellable = true)
+	private void renderStatusEffectOverlay(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
+		if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().potionEffect.enabled.getValue()) {
 			ci.cancel();
 		}
 	}
