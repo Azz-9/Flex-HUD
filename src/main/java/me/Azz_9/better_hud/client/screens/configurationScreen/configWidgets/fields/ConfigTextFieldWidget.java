@@ -6,11 +6,14 @@ import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.Co
 import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.ResetAware;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class ConfigTextFieldWidget<T> extends TextFieldWidget implements TrackableChange, DataGetter<String>, ResetAware {
@@ -19,14 +22,17 @@ public class ConfigTextFieldWidget<T> extends TextFieldWidget implements Trackab
 	private final Predicate<String> IS_VALID;
 	private final List<Observer> observers;
 	private final T disableWhen;
+	@Nullable
+	private final Function<String, Tooltip> getTooltip;
 
-	public ConfigTextFieldWidget(TextRenderer textRenderer, int width, int height, ConfigString variable, List<Observer> observers, T disableWhen, Predicate<String> isValid) {
+	public ConfigTextFieldWidget(TextRenderer textRenderer, int width, int height, ConfigString variable, List<Observer> observers, T disableWhen, Predicate<String> isValid, @Nullable Function<String, Tooltip> getTooltip) {
 		super(textRenderer, width, height, Text.translatable("better_hud.text_field"));
 		this.INITIAL_VALUE = variable.getValue();
 		this.variable = variable;
 		this.IS_VALID = isValid;
 		this.observers = observers;
 		this.disableWhen = disableWhen;
+		this.getTooltip = getTooltip;
 
 		setText(variable.getValue());
 
@@ -41,7 +47,11 @@ public class ConfigTextFieldWidget<T> extends TextFieldWidget implements Trackab
 			for (Observer observer : observers) {
 				observer.onChange(this);
 			}
+
+			if (getTooltip != null) this.setTooltip(getTooltip.apply(variable.getValue()));
 		});
+
+		if (getTooltip != null) this.setTooltip(getTooltip.apply(variable.getValue()));
 	}
 
 	@Override

@@ -11,6 +11,7 @@ import me.Azz_9.better_hud.client.utils.clock.ClockUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
 import org.joml.Matrix3x2fStack;
@@ -151,6 +152,7 @@ public class Clock extends AbstractHudElement {
 										return false;
 									}
 								})
+								.setGetTooltip((value) -> Tooltip.of(Text.of("hh: " + Text.translatable("better_hud.global.hours").getString() + "\nmm: " + Text.translatable("better_hud.global.minutes").getString() + "\nss: " + Text.translatable("better_hud.global.seconds").getString())))
 								.setText(Text.translatable("better_hud.clock.config.text_format"))
 								.build()
 				);

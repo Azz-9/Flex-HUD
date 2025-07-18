@@ -8,6 +8,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.gui.widget.TextWidget;
@@ -15,6 +16,7 @@ import net.minecraft.text.Text;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 public class ScrollableConfigList extends AbstractSmoothScrollableList<ScrollableConfigList.AbstractConfigEntry> {
 	private final int itemWidth;
@@ -95,17 +97,23 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 
 		public abstract DataGetter<?> getDataGetter();
 
-		public abstract static class AbstractBuilder {
+		public abstract static class AbstractBuilder<T> {
 			protected int resetButtonSize = 20;
 			protected Text text;
+			protected Function<T, Tooltip> getTooltip = null;
 
-			public AbstractBuilder setResetButtonSize(int size) {
+			public AbstractBuilder<T> setResetButtonSize(int size) {
 				this.resetButtonSize = size;
 				return this;
 			}
 
-			public AbstractBuilder setText(Text text) {
+			public AbstractBuilder<T> setText(Text text) {
 				this.text = text;
+				return this;
+			}
+
+			public AbstractBuilder<T> setGetTooltip(Function<T, Tooltip> tooltip) {
+				this.getTooltip = tooltip;
 				return this;
 			}
 

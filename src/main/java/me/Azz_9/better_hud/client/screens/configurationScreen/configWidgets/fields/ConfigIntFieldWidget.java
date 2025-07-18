@@ -5,12 +5,16 @@ import me.Azz_9.better_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.ResetAware;
+import me.Azz_9.better_hud.client.screens.widgets.buttons.TexturedButtonWidget;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Function;
 
 public class ConfigIntFieldWidget<T> extends TextFieldWidget implements TrackableChange, DataGetter<Integer>, ResetAware {
 
@@ -20,15 +24,19 @@ public class ConfigIntFieldWidget<T> extends TextFieldWidget implements Trackabl
 	private final int MIN_VALUE;
 	private final int MAX_VALUE;
 	private final List<Observer> observers;
+	@Nullable
+	private final Function<Integer, Tooltip> getTooltip;
+	private TexturedButtonWidget increaseButton, decreaseButton;
 
 	private boolean suppressIntFieldCallback = false;
 
-	public ConfigIntFieldWidget(TextRenderer textRenderer, int width, int height, ConfigInteger variable, List<Observer> observers, T disableWhen) {
+	public ConfigIntFieldWidget(TextRenderer textRenderer, int width, int height, ConfigInteger variable, List<Observer> observers, T disableWhen, @Nullable Function<Integer, Tooltip> getTooltip) {
 		super(textRenderer, width, height, Text.translatable("better_hud.integer_field"));
 		this.INITIAL_STATE = variable.getValue();
 		this.variable = variable;
 		this.disableWhen = disableWhen;
 		this.observers = observers;
+		this.getTooltip = getTooltip;
 
 		if (variable.getMin() < 0)
 			throw new IllegalArgumentException("Min value cannot be negative!");
@@ -70,9 +78,20 @@ public class ConfigIntFieldWidget<T> extends TextFieldWidget implements Trackabl
 				observer.onChange(this);
 			}
 			variable.setValue(getValue());
+
+			if (getTooltip != null) this.setTooltip(this.getTooltip.apply(variable.getValue()));
+
+			if (increaseButton != null) increaseButton.active = getValue() < MAX_VALUE;
+			if (decreaseButton != null) decreaseButton.active = getValue() > MIN_VALUE;
 		});
 
 		setText(String.valueOf(variable.getValue()));
+
+		if (getTooltip != null) {
+			this.setTooltip(this.getTooltip.apply(variable.getValue()));
+		} else {
+			this.setTooltip(Tooltip.of(Text.of("Min: " + MIN_VALUE + (MAX_VALUE == Integer.MAX_VALUE ? "" : "\nMax: " + MAX_VALUE))));
+		}
 	}
 
 	@Override
@@ -98,6 +117,16 @@ public class ConfigIntFieldWidget<T> extends TextFieldWidget implements Trackabl
 		if (getValue() > MIN_VALUE) {
 			super.setText(String.valueOf(getValue() - 1));
 		}
+	}
+
+	public void setIncreaseButton(TexturedButtonWidget increaseButton) {
+		this.increaseButton = increaseButton;
+		increaseButton.active = getValue() < MAX_VALUE;
+	}
+
+	public void setDecreaseButton(TexturedButtonWidget decreaseButton) {
+		this.decreaseButton = decreaseButton;
+		decreaseButton.active = getValue() > MIN_VALUE;
 	}
 
 	@Override

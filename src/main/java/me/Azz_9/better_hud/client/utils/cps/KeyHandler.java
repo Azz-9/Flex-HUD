@@ -26,6 +26,7 @@ public class KeyHandler {
 			System.out.println("Reach: " + (Reach.times.stream().mapToDouble(Long::doubleValue).sum() / 1_000_000) + "ms for " + Reach.times.size() + " times, average: " + (Reach.times.stream().mapToDouble(Long::doubleValue).average().orElse(0) / 1_000_000) + "ms");
 			System.out.println("ServerAddress: " + (ServerAddress.times.stream().mapToDouble(Long::doubleValue).sum() / 1_000_000) + "ms for " + ServerAddress.times.size() + " times, average: " + (ServerAddress.times.stream().mapToDouble(Long::doubleValue).average().orElse(0) / 1_000_000) + "ms");
 			System.out.println("Speedometer: " + (Speedometer.times.stream().mapToDouble(Long::doubleValue).sum() / 1_000_000) + "ms for " + Speedometer.times.size() + " times, average: " + (Speedometer.times.stream().mapToDouble(Long::doubleValue).average().orElse(0) / 1_000_000) + "ms");
+			System.out.println("potion effect: " + (PotionEffect.times.stream().mapToDouble(Long::doubleValue).sum() / 1_000_000) + "ms for " + PotionEffect.times.size() + " times, average: " + (PotionEffect.times.stream().mapToDouble(Long::doubleValue).average().orElse(0) / 1_000_000) + "ms");
 		}
 
 		if (!JsonConfigHelper.getInstance().isEnabled || !JsonConfigHelper.getInstance().cps.isEnabled()) {

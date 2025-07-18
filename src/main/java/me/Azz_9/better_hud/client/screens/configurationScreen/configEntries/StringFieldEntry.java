@@ -9,9 +9,11 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.text.Text;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class StringFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
@@ -23,7 +25,8 @@ public class StringFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 			ConfigString variable,
 			Predicate<String> isValid,
 			int resetButtonSize,
-			T disableWhen
+			T disableWhen,
+			Function<String, Tooltip> getTooltip
 	) {
 		super(resetButtonSize, Text.translatable(variable.getConfigTextTranslationKey()));
 		textFieldWidget = new ConfigTextFieldWidget<>(
@@ -32,7 +35,8 @@ public class StringFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 				variable,
 				observers,
 				disableWhen,
-				isValid
+				isValid,
+				getTooltip
 		);
 		setResetButtonPressAction((btn) -> textFieldWidget.setToDefaultState());
 
@@ -78,7 +82,7 @@ public class StringFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 	}
 
 	// Builder
-	public static class Builder extends AbstractBuilder {
+	public static class Builder extends AbstractBuilder<String> {
 		private int textFieldWidth;
 		private int textFieldHeight = 20;
 		private ConfigString variable;
@@ -115,12 +119,16 @@ public class StringFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 
 		@Override
 		public StringFieldEntry build() {
+			if (variable == null)
+				throw new IllegalArgumentException("StringFieldEntry requires a variable to be set using setVariable()!");
+
 			StringFieldEntry entry = new StringFieldEntry(
 					textFieldWidth, textFieldHeight,
 					variable,
 					isValid,
 					resetButtonSize,
-					disableWhen
+					disableWhen,
+					getTooltip
 			);
 			if (dependency != null) {
 				dependency.addObserver(entry);

@@ -11,6 +11,7 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Function;
@@ -24,7 +25,7 @@ public class CyclingButtonEntry<E extends Enum<E> & Translatable> extends Scroll
 			ConfigEnum<E> variable,
 			int resetButtonSize,
 			T disableWhen,
-			Function<E, Tooltip> getTooltip
+			@Nullable Function<E, Tooltip> getTooltip
 	) {
 		super(resetButtonSize, Text.translatable(variable.getConfigTextTranslationKey()));
 		cyclingButtonWidget = new ConfigCyclingButtonWidget<>(cyclingButtonWidth, cyclingButtonHeight, variable, observers, disableWhen, getTooltip);
@@ -71,13 +72,12 @@ public class CyclingButtonEntry<E extends Enum<E> & Translatable> extends Scroll
 	}
 
 	// Builder
-	public static class Builder<E extends Enum<E> & Translatable> extends AbstractBuilder {
+	public static class Builder<E extends Enum<E> & Translatable> extends AbstractBuilder<E> {
 		private int cyclingButtonWidth;
 		private int cyclingButtonHeight = 20;
 		private ConfigEnum<E> variable;
 		private ScrollableConfigList.AbstractConfigEntry dependency = null;
 		private Object disableWhen;
-		private Function<E, Tooltip> getTooltip = null;
 
 		public CyclingButtonEntry.Builder<E> setCyclingButtonWidth(int width) {
 			this.cyclingButtonWidth = width;
@@ -101,13 +101,11 @@ public class CyclingButtonEntry<E extends Enum<E> & Translatable> extends Scroll
 			return this;
 		}
 
-		public CyclingButtonEntry.Builder<E> setGetTooltip(Function<E, Tooltip> getTooltip) {
-			this.getTooltip = getTooltip;
-			return this;
-		}
-
 		@Override
 		public CyclingButtonEntry<E> build() {
+			if (variable == null)
+				throw new IllegalArgumentException("CyclingButtonEntry requires a variable to be set using setVariable()!");
+
 			CyclingButtonEntry<E> entry = new CyclingButtonEntry<>(
 					cyclingButtonWidth, cyclingButtonHeight,
 					variable,

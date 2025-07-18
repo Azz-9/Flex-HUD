@@ -8,9 +8,11 @@ import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.slid
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.text.Text;
 
 import java.util.List;
+import java.util.function.Function;
 
 public class IntSliderEntry extends ScrollableConfigList.AbstractConfigEntry {
 	private final ConfigIntSliderWidget<?> sliderWidget;
@@ -21,10 +23,11 @@ public class IntSliderEntry extends ScrollableConfigList.AbstractConfigEntry {
 			ConfigInteger variable,
 			Integer step,
 			int resetButtonSize,
-			T disableWhen
+			T disableWhen,
+			Function<Integer, Tooltip> getTooltip
 	) {
 		super(resetButtonSize, Text.translatable(variable.getConfigTextTranslationKey()));
-		sliderWidget = new ConfigIntSliderWidget<>(intSliderWidth, intSliderHeight, variable, step, observers, disableWhen);
+		sliderWidget = new ConfigIntSliderWidget<>(intSliderWidth, intSliderHeight, variable, step, observers, disableWhen, getTooltip);
 		setResetButtonPressAction((btn) -> sliderWidget.setToDefaultState());
 
 		sliderWidget.addObserver(this.resetButtonWidget);
@@ -68,7 +71,7 @@ public class IntSliderEntry extends ScrollableConfigList.AbstractConfigEntry {
 	}
 
 	// Builder
-	public static class Builder extends AbstractBuilder {
+	public static class Builder extends AbstractBuilder<Integer> {
 		private int intSliderWidth;
 		private int intSliderHeight = 20;
 		private ConfigInteger variable;
@@ -105,12 +108,16 @@ public class IntSliderEntry extends ScrollableConfigList.AbstractConfigEntry {
 
 		@Override
 		public IntSliderEntry build() {
+			if (variable == null)
+				throw new IllegalArgumentException("IntSliderEntry requires a variable to be set using setVariable()!");
+
 			IntSliderEntry entry = new IntSliderEntry(
 					intSliderWidth, intSliderHeight,
 					variable,
 					step,
 					resetButtonSize,
-					disableWhen
+					disableWhen,
+					getTooltip
 			);
 			if (dependency != null) {
 				dependency.addObserver(entry);

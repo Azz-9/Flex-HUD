@@ -11,9 +11,12 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Function;
 
 public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 	private ConfigColorButtonWidget<?> colorButtonWidget;
@@ -23,7 +26,8 @@ public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 			int colorButtonHeight,
 			ConfigInteger variable,
 			int resetButtonSize,
-			T disableWhen
+			T disableWhen,
+			@Nullable Function<Integer, Tooltip> getTooltip
 	) {
 		super(resetButtonSize, Text.translatable(variable.getConfigTextTranslationKey()));
 		colorButtonWidget = new ConfigColorButtonWidget<>(colorButtonWidth, colorButtonHeight, variable, observers, disableWhen,
@@ -37,7 +41,7 @@ public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 							screen.closeColorSelector();
 						}
 					}
-				});
+				}, getTooltip);
 		setResetButtonPressAction((btn) -> colorButtonWidget.setToDefaultState());
 
 		colorButtonWidget.addObserver(this.resetButtonWidget);
@@ -86,7 +90,7 @@ public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 	}
 
 	//Builder
-	public static class Builder extends AbstractBuilder {
+	public static class Builder extends AbstractBuilder<Integer> {
 		private int colorButtonWidth;
 		private int colorButtonHeight = 20;
 		private ConfigInteger variable;
@@ -117,11 +121,15 @@ public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 
 		@Override
 		public ColorButtonEntry build() {
+			if (variable == null)
+				throw new IllegalArgumentException("ColorButtonEntry requires a variable to be set using setVariable()!");
+
 			ColorButtonEntry entry = new ColorButtonEntry(
 					colorButtonWidth, colorButtonHeight,
 					variable,
 					resetButtonSize,
-					disableWhen
+					disableWhen,
+					getTooltip
 			);
 			if (dependency != null) {
 				dependency.addObserver(entry);

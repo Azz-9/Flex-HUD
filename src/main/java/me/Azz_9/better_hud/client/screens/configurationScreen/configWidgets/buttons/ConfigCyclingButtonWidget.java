@@ -21,8 +21,9 @@ public class ConfigCyclingButtonWidget<T, E extends Enum<E> & Translatable> exte
 	private final List<Observer> observers;
 	private final T disableWhen;
 	private final E[] values;
-	private ConfigEnum<E> variable;
-	private Function<E, Tooltip> getTooltip;
+	private final ConfigEnum<E> variable;
+	@Nullable
+	private final Function<E, Tooltip> getTooltip;
 
 	public ConfigCyclingButtonWidget(int width, int height, ConfigEnum<E> variable, List<Observer> observers, T disableWhen, @Nullable Function<E, Tooltip> getTooltip) {
 		super(0, 0, width, height, Text.translatable(variable.getValue().getTranslationKey()), (btn) -> {
@@ -34,7 +35,9 @@ public class ConfigCyclingButtonWidget<T, E extends Enum<E> & Translatable> exte
 		this.values = variable.getValue().getDeclaringClass().getEnumConstants();
 		this.getTooltip = getTooltip;
 
-		if (getTooltip != null) this.setTooltip(getTooltip.apply(variable.getValue()));
+		if (getTooltip != null) {
+			this.setTooltip(getTooltip.apply(variable.getValue()));
+		}
 	}
 
 	@Override

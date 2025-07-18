@@ -73,7 +73,7 @@ public class Compass extends AbstractHudElement {
 
 		PlayerEntity player = client.player;
 
-		int screenWidth = MinecraftClient.getInstance().getWindow().getScaledWidth();
+		int screenWidth = context.getScaledWindowWidth();
 		this.width = screenWidth / 4;
 
 		// Calcul de la direction (yaw)

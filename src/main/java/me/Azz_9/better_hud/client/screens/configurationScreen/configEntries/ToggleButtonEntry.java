@@ -8,9 +8,11 @@ import me.Azz_9.better_hud.client.screens.configurationScreen.configWidgets.butt
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.text.Text;
 
 import java.util.List;
+import java.util.function.Function;
 
 public class ToggleButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 	private final ConfigToggleButtonWidget<?> toggleButtonWidget;
@@ -20,10 +22,11 @@ public class ToggleButtonEntry extends ScrollableConfigList.AbstractConfigEntry 
 			int toggleButtonHeight,
 			ConfigBoolean variable,
 			int resetButtonSize,
-			T disableWhen
+			T disableWhen,
+			Function<Boolean, Tooltip> getTooltip
 	) {
 		super(resetButtonSize, Text.translatable(variable.getConfigTextTranslationKey()));
-		toggleButtonWidget = new ConfigToggleButtonWidget<>(toggleButtonWidth, toggleButtonHeight, variable, observers, disableWhen);
+		toggleButtonWidget = new ConfigToggleButtonWidget<>(toggleButtonWidth, toggleButtonHeight, variable, observers, disableWhen, getTooltip);
 		setResetButtonPressAction((btn) -> toggleButtonWidget.setToDefaultState());
 
 		toggleButtonWidget.addObserver(this.resetButtonWidget);
@@ -66,7 +69,7 @@ public class ToggleButtonEntry extends ScrollableConfigList.AbstractConfigEntry 
 	}
 
 	// Builder
-	public static class Builder extends AbstractBuilder {
+	public static class Builder extends AbstractBuilder<Boolean> {
 		private int toggleButtonWidth;
 		private int toggleButtonHeight = 20;
 		private ConfigBoolean variable;
@@ -97,11 +100,15 @@ public class ToggleButtonEntry extends ScrollableConfigList.AbstractConfigEntry 
 
 		@Override
 		public ToggleButtonEntry build() {
+			if (variable == null)
+				throw new IllegalArgumentException("ToggleButtonEntry requires a variable to be set using setVariable()!");
+
 			ToggleButtonEntry entry = new ToggleButtonEntry(
 					toggleButtonWidth, toggleButtonHeight,
 					variable,
 					resetButtonSize,
-					disableWhen
+					disableWhen,
+					getTooltip
 			);
 			if (dependency != null) {
 				dependency.addObserver(entry);

@@ -11,26 +11,29 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.ButtonTextures;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.util.List;
+import java.util.function.Function;
 
 import static me.Azz_9.better_hud.client.Better_hudClient.MOD_ID;
 
 public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
-	private ConfigIntFieldWidget<?> intFieldWidget;
-	private TexturedButtonWidget increaseButton;
-	private TexturedButtonWidget decreaseButton;
+	private final ConfigIntFieldWidget<?> intFieldWidget;
+	private final TexturedButtonWidget increaseButton;
+	private final TexturedButtonWidget decreaseButton;
 
-	private int increaseAndDecreaseButtonSize = 10;
+	private final int increaseAndDecreaseButtonsSize = 10;
 
 	private <T> IntFieldEntry(
 			int intFieldWidth,
 			int intFieldHeight,
 			ConfigInteger variable,
 			int resetButtonSize,
-			T disableWhen
+			T disableWhen,
+			Function<Integer, Tooltip> getTooltip
 	) {
 		super(resetButtonSize, Text.translatable(variable.getConfigTextTranslationKey()));
 		intFieldWidget = new ConfigIntFieldWidget<>(
@@ -38,18 +41,22 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 				intFieldWidth, intFieldHeight,
 				variable,
 				observers,
-				disableWhen
+				disableWhen,
+				getTooltip
 		);
 		setResetButtonPressAction((btn) -> intFieldWidget.setToDefaultState());
 
-		increaseButton = new TexturedButtonWidget(increaseAndDecreaseButtonSize, increaseAndDecreaseButtonSize, new ButtonTextures(
+		increaseButton = new TexturedButtonWidget(increaseAndDecreaseButtonsSize, increaseAndDecreaseButtonsSize, new ButtonTextures(
 				Identifier.of(MOD_ID, "widgets/buttons/int_field/increase/unfocused.png"),
 				Identifier.of(MOD_ID, "widgets/buttons/int_field/increase/focused.png")
 		), (btn) -> this.intFieldWidget.increase());
-		decreaseButton = new TexturedButtonWidget(increaseAndDecreaseButtonSize, increaseAndDecreaseButtonSize, new ButtonTextures(
+		decreaseButton = new TexturedButtonWidget(increaseAndDecreaseButtonsSize, increaseAndDecreaseButtonsSize, new ButtonTextures(
 				Identifier.of(MOD_ID, "widgets/buttons/int_field/decrease/unfocused.png"),
 				Identifier.of(MOD_ID, "widgets/buttons/int_field/decrease/focused.png")
 		), (btn) -> this.intFieldWidget.decrease());
+
+		intFieldWidget.setIncreaseButton(increaseButton);
+		intFieldWidget.setDecreaseButton(decreaseButton);
 
 		intFieldWidget.addObserver(this.resetButtonWidget);
 		this.resetButtonWidget.onChange(intFieldWidget);
@@ -58,9 +65,9 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 	@Override
 	public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickProgress) {
 		super.render(context, index, y, x, entryWidth, entryHeight, mouseX, mouseY, hovered, tickProgress);
-		intFieldWidget.setPosition(x + entryWidth - resetButtonWidget.getWidth() - 10 - increaseAndDecreaseButtonSize - intFieldWidget.getWidth(), y);
+		intFieldWidget.setPosition(x + entryWidth - resetButtonWidget.getWidth() - 10 - increaseAndDecreaseButtonsSize - intFieldWidget.getWidth(), y);
 		increaseButton.setPosition(intFieldWidget.getRight(), y);
-		decreaseButton.setPosition(intFieldWidget.getRight(), y + increaseAndDecreaseButtonSize);
+		decreaseButton.setPosition(intFieldWidget.getRight(), y + increaseAndDecreaseButtonsSize);
 
 		increaseButton.render(context, mouseX, mouseY, tickProgress);
 		if (!increaseButton.active) {
@@ -105,7 +112,7 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 	}
 
 	// Builder
-	public static class Builder extends AbstractBuilder {
+	public static class Builder extends AbstractBuilder<Integer> {
 		private int intFieldWidth;
 		private int intFieldHeight = 20;
 		private ConfigInteger variable;
@@ -136,11 +143,15 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 
 		@Override
 		public IntFieldEntry build() {
+			if (variable == null)
+				throw new IllegalStateException("IntFieldEntry requires a variable to be set using setVariable()!");
+
 			IntFieldEntry entry = new IntFieldEntry(
 					intFieldWidth, intFieldHeight,
 					variable,
 					resetButtonSize,
-					disableWhen
+					disableWhen,
+					getTooltip
 			);
 			if (dependency != null) {
 				dependency.addObserver(entry);

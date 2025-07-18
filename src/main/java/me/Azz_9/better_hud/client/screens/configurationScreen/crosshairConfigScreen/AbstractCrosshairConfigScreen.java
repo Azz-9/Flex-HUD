@@ -7,7 +7,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
-public class AbstractCrosshairConfigScreen extends AbstractConfigurationScreen {
+public abstract class AbstractCrosshairConfigScreen extends AbstractConfigurationScreen {
 	private CrosshairEditor crosshairEditor = null;
 
 	public AbstractCrosshairConfigScreen(Text title, Screen parent) {
