@@ -82,6 +82,8 @@ public class Better_hudClient implements ClientModInitializer {
 				if (JsonConfigHelper.getInstance().clock.enabled.getValue()) ClockUtils.updateTime();
 				if (JsonConfigHelper.getInstance().memoryUsage.enabled.getValue()) MemoryUsageUtils.updateMemoryUsage();
 				if (JsonConfigHelper.getInstance().speedometer.enabled.getValue()) SpeedUtils.calculateSpeed();
+				if (JsonConfigHelper.getInstance().tntCountdown.enabled.getValue())
+					JsonConfigHelper.getInstance().tntCountdown.drawCountdown();
 
 				if (JsonConfigHelper.getInstance().compass.showTamedEntitiesPoint.getValue()) TamedEntityUtils.update();
 				if (JsonConfigHelper.getInstance().compass.showXaerosMapWaypoints.getValue() && XaeroCompat.isXaerosMinimapLoaded()) {

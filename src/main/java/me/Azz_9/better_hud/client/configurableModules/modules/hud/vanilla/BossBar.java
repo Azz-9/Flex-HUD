@@ -212,6 +212,18 @@ public class BossBar extends AbstractModule implements MovableModule {
 
 	@Override
 	public void setScale(float scale) {
+		/*int screenWidth = MinecraftClient.getInstance().getWindow().getScaledWidth();
+		int screenHeight = MinecraftClient.getInstance().getWindow().getScaledHeight();
+
+		float newX = getXWithScale(scale);
+		float newY = getYWithScale(scale);
+		float newScale = scale;
+
+		if (newX < 0 || newX + getWidth() + scale > screenWidth || newY < 0 || newY + getHeight() + scale > screenHeight) {
+			newScale = Math.min(scale, computeMaxScale());
+			System.out.println(newScale);
+		}*/
+
 		this.scale = scale;
 	}
 

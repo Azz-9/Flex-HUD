@@ -48,6 +48,30 @@ public interface MovableModule extends Configurable {
 		}
 	}
 
+	default float getXWithScale(float scale) {
+		int screenWidth = MinecraftClient.getInstance().getWindow().getScaledWidth();
+
+		if (getAnchorX() == AbstractHudElement.AnchorPosition.START) {
+			return (float) getOffsetX();
+		} else if (getAnchorX() == AbstractHudElement.AnchorPosition.CENTER) {
+			return (float) ((screenWidth - getWidth() * scale) / 2.0 + getOffsetX());
+		} else {
+			return (float) (screenWidth - getWidth() * scale + getOffsetX());
+		}
+	}
+
+	default float getYWithScale(float scale) {
+		int screenHeight = MinecraftClient.getInstance().getWindow().getScaledHeight();
+
+		if (getAnchorY() == AbstractHudElement.AnchorPosition.START) {
+			return (float) getOffsetY();
+		} else if (getAnchorY() == AbstractHudElement.AnchorPosition.CENTER) {
+			return (float) ((screenHeight - getHeight() * scale) / 2.0 + getOffsetY());
+		} else {
+			return (float) (screenHeight - getHeight() * scale + getOffsetY());
+		}
+	}
+
 	default void setX(double x) {
 		int screenWidth = MinecraftClient.getInstance().getWindow().getScaledWidth();
 
@@ -87,6 +111,45 @@ public interface MovableModule extends Configurable {
 	void setPos(double offsetX, double offsetY, AbstractHudElement.AnchorPosition anchorX, AbstractHudElement.AnchorPosition anchorY);
 
 	float getScale();
+
+	default float computeMaxScale() {
+		int screenWidth = MinecraftClient.getInstance().getWindow().getScaledWidth();
+		int screenHeight = MinecraftClient.getInstance().getWindow().getScaledHeight();
+
+		float maxWidthScale;
+		float maxHeightScale;
+
+		// --- Horizontal ---
+		if (getAnchorX() == AbstractHudElement.AnchorPosition.START) {
+			// Must not overflow to the right
+			maxWidthScale = (float) ((screenWidth - getOffsetX()) / getWidth());
+		} else if (getAnchorX() == AbstractHudElement.AnchorPosition.CENTER) {
+			// Must fit in both directions from the center
+			float leftSpace = (float) ((screenWidth / 2.0 + getOffsetX()) / (getWidth() / 2.0));
+			float rightSpace = (float) ((screenWidth / 2.0 - getOffsetX()) / (getWidth() / 2.0));
+			maxWidthScale = Math.min(leftSpace, rightSpace);
+		} else { // END
+			// Must not overflow to the left
+			maxWidthScale = (float) ((getOffsetX() + getWidth()) / getWidth());
+		}
+
+		// --- Vertical ---
+		if (getAnchorY() == AbstractHudElement.AnchorPosition.START) {
+			// Must not overflow to the bottom
+			maxHeightScale = (float) ((screenHeight - getOffsetY()) / getHeight());
+		} else if (getAnchorY() == AbstractHudElement.AnchorPosition.CENTER) {
+			// Must fit in both directions from the center
+			float topSpace = (float) ((screenHeight / 2.0 + getOffsetY()) / (getHeight() / 2.0));
+			float bottomSpace = (float) ((screenHeight / 2.0 - getOffsetY()) / (getHeight() / 2.0));
+			maxHeightScale = Math.min(topSpace, bottomSpace);
+		} else { // END
+			// Must not overflow to the top
+			maxHeightScale = (float) ((getOffsetY() + getHeight()) / getHeight());
+		}
+
+		// Final scale is the minimum of both to ensure full visibility
+		return Math.max(0.1f, Math.min(maxWidthScale, maxHeightScale));
+	}
 
 	void setScale(float scale);
 

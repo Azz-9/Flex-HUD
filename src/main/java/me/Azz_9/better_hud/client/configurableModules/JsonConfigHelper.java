@@ -9,6 +9,7 @@ import me.Azz_9.better_hud.client.configurableModules.modules.hud.custom.*;
 import me.Azz_9.better_hud.client.configurableModules.modules.hud.vanilla.BossBar;
 import me.Azz_9.better_hud.client.configurableModules.modules.hud.vanilla.Crosshair;
 import me.Azz_9.better_hud.client.configurableModules.modules.notHud.TimeChanger;
+import me.Azz_9.better_hud.client.configurableModules.modules.notHud.TntCountdown;
 import me.Azz_9.better_hud.client.configurableModules.modules.notHud.WeatherChanger;
 import me.Azz_9.better_hud.client.configurableModules.modules.notHud.durabilityPing.DurabilityPing;
 
@@ -43,6 +44,7 @@ public class JsonConfigHelper {
 	public WeatherChanger weatherChanger = new WeatherChanger();
 	public TimeChanger timeChanger = new TimeChanger();
 	public DurabilityPing durabilityPing = new DurabilityPing();
+	public TntCountdown tntCountdown = new TntCountdown();
 
 	//number of columns
 	public int numberOfColumns = 2;
@@ -113,8 +115,9 @@ public class JsonConfigHelper {
 		configurables.addAll(List.of(
 				getInstance().weatherChanger,
 				getInstance().timeChanger,
-				getInstance().durabilityPing,
-				getInstance().crosshair
+				//getInstance().durabilityPing,
+				getInstance().crosshair,
+				getInstance().tntCountdown
 		));
 		return configurables;
 	}

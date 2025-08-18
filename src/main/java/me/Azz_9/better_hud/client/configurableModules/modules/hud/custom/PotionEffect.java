@@ -1,6 +1,7 @@
 package me.Azz_9.better_hud.client.configurableModules.modules.hud.custom;
 
 import com.google.common.collect.Ordering;
+import me.Azz_9.better_hud.client.Better_hudClient;
 import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractHudElement;
 import me.Azz_9.better_hud.client.configurableModules.modules.hud.renderable.Renderable;
 import me.Azz_9.better_hud.client.configurableModules.modules.hud.renderable.RenderableImage;
@@ -14,6 +15,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -61,7 +63,17 @@ public class PotionEffect extends AbstractHudElement {
 		List<Renderable> renderables = new ArrayList<>();
 
 		int hudX = 0, hudY = 0;
-		for (StatusEffectInstance effect : Ordering.natural().sortedCopy(client.player.getStatusEffects())) {
+
+		List<StatusEffectInstance> playerEffects;
+		if (Better_hudClient.isInMoveElementScreen) {
+			playerEffects = List.of(new StatusEffectInstance(StatusEffects.SPEED, 1800, 1), new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 200));
+		} else {
+			playerEffects = Ordering.natural().sortedCopy(client.player.getStatusEffects());
+		}
+
+		for (StatusEffectInstance effect : playerEffects) {
+			if (effect == null) continue;
+
 			int effectWidth;
 
 			String effectString = Text.translatable(effect.getTranslationKey()).getString() + " " + (effect.getAmplifier() + 1);
@@ -69,7 +81,8 @@ public class PotionEffect extends AbstractHudElement {
 			effectWidth = client.textRenderer.getWidth(effectString);
 
 			String durationString = effect.isInfinite() ? "∞" : getDurationString(effect.getDuration() / 20);
-			renderables.add(new RenderableText(hudX, hudY + 10, Text.of(durationString), getColor(), shadow.getValue()));
+			int textColor = (effect.isInfinite() ? getColor() : (getColor() & 0x00ffffff) | (getTimestampAlpha(effect.getDuration()) << 24));
+			renderables.add(new RenderableText(hudX, hudY + 10, Text.of(durationString), textColor, shadow.getValue()));
 			effectWidth = Math.max(effectWidth, client.textRenderer.getWidth(durationString));
 			this.height = hudY + client.textRenderer.fontHeight;
 
@@ -108,6 +121,35 @@ public class PotionEffect extends AbstractHudElement {
 		} else {
 			return String.format("%02d:%02d:%02d", (duration / 3600), ((duration % 3600) / 60), (duration % 60));
 		}
+	}
+
+	private int getTimestampAlpha(int duration) {
+		MinecraftClient client = MinecraftClient.getInstance();
+
+		// Always opaque if paused or no world (e.g., title screen)
+		if (client.isPaused() || client.world == null) {
+			return 255;
+		}
+
+		// Smooth fraction of current tick [0..1]; works on Fabric/Yarn
+		float tickDelta = client.getRenderTickCounter().getDynamicDeltaTicks();
+
+		// Add tickDelta to world time for smooth animation
+		float ticks = client.world.getTime() + tickDelta;
+
+		// 20 ticks ~= 1 second at 20 TPS
+		float cycle = (ticks % 20.0f) / 20.0f;
+
+		// Sinus pulse between 0 and 1
+		float alpha01 = (float) (Math.sin(cycle * Math.PI * 2.0) * 0.5 + 0.5);
+
+		if (duration <= 100) {
+			return (int) (alpha01 * 255); // faster pulse
+		} else if (duration <= 200) {
+			return (int) ((alpha01 * 0.5f + 0.5f) * 255); // softer pulse
+		}
+
+		return 255;
 	}
 
 	@Override

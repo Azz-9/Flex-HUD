@@ -106,6 +106,7 @@
 	"better_hud.compass.config.show_marker": "Afficher le marqueur",
 	"better_hud.compass.config.show_intermediate_point": "Afficher les points intermédiaires",
 	"better_hud.compass.config.show_xaeros_map_waypoints": "Afficher les waypoints de Xaero's map",
+	"better_hud.compass.config.show_xaeros_map_waypoints.not_installed_tooltip": "Xaero's Minimap n'est pas installé",
 	"better_hud.compass.config.override_locator_bar": "Remplacer la barre de localisation",
 	"better_hud.compass.config.show_tamed_entities_point": "Afficher les entités apprivoisées",
 	"better_hud.compass.config.show_only_pets": "Afficher que les animaux de compagnie",
@@ -175,6 +176,9 @@
 
 	"better_hud.potion_effect": "Effet de potion",
 	"better_hud.potion_effect.config.enable": "Afficher les effets de potion",
+
+	"better_hud.tnt_countdown": "Compte à rebours TNT",
+	"better_hud.tnt_countdown.config.enable": "Activer le compte à rebours TNT",
 
 
 	"better_hud.coordinates.hud.direction.south": "Sud",

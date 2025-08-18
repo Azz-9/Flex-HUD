@@ -110,7 +110,7 @@ public class ConfigToggleButtonWidget<T> extends ToggleButtonWidget implements T
 
 		if (alpha > 0) {
 			Identifier selectedTexture = Identifier.of(MOD_ID, "widgets/buttons/selected.png");
-			context.drawTexture(RenderPipelines.GUI_TEXTURED, selectedTexture, this.getX(), this.getY(), 0, 0, this.width, this.height, this.width, this.height, ColorHelper.withAlpha(alpha, 0xFFFFFF));
+			context.drawTexture(RenderPipelines.GUI_TEXTURED, selectedTexture, this.getX(), this.getY(), 0, 0, this.width, this.height, 120, 20, ColorHelper.withAlpha(alpha, 0xFFFFFF));
 		}
 	}
 

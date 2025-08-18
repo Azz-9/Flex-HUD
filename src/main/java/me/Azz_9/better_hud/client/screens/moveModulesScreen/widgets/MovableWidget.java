@@ -28,7 +28,6 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 
 	private final Set<Integer> pressedKeys = new HashSet<>();
 
-	private final int INITIAL_X, INITIAL_Y;
 	private final float INITIAL_SCALE;
 	private final double INITIAL_OFFSET_X, INITIAL_OFFSET_Y;
 	private final AbstractHudElement.AnchorPosition INITIAL_ANCHOR_X, INITIAL_ANCHOR_Y;
@@ -53,8 +52,6 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 	private int onClickBottom;
 	private int onClickX;
 	private int onClickY;
-	private AbstractHudElement.AnchorPosition onClickAnchorX;
-	private AbstractHudElement.AnchorPosition onClickAnchorY;
 	private float onClickScale;
 	private boolean shouldDrawScaleValue = false;
 
@@ -66,8 +63,6 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 		);
 		this.PARENT = parent;
 		this.HUD_ELEMENT = hudElement;
-		this.INITIAL_X = hudElement.getRoundedX();
-		this.INITIAL_Y = hudElement.getRoundedY();
 		this.INITIAL_SCALE = hudElement.getScale();
 		this.INITIAL_OFFSET_X = hudElement.getOffsetX();
 		this.INITIAL_OFFSET_Y = hudElement.getOffsetY();
@@ -175,8 +170,6 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 			isDraggingScalehandle = true;
 			onClickRight = HUD_ELEMENT.getWidth() + getX();
 			onClickBottom = HUD_ELEMENT.getHeight() + getY();
-			onClickAnchorX = HUD_ELEMENT.getAnchorX();
-			onClickAnchorY = HUD_ELEMENT.getAnchorY();
 		} else {
 			offsetX = mouseX - getX();
 			offsetY = mouseY - getY();
@@ -248,7 +241,7 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 				shouldDrawScaleValue = true;
 			}
 
-			setScaleAndMove(newScale);
+			setScale(newScale);
 		}
 	}
 
@@ -406,12 +399,30 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 		PARENT.onWidgetChange();
 	}
 
-	public void setScaleAndMove(float scale) {
+	public void setScale(float scale) {
 		scale = Math.clamp(scale, MIN_SCALE, MAX_SCALE);
 
-		HUD_ELEMENT.setScale(scale);
-		updateDimensionAndPosition();
-		PARENT.onWidgetChange();
+		if (scale != HUD_ELEMENT.getScale()) {
+
+			int screenWidth = MinecraftClient.getInstance().getWindow().getScaledWidth();
+			int screenHeight = MinecraftClient.getInstance().getWindow().getScaledHeight();
+
+			float newX = HUD_ELEMENT.getXWithScale(scale);
+			float newY = HUD_ELEMENT.getYWithScale(scale);
+			float newScale = scale;
+
+			if ((newX < 0 || newX + getWidth() + scale > screenWidth || newY < 0 || newY + getHeight() + scale > screenHeight)) {
+				if (shouldDrawScaleValue) { // is snapping
+					newScale = Math.round(HUD_ELEMENT.getScale() * 4) / 4.0f;
+				} else {
+					newScale = Math.min(scale, HUD_ELEMENT.computeMaxScale());
+				}
+			}
+
+			HUD_ELEMENT.setScale(newScale);
+			updateDimensionAndPosition();
+			PARENT.onWidgetChange();
+		}
 	}
 
 	private boolean isScaleHandleHovered(double mouseX, double mouseY) {
