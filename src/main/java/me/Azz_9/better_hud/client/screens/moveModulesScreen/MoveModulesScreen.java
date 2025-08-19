@@ -38,11 +38,11 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 		int helpWidgetPadding = 4;
 		int helpWidgetSize = 20;
 		helpWidget = new HelpWidget(helpWidgetPadding, this.height - helpWidgetPadding - helpWidgetSize, helpWidgetSize, helpWidgetSize, new Text[]{
-				Text.translatable("better_hud.help_widget.line1"),
-				Text.translatable("better_hud.help_widget.line2"),
-				Text.translatable("better_hud.help_widget.line3"),
-				Text.translatable("better_hud.help_widget.line4"),
-				Text.translatable("better_hud.help_widget.line5"),
+				Text.translatable("better_hud.move_module_screen.help_widget.line1"),
+				Text.translatable("better_hud.move_module_screen.help_widget.line2"),
+				Text.translatable("better_hud.move_module_screen.help_widget.line3"),
+				Text.translatable("better_hud.move_module_screen.help_widget.line4"),
+				Text.translatable("better_hud.move_module_screen.help_widget.line5"),
 		});
 
 		this.addDrawableChild(helpWidget);

@@ -127,6 +127,7 @@ public class Better_hudClient implements ClientModInitializer {
 					);
 
 					JsonConfigHelper.getInstance().durabilityPing.init();
+					JsonConfigHelper.getInstance().tntCountdown.init();
 					JsonConfigHelper.getInstance().timeChanger.init();
 					JsonConfigHelper.getInstance().weatherChanger.init();
 

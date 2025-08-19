@@ -118,7 +118,9 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 			if (colorSelector.mouseClicked(mouseX, mouseY, button)) {
 				return true;
 			} else {
+				boolean res = super.mouseClicked(mouseX, mouseY, button);
 				closeColorSelector();
+				return res;
 			}
 		}
 		return super.mouseClicked(mouseX, mouseY, button);

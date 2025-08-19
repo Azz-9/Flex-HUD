@@ -2,6 +2,7 @@ package me.Azz_9.better_hud.client.screens.configurationScreen.crosshairConfigSc
 
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.better_hud.client.screens.configurationScreen.crosshairConfigScreen.crosshairEditor.CrosshairEditor;
+import me.Azz_9.better_hud.client.screens.moveModulesScreen.widgets.HelpWidget;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
@@ -9,9 +10,24 @@ import org.lwjgl.glfw.GLFW;
 
 public abstract class AbstractCrosshairConfigScreen extends AbstractConfigurationScreen {
 	private CrosshairEditor crosshairEditor = null;
+	private HelpWidget helpWidget;
 
 	public AbstractCrosshairConfigScreen(Text title, Screen parent) {
 		super(title, parent);
+	}
+
+	@Override
+	protected void init() {
+		super.init();
+
+		int helpWidgetPadding = 4;
+		int helpWidgetSize = 20;
+		helpWidget = new HelpWidget(helpWidgetPadding, this.height - helpWidgetPadding - helpWidgetSize, helpWidgetSize, helpWidgetSize, new Text[]{
+				Text.translatable("better_hud.crosshair_editor.help_widget.line1"),
+				Text.translatable("better_hud.crosshair_editor.help_widget.line2"),
+				Text.translatable("better_hud.crosshair_editor.help_widget.line3"),
+				Text.translatable("better_hud.crosshair_editor.help_widget.line4"),
+		});
 	}
 
 	@Override
@@ -20,6 +36,7 @@ public abstract class AbstractCrosshairConfigScreen extends AbstractConfiguratio
 
 		if (crosshairEditor != null && crosshairEditor.isFocused()) {
 			crosshairEditor.render(context, mouseX, mouseY, deltaTicks);
+			helpWidget.render(context, mouseX, mouseY, deltaTicks);
 		}
 	}
 
@@ -30,7 +47,7 @@ public abstract class AbstractCrosshairConfigScreen extends AbstractConfiguratio
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		if (crosshairEditor != null && crosshairEditor.isFocused()) {
-			if (crosshairEditor.mouseClicked(mouseX, mouseY, button)) {
+			if (crosshairEditor.mouseClicked(mouseX, mouseY, button) || helpWidget.mouseClicked(mouseX, mouseY, button)) {
 				return true;
 			} else {
 				closeEditor();
