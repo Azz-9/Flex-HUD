@@ -108,6 +108,7 @@
 	"better_hud.compass": "Boussole",
 	"better_hud.compass.config.enable": "Afficher la boussole",
 	"better_hud.compass.config.show_marker": "Afficher le marqueur",
+	"better_hud.compass.config.show_degrees": "Afficher les degrés",
 	"better_hud.compass.config.show_intermediate_point": "Afficher les points intermédiaires",
 	"better_hud.compass.config.show_xaeros_map_waypoints": "Afficher les waypoints de Xaero's map",
 	"better_hud.compass.config.show_xaeros_map_waypoints.not_installed_tooltip": "Xaero's Minimap n'est pas installé",
@@ -183,6 +184,9 @@
 
 	"better_hud.tnt_countdown": "Compte à rebours TNT",
 	"better_hud.tnt_countdown.config.enable": "Activer le compte à rebours TNT",
+
+	"better_hud.weather_display": "Affichage météo",
+	"better_hud.weather_display.config.enable": "Activer l'affichage météo",
 
 
 	"better_hud.coordinates.hud.direction.south": "Sud",

@@ -36,6 +36,7 @@ import static me.Azz_9.better_hud.client.Better_hudClient.MOD_ID;
 
 public class Compass extends AbstractHudElement {
 	private ConfigBoolean showMarker = new ConfigBoolean(true, "better_hud.compass.config.show_marker");
+	private ConfigBoolean showDegrees = new ConfigBoolean(false, "better_hud.compass.config.show_degrees");
 	private ConfigBoolean showIntermediatePoint = new ConfigBoolean(true, "better_hud.compass.config.show_intermediate_point");
 	public ConfigBoolean showXaerosMapWaypoints = new ConfigBoolean(true, "better_hud.compass.config.show_xaeros_map_waypoints");
 	public ConfigBoolean overrideLocatorBar = new ConfigBoolean(false, "better_hud.compass.config.override_locator_bar");
@@ -49,7 +50,7 @@ public class Compass extends AbstractHudElement {
 
 	@Override
 	public void init() {
-		this.height = 30;
+		this.height = 35;
 		this.enabled.setConfigTextTranslationKey("better_hud.compass.config.enable");
 	}
 
@@ -124,12 +125,21 @@ public class Compass extends AbstractHudElement {
 
 		context.disableScissor();
 
+		if (this.showDegrees.getValue()) {
+			String degrees = String.valueOf(Math.round(yaw));
+			matrices.pushMatrix();
+			matrices.translate((this.width / 2.0f) - (client.textRenderer.getWidth(degrees) / 2.0f) * 0.75f, 1);
+			matrices.scale(0.75f, 0.75f);
+			context.drawText(client.textRenderer, degrees, 0, 0, getColor(), this.shadow.getValue());
+			matrices.popMatrix();
+		}
+
 		// Affichage du marqueur de direction
 		if (this.showMarker.getValue()) {
 			String markerText = "▼";
 
 			matrices.pushMatrix();
-			matrices.translate((this.width / 2.0f) - (client.textRenderer.getWidth(markerText) / 2.0f), 0);
+			matrices.translate((this.width / 2.0f) - (client.textRenderer.getWidth(markerText) / 2.0f), this.showDegrees.getValue() ? 8 : 0);
 			matrices.scale(1.0f, 0.5f);
 			context.drawText(client.textRenderer, markerText, 0, 0, getColor(), this.shadow.getValue());
 			matrices.popMatrix();
@@ -158,7 +168,7 @@ public class Compass extends AbstractHudElement {
 
 			// Afficher le label des directions avec couleur et taille de texte ajustée
 			matrices.pushMatrix();
-			matrices.translate(positionX - pointWidth / 2.0f, 10);
+			matrices.translate(positionX - pointWidth / 2.0f, this.showDegrees.getValue() ? 18 : 10);
 			matrices.scale(scaleFactor, scaleFactor);
 			drawContext.drawText(client.textRenderer, label, 0, 0, getColorWithFadeEffect(positionX), this.shadow.getValue());
 			matrices.popMatrix();
@@ -176,14 +186,14 @@ public class Compass extends AbstractHudElement {
 			float positionX = ((this.width / 2.0f) + (angleDifference * (screenWidth / 720.0f)));
 
 			matrices.pushMatrix();
-			matrices.translate(positionX - (CLIENT.textRenderer.getWidth("|") / 2.0f), 12);
+			matrices.translate(positionX - (CLIENT.textRenderer.getWidth("|") / 2.0f), this.showDegrees.getValue() ? 20 : 12);
 			matrices.scale(1.0f, 0.75f); // slightly smaller
 			drawContext.drawText(CLIENT.textRenderer, "|", 0, 0, getColorWithFadeEffect(positionX), this.shadow.getValue());
 			matrices.popMatrix();
 
 
 			matrices.pushMatrix();
-			matrices.translate(positionX - (CLIENT.textRenderer.getWidth(String.valueOf(angle)) / 4.0f), 20);
+			matrices.translate(positionX - (CLIENT.textRenderer.getWidth(String.valueOf(angle)) / 4.0f), this.showDegrees.getValue() ? 28 : 20);
 			matrices.scale(0.5f, 0.5f); // 2 times smaller
 			drawContext.drawText(CLIENT.textRenderer, String.valueOf(angle), 0, 0, getColorWithFadeEffect(positionX), this.shadow.getValue());
 			matrices.popMatrix();
@@ -240,7 +250,7 @@ public class Compass extends AbstractHudElement {
 						int backgroundColor = ((getAlpha(positionX) / 2) << 24) | Objects.requireNonNullElse(color, 0x00FFFFFF);
 
 						matrices.pushMatrix();
-						matrices.translate(positionX - (client.textRenderer.getWidth(initials) / 2.0f), 2);
+						matrices.translate(positionX - (client.textRenderer.getWidth(initials) / 2.0f), this.showDegrees.getValue() ? 10 : 2);
 						matrices.scale(0.75f, 0.75f);
 						renderTextWithBackground(drawContext, initials, 0, 0, backgroundColor, 0xffffff | (getAlpha(positionX) << 24));
 						matrices.popMatrix();
@@ -307,7 +317,7 @@ public class Compass extends AbstractHudElement {
 					int textureSize = 9;
 
 					matrices.pushMatrix();
-					matrices.translate((float) (positionX - textureSize / 2.0), 2.5f);
+					matrices.translate((float) (positionX - textureSize / 2.0), this.showDegrees.getValue() ? 10.5f : 2.5f);
 					matrices.scale(0.7f, 0.7f);
 
 					context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, waypointIdentifier, 0, 0, textureSize, textureSize, ColorHelper.withAlpha(getAlpha((float) positionX), color));
@@ -363,7 +373,7 @@ public class Compass extends AbstractHudElement {
 						texture = Identifier.of(MOD_ID, "tamed_entities_icons/cat.png");
 					}
 					matrices.pushMatrix();
-					matrices.translate(positionX - textureSize / 2.0f, 2);
+					matrices.translate(positionX - textureSize / 2.0f, this.showDegrees.getValue() ? 10 : 2);
 					matrices.scale(0.75f, 0.75f);
 					context.drawTexture(RenderPipelines.GUI_TEXTURED, texture, 0, 0, 0, 0, textureSize, textureSize, textureSize, textureSize, ColorHelper.withAlpha(getAlpha(positionX), color));
 					matrices.popMatrix();
@@ -384,7 +394,7 @@ public class Compass extends AbstractHudElement {
 					}
 
 					matrices.pushMatrix();
-					matrices.translate(positionX - textureSize / 2.0f, 2);
+					matrices.translate(positionX - textureSize / 2.0f, this.showDegrees.getValue() ? 10 : 2);
 					matrices.scale(0.75f, 0.75f);
 					context.drawTexture(RenderPipelines.GUI_TEXTURED, texture, 0, 0, 0, 0, textureSize, textureSize, textureSize, textureSize, ColorHelper.withAlpha(getAlpha(positionX), 0xffffff));
 					matrices.popMatrix();
@@ -445,6 +455,10 @@ public class Compass extends AbstractHudElement {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(showMarker)
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(showDegrees)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)

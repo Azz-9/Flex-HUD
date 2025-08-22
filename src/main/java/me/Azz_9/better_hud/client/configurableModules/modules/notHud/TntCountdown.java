@@ -66,6 +66,10 @@ public class TntCountdown extends AbstractModule {
 		return new AbstractCrosshairConfigScreen(getName(), parent) {
 			@Override
 			protected void init() {
+				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+					buttonWidth = 200;
+				}
+
 				super.init();
 
 				this.addAllEntries(

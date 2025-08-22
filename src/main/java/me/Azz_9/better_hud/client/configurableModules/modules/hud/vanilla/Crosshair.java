@@ -91,7 +91,10 @@ public class Crosshair extends AbstractModule {
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
 		MinecraftClient client = MinecraftClient.getInstance();
 
-		if (shouldNotRender() || client.player == null || !client.options.getPerspective().isFirstPerson() || client.interactionManager == null || (client.interactionManager.getCurrentGameMode() == GameMode.SPECTATOR && this.shouldRenderSpectatorCrosshair(client.crosshairTarget)) || this.shouldNotRenderCrosshair()) {
+		if (shouldNotRender() || client.player == null ||
+				!client.options.getPerspective().isFirstPerson() || client.interactionManager == null ||
+				(client.interactionManager.getCurrentGameMode() == GameMode.SPECTATOR && !this.shouldRenderSpectatorCrosshair(client.crosshairTarget)) ||
+				this.shouldNotRenderCrosshair()) {
 			return;
 		}
 
@@ -121,15 +124,15 @@ public class Crosshair extends AbstractModule {
 
 		if (client.options.getAttackIndicator().getValue() == AttackIndicator.CROSSHAIR) {
 			float attackCooldownProgress = client.player.getAttackCooldownProgress(0.0F);
-			boolean renderFullAttackIndeicator = false;
+			boolean renderFullAttackIndicator = false;
 			if (client.targetedEntity instanceof LivingEntity && attackCooldownProgress >= 1.0F) {
-				renderFullAttackIndeicator = client.player.getAttackCooldownProgressPerTick() > 5.0F;
-				renderFullAttackIndeicator &= client.targetedEntity.isAlive();
+				renderFullAttackIndicator = client.player.getAttackCooldownProgressPerTick() > 5.0F;
+				renderFullAttackIndicator &= client.targetedEntity.isAlive();
 			}
 
 			int y = context.getScaledWindowHeight() / 2 - 7 + 16;
 			int x = context.getScaledWindowWidth() / 2 - 8;
-			if (renderFullAttackIndeicator) {
+			if (renderFullAttackIndicator) {
 				context.drawGuiTexture((disableBlending.getValue() ? RenderPipelines.GUI_TEXTURED : RenderPipelines.CROSSHAIR), CROSSHAIR_ATTACK_INDICATOR_FULL_TEXTURE, x, y, 16, 16);
 			} else if (attackCooldownProgress < 1.0F) {
 				int l = (int) (attackCooldownProgress * 17.0F);

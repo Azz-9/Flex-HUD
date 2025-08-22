@@ -157,6 +157,10 @@ public class PotionEffect extends AbstractHudElement {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
+				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+					buttonWidth = 180;
+				}
+
 				super.init();
 
 				this.addAllEntries(

@@ -40,6 +40,7 @@ public class JsonConfigHelper {
 	public PotionEffect potionEffect = new PotionEffect(0, 20, AbstractHudElement.AnchorPosition.END, AbstractHudElement.AnchorPosition.START);
 	public Crosshair crosshair = new Crosshair();
 	public BossBar bossBar = new BossBar(0, 30, AbstractHudElement.AnchorPosition.CENTER, AbstractHudElement.AnchorPosition.START);
+	public WeatherDisplay weatherDisplay = new WeatherDisplay(-4, -4, AbstractHudElement.AnchorPosition.END, AbstractHudElement.AnchorPosition.END);
 	//others
 	public WeatherChanger weatherChanger = new WeatherChanger();
 	public TimeChanger timeChanger = new TimeChanger();
@@ -98,7 +99,8 @@ public class JsonConfigHelper {
 				getInstance().reach,
 				getInstance().playtime,
 				//getInstance().resourcePack,
-				getInstance().potionEffect
+				getInstance().potionEffect,
+				getInstance().weatherDisplay
 		);
 	}
 
