@@ -1,7 +1,6 @@
 package me.Azz_9.better_hud.client.configurableModules;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
 import me.Azz_9.better_hud.client.Better_hudClient;
 import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractHudElement;
 import me.Azz_9.better_hud.client.configurableModules.modules.hud.MovableModule;
@@ -13,12 +12,10 @@ import me.Azz_9.better_hud.client.configurableModules.modules.notHud.TntCountdow
 import me.Azz_9.better_hud.client.configurableModules.modules.notHud.WeatherChanger;
 import me.Azz_9.better_hud.client.configurableModules.modules.notHud.durabilityPing.DurabilityPing;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class JsonConfigHelper {
 	public boolean isEnabled = true;
@@ -62,24 +59,83 @@ public class JsonConfigHelper {
 		return INSTANCE;
 	}
 
-	// Méthode pour charger la configuration depuis le fichier JSON
 	private static JsonConfigHelper loadConfig() {
+		// 1) Build defaults from the class constructor values
+		JsonConfigHelper defaults = new JsonConfigHelper();
+
+		// 2) If a file exists, deep-merge file values over defaults
 		if (CONFIG_FILE.exists()) {
-			try (FileReader reader = new FileReader(CONFIG_FILE)) {
-				return GSON.fromJson(reader, JsonConfigHelper.class);
-			} catch (IOException e) {
-				Better_hudClient.LOGGER.error("Failed to load config {}", e.getMessage());
+			try (Reader reader = new FileReader(CONFIG_FILE)) {
+				// Serialize defaults to a JsonObject tree
+				JsonObject defaultTree = GSON.toJsonTree(defaults).getAsJsonObject();
+
+				// Parse existing config as a JsonObject (might be partial)
+				JsonElement parsed = JsonParser.parseReader(reader);
+				if (parsed != null && parsed.isJsonObject()) {
+					// Merge user values into the defaults
+					deepMergeInto(defaultTree, parsed.getAsJsonObject());
+				}
+
+				// Deserialize merged tree back into the Java class
+				INSTANCE = GSON.fromJson(defaultTree, JsonConfigHelper.class);
+			} catch (Exception e) {
+				// On error, fall back to defaults
+				Better_hudClient.LOGGER.error("Failed to load config {}, using defaults", e.getMessage());
+				INSTANCE = defaults;
 			}
+		} else {
+			INSTANCE = defaults;
 		}
-		return new JsonConfigHelper(); // Si le fichier n'existe pas, retourner la configuration par défaut
+
+		// 3) Ensure directory exists and write back to disk so new keys appear in file
+		ensureParentDirExists(CONFIG_FILE);
+		saveConfig();
+
+		return INSTANCE;
 	}
 
 	// Méthode pour sauvegarder la configuration dans le fichier JSON
 	public static void saveConfig() {
-		try (FileWriter writer = new FileWriter(CONFIG_FILE)) {
-			GSON.toJson(getInstance(), writer);
+		try {
+			if (INSTANCE == null) {
+				// Safety: initialize defaults if called very early
+				INSTANCE = new JsonConfigHelper();
+			}
+			ensureParentDirExists(CONFIG_FILE);
+			try (Writer writer = new FileWriter(CONFIG_FILE)) {
+				GSON.toJson(INSTANCE, writer);
+			}
 		} catch (IOException e) {
 			Better_hudClient.LOGGER.error("Failed to save config {}", e.getMessage());
+		}
+	}
+
+	/**
+	 * Deeply merge 'overrides' into 'target'. Objects are merged; arrays/primitives are replaced.
+	 */
+	private static void deepMergeInto(JsonObject target, JsonObject overrides) {
+		for (Map.Entry<String, JsonElement> e : overrides.entrySet()) {
+			String key = e.getKey();
+			JsonElement overrideVal = e.getValue();
+
+			// If both sides are objects, merge recursively
+			if (target.has(key) && target.get(key).isJsonObject() && overrideVal.isJsonObject()) {
+				deepMergeInto(target.getAsJsonObject(key), overrideVal.getAsJsonObject());
+			} else {
+				// Otherwise, override or add
+				target.add(key, overrideVal);
+			}
+		}
+	}
+
+	/**
+	 * Ensure the parent directory exists before writing the file.
+	 */
+	private static void ensureParentDirExists(File file) {
+		File parent = file.getParentFile();
+		if (parent != null && !parent.exists()) {
+			//noinspection ResultOfMethodCallIgnored
+			parent.mkdirs();
 		}
 	}
 
