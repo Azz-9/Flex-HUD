@@ -188,4 +188,14 @@ public class ConfigColorButtonWidget<T> extends ClickableWidget implements Track
 	public void addObserver(Observer observer) {
 		observers.add(observer);
 	}
+
+	@Override
+	public int getBottom() {
+		return this.getY() + this.getHeight();
+	}
+
+	@Override
+	public int getRight() {
+		return this.getX() + this.getWidth();
+	}
 }

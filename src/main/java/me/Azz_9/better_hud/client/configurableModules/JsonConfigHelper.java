@@ -36,7 +36,7 @@ public class JsonConfigHelper {
 	//public ResourcePack resourcePack = new ResourcePack(0, 100, AbstractHudElement.AnchorPosition.END, AbstractHudElement.AnchorPosition.START);
 	public PotionEffect potionEffect = new PotionEffect(0, 20, AbstractHudElement.AnchorPosition.END, AbstractHudElement.AnchorPosition.START);
 	public Crosshair crosshair = new Crosshair();
-	public BossBar bossBar = new BossBar(0, 30, AbstractHudElement.AnchorPosition.CENTER, AbstractHudElement.AnchorPosition.START);
+	public BossBar bossBar = new BossBar(0, 35, AbstractHudElement.AnchorPosition.CENTER, AbstractHudElement.AnchorPosition.START);
 	public WeatherDisplay weatherDisplay = new WeatherDisplay(-4, -4, AbstractHudElement.AnchorPosition.END, AbstractHudElement.AnchorPosition.END);
 	//others
 	public WeatherChanger weatherChanger = new WeatherChanger();

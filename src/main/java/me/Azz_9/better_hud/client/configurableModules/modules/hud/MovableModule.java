@@ -1,6 +1,7 @@
 package me.Azz_9.better_hud.client.configurableModules.modules.hud;
 
 import me.Azz_9.better_hud.client.configurableModules.Configurable;
+import me.Azz_9.better_hud.client.screens.moveModulesScreen.widgets.MovableWidget;
 import net.minecraft.client.MinecraftClient;
 
 public interface MovableModule extends Configurable {
@@ -121,35 +122,25 @@ public interface MovableModule extends Configurable {
 
 		// --- Horizontal ---
 		if (getAnchorX() == AbstractHudElement.AnchorPosition.START) {
-			// Must not overflow to the right
-			maxWidthScale = (float) ((screenWidth - getOffsetX()) / getWidth());
-		} else if (getAnchorX() == AbstractHudElement.AnchorPosition.CENTER) {
-			// Must fit in both directions from the center
-			float leftSpace = (float) ((screenWidth / 2.0 + getOffsetX()) / (getWidth() / 2.0));
-			float rightSpace = (float) ((screenWidth / 2.0 - getOffsetX()) / (getWidth() / 2.0));
-			maxWidthScale = Math.min(leftSpace, rightSpace);
-		} else { // END
-			// Must not overflow to the left
-			maxWidthScale = (float) ((getOffsetX() + getWidth()) / getWidth());
+			maxWidthScale = (float) (screenWidth - Math.round(getOffsetX())) / getWidth();
+		} else if (getAnchorX() == AbstractHudElement.AnchorPosition.END) {
+			maxWidthScale = (float) (screenWidth + Math.round(getOffsetX())) / getWidth();
+		} else { // CENTER
+			maxWidthScale = (float) ((screenWidth / 2.0 - Math.abs(getOffsetX())) / (getWidth() / 2.0));
 		}
 
 		// --- Vertical ---
 		if (getAnchorY() == AbstractHudElement.AnchorPosition.START) {
-			// Must not overflow to the bottom
-			maxHeightScale = (float) ((screenHeight - getOffsetY()) / getHeight());
-		} else if (getAnchorY() == AbstractHudElement.AnchorPosition.CENTER) {
-			// Must fit in both directions from the center
-			float topSpace = (float) ((screenHeight / 2.0 + getOffsetY()) / (getHeight() / 2.0));
-			float bottomSpace = (float) ((screenHeight / 2.0 - getOffsetY()) / (getHeight() / 2.0));
-			maxHeightScale = Math.min(topSpace, bottomSpace);
-		} else { // END
-			// Must not overflow to the top
-			maxHeightScale = (float) ((getOffsetY() + getHeight()) / getHeight());
+			maxHeightScale = (float) (screenHeight - Math.round(getOffsetY())) / getHeight();
+		} else if (getAnchorY() == AbstractHudElement.AnchorPosition.END) {
+			maxHeightScale = (float) (screenHeight + Math.round(getOffsetY())) / getHeight();
+		} else { // CENTER
+			maxHeightScale = (float) ((screenHeight / 2.0 - Math.abs(getOffsetY())) / (getHeight() / 2.0));
 		}
 
-		// Final scale is the minimum of both to ensure full visibility
-		return Math.max(0.1f, Math.min(maxWidthScale, maxHeightScale));
+		return Math.max(MovableWidget.MIN_SCALE, Math.min(maxWidthScale, maxHeightScale));
 	}
+
 
 	void setScale(float scale);
 

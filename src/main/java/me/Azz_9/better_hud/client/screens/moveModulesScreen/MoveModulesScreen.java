@@ -60,7 +60,10 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
 		if (firstFrame) {
-			getMovableWidgets().forEach(MovableWidget::updateDimensionAndPosition);
+			getMovableWidgets().forEach((movableWidget) -> {
+				movableWidget.updateDimensionAndPosition();
+				movableWidget.updateScaleHandle();
+			});
 			firstFrame = false;
 		}
 

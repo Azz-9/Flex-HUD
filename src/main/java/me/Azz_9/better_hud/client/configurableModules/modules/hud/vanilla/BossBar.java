@@ -64,8 +64,7 @@ public class BossBar extends AbstractModule implements MovableModule {
 
 	public void init() {
 		this.width = 182;
-		int textAndBarHeight = (BOSS_BAR_GAP + MinecraftClient.getInstance().textRenderer.fontHeight);
-		this.height = (int) ((MinecraftClient.getInstance().getWindow().getScaledHeight() / 5.0) / textAndBarHeight) * textAndBarHeight;
+		this.height = (BOSS_BAR_GAP + MinecraftClient.getInstance().textRenderer.fontHeight);
 
 		this.enabled.setConfigTextTranslationKey("better_hud.bossbar.config.enable");
 	}

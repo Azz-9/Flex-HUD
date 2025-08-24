@@ -18,12 +18,12 @@ public class MoveAction implements Action {
 	@Override
 	public void redo() {
 		widget.moveTo(newX, newY);
-		widget.updateScalePosition();
+		widget.updateScaleHandle();
 	}
 
 	@Override
 	public void undo() {
 		widget.moveTo(oldX, oldY);
-		widget.updateScalePosition();
+		widget.updateScaleHandle();
 	}
 }

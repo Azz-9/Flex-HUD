@@ -41,8 +41,8 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 	private boolean shouldDrawHorizontalSnapLine = false;
 
 	// scale
-	private final float MAX_SCALE = 3.0f;
-	private final float MIN_SCALE = 0.5f;
+	public static final float MAX_SCALE = 3.0f;
+	public static final float MIN_SCALE = 0.5f;
 	private final int HANDLE_SIZE = 4;
 	private int handleX = getX() - HANDLE_SIZE / 2;
 	private int handleY = getY() - HANDLE_SIZE / 2;
@@ -54,6 +54,7 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 	private int onClickY;
 	private float onClickScale;
 	private boolean shouldDrawScaleValue = false;
+	private final float STEP = 0.25f;
 
 	public MovableWidget(MovableModule hudElement, MoveModulesScreen parent) {
 		super(
@@ -69,7 +70,7 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 		this.INITIAL_ANCHOR_X = hudElement.getAnchorX();
 		this.INITIAL_ANCHOR_Y = hudElement.getAnchorY();
 
-		updateScalePosition();
+		updateScaleHandle();
 	}
 
 	public void render(DrawContext context, float deltaTicks) {
@@ -127,7 +128,7 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 		}
 	}
 
-	public void updateScalePosition() {
+	public void updateScaleHandle() {
 		double screenCenterX = MinecraftClient.getInstance().getWindow().getScaledWidth() / 2.0;
 		double screenCenterY = MinecraftClient.getInstance().getWindow().getScaledHeight() / 2.0;
 		double centerX = getX() + getWidth() / 2.0;
@@ -136,22 +137,37 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 		if (centerX < screenCenterX) {
 			if (centerY < screenCenterY) {
 				handlePosition = HandlePosition.BOTTOM_RIGHT;
-				handleX = getRight() - HANDLE_SIZE / 2;
-				handleY = getBottom() - HANDLE_SIZE / 2;
 			} else {
 				handlePosition = HandlePosition.TOP_RIGHT;
-				handleX = getRight() - HANDLE_SIZE / 2;
-				handleY = getY() - HANDLE_SIZE / 2;
 			}
 		} else {
 			if (centerY < screenCenterY) {
 				handlePosition = HandlePosition.BOTTOM_LEFT;
-				handleX = getX() - HANDLE_SIZE / 2;
-				handleY = getBottom() - HANDLE_SIZE / 2;
 			} else {
 				handlePosition = HandlePosition.TOP_LEFT;
+			}
+		}
+
+		refreshScaleHandleCoords();
+	}
+
+	public void refreshScaleHandleCoords() {
+		switch (handlePosition) {
+			case TOP_LEFT -> {
 				handleX = getX() - HANDLE_SIZE / 2;
 				handleY = getY() - HANDLE_SIZE / 2;
+			}
+			case TOP_RIGHT -> {
+				handleX = getRight() - HANDLE_SIZE / 2;
+				handleY = getY() - HANDLE_SIZE / 2;
+			}
+			case BOTTOM_LEFT -> {
+				handleX = getX() - HANDLE_SIZE / 2;
+				handleY = getBottom() - HANDLE_SIZE / 2;
+			}
+			case BOTTOM_RIGHT -> {
+				handleX = getRight() - HANDLE_SIZE / 2;
+				handleY = getBottom() - HANDLE_SIZE / 2;
 			}
 		}
 	}
@@ -161,7 +177,6 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 				(int) Math.ceil(HUD_ELEMENT.getScaledWidth()), (int) Math.ceil(HUD_ELEMENT.getScaledHeight()),
 				HUD_ELEMENT.getRoundedX(), HUD_ELEMENT.getRoundedY()
 		);
-		updateScalePosition();
 	}
 
 	@Override
@@ -197,26 +212,26 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 				case TOP_LEFT -> {
 					dx = onClickX - onClickRight;
 					dy = onClickY - onClickBottom;
-					oppositeCornerX = getX() + HUD_ELEMENT.getWidth() * HUD_ELEMENT.getScale();
-					oppositeCornerY = getY() + HUD_ELEMENT.getHeight() * HUD_ELEMENT.getScale();
+					oppositeCornerX = getX() + HUD_ELEMENT.getScaledWidth();
+					oppositeCornerY = getY() + HUD_ELEMENT.getScaledHeight();
 				}
 				case TOP_RIGHT -> {
 					dx = onClickRight - onClickX;
 					dy = onClickY - onClickBottom;
-					oppositeCornerX = onClickX;
-					oppositeCornerY = getY() + HUD_ELEMENT.getHeight() * HUD_ELEMENT.getScale();
+					oppositeCornerX = getX();
+					oppositeCornerY = getY() + HUD_ELEMENT.getScaledHeight();
 				}
 				case BOTTOM_LEFT -> {
 					dx = onClickX - onClickRight;
 					dy = onClickBottom - onClickY;
-					oppositeCornerX = getX() + HUD_ELEMENT.getWidth() * HUD_ELEMENT.getScale();
-					oppositeCornerY = onClickY;
+					oppositeCornerX = getX() + HUD_ELEMENT.getScaledWidth();
+					oppositeCornerY = getY();
 				}
 				default -> {
 					dx = onClickRight - onClickX;
 					dy = onClickBottom - onClickY;
-					oppositeCornerX = onClickX;
-					oppositeCornerY = onClickY;
+					oppositeCornerX = getX();
+					oppositeCornerY = getY();
 				}
 			}
 
@@ -235,9 +250,9 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 			float newScale = (float) (Math.sqrt(Math.pow((closestX - oppositeCornerX), 2) + Math.pow((closestY - oppositeCornerY), 2))
 					/ Math.sqrt(dx * dx + dy * dy));
 
-			// Arrondi à 0.25 près si Maj est enfoncé
+			// Arrondi à STEP près si Maj est enfoncé
 			if (Screen.hasShiftDown()) {
-				newScale = Math.round(newScale * 4) / 4.0f;
+				newScale = Math.round(newScale / STEP) * STEP;
 				shouldDrawScaleValue = true;
 			}
 
@@ -248,9 +263,9 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 	@Override
 	public void onRelease(double mouseX, double mouseY) {
 		if (isDraggingScalehandle) {
-			updateScalePosition();
+			updateScaleHandle();
 
-			PARENT.undoManager.addAction(new ScaleAction(this, onClickX, onClickY, onClickScale, getX(), getY(), HUD_ELEMENT.getScale()));
+			PARENT.undoManager.addAction(new ScaleAction(this, onClickScale, HUD_ELEMENT.getScale()));
 
 			isDraggingScalehandle = false;
 			shouldDrawScaleValue = false;
@@ -287,7 +302,7 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 			if (pressedKeys.contains(GLFW.GLFW_KEY_RIGHT)) {
 				moveTo(getX() + 1, getY());
 			}
-			updateScalePosition();
+			updateScaleHandle();
 			return true;
 		}
 		return false;
@@ -320,23 +335,28 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 		double minXDistance = SNAP_DISTANCE;
 		double minYDistance = SNAP_DISTANCE;
 
-		int closestSnapX = -1;
-		int closestSnapY = -1;
+		// These are the GUIDELINE coordinates (aligned edge), not the element's top-left
+		Integer guideX = null;
+		Integer guideY = null;
+
+		// Use scaled sizes to match getX()/getY() coordinate space
+		double thisW = this.HUD_ELEMENT.getScaledWidth();
+		double thisH = this.HUD_ELEMENT.getScaledHeight();
 
 		if (!Screen.hasShiftDown()) {
-			// Snap to screen center if close
-			double dxCenter = Math.abs(x + this.getWidth() / 2.0 - centerX);
+			// ---- Center snapping (screen center) ----
+			double dxCenter = Math.abs((x + thisW / 2.0) - centerX);
 			if (dxCenter < CENTERED_LINES_SNAP_DISTANCE) {
-				snappedX = centerX - this.getWidth() / 2.0;
-				closestSnapX = (int) Math.round(centerX);
+				snappedX = centerX - thisW / 2.0;   // position (left of current) to center it
+				guideX = (int) Math.round(centerX); // guideline at the center line
 				shouldDrawVerticalSnapLine = true;
-				minXDistance = dxCenter; // Prioritize this if closest
+				minXDistance = dxCenter;
 			}
 
-			double dyCenter = Math.abs(y + this.getHeight() / 2.0 - centerY);
+			double dyCenter = Math.abs((y + thisH / 2.0) - centerY);
 			if (dyCenter < CENTERED_LINES_SNAP_DISTANCE) {
-				snappedY = centerY - this.getHeight() / 2.0;
-				closestSnapY = (int) Math.round(centerY);
+				snappedY = centerY - thisH / 2.0;
+				guideY = (int) Math.round(centerY);
 				shouldDrawHorizontalSnapLine = true;
 				minYDistance = dyCenter;
 			}
@@ -344,36 +364,47 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 			if (!Screen.hasControlDown()) {
 				for (MovableWidget widget : PARENT.getMovableWidgets()) {
 					if (!widget.HUD_ELEMENT.getID().equals(this.HUD_ELEMENT.getID())) {
-						// Horizontal snapping
-						double[] candidateYs = {
-								widget.getY(),                                 // Top edge
-								widget.getBottom(),                            // Bottom edge
-								widget.getY() - this.getHeight(),              // Snap bottom of current to top
-								widget.getBottom() - this.getHeight()          // Snap bottom of current to bottom
+						double otherX = widget.getX();
+						double otherY = widget.getY();
+						double otherRight = widget.getRight();   // should be getX() + widget.getScaledWidth()
+						double otherBottom = widget.getBottom(); // should be getY() + widget.getScaledHeight()
+
+						// ---------- Horizontal snapping (align tops/bottoms) ----------
+						// Build candidate pairs: (posYToApply, guideLineYToDraw)
+						double[][] yPairs = new double[][]{
+								{otherY, otherY},          // top-to-top
+								{otherBottom, otherBottom},      // top-to-bottom
+								{otherY - thisH, otherY},           // bottom(current)-to-top(other)
+								{otherBottom - thisH, otherBottom}       // bottom-to-bottom
 						};
-						for (double candidateY : candidateYs) {
-							double dy = Math.abs(y - candidateY);
+						for (double[] pair : yPairs) {
+							double posY = pair[0];
+							double lineY = pair[1];
+							double dy = Math.abs(y - posY); // distance in top-left space
 							if (dy < minYDistance && dy < SNAP_DISTANCE) {
 								minYDistance = dy;
-								snappedY = candidateY;
-								closestSnapY = (int) Math.round(candidateY);
+								snappedY = posY;                 // apply position
+								guideY = (int) Math.round(lineY); // draw line at aligned edge
 								shouldDrawHorizontalSnapLine = true;
 							}
 						}
 
-						// Vertical snapping
-						double[] candidateXs = {
-								widget.getX(),                                 // Left edge
-								widget.getRight(),                             // Right edge
-								widget.getX() - this.getWidth(),               // Snap right of current to left
-								widget.getRight() - this.getWidth()            // Snap right of current to right
+						// ---------- Vertical snapping (align lefts/rights) ----------
+						// Build candidate pairs: (posXToApply, guideLineXToDraw)
+						double[][] xPairs = new double[][]{
+								{otherX, otherX},                 // left-to-left
+								{otherRight, otherRight},            // left-to-right
+								{otherX - thisW, otherX},                // right(current)-to-left(other)
+								{otherRight - thisW, otherRight}             // right-to-right
 						};
-						for (double candidateX : candidateXs) {
-							double dx = Math.abs(x - candidateX);
+						for (double[] pair : xPairs) {
+							double posX = pair[0];
+							double lineX = pair[1];
+							double dx = Math.abs(x - posX);
 							if (dx < minXDistance && dx < SNAP_DISTANCE) {
 								minXDistance = dx;
-								snappedX = candidateX;
-								closestSnapX = (int) Math.round(candidateX);
+								snappedX = posX;                 // apply position
+								guideX = (int) Math.round(lineX); // draw line at aligned edge
 								shouldDrawVerticalSnapLine = true;
 							}
 						}
@@ -382,11 +413,13 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 			}
 		}
 
-		if (closestSnapX != -1) snapLineX = closestSnapX;
-		if (closestSnapY != -1) snapLineY = closestSnapY;
+		// Apply guides if any
+		if (guideX != null) snapLineX = guideX;
+		if (guideY != null) snapLineY = guideY;
 
 		moveTo(snappedX, snappedY);
 	}
+
 
 	public void moveTo(double x, double y) {
 		x = Math.clamp(x, 0, MinecraftClient.getInstance().getWindow().getScaledWidth() - this.getWidth());
@@ -395,7 +428,7 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 		HUD_ELEMENT.setX(x);
 		HUD_ELEMENT.setY(y);
 		this.setPosition(HUD_ELEMENT.getRoundedX(), HUD_ELEMENT.getRoundedY());
-		updateScalePosition();
+		updateScaleHandle();
 		PARENT.onWidgetChange();
 	}
 
@@ -404,23 +437,19 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 
 		if (scale != HUD_ELEMENT.getScale()) {
 
-			int screenWidth = MinecraftClient.getInstance().getWindow().getScaledWidth();
-			int screenHeight = MinecraftClient.getInstance().getWindow().getScaledHeight();
+			float maxScale = HUD_ELEMENT.computeMaxScale();
 
-			float newX = HUD_ELEMENT.getXWithScale(scale);
-			float newY = HUD_ELEMENT.getYWithScale(scale);
-			float newScale = scale;
-
-			if ((newX < 0 || newX + getWidth() + scale > screenWidth || newY < 0 || newY + getHeight() + scale > screenHeight)) {
+			if (scale > maxScale) {
 				if (shouldDrawScaleValue) { // is snapping
-					newScale = Math.round(HUD_ELEMENT.getScale() * 4) / 4.0f;
+					scale = (float) (Math.floor(maxScale / STEP) * STEP);
 				} else {
-					newScale = Math.min(scale, HUD_ELEMENT.computeMaxScale());
+					scale = maxScale;
 				}
 			}
 
-			HUD_ELEMENT.setScale(newScale);
+			HUD_ELEMENT.setScale(scale);
 			updateDimensionAndPosition();
+			refreshScaleHandleCoords();
 			PARENT.onWidgetChange();
 		}
 	}
