@@ -11,6 +11,9 @@
 
 	"better_hud.options_screen": "Options",
 	"better_hud.options_screen.modules": "Modules",
+	"better_hud.options_screen.enable.tooltip": "Activer Better HUD",
+	"better_hud.options_screen.disable.tooltip": "Désactiver Better HUD",
+	"better_hud.options_screen.mod_is_disabled_warning": "⚠ Le mod est désactivé !",
 
 	"better_hud.color_entry_widget": "Entrée de couleur",
 	"better_hud.gradient_widget": "Dégradé de couleur",

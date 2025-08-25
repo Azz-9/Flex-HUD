@@ -1,17 +1,19 @@
 package me.Azz_9.better_hud.client.screens;
 
 import me.Azz_9.better_hud.client.Better_hudClient;
+import me.Azz_9.better_hud.client.configurableModules.JsonConfigHelper;
 import me.Azz_9.better_hud.client.screens.modulesList.ModulesListScreen;
 import me.Azz_9.better_hud.client.screens.moveModulesScreen.MoveModulesScreen;
-import me.Azz_9.better_hud.client.screens.widgets.buttons.TexturedButtonWidget;
+import me.Azz_9.better_hud.client.screens.widgets.buttons.IconButton;
 import me.Azz_9.better_hud.client.utils.EaseUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.joml.Matrix3x2fStack;
 
@@ -20,6 +22,7 @@ import static me.Azz_9.better_hud.client.Better_hudClient.openOptionScreenKeyBin
 
 public class OptionsScreen extends AbstractBackNavigableScreen {
 	private long initTimestamp;
+	private IconButton enableModButton;
 
 	public OptionsScreen() {
 		super(Text.translatable("better_hud.options_screen"), null);
@@ -33,21 +36,51 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 	protected void init() {
 		initTimestamp = System.currentTimeMillis();
 
+		int squareButtonSize = 20;
+		int buttonGap = 20;
+		int centralButtonWidth = 120;
+
+		enableModButton = new IconButton(
+				(width - squareButtonSize - centralButtonWidth) / 2 - buttonGap,
+				(height - squareButtonSize) / 2,
+				squareButtonSize, squareButtonSize,
+				null,
+				14, 14,
+				(btn) -> {
+					JsonConfigHelper.getInstance().isEnabled = !JsonConfigHelper.getInstance().isEnabled;
+					updateEnableButton();
+				}
+		);
+		updateEnableButton();
+		this.addDrawableChild(enableModButton);
+
 		ButtonWidget modsButton = ButtonWidget.builder(Text.translatable("better_hud.options_screen.modules"),
 						(btn) -> MinecraftClient.getInstance().setScreen(new ModulesListScreen(this))
-				).dimensions(width / 2 - 60, height / 2 - 10, 120, 20)
+				).dimensions((width - centralButtonWidth) / 2, (height - squareButtonSize) / 2, centralButtonWidth, squareButtonSize)
 				.build();
 		this.addDrawableChild(modsButton);
 
 		if (MinecraftClient.getInstance().world != null) {
-			TexturedButtonWidget moveButton = new TexturedButtonWidget(width / 2 - 10 + 80, height / 2 - 10, 20, 20,
-					new ButtonTextures(Identifier.of(MOD_ID, "widgets/buttons/open_move_elements_screen/unfocused.png"),
-							Identifier.of(MOD_ID, "widgets/buttons/open_move_elements_screen/focused.png")),
-					(btn) -> {
-						MinecraftClient.getInstance().setScreen(new MoveModulesScreen(this));
-						Better_hudClient.isInMoveElementScreen = true;
-					});
+			IconButton moveButton = new IconButton(
+					(width - squareButtonSize + centralButtonWidth) / 2 + buttonGap,
+					(height - squareButtonSize) / 2,
+					squareButtonSize, squareButtonSize,
+					Identifier.of(MOD_ID, "widgets/buttons/options_menu_buttons/move.png"),
+					14, 14, (btn) -> {
+				MinecraftClient.getInstance().setScreen(new MoveModulesScreen(this));
+				Better_hudClient.isInMoveElementScreen = true;
+			});
 			this.addDrawableChild(moveButton);
+		}
+	}
+
+	private void updateEnableButton() {
+		if (JsonConfigHelper.getInstance().isEnabled) {
+			enableModButton.setTooltip(Tooltip.of(Text.translatable("better_hud.options_screen.disable.tooltip")));
+			enableModButton.setTexture(Identifier.of(MOD_ID, "widgets/buttons/options_menu_buttons/enabled.png"));
+		} else {
+			enableModButton.setTooltip(Tooltip.of(Text.translatable("better_hud.options_screen.enable.tooltip")));
+			enableModButton.setTexture(Identifier.of(MOD_ID, "widgets/buttons/options_menu_buttons/disabled.png"));
 		}
 	}
 
@@ -84,6 +117,10 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 		matrices.popMatrix();
 
 		//RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F); // Opacité à 100%
+
+		if (!JsonConfigHelper.getInstance().isEnabled) {
+			context.drawCenteredTextWithShadow(MinecraftClient.getInstance().textRenderer, Text.translatable("better_hud.options_screen.mod_is_disabled_warning").formatted(Formatting.RED, Formatting.ITALIC), this.width / 2, this.height / 2 + 20, 0xffffffff);
+		}
 	}
 
 	@Override
