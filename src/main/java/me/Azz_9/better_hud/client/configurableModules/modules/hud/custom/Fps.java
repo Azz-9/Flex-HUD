@@ -1,7 +1,7 @@
 package me.Azz_9.better_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.better_hud.client.Better_hudClient;
-import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractHudElement;
+import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
@@ -15,7 +15,7 @@ import org.joml.Matrix3x2fStack;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Fps extends AbstractHudElement {
+public class Fps extends AbstractTextElement {
 	public static List<Long> times = new LinkedList<>();
 
 	public Fps(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {

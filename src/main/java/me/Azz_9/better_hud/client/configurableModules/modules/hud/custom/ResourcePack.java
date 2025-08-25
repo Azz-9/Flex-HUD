@@ -1,6 +1,6 @@
 package me.Azz_9.better_hud.client.configurableModules.modules.hud.custom;
 
-import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractHudElement;
+import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ResourcePack extends AbstractHudElement {
+public class ResourcePack extends AbstractTextElement {
 	public static List<Long> times = new LinkedList<>();
 
 	public ResourcePack(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {

@@ -1,6 +1,6 @@
 package me.Azz_9.better_hud.client.configurableModules.modules.hud.custom;
 
-import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractHudElement;
+import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
@@ -34,7 +34,7 @@ import java.util.Objects;
 
 import static me.Azz_9.better_hud.client.Better_hudClient.MOD_ID;
 
-public class Compass extends AbstractHudElement {
+public class Compass extends AbstractTextElement {
 	private ConfigBoolean showMarker = new ConfigBoolean(true, "better_hud.compass.config.show_marker");
 	private ConfigBoolean showDegrees = new ConfigBoolean(false, "better_hud.compass.config.show_degrees");
 	private ConfigBoolean showIntermediatePoint = new ConfigBoolean(true, "better_hud.compass.config.show_intermediate_point");

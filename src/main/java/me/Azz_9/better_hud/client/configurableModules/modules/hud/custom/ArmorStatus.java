@@ -2,7 +2,7 @@ package me.Azz_9.better_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.better_hud.client.Better_hudClient;
 import me.Azz_9.better_hud.client.configurableModules.modules.Translatable;
-import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractHudElement;
+import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.better_hud.client.configurableModules.modules.hud.DisplayMode;
 import me.Azz_9.better_hud.client.configurableModules.modules.hud.renderable.Renderable;
 import me.Azz_9.better_hud.client.configurableModules.modules.hud.renderable.RenderableItem;
@@ -26,7 +26,7 @@ import org.joml.Matrix3x2fStack;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ArmorStatus extends AbstractHudElement {
+public class ArmorStatus extends AbstractTextElement {
 	private final ConfigBoolean showHelmet = new ConfigBoolean(true, "better_hud.armor_status.config.show_helmet");
 	private final ConfigBoolean showChestplate = new ConfigBoolean(true, "better_hud.armor_status.config.show_chestplate");
 	private final ConfigBoolean showLeggings = new ConfigBoolean(true, "better_hud.armor_status.config.show_leggings");

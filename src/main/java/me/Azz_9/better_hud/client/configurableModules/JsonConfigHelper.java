@@ -156,20 +156,17 @@ public class JsonConfigHelper {
 				getInstance().playtime,
 				//getInstance().resourcePack,
 				getInstance().potionEffect,
-				getInstance().weatherDisplay
+				getInstance().weatherDisplay,
+				getInstance().bossBar
 		);
 	}
 
 	public static List<MovableModule> getMovableModules() {
-		List<MovableModule> movableModuleList = new ArrayList<>(getHudElements());
-		movableModuleList.add(
-				getInstance().bossBar
-		);
-		return movableModuleList;
+		return new ArrayList<>(getHudElements());
 	}
 
 	public static List<Configurable> getConfigurableModules() {
-		List<Configurable> configurables = new ArrayList<>(getMovableModules());
+		List<Configurable> configurables = new ArrayList<>(getHudElements());
 		configurables.addAll(List.of(
 				getInstance().weatherChanger,
 				getInstance().timeChanger,

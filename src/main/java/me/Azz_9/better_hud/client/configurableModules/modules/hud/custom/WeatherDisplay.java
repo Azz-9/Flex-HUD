@@ -1,8 +1,9 @@
 package me.Azz_9.better_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.better_hud.client.Better_hudClient;
-import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractHudElement;
+import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractBackgroundElement;
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
@@ -16,7 +17,7 @@ import org.joml.Matrix3x2fStack;
 
 import static me.Azz_9.better_hud.client.Better_hudClient.MOD_ID;
 
-public class WeatherDisplay extends AbstractHudElement {
+public class WeatherDisplay extends AbstractBackgroundElement {
 
 	public WeatherDisplay(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
@@ -55,6 +56,8 @@ public class WeatherDisplay extends AbstractHudElement {
 			matrices.pushMatrix();
 			matrices.translate(getRoundedX(), getRoundedY());
 			matrices.scale(this.scale, this.scale);
+
+			drawBackground(context);
 
 			String path = getWeatherIconPath(client);
 
@@ -101,6 +104,17 @@ public class WeatherDisplay extends AbstractHudElement {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(enabled)
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(drawBackground)
+								.build()
+				);
+				this.addAllEntries(
+						new ColorButtonEntry.Builder()
+								.setColorButtonWidth(buttonWidth)
+								.setVariable(backgroundColor)
+								.setDependency(this.getConfigList().getLastEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)

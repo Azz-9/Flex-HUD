@@ -2,7 +2,7 @@ package me.Azz_9.better_hud.client.configurableModules.modules.hud.custom;
 
 import com.google.common.collect.Ordering;
 import me.Azz_9.better_hud.client.Better_hudClient;
-import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractHudElement;
+import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.better_hud.client.configurableModules.modules.hud.renderable.Renderable;
 import me.Azz_9.better_hud.client.configurableModules.modules.hud.renderable.RenderableImage;
 import me.Azz_9.better_hud.client.configurableModules.modules.hud.renderable.RenderableText;
@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class PotionEffect extends AbstractHudElement {
+public class PotionEffect extends AbstractTextElement {
 	public static List<Long> times = new LinkedList<>();
 
 	public PotionEffect(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {

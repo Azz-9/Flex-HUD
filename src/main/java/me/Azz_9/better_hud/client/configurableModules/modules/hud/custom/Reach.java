@@ -1,6 +1,6 @@
 package me.Azz_9.better_hud.client.configurableModules.modules.hud.custom;
 
-import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractHudElement;
+import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.IntFieldEntry;
@@ -17,7 +17,7 @@ import org.joml.Matrix3x2fStack;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Reach extends AbstractHudElement {
+public class Reach extends AbstractTextElement {
 	public ConfigInteger digits = new ConfigInteger(2, "better_hud.reach.config.number_of_digits", 0, 16);
 	public static List<Long> times = new LinkedList<>();
 

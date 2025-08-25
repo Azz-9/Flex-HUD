@@ -1,7 +1,7 @@
 package me.Azz_9.better_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.better_hud.client.Better_hudClient;
-import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractHudElement;
+import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
@@ -17,7 +17,7 @@ import org.joml.Matrix3x2fStack;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Cps extends AbstractHudElement {
+public class Cps extends AbstractTextElement {
 	public ConfigBoolean showLeftClick = new ConfigBoolean(true, "better_hud.cps.config.show_left_click");
 	public ConfigBoolean showRightClick = new ConfigBoolean(true, "better_hud.cps.config.show_right_click");
 	public ConfigBoolean showSuffix = new ConfigBoolean(true, "better_hud.cps.config.show_suffix");

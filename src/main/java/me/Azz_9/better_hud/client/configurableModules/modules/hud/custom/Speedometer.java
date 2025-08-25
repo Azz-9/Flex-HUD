@@ -1,7 +1,7 @@
 package me.Azz_9.better_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.better_hud.client.configurableModules.modules.Translatable;
-import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractHudElement;
+import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
@@ -22,7 +22,7 @@ import org.joml.Matrix3x2fStack;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Speedometer extends AbstractHudElement {
+public class Speedometer extends AbstractTextElement {
 	public ConfigInteger digits = new ConfigInteger(1, "better_hud.speedometer.config.number_of_digits", 0, 16);
 	public ConfigEnum<SpeedometerUnits> units = new ConfigEnum<>(SpeedometerUnits.MPS, "better_hud.speedometer.config.selected_unit");
 	public ConfigBoolean useKnotInBoat = new ConfigBoolean(false, "better_hud.speedometer.config.use_knot_when_in_boat");

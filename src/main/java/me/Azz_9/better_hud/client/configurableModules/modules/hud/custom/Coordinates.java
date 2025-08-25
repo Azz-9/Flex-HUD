@@ -1,6 +1,6 @@
 package me.Azz_9.better_hud.client.configurableModules.modules.hud.custom;
 
-import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractHudElement;
+import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.better_hud.client.configurableModules.modules.hud.DisplayMode;
 import me.Azz_9.better_hud.client.configurableModules.modules.hud.renderable.Renderable;
 import me.Azz_9.better_hud.client.configurableModules.modules.hud.renderable.RenderableText;
@@ -32,7 +32,7 @@ import java.util.Map;
 
 import static java.util.Map.entry;
 
-public class Coordinates extends AbstractHudElement {
+public class Coordinates extends AbstractTextElement {
 	private ConfigBoolean showY = new ConfigBoolean(true, "better_hud.coordinates.config.show_y");
 	private ConfigInteger numberOfDigits = new ConfigInteger(0, "better_hud.coordinates.config.number_of_digits", 0, 14);
 	private ConfigBoolean showBiome = new ConfigBoolean(true, "better_hud.coordinates.config.show_biome");

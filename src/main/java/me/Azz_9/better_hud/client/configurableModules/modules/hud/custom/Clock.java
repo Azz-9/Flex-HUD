@@ -1,6 +1,6 @@
 package me.Azz_9.better_hud.client.configurableModules.modules.hud.custom;
 
-import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractHudElement;
+import me.Azz_9.better_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.StringFieldEntry;
@@ -22,7 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
-public class Clock extends AbstractHudElement {
+public class Clock extends AbstractTextElement {
 	public ConfigString textFormat = new ConfigString("hh:mm:ss", "better_hud.clock.config.text_format");
 	public ConfigBoolean isTwentyFourHourFormat;
 	public static List<Long> times = new LinkedList<>();
