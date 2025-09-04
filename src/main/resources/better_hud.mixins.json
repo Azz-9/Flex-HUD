@@ -6,6 +6,7 @@
 	"mixins": [
 		"cps.MouseMixin",
 		"durabilityPing.ItemStackMixin",
+		"reach.PlayerMixin",
 		"weatherChanger.ClientWorldMixin",
 		"weatherChanger.ClientWorldPropertiesMixin"
 	],

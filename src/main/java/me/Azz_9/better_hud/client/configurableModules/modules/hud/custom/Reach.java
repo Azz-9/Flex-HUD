@@ -53,10 +53,6 @@ public class Reach extends AbstractTextElement {
 			return;
 		}
 
-		if (ReachUtils.getLastHitTime() == -1 || System.currentTimeMillis() - ReachUtils.getLastHitTime() > 5000) {
-			ReachUtils.resetReach(); // reset the reach 5s after the last hit
-		}
-
 		String format = "%." + this.digits.getValue() + "f";
 		String formattedSpeed = String.format(format, ReachUtils.getReach());
 		Text text = Text.literal(formattedSpeed).append(" ").append(Text.translatable("better_hud.reach.hud.unit"));

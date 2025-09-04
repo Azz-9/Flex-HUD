@@ -152,7 +152,7 @@ public class JsonConfigHelper {
 				getInstance().serverAddress,
 				getInstance().memoryUsage,
 				getInstance().speedometer,
-				getInstance().reach,
+				//getInstance().reach,
 				getInstance().playtime,
 				//getInstance().resourcePack,
 				getInstance().potionEffect,

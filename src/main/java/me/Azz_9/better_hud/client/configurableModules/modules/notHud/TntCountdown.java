@@ -35,7 +35,7 @@ public class TntCountdown extends AbstractModule {
 		return "tnt_countdown";
 	}
 
-	public void drawCountdown() {
+	public void renderCountdown() {
 		PlayerEntity player = MinecraftClient.getInstance().player;
 
 		if (player == null) {

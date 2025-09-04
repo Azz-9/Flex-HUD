@@ -31,11 +31,16 @@ public class ToggleButtonEntry extends ScrollableConfigList.AbstractConfigEntry 
 		super(resetButtonSize, Text.translatable(variable.getConfigTextTranslationKey()));
 		toggleButtonWidget = new ConfigToggleButtonWidget<>(toggleButtonWidth, toggleButtonHeight, variable, observers, disableWhen, getTooltip);
 		setResetButtonPressAction((btn) -> toggleButtonWidget.setToDefaultState());
-		this.toggleable = toggleable;
-		this.setActive(toggleable.getAsBoolean());
 
 		toggleButtonWidget.addObserver(this.resetButtonWidget);
 		this.resetButtonWidget.onChange(toggleButtonWidget);
+
+		this.toggleable = toggleable;
+		if (!toggleable.getAsBoolean()) {
+			this.setActive(false);
+			toggleButtonWidget.setToggled(false);
+			resetButtonWidget.active = false;
+		}
 	}
 
 	@Override

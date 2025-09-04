@@ -19,10 +19,8 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
-import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
@@ -69,13 +67,6 @@ public class Better_hudClient implements ClientModInitializer {
 			}
 		});
 
-		AttackEntityCallback.EVENT.register((player, world, hand, pos, face) -> {
-			if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().reach.enabled.getValue()) {
-				ReachUtils.calculateReach(player, pos);
-			}
-			return ActionResult.PASS;
-		});
-
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			if (JsonConfigHelper.getInstance().isEnabled) {
 				ChromaColorUtils.updateColor();
@@ -83,7 +74,8 @@ public class Better_hudClient implements ClientModInitializer {
 				if (JsonConfigHelper.getInstance().memoryUsage.enabled.getValue()) MemoryUsageUtils.updateMemoryUsage();
 				if (JsonConfigHelper.getInstance().speedometer.enabled.getValue()) SpeedUtils.calculateSpeed();
 				if (JsonConfigHelper.getInstance().tntCountdown.enabled.getValue())
-					JsonConfigHelper.getInstance().tntCountdown.drawCountdown();
+					JsonConfigHelper.getInstance().tntCountdown.renderCountdown();
+				if (JsonConfigHelper.getInstance().reach.enabled.getValue()) ReachUtils.tick();
 
 				if (JsonConfigHelper.getInstance().compass.showTamedEntitiesPoint.getValue()) TamedEntityUtils.update();
 				if (JsonConfigHelper.getInstance().compass.showXaerosMapWaypoints.getValue() && XaeroCompat.isXaerosMinimapLoaded()) {

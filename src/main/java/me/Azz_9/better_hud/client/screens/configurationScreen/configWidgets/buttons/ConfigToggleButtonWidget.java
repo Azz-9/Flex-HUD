@@ -40,7 +40,7 @@ public class ConfigToggleButtonWidget<T> extends ToggleButtonWidget implements T
 	public ConfigToggleButtonWidget(int width, int height, ConfigBoolean variable, List<Observer> observers, T disableWhen, @Nullable Function<Boolean, Tooltip> getTooltip) {
 		super(0, 0, width, height, variable.getValue());
 		this.variable = variable;
-		this.INITIAL_STATE = toggled;
+		this.INITIAL_STATE = variable.getValue();
 		this.textures = new ButtonTextures(
 				Identifier.of(MOD_ID, "widgets/buttons/toggle/unfocused_enabled.png"),
 				Identifier.of(MOD_ID, "widgets/buttons/toggle/unfocused_disabled.png"),
@@ -154,7 +154,7 @@ public class ConfigToggleButtonWidget<T> extends ToggleButtonWidget implements T
 
 	@Override
 	public boolean hasChanged() {
-		return toggled != INITIAL_STATE;
+		return variable.getValue() != INITIAL_STATE;
 	}
 
 	@Override
@@ -168,7 +168,7 @@ public class ConfigToggleButtonWidget<T> extends ToggleButtonWidget implements T
 
 	@Override
 	public Boolean getData() {
-		return toggled;
+		return variable.getValue();
 	}
 
 	@Override
