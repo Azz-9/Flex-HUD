@@ -25,6 +25,7 @@ public class JsonConfigHelper {
 	public Clock clock = new Clock(-204, 2, AbstractHudElement.AnchorPosition.END, AbstractHudElement.AnchorPosition.START);
 	public Fps fps = new Fps(2, 2, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.START);
 	public Coordinates coordinates = new Coordinates(2, 15, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.START);
+	public NetherCoordinates netherCoordinates = new NetherCoordinates(2, 60, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.START);
 	public Compass compass = new Compass(0, 0, AbstractHudElement.AnchorPosition.CENTER, AbstractHudElement.AnchorPosition.START);
 	public DayCounter dayCounter = new DayCounter(148, 2, AbstractHudElement.AnchorPosition.CENTER, AbstractHudElement.AnchorPosition.START);
 	public Ping ping = new Ping(-129, 2, AbstractHudElement.AnchorPosition.END, AbstractHudElement.AnchorPosition.START);
@@ -146,6 +147,7 @@ public class JsonConfigHelper {
 				getInstance().clock,
 				getInstance().fps,
 				getInstance().coordinates,
+				getInstance().netherCoordinates,
 				getInstance().compass,
 				getInstance().dayCounter,
 				getInstance().ping,

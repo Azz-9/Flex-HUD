@@ -6,6 +6,7 @@
 	"better_hud.configuration_screen.searchbar_placeholder": "Search...",
 	"better_hud.configuration_screen.columns": "Columns",
 	"better_hud.configuration_screen.done": "Done",
+	"better_hud.configuration_screen.module_compatibility_warning": "This module doesn't work properly with ",
 
 	"better_hud.move_elements_screen": "Move elements",
 
@@ -98,6 +99,10 @@
 	"better_hud.coordinates.config.direction_abbreviation": "Direction abbreviation",
 	"better_hud.coordinates.config.number_of_digits": "Number of digits",
 	"better_hud.coordinates.config.orientation": "Orientation",
+
+	"better_hud.nether_coordinates": "Nether coordinates",
+	"better_hud.nether_coordinates.config.enable": "Show nether coordinates",
+	"better_hud.nether_coordinates.config.only_show_in_overworld": "Only show in overworld",
 
 	"better_hud.cps": "CPS",
 	"better_hud.cps.config.enable": "Show CPS",

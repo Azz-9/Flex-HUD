@@ -2,9 +2,12 @@ package me.Azz_9.better_hud.client.screens.modulesList;
 
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+
+import java.util.function.Supplier;
 
 import static me.Azz_9.better_hud.client.Better_hudClient.MOD_ID;
 
@@ -15,7 +18,7 @@ public class Module {
 	public AbstractConfigurationScreen configScreen;
 	public ButtonWidget button;
 
-	public Module(String name, String id, AbstractConfigurationScreen configScreen, int buttonWidth, int buttonHeight, ModulesListScreen parent) {
+	public Module(String name, String id, AbstractConfigurationScreen configScreen, int buttonWidth, int buttonHeight, ModulesListScreen parent, Supplier<Tooltip> getTooltip) {
 		if (name == null) {
 			this.setAllNull();
 		} else {
@@ -29,6 +32,10 @@ public class Module {
 					})
 					.size(buttonWidth, buttonHeight)
 					.build();
+
+			if (getTooltip != null) {
+				this.button.setTooltip(getTooltip.get());
+			}
 		}
 	}
 

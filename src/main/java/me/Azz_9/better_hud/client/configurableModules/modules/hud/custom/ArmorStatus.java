@@ -160,7 +160,7 @@ public class ArmorStatus extends AbstractTextElement {
 		renderables.add(new RenderableItem(x, y, stack));
 		int drawingWidth = 16;
 
-		if (stack.isDamageable()) {
+		if (new ItemStack(stack.getItem()).isDamageable()) {
 			switch (this.durabilityType.getValue()) {
 				case PERCENTAGE -> {
 					String text = Math.round(getDurabilityPercentage(stack)) + "%";
