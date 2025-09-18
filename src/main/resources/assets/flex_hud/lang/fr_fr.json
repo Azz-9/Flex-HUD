@@ -28,6 +28,7 @@
 	"flex_hud.crosshair_editor": "Editeur de viseur",
 	"flex_hud.crosshair_editor.color": "Couleur",
 	"flex_hud.crosshair_editor.clear": "Tout effacer",
+	"flex_hud.crosshair_editor.presets": "Préréglages",
 
 	"flex_hud.help_widget": "Bouton d'aide",
 	"flex_hud.move_module_screen.help_widget.line1": "CTRL + Z : annuler",

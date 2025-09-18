@@ -28,6 +28,7 @@
 	"flex_hud.crosshair_editor": "Crosshair editor",
 	"flex_hud.crosshair_editor.color": "Color",
 	"flex_hud.crosshair_editor.clear": "Clear",
+	"flex_hud.crosshair_editor.presets": "Presets",
 
 	"flex_hud.help_widget": "Help button",
 	"flex_hud.move_module_screen.help_widget.line1": "CTRL + Z : undo",

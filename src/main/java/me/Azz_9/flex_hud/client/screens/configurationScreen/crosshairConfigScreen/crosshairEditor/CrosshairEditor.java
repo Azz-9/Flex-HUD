@@ -37,6 +37,7 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 	private ButtonWidget clearButton;
 
 	// presets list
+	private final TextWidget presetText;
 	private CrosshairPresetsList crosshairPresetsList;
 
 	private boolean clicked = false;
@@ -98,6 +99,8 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 				asideWidth - 6, listHeight,
 				this.getBottom() - padding - listHeight, asideX, this
 		);
+		this.presetText = new TextWidget(Text.translatable("flex_hud.crosshair_editor.presets"), MinecraftClient.getInstance().textRenderer);
+		this.presetText.setPosition(crosshairPresetsList.getX(), crosshairPresetsList.getY() - MinecraftClient.getInstance().textRenderer.fontHeight - 2);
 	}
 
 	@Override
@@ -114,13 +117,8 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 		colorButton.render(context, mouseX, mouseY, deltaTicks);
 
 		clearButton.render(context, mouseX, mouseY, deltaTicks);
-
-		context.drawText(
-				MinecraftClient.getInstance().textRenderer, "Presets",
-				crosshairPresetsList.getX(),
-				crosshairPresetsList.getY() - MinecraftClient.getInstance().textRenderer.fontHeight - 2,
-				0xffffffff, true
-		);
+		
+		presetText.render(context, mouseX, mouseY, deltaTicks);
 		crosshairPresetsList.render(context, mouseX, mouseY, deltaTicks);
 
 		if (colorSelector.isFocused()) {
@@ -132,6 +130,14 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 		crosshairButtonWidget.onReceivePixel(x, y, pixels[y][x].getColor());
 	}
 
+	public int[][] getTexture() {
+		int[][] texture = new int[this.pixels.length][this.pixels[0].length];
+		for (int y = 0; y < texture.length; y++) {
+			texture[y] = crosshairButtonWidget.getData()[y].clone();
+		}
+		return texture;
+	}
+
 	public void setTexture(int[][] texture) {
 		crosshairButtonWidget.setCrosshairTexture(texture);
 		this.updateTexture(texture);
@@ -139,10 +145,7 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 
 	public void clearTexture() {
 		int[][] texture = new int[this.pixels.length][this.pixels[0].length];
-		int[][] oldTexture = new int[this.pixels.length][this.pixels[0].length];
-		for (int y = 0; y < texture.length; y++) {
-			oldTexture[y] = crosshairButtonWidget.getData()[y].clone();
-		}
+		int[][] oldTexture = getTexture();
 		undoManager.addAction(new TextureAction(this, oldTexture, texture));
 
 		crosshairButtonWidget.setCrosshairTexture(texture);
