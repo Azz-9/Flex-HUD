@@ -6,6 +6,7 @@ import me.Azz_9.better_hud.client.configurableModules.modules.hud.MovableModule;
 import me.Azz_9.better_hud.client.mixin.bossBar.BossBarAccessor;
 import me.Azz_9.better_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.better_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
+import me.Azz_9.better_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
@@ -47,6 +48,8 @@ public class BossBar extends AbstractHudElement implements MovableModule {
 	private transient Map<UUID, ClientBossBar> bossBars = new LinkedHashMap<>();
 	private final transient int BOSS_BAR_GAP = 10;
 
+	public final ConfigBoolean showBossBar = new ConfigBoolean(true, "better_hud.bossbar.config.show_bossbar");
+
 	public BossBar(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 	}
@@ -60,6 +63,10 @@ public class BossBar extends AbstractHudElement implements MovableModule {
 
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
 		MinecraftClient client = MinecraftClient.getInstance();
+		
+		if (shouldNotRender()) {
+			return;
+		}
 
 		if (Better_hudClient.isInMoveElementScreen) {
 			Matrix3x2fStack matrices = context.getMatrices();
@@ -79,10 +86,6 @@ public class BossBar extends AbstractHudElement implements MovableModule {
 			context.drawTextWithShadow(client.textRenderer, text, textX, textY, 0xffffffff);
 
 			matrices.popMatrix();
-			return;
-		}
-
-		if (shouldNotRender()) {
 			return;
 		}
 
@@ -142,6 +145,11 @@ public class BossBar extends AbstractHudElement implements MovableModule {
 	}
 
 	@Override
+	protected boolean shouldNotRender() {
+		return super.shouldNotRender() || !this.showBossBar.getValue();
+	}
+
+	@Override
 	public String getID() {
 		return "boss_bar";
 	}
@@ -156,16 +164,21 @@ public class BossBar extends AbstractHudElement implements MovableModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				super.init();
 
 				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
-					buttonWidth = 160;
+					buttonWidth = 220;
 				}
+
+				super.init();
 
 				this.addAllEntries(
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(enabled)
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(showBossBar)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)

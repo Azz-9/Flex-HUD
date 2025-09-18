@@ -182,7 +182,8 @@
 	"better_hud.crosshair.config.disable_blending": "Désactiver le fondu",
 
 	"better_hud.bossbar": "Barre de boss",
-	"better_hud.bossbar.config.enable": "Afficher la barre de boss",
+	"better_hud.bossbar.config.enable": "Activer la barrer de boss customisée",
+	"better_hud.bossbar.config.show_bossbar": "Afficher la barre de boss",
 
 	"better_hud.ressource_pack": "Ressource pack",
 	"better_hud.ressource_pack.config.enable": "Afficher le ressource pack",

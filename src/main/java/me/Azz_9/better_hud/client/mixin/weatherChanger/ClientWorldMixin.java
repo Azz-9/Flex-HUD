@@ -35,6 +35,6 @@ public abstract class ClientWorldMixin extends World {
 				return 1f;
 			} else return 0f;
 		}
-		return super.getRainGradient(delta);
+		return super.getThunderGradient(delta);
 	}
 }

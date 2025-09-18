@@ -7,8 +7,8 @@
 		"cps.MouseMixin",
 		"durabilityPing.ItemStackMixin",
 		"reach.PlayerMixin",
-		"weatherChanger.ClientWorldMixin",
-		"weatherChanger.ClientWorldPropertiesMixin"
+		"timeChanger.ClientWorldPropertiesMixin",
+		"weatherChanger.ClientWorldMixin"
 	],
 	"client": [
 		"bossBar.BossBarAccessor",

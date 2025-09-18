@@ -1,4 +1,4 @@
-package me.Azz_9.better_hud.client.mixin.weatherChanger;
+package me.Azz_9.better_hud.client.mixin.timeChanger;
 
 import me.Azz_9.better_hud.client.configurableModules.JsonConfigHelper;
 import me.Azz_9.better_hud.client.configurableModules.modules.notHud.TimeChanger;

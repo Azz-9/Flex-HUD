@@ -13,7 +13,7 @@ public abstract class BossBarHudMixin {
 
 	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
 	public void render(DrawContext context, CallbackInfo ci) {
-		if (JsonConfigHelper.getInstance().isEnabled) {
+		if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().bossBar.enabled.getValue()) {
 			ci.cancel();
 		}
 	}
