@@ -1,30 +1,30 @@
 {
 	"schemaVersion": 1,
-	"id": "better_hud",
+	"id": "flex_hud",
 	"version": "${version}",
 
-	"name": "Better HUD",
-	"description": "Adds a bunch of hud things",
+	"name": "Flex HUD",
+	"description": "This mod adds a fully customizable HUD system and useful utilities for Minecraft.\nWhether you're playing survival, building, or PvP, it provides all the information and quality-of-life features you need in one place.",
 	"authors": [
 		"Azz_9"
 	],
 	"contact": {},
 
 	"license": "All-Rights-Reserved",
-	"icon": "assets/better_hud/icon.png",
+	"icon": "assets/flex_hud/icon.png",
 
 	"environment": "client",
 	"entrypoints": {
 		"client": [
-			"me.Azz_9.better_hud.client.Better_hudClient"
+			"me.Azz_9.flex_hud.client.Flex_hudClient"
 		],
 		"modmenu": [
-			"me.Azz_9.better_hud.compat.ModMenuCompat"
+			"me.Azz_9.flex_hud.compat.ModMenuCompat"
 		]
 	},
 
 	"mixins": [
-		"better_hud.mixins.json"
+		"flex_hud.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=${loader_version}",
