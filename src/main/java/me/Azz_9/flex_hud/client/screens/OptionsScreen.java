@@ -90,7 +90,7 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 		float progress = Math.min((float) (System.currentTimeMillis() - initTimestamp) / ANIMATION_DURATION, 1.0f);
 		float easedProgress = EaseUtils.getEaseOutQuad(progress);
 
-		final Identifier modIcon = Identifier.of(MOD_ID, "icon.png");
+		final Identifier modIcon = Identifier.of(MOD_ID, "logo-without-bg.png");
 
 		// set the icon width and height
 		int iconWidth = 64;

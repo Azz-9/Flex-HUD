@@ -11,7 +11,7 @@
 	"contact": {},
 
 	"license": "All-Rights-Reserved",
-	"icon": "assets/flex_hud/icon.png",
+	"icon": "assets/flex_hud/logo.png",
 
 	"environment": "client",
 	"entrypoints": {
