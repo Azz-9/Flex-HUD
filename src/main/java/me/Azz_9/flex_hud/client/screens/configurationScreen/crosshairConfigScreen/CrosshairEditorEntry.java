@@ -47,12 +47,19 @@ public class CrosshairEditorEntry extends ScrollableConfigList.AbstractConfigEnt
 	}
 
 	@Override
+	public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+		super.render(context, mouseX, mouseY, hovered, deltaTicks);
+
+		crosshairButtonWidget.render(context, mouseX, mouseY, deltaTicks);
+	}
+
+	/*@Override
 	public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickProgress) {
 		super.render(context, index, y, x, entryWidth, entryHeight, mouseX, mouseY, hovered, tickProgress);
 		crosshairButtonWidget.setPosition(x, y);
 
 		crosshairButtonWidget.render(context, mouseX, mouseY, tickProgress);
-	}
+	}*/
 
 	@Override
 	public TrackableChange getTrackableChangeWidget() {

@@ -45,13 +45,13 @@ public class NetherCoordinates extends AbstractTextElement {
 		MinecraftClient client = MinecraftClient.getInstance();
 		PlayerEntity player = client.player;
 
-		if (shouldNotRender() || player == null || !player.getWorld().getRegistryKey().equals(World.OVERWORLD) && this.onlyWhenInOverworld.getValue() || player.getWorld().getRegistryKey().equals(World.END)) {
+		if (shouldNotRender() || player == null || !player.getEntityWorld().getRegistryKey().equals(World.OVERWORLD) && this.onlyWhenInOverworld.getValue() || player.getEntityWorld().getRegistryKey().equals(World.END)) {
 			return;
 		}
 
 		int x, z;
 		String dimension;
-		if (player.getWorld().getRegistryKey().equals(World.OVERWORLD)) {
+		if (player.getEntityWorld().getRegistryKey().equals(World.OVERWORLD)) {
 			x = (int) Math.floor(player.getX() / 8);
 			z = (int) Math.floor(player.getZ() / 8);
 

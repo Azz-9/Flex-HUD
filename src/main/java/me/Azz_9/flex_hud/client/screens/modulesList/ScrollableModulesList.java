@@ -3,7 +3,6 @@ package me.Azz_9.flex_hud.client.screens.modulesList;
 import me.Azz_9.flex_hud.client.configurableModules.JsonConfigHelper;
 import me.Azz_9.flex_hud.client.screens.AbstractSmoothScrollableList;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
@@ -121,6 +120,11 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 		}
 
 		@Override
+		public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+			//TODO
+		}
+
+		/*@Override
 		public void render(DrawContext drawContext, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			int totalButtonWidth = scrollableModulesList.buttonWidth * scrollableModulesList.columns + scrollableModulesList.padding;
 			int buttonX = x + (entryWidth - totalButtonWidth) / scrollableModulesList.columns;
@@ -142,7 +146,7 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 				this.rowModules.get(i).button.setY(y + scrollableModulesList.iconWidthHeight + scrollableModulesList.padding / 2);
 				this.rowModules.get(i).button.render(drawContext, mouseX, mouseY, tickDelta);
 			}
-		}
+		}*/
 
 		@Override
 		public List<ClickableWidget> children() {

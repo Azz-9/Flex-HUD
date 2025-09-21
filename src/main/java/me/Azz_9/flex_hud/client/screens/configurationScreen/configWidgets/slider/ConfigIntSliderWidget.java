@@ -5,8 +5,8 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.text.Text;
@@ -40,7 +40,7 @@ public class ConfigIntSliderWidget<T> extends SliderWidget implements TrackableC
 	public void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
 		if (this.active) {
 			if (this.isSelected()) {
-				context.drawBorder(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+				//TODO context.drawBorder(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
 			}
 		}
 		super.renderWidget(context, mouseX, mouseY, deltaTicks);
@@ -92,7 +92,7 @@ public class ConfigIntSliderWidget<T> extends SliderWidget implements TrackableC
 
 	@Override
 	protected void applyValue() {
-		if (Screen.hasShiftDown() && STEP != null) {
+		if (MinecraftClient.getInstance().isShiftPressed() && STEP != null) {
 			// Snap to the nearest multiple of STEP
 			int rawValue = getRelativeValue();
 			int snappedValue = Math.round((float) rawValue / STEP) * STEP;

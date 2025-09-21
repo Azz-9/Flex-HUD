@@ -2,6 +2,7 @@ package me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScre
 
 import me.Azz_9.flex_hud.client.screens.AbstractSmoothScrollableList;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
@@ -291,6 +292,11 @@ public class CrosshairPresetsList extends AbstractSmoothScrollableList<Crosshair
 		}
 
 		@Override
+		public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+			//TODO
+		}
+
+		/*@Override
 		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickProgress) {
 			int centerX = x + (entryWidth - texture.length * PIXEL_SIZE) / 2;
 			int centerY = y + (entryHeight - texture.length * PIXEL_SIZE) / 2;
@@ -309,10 +315,10 @@ public class CrosshairPresetsList extends AbstractSmoothScrollableList<Crosshair
 			} else {
 				context.fill(x, y, x + entryWidth, y + entryHeight, 0x20000000);
 			}
-		}
+		}*/
 
 		@Override
-		public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		public boolean mouseClicked(Click click, boolean doubled) {
 			if (parent != null) {
 				int[][] oldTexture = parent.crosshairEditor.getTexture();
 				int[][] texture = new int[this.texture.length][this.texture[0].length];

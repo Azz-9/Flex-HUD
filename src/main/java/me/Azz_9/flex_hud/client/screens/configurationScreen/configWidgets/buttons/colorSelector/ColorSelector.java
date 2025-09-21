@@ -1,9 +1,12 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.input.KeyInput;
 
 import java.util.List;
 
@@ -72,10 +75,10 @@ public class ColorSelector extends ColorUpdatable implements Element, Drawable {
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		if (this.isMouseOver(mouseX, mouseY)) {
+	public boolean mouseClicked(Click click, boolean doubled) {
+		if (this.isMouseOver(click.x(), click.y())) {
 			for (Element child : getChildren()) {
-				child.mouseClicked(mouseX, mouseY, button);
+				child.mouseClicked(click, doubled);
 			}
 
 			return true;
@@ -84,10 +87,10 @@ public class ColorSelector extends ColorUpdatable implements Element, Drawable {
 	}
 
 	@Override
-	public boolean mouseReleased(double mouseX, double mouseY, int button) {
-		if (this.isMouseOver(mouseX, mouseY) || this.isDraggingACursor()) {
-			gradientWidget.mouseReleased(mouseX, mouseY, button);
-			hueWidget.mouseReleased(mouseX, mouseY, button);
+	public boolean mouseReleased(Click click) {
+		if (this.isMouseOver(click.x(), click.y()) || this.isDraggingACursor()) {
+			gradientWidget.mouseReleased(click);
+			hueWidget.mouseReleased(click);
 
 			return true;
 		}
@@ -95,10 +98,10 @@ public class ColorSelector extends ColorUpdatable implements Element, Drawable {
 	}
 
 	@Override
-	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-		if (this.isMouseOver(mouseX, mouseY) || this.isDraggingACursor()) {
-			gradientWidget.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
-			hueWidget.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+	public boolean mouseDragged(Click click, double offsetX, double offsetY) {
+		if (this.isMouseOver(click.x(), click.y()) || this.isDraggingACursor()) {
+			gradientWidget.mouseDragged(click, offsetX, offsetY);
+			hueWidget.mouseDragged(click, offsetX, offsetY);
 
 			return true;
 		}
@@ -106,9 +109,9 @@ public class ColorSelector extends ColorUpdatable implements Element, Drawable {
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+	public boolean keyPressed(KeyInput input) {
 		if (colorFieldWidget.isFocused()) {
-			colorFieldWidget.keyPressed(keyCode, scanCode, modifiers);
+			colorFieldWidget.keyPressed(input);
 
 			return true;
 		}
@@ -116,9 +119,9 @@ public class ColorSelector extends ColorUpdatable implements Element, Drawable {
 	}
 
 	@Override
-	public boolean charTyped(char chr, int modifiers) {
+	public boolean charTyped(CharInput input) {
 		if (colorFieldWidget.isFocused()) {
-			return colorFieldWidget.charTyped(chr, modifiers);
+			return colorFieldWidget.charTyped(input);
 		}
 		return false;
 	}

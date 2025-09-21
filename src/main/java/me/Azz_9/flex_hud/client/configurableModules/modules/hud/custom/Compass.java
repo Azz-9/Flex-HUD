@@ -24,6 +24,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.waypoint.EntityTickProgress;
 import net.minecraft.world.waypoint.TrackedWaypoint;
 import net.minecraft.world.waypoint.Waypoint;
 import org.joml.Matrix3x2fStack;
@@ -111,7 +112,7 @@ public class Compass extends AbstractTextElement {
 
 		// Override locator bar
 		if (overrideLocatorBar.getValue()) {
-			renderLocatorBarWaypoints(context, matrices);
+			renderLocatorBarWaypoints(context, matrices, tickCounter);
 		}
 
 		// tamed entities
@@ -280,19 +281,22 @@ public class Compass extends AbstractTextElement {
 		return ColorHelper.withAlpha(getAlpha(CenterXOfDrawing), getColor());
 	}
 
-	private void renderLocatorBarWaypoints(DrawContext context, Matrix3x2fStack matrices) {
+	private void renderLocatorBarWaypoints(DrawContext context, Matrix3x2fStack matrices, RenderTickCounter tickCounter) {
 		MinecraftClient client = MinecraftClient.getInstance();
 
-		if (client.cameraEntity == null || client.player == null) {
+		if (client.getCameraEntity() == null || client.player == null) {
 			return;
 		}
 
 		final Identifier ARROW_UP = Identifier.ofVanilla("hud/locator_bar_arrow_up");
 		final Identifier ARROW_DOWN = Identifier.ofVanilla("hud/locator_bar_arrow_down");
 
-		client.player.networkHandler.getWaypointHandler().forEachWaypoint(client.cameraEntity, (waypoint) -> {
-			if (!(Boolean) waypoint.getSource().left().map((uuid) -> uuid.equals(client.cameraEntity.getUuid())).orElse(false)) {
-				double angleDifference = waypoint.getRelativeYaw(client.world, client.gameRenderer.getCamera());
+		EntityTickProgress entityTickProgress = entityx -> tickCounter.getTickProgress(!client.player.getEntityWorld().getTickManager().shouldSkipTick(entityx));
+
+		client.player.networkHandler.getWaypointHandler().forEachWaypoint(client.getCameraEntity(), (waypoint) -> {
+			if (!(Boolean) waypoint.getSource().left().map((uuid) -> uuid.equals(client.getCameraEntity().getUuid())).orElse(false)) {
+
+				double angleDifference = waypoint.getRelativeYaw(client.world, client.gameRenderer.getCamera(), entityTickProgress);
 
 				if (Math.abs(angleDifference) <= 120) {
 					// Calculer la position X de chaque point cardinal en fonction de l'angle
@@ -300,7 +304,7 @@ public class Compass extends AbstractTextElement {
 
 					Waypoint.Config config = waypoint.getConfig();
 					WaypointStyleAsset waypointStyleAsset = client.getWaypointStyleAssetManager().get(config.style);
-					float distance = (float) Math.sqrt(waypoint.squaredDistanceTo(client.cameraEntity));
+					float distance = (float) Math.sqrt(waypoint.squaredDistanceTo(client.getCameraEntity()));
 					Identifier waypointIdentifier = waypointStyleAsset.getSpriteForDistance(distance);
 					int color = config.color.orElseGet(() -> waypoint.getSource().map((uuid) -> ColorHelper.withBrightness(ColorHelper.withAlpha(255, uuid.hashCode()), 0.9F), (name) -> ColorHelper.withBrightness(ColorHelper.withAlpha(255, name.hashCode()), 0.9F)));
 
@@ -311,7 +315,7 @@ public class Compass extends AbstractTextElement {
 					matrices.scale(0.7f, 0.7f);
 
 					context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, waypointIdentifier, 0, 0, textureSize, textureSize, ColorHelper.withAlpha(getAlpha((float) positionX), color));
-					TrackedWaypoint.Pitch pitch = waypoint.getPitch(client.world, client.gameRenderer);
+					TrackedWaypoint.Pitch pitch = waypoint.getPitch(client.world, client.gameRenderer, entityTickProgress);
 					if (pitch != TrackedWaypoint.Pitch.NONE) {
 						int offset;
 						Identifier arrowIdentifier;

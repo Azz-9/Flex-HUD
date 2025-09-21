@@ -37,7 +37,7 @@ public class ConfigResetButtonWidget extends TexturedButtonWidget implements Obs
 		if (!this.active) {
 			context.fill(getX(), getY(), getRight(), getBottom(), 0xcf4e4e4e);
 		} else if (this.isSelected()) {
-			context.drawBorder(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+			context.drawStrokedRectangle(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff); //todo check border
 		}
 	}
 

@@ -63,6 +63,21 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 	}
 
 	@Override
+	public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+		super.render(context, mouseX, mouseY, hovered, deltaTicks);
+
+		increaseButton.render(context, mouseX, mouseY, deltaTicks);
+		if (!increaseButton.active) {
+			context.fill(increaseButton.getX(), increaseButton.getY(), increaseButton.getRight(), increaseButton.getBottom(), 0xcf4e4e4e);
+		}
+		decreaseButton.render(context, mouseX, mouseY, deltaTicks);
+		if (!decreaseButton.active) {
+			context.fill(decreaseButton.getX(), decreaseButton.getY(), decreaseButton.getRight(), decreaseButton.getBottom(), 0xcf4e4e4e);
+		}
+		intFieldWidget.render(context, mouseX, mouseY, deltaTicks);
+	}
+
+	/*@Override
 	public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickProgress) {
 		super.render(context, index, y, x, entryWidth, entryHeight, mouseX, mouseY, hovered, tickProgress);
 		intFieldWidget.setPosition(x + entryWidth - resetButtonWidget.getWidth() - 10 - increaseAndDecreaseButtonsSize - intFieldWidget.getWidth(), y);
@@ -78,7 +93,7 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 			context.fill(decreaseButton.getX(), decreaseButton.getY(), decreaseButton.getRight(), decreaseButton.getBottom(), 0xcf4e4e4e);
 		}
 		intFieldWidget.render(context, mouseX, mouseY, tickProgress);
-	}
+	}*/
 
 	@Override
 	public List<? extends Selectable> selectableChildren() {

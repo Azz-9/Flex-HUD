@@ -7,8 +7,10 @@ import me.Azz_9.flex_hud.client.screens.AbstractCallbackScreen;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.actions.UndoManager;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.widgets.HelpWidget;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.widgets.MovableWidget;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
@@ -71,7 +73,7 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 			return;
 		}
 
-		movableWidgets.forEach(widget -> widget.render(context, deltaTicks));
+		movableWidgets.forEach(widget -> widget.draw(context, mouseX, mouseY, deltaTicks));
 
 		helpWidget.render(context, mouseX, mouseY, deltaTicks);
 	}
@@ -105,22 +107,22 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		if (helpWidget.getDisplayHelp() && !helpWidget.isMouseOver(mouseX, mouseY)) {
-			helpWidget.onClick(mouseX, mouseY);
+	public boolean mouseClicked(Click click, boolean doubled) {
+		if (helpWidget.getDisplayHelp() && !helpWidget.isMouseOver(click.x(), click.y())) {
+			helpWidget.onClick(click, doubled);
 		}
-		return super.mouseClicked(mouseX, mouseY, button);
+		return super.mouseClicked(click, doubled);
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (keyCode == 87 && modifiers == GLFW.GLFW_MOD_CONTROL) { // CTRL + Z
+	public boolean keyPressed(KeyInput input) {
+		if (input.key() == 87 && input.modifiers() == GLFW.GLFW_MOD_CONTROL) { // CTRL + Z
 			undoManager.undo();
-		} else if ((keyCode == GLFW.GLFW_KEY_Y && modifiers == GLFW.GLFW_MOD_CONTROL) ||
-				(keyCode == 87 && modifiers == (GLFW.GLFW_MOD_CONTROL + GLFW.GLFW_MOD_SHIFT))) { // CTRL + Y or CTRL + SHIFT + Z
+		} else if ((input.key() == GLFW.GLFW_KEY_Y && input.modifiers() == GLFW.GLFW_MOD_CONTROL) ||
+				(input.key() == 87 && input.modifiers() == (GLFW.GLFW_MOD_CONTROL + GLFW.GLFW_MOD_SHIFT))) { // CTRL + Y or CTRL + SHIFT + Z
 			undoManager.redo();
 		}
-		return super.keyPressed(keyCode, scanCode, modifiers);
+		return super.keyPressed(input);
 	}
 
 	@Override

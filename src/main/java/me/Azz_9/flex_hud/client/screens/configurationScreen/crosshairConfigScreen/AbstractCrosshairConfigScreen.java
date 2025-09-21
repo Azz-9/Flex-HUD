@@ -3,8 +3,10 @@ package me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScre
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.crosshairEditor.CrosshairEditor;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.widgets.HelpWidget;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
@@ -45,36 +47,36 @@ public abstract class AbstractCrosshairConfigScreen extends AbstractConfiguratio
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+	public boolean mouseClicked(Click click, boolean doubled) {
 		if (crosshairEditor != null && crosshairEditor.isFocused()) {
-			if (crosshairEditor.mouseClicked(mouseX, mouseY, button) || helpWidget.mouseClicked(mouseX, mouseY, button)) {
+			if (crosshairEditor.mouseClicked(click, doubled) || helpWidget.mouseClicked(click, doubled)) {
 				return true;
 			} else {
 				closeEditor();
 				return false;
 			}
 		}
-		return super.mouseClicked(mouseX, mouseY, button);
+		return super.mouseClicked(click, doubled);
 	}
 
 	@Override
-	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+	public boolean mouseDragged(Click click, double offsetX, double offsetY) {
 		if (crosshairEditor != null && crosshairEditor.isFocused()) {
-			if (crosshairEditor.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
+			if (crosshairEditor.mouseDragged(click, offsetX, offsetY)) {
 				return true;
 			}
 		}
-		return super.mouseClicked(mouseX, mouseY, button);
+		return super.mouseDragged(click, offsetX, offsetY);
 	}
 
 	@Override
-	public boolean mouseReleased(double mouseX, double mouseY, int button) {
+	public boolean mouseReleased(Click click) {
 		if (crosshairEditor != null && crosshairEditor.isFocused()) {
-			if (crosshairEditor.mouseReleased(mouseX, mouseY, button)) {
+			if (crosshairEditor.mouseReleased(click)) {
 				return true;
 			}
 		}
-		return super.mouseReleased(mouseX, mouseY, button);
+		return super.mouseReleased(click);
 	}
 
 	@Override
@@ -88,14 +90,14 @@ public abstract class AbstractCrosshairConfigScreen extends AbstractConfiguratio
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+	public boolean keyPressed(KeyInput input) {
 		if (crosshairEditor != null && crosshairEditor.isFocused()) {
-			if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+			if (input.key() == GLFW.GLFW_KEY_ESCAPE) {
 				closeEditor();
 				return true;
-			} else return crosshairEditor.keyPressed(keyCode, scanCode, modifiers);
+			} else return crosshairEditor.keyPressed(input);
 		}
-		return super.keyPressed(keyCode, scanCode, modifiers);
+		return super.keyPressed(input);
 	}
 
 	public void openEditor(CrosshairButtonWidget<?> crosshairButtonWidget) {

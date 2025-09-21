@@ -17,9 +17,6 @@
 	"entrypoints": {
 		"client": [
 			"me.Azz_9.flex_hud.client.Flex_hudClient"
-		],
-		"modmenu": [
-			"me.Azz_9.flex_hud.compat.ModMenuCompat"
 		]
 	},
 
@@ -30,6 +27,6 @@
 		"fabricloader": ">=${loader_version}",
 		"fabric": "*",
 		"fabric-key-binding-api-v1": "*",
-		"minecraft": "${minecraft_version}"
+		"minecraft": "1.21.9-beta.2"
 	}
 }

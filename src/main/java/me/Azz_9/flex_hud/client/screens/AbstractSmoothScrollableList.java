@@ -17,12 +17,6 @@ public abstract class AbstractSmoothScrollableList<E extends ElementListWidget.E
 		this.currentScroll = 0.0;
 	}
 
-	public AbstractSmoothScrollableList(MinecraftClient minecraftClient, int width, int height, int y, int itemHeight, int headerHeight) {
-		super(minecraftClient, width, height, y, itemHeight, headerHeight);
-		this.targetScroll = 0.0;
-		this.currentScroll = 0.0;
-	}
-
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
 		// Update the target scroll position

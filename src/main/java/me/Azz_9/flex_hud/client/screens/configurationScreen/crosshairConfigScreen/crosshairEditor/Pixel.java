@@ -1,5 +1,6 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.crosshairEditor;
 
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
@@ -30,21 +31,21 @@ public class Pixel extends ClickableWidget {
 
 
 		if (this.isHovered()) {
-			context.drawBorder(getX(), getY(), getWidth(), getHeight(), 0xffdf1515);
+			//TODO context.drawBorder(getX(), getY(), getWidth(), getHeight(), 0xffdf1515);
 		} else {
-			context.drawBorder(getX(), getY(), getWidth(), getHeight(), 0xffdfdfdf);
+			//TODO context.drawBorder(getX(), getY(), getWidth(), getHeight(), 0xffdfdfdf);
 		}
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		if (isMouseOver(mouseX, mouseY)) {
-			if (button == 0) {
+	public boolean mouseClicked(Click click, boolean doubled) {
+		if (isMouseOver(click.x(), click.y())) {
+			if (click.button() == 0) {
 				if (color != crosshairEditor.getColor()) {
 					color = crosshairEditor.getColor();
 					crosshairEditor.onTextureChange(pixelX, pixelY);
 				}
-			} else if (button == 1) {
+			} else if (click.button() == 1) {
 				if (color != 0x00000000) {
 					color = 0x00000000;
 					crosshairEditor.onTextureChange(pixelX, pixelY);
@@ -56,8 +57,8 @@ public class Pixel extends ClickableWidget {
 	}
 
 	@Override
-	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-		return mouseClicked(mouseX, mouseY, button);
+	public boolean mouseDragged(Click click, double offsetX, double offsetY) {
+		return mouseClicked(click, false);
 	}
 
 	public int getColor() {

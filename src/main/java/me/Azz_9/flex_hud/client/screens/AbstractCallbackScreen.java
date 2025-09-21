@@ -1,9 +1,11 @@
 package me.Azz_9.flex_hud.client.screens;
 
 import me.Azz_9.flex_hud.client.configurableModules.JsonConfigHelper;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
@@ -98,8 +100,8 @@ public abstract class AbstractCallbackScreen extends AbstractBackNavigableScreen
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (shouldCloseOnEsc() && keyCode == GLFW.GLFW_KEY_ESCAPE) {
+	public boolean keyPressed(KeyInput input) {
+		if (shouldCloseOnEsc() && input.key() == GLFW.GLFW_KEY_ESCAPE) {
 			if (callbackScreen) {
 				setCallbackScreen(false);
 			} else {
@@ -107,7 +109,7 @@ public abstract class AbstractCallbackScreen extends AbstractBackNavigableScreen
 			}
 			return true;
 		}
-		return super.keyPressed(keyCode, scanCode, modifiers);
+		return super.keyPressed(input);
 	}
 
 	protected void cancel() {
@@ -121,7 +123,7 @@ public abstract class AbstractCallbackScreen extends AbstractBackNavigableScreen
 	}
 
 	protected void onCancelButtonClick() {
-		if (!Screen.hasShiftDown() && trackableWidgets.stream().anyMatch(TrackableChange::hasChanged)) {
+		if (!MinecraftClient.getInstance().isShiftPressed() && trackableWidgets.stream().anyMatch(TrackableChange::hasChanged)) {
 			setCallbackScreen(true);
 		} else {
 			cancel();

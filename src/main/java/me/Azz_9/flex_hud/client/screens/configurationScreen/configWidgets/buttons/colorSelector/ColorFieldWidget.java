@@ -2,6 +2,7 @@ package me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.butto
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.text.Text;
 
@@ -33,11 +34,11 @@ public class ColorFieldWidget extends TextFieldWidget {
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		if (this.active && this.visible && this.isValidClickButton(button)) {
-			setFocused(this.isMouseOver(mouseX, mouseY));
+	public boolean mouseClicked(Click click, boolean doubled) {
+		if (this.active && this.visible && this.isValidClickButton(click.buttonInfo())) {
+			setFocused(this.isMouseOver(click.x(), click.y()));
 		}
-		return super.mouseClicked(mouseX, mouseY, button);
+		return super.mouseClicked(click, doubled);
 	}
 
 	public void updateColor(int color) {

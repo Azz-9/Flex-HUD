@@ -16,7 +16,7 @@ public class TamedEntityUtils {
 	public static void update() {
 		PlayerEntity player = MinecraftClient.getInstance().player;
 		if (player == null) return;
-		tamedEntities = player.getWorld().getEntitiesByClass(
+		tamedEntities = player.getEntityWorld().getEntitiesByClass(
 				LivingEntity.class,
 				player.getBoundingBox().expand(100),
 				entity -> {

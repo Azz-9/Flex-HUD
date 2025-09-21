@@ -8,10 +8,12 @@ import me.Azz_9.flex_hud.client.screens.widgets.buttons.IconButton;
 import me.Azz_9.flex_hud.client.utils.EaseUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -124,21 +126,21 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (openOptionScreenKeyBind.matchesKey(keyCode, scanCode)) {
+	public boolean keyPressed(KeyInput input) {
+		if (openOptionScreenKeyBind.matchesKey(input)) {
 			this.close();
 			return true;
 		}
-		return super.keyPressed(keyCode, scanCode, modifiers);
+		return super.keyPressed(input);
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+	public boolean mouseClicked(Click click, boolean doubled) {
 		//if the keybind is on a mouse button
-		if (openOptionScreenKeyBind.matchesMouse(button)) {
+		if (openOptionScreenKeyBind.matchesMouse(click)) {
 			this.close();
 			return true;
 		}
-		return super.mouseClicked(mouseX, mouseY, button);
+		return super.mouseClicked(click, doubled);
 	}
 }

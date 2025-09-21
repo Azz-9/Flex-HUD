@@ -42,7 +42,7 @@ public class TntCountdown extends AbstractModule {
 			return;
 		}
 
-		List<TntEntity> tntEntities = player.getWorld().getEntitiesByClass(TntEntity.class, player.getBoundingBox().expand(20), (entity) -> true);
+		List<TntEntity> tntEntities = player.getEntityWorld().getEntitiesByClass(TntEntity.class, player.getBoundingBox().expand(20), (entity) -> true);
 
 		for (TntEntity tntEntity : tntEntities) {
 			int seconds = tntEntity.getFuse() / 20;

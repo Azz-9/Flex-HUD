@@ -7,6 +7,7 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGe
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
 import me.Azz_9.flex_hud.client.utils.EaseUtils;
 import net.minecraft.client.gl.RenderPipelines;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
@@ -53,9 +54,9 @@ public class CrosshairButtonWidget<T> extends ClickableWidget implements Trackab
 			drawSelectedTexture(context);
 
 			if (this.isSelected()) {
-				context.drawBorder(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+				//TODO context.drawBorder(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
 			}
-			context.drawBorder(getRight() - getHeight(), getY(), getHeight(), getHeight(), (this.isHovered() ? 0xffd0d0d0 : 0xff404040));
+			//TODO context.drawBorder(getRight() - getHeight(), getY(), getHeight(), getHeight(), (this.isHovered() ? 0xffd0d0d0 : 0xff404040));
 		}
 		float startX = getRight() - getHeight() + 1 + (getHeight() - 2 - variable.getValue()[0].length) / 2.0f;
 		float startY = getY() + 1 + (getHeight() - 2 - variable.getValue().length) / 2.0f;
@@ -135,7 +136,7 @@ public class CrosshairButtonWidget<T> extends ClickableWidget implements Trackab
 	}
 
 	@Override
-	public void onClick(double mouseX, double mouseY) {
+	public void onClick(Click click, boolean bl) {
 		onClickAction.accept(this);
 	}
 

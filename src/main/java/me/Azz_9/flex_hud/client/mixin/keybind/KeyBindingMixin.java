@@ -3,6 +3,7 @@ package me.Azz_9.flex_hud.client.mixin.keybind;
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.screens.OptionsScreen;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,7 +20,7 @@ public abstract class KeyBindingMixin {
 		int scanCode = key.getCategory() == InputUtil.Type.SCANCODE ? key.getCode() : -1;
 
 		// open option screen
-		if (Flex_hudClient.openOptionScreenKeyBind.matchesKey(keyCode, scanCode)) {
+		if (Flex_hudClient.openOptionScreenKeyBind.matchesKey(new KeyInput(keyCode, scanCode, 0))) { //TODO check
 			MinecraftClient.getInstance().setScreen(new OptionsScreen());
 		}
 

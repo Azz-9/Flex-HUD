@@ -98,7 +98,7 @@ public class ConfigIntFieldWidget<T> extends TextFieldWidget implements Trackabl
 	public void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
 		if (this.active) {
 			if (this.isSelected()) {
-				context.drawBorder(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+				//TODO context.drawBorder(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
 			}
 		}
 		super.renderWidget(context, mouseX, mouseY, deltaTicks);
