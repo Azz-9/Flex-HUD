@@ -1,0 +1,21 @@
+name: Sync Public Branch
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout private repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0   # nécessaire pour pouvoir pousser correctement
+
+      - name: Push to public repo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/tonuser/mon-projet-public.git branche_publique:main --force
