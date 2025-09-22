@@ -15,8 +15,19 @@ jobs:
           fetch-depth: 0   # nécessaire pour pouvoir pousser correctement
           persist-credentials: false
 
-      - name: Push to public repo
+      - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Prepare branch for public push
+        run: |
+          # Crée une branche temporaire
+          git checkout -b temp-push
+          # Supprime le fichier sync.yml du commit
+          git rm -r --cached .github/workflows/sync.yml || true
+          git commit -m "Remove workflows before pushing" || true
+
+      - name: Push to public repo
+        run: |
           git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/Azz-9/Flex-HUD.git main:main --force
