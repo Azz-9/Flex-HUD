@@ -18,4 +18,4 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/tonuser/mon-projet-public.git branche_publique:main --force
+          git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/Azz-9/Flex-HUD.git main:main --force
