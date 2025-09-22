@@ -1,8 +1,5 @@
-.idea/
 .gradle/
 build/
 gradlew
 gradlew.bat
 run/
-*.psd
-src/main/resources/assets/better_hud/tamed_entities_icons/test/
