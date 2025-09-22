@@ -22,11 +22,14 @@ jobs:
 
       - name: Prepare branch for public push
         run: |
-          # Crée une branche temporaire
-          git checkout -b temp-push
-          # Supprime le fichier sync.yml du commit
-          git rm -r --cached .github/workflows/sync.yml || true
-          git commit -m "Remove workflows before pushing" || true
+          # Crée une branche orpheline (pas d'historique)
+          git checkout --orphan public
+          # Supprime tous les fichiers de l'index
+          git reset --hard
+          # Ajoute tous les fichiers sauf le workflow
+          git add . ':! .github/workflows/*'
+          # Commit unique
+          git commit -m "Initial public commit"
 
       - name: Push to public repo
         run: |
