@@ -3,3 +3,4 @@ build/
 gradlew
 gradlew.bat
 run/
+.github/workflows/sync.yml
