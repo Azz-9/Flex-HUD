@@ -2,11 +2,12 @@ package me.Azz_9.flex_hud.client.screens.moveModulesScreen.widgets;
 
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractHudElement;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.MovableModule;
+import me.Azz_9.flex_hud.client.mixin.CursorAccessor;
 import me.Azz_9.flex_hud.client.screens.TrackableChange;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.MoveModulesScreen;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.actions.MoveAction;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.actions.ScaleAction;
-import me.Azz_9.flex_hud.client.utils.StandardCursors;
+import me.Azz_9.flex_hud.client.utils.Cursors;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
@@ -85,26 +86,17 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 
 	@Override
 	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-		if (this.isHovered()) {
-			Cursor cursor;
-			if (this.isScaleHandleHovered(mouseX, mouseY)) {
-				cursor = switch (handlePosition) {
-					case BOTTOM_RIGHT, TOP_LEFT -> StandardCursors.RESIZE_NWSE;
-					case BOTTOM_LEFT, TOP_RIGHT -> StandardCursors.RESIZE_NESW;
-				};
-			} else {
-				cursor = StandardCursors.RESIZE_ALL;
+		if (((CursorAccessor) context).getCursor() == Cursor.DEFAULT) {
+			if (this.isScaleHandleHovered(mouseX, mouseY) || isDraggingScalehandle) {
+				context.setCursor(
+						switch (handlePosition) {
+							case BOTTOM_RIGHT, TOP_LEFT -> Cursors.RESIZE_NWSE;
+							case BOTTOM_LEFT, TOP_RIGHT -> Cursors.RESIZE_NESW;
+						}
+				);
+			} else if (this.isHovered()) {
+				context.setCursor(Cursors.RESIZE_ALL);
 			}
-			context.setCursor(cursor);
-		}
-
-		if (isDraggingScalehandle) {
-			context.setCursor(
-					switch (handlePosition) {
-						case BOTTOM_RIGHT, TOP_LEFT -> StandardCursors.RESIZE_NWSE;
-						case BOTTOM_LEFT, TOP_RIGHT -> StandardCursors.RESIZE_NESW;
-					}
-			);
 		}
 
 		context.fill(getX(), getY(), getRight(), getBottom(), 0x4f88888c);
