@@ -3,6 +3,7 @@ package me.Azz_9.flex_hud.client.screens.modulesList;
 import me.Azz_9.flex_hud.client.configurableModules.JsonConfigHelper;
 import me.Azz_9.flex_hud.client.screens.AbstractSmoothScrollableList;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
@@ -13,7 +14,7 @@ import java.util.function.Consumer;
 
 public class ScrollableModulesList extends AbstractSmoothScrollableList<ScrollableModulesList.Entry> {
 
-	private final List<Entry> allEntries = new ArrayList<>();
+	private final List<Entry> entries = new ArrayList<>();
 	private int buttonWidth;
 	private int buttonHeight;
 	private int iconWidthHeight;
@@ -40,16 +41,16 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 			}
 		}
 		Entry entry = new Entry(modules, this);
-		this.allEntries.add(entry);
+		this.entries.add(entry);
 		this.addEntry(entry);
 	}
 
 	public void filterModules(String query) {
 		query = query.toLowerCase().strip();
-		this.clearEntries();
+		super.clearEntries();
 
 		List<Entry> newEntries = new ArrayList<>();
-		List<Module> modulesInEntry = new ArrayList<>();
+		List<Module> modulesInEntry = new ArrayList<>(); // modules in current entry
 
 		Consumer<Module> addModuleToEntry = module -> {
 			modulesInEntry.add(module);
@@ -60,7 +61,7 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 			}
 		};
 
-		for (Entry entry : this.allEntries) {
+		for (Entry entry : this.entries) {
 			// Vérification pour les colonnes
 			for (Module module : entry.rowModules) {
 				if (module != null && (module.name.toLowerCase().contains(query) || module.id.replace("_", " ").contains(query.toLowerCase()))) {
@@ -101,13 +102,19 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 		return buttonHeight;
 	}
 
-	public List<Entry> getAllEntries() {
-		return this.allEntries;
-	}
-
 	public void setColumns(int columns) {
 		this.columns = columns;
 		JsonConfigHelper.getInstance().numberOfColumns = columns;
+	}
+
+	public List<Entry> getEntries() {
+		return entries;
+	}
+
+	@Override
+	protected void clearEntries() {
+		super.clearEntries();
+		this.entries.clear();
 	}
 
 	public static class Entry extends ElementListWidget.Entry<Entry> {
@@ -121,13 +128,8 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 
 		@Override
 		public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
-			//TODO
-		}
-
-		/*@Override
-		public void render(DrawContext drawContext, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			int totalButtonWidth = scrollableModulesList.buttonWidth * scrollableModulesList.columns + scrollableModulesList.padding;
-			int buttonX = x + (entryWidth - totalButtonWidth) / scrollableModulesList.columns;
+			int buttonX = getX() + (getWidth() - totalButtonWidth) / scrollableModulesList.columns;
 			int iconX = buttonX + (scrollableModulesList.buttonWidth - scrollableModulesList.iconWidthHeight) / 2;
 
 			for (int i = 0; i < rowModules.size(); i++) {
@@ -140,13 +142,14 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 					iconX = buttonX + (scrollableModulesList.buttonWidth - scrollableModulesList.iconWidthHeight) / 2;
 				}
 
-				drawContext.drawTexture(RenderPipelines.GUI_TEXTURED, this.rowModules.get(i).icon, iconX, y, 0, 0,
+				context.drawTexture(RenderPipelines.GUI_TEXTURED, this.rowModules.get(i).icon, iconX, getY(), 0, 0,
 						scrollableModulesList.iconWidthHeight, scrollableModulesList.iconWidthHeight, scrollableModulesList.iconWidthHeight, scrollableModulesList.iconWidthHeight);
 				this.rowModules.get(i).button.setX(buttonX);
-				this.rowModules.get(i).button.setY(y + scrollableModulesList.iconWidthHeight + scrollableModulesList.padding / 2);
-				this.rowModules.get(i).button.render(drawContext, mouseX, mouseY, tickDelta);
+				this.rowModules.get(i).button.setY(getY() + scrollableModulesList.iconWidthHeight + scrollableModulesList.padding / 2);
+				this.rowModules.get(i).button.render(context, mouseX, mouseY, deltaTicks);
 			}
-		}*/
+		}
+
 
 		@Override
 		public List<ClickableWidget> children() {

@@ -20,7 +20,7 @@ public class SpeedUtils {
 			return;
 		}
 
-		Vec3d currentPosition = player.getPos();
+		Vec3d currentPosition = player.getEntityPos();
 		if (previousPosition != null) {
 			Vec3d currentVector = new Vec3d(
 					currentPosition.x - previousPosition.x,

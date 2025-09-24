@@ -6,6 +6,7 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.Conf
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector.ColorBindable;
+import me.Azz_9.flex_hud.client.utils.Cursors;
 import me.Azz_9.flex_hud.client.utils.EaseUtils;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.Click;
@@ -25,6 +26,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+import static me.Azz_9.flex_hud.client.utils.DrawingUtils.drawBorder;
 
 public class ConfigColorButtonWidget<T> extends ClickableWidget implements TrackableChange, DataGetter<Integer>, ResetAware, ColorBindable {
 	private ConfigInteger variable;
@@ -61,18 +63,22 @@ public class ConfigColorButtonWidget<T> extends ClickableWidget implements Track
 
 	@Override
 	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+
 		if (this.active) {
+			if (this.isHovered()) context.setCursor(Cursors.POINTING_HAND);
 
 			drawSelectedTexture(context);
 
 			if (this.isSelected()) {
-				//TODO context.drawBorder(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+				drawBorder(context, getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
 			}
-			//TODO context.drawBorder(getRight() - getHeight(), getY(), getHeight(), getHeight(), (this.isHovered() ? 0xffd0d0d0 : 0xff404040));
+			drawBorder(context, getRight() - getHeight(), getY(), getHeight(), getHeight(), (this.isHovered() ? 0xffd0d0d0 : 0xff404040));
 		}
 		context.fill(getRight() - getHeight() + 1, getY() + 1, getRight() - 1, getBottom() - 1, variable.getValue() | 0xff000000);
 
 		if (!this.active) {
+			if (this.isHovered()) context.setCursor(Cursors.NOT_ALLOWED);
+
 			context.fill(getRight() - getHeight(), getY(), getRight(), getBottom(), 0xcf4e4e4e);
 		}
 	}

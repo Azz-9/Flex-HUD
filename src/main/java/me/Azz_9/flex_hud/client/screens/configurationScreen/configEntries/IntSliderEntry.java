@@ -35,19 +35,23 @@ public class IntSliderEntry extends ScrollableConfigList.AbstractConfigEntry {
 	}
 
 	@Override
+	public void setX(int x) {
+		super.setX(x);
+		sliderWidget.setX(x + getWidth() - resetButtonWidget.getWidth() - 10 - sliderWidget.getWidth());
+	}
+
+	@Override
+	public void setY(int y) {
+		super.setY(y);
+		sliderWidget.setY(y);
+	}
+
+	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
 		super.render(context, mouseX, mouseY, hovered, deltaTicks);
 
-		sliderWidget.renderWidget(context, mouseX, mouseY, deltaTicks);
+		sliderWidget.render(context, mouseX, mouseY, deltaTicks);
 	}
-
-	/*@Override
-	public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickProgress) {
-		super.render(context, index, y, x, entryWidth, entryHeight, mouseX, mouseY, hovered, tickProgress);
-		sliderWidget.setPosition(x + entryWidth - resetButtonWidget.getWidth() - 10 - sliderWidget.getWidth(), y);
-
-		sliderWidget.renderWidget(context, mouseX, mouseY, tickProgress);
-	}*/
 
 	@Override
 	public List<? extends Selectable> selectableChildren() {

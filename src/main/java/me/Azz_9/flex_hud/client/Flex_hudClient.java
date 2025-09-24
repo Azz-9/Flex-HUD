@@ -144,7 +144,7 @@ public class Flex_hudClient implements ClientModInitializer {
 			}
 		});
 
-		final KeyBinding.Category FLEX_HUD = KeyBinding.Category.create(Identifier.of("flex-hud")); //TOdo check category
+		final KeyBinding.Category FLEX_HUD = KeyBinding.Category.create(Identifier.of("flex-hud"));
 
 		// see KeyBindingMixin
 		openOptionScreenKeyBind = KeyBindingHelper.registerKeyBinding(new KeyBinding("flex_hud.controls.open_menu", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_RIGHT_SHIFT, FLEX_HUD));

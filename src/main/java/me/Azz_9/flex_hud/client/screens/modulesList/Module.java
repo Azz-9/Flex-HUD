@@ -27,7 +27,7 @@ public class Module {
 			this.icon = Identifier.of(MOD_ID, "modules_icons/" + id + ".png");
 			this.configScreen = configScreen;
 			this.button = ButtonWidget.builder(Text.literal(name), (btn) -> {
-						configScreen.setParentScrollAmount(parent.getModulesList().getScrollY());
+						configScreen.setParentScrollAmount(parent.getModulesListWidget().getScrollY());
 						MinecraftClient.getInstance().setScreen(configScreen);
 					})
 					.size(buttonWidth, buttonHeight)

@@ -8,6 +8,8 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.text.Text;
 
+import static me.Azz_9.flex_hud.client.utils.DrawingUtils.drawBorder;
+
 public class ColorButton extends ClickableWidget implements ColorBindable, DataGetter<Integer> {
 	private int color;
 	private Runnable onPress;
@@ -21,9 +23,9 @@ public class ColorButton extends ClickableWidget implements ColorBindable, DataG
 	@Override
 	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
 		if (this.isHovered()) {
-			//TODO context.drawBorder(getX(), getY(), getWidth(), getHeight(), 0xffd0d0d0);
+			drawBorder(context, getX(), getY(), getWidth(), getHeight(), 0xffd0d0d0);
 		} else {
-			//TODO context.drawBorder(getX(), getY(), getWidth(), getHeight(), 0xff404040);
+			drawBorder(context, getX(), getY(), getWidth(), getHeight(), 0xff404040);
 		}
 
 		context.fill(getX() + 1, getY() + 1, getRight() - 1, getBottom() - 1, color);

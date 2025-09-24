@@ -1,5 +1,6 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector;
 
+import me.Azz_9.flex_hud.client.utils.Cursors;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.Click;
@@ -30,6 +31,12 @@ public class HueWidget extends ClickableWidget {
 
 	@Override
 	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+		if (isDraggingCursor) {
+			context.setCursor(Cursors.HIDDEN);
+		} else if (this.isInteractable() && this.isHovered()) {
+			context.setCursor(Cursors.POINTING_HAND);
+		}
+
 		drawHueBar(context);
 
 		Matrix3x2fStack matrices = context.getMatrices();

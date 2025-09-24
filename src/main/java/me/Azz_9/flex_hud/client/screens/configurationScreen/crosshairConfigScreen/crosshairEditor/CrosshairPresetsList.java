@@ -293,13 +293,8 @@ public class CrosshairPresetsList extends AbstractSmoothScrollableList<Crosshair
 
 		@Override
 		public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
-			//TODO
-		}
-
-		/*@Override
-		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickProgress) {
-			int centerX = x + (entryWidth - texture.length * PIXEL_SIZE) / 2;
-			int centerY = y + (entryHeight - texture.length * PIXEL_SIZE) / 2;
+			int centerX = getX() + (getWidth() - texture.length * PIXEL_SIZE) / 2;
+			int centerY = getY() + (getHeight() - texture.length * PIXEL_SIZE) / 2;
 			for (int textureY = 0; textureY < texture.length; textureY++) {
 				for (int textureX = 0; textureX < texture.length; textureX++) {
 					if (texture[textureY][textureX] >> 24 != 0) {
@@ -311,11 +306,11 @@ public class CrosshairPresetsList extends AbstractSmoothScrollableList<Crosshair
 			}
 
 			if (this.isMouseOver(mouseX, mouseY)) {
-				context.fill(x, y, x + entryWidth, y + entryHeight, 0x10000000);
+				context.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), 0x10000000);
 			} else {
-				context.fill(x, y, x + entryWidth, y + entryHeight, 0x20000000);
+				context.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), 0x20000000);
 			}
-		}*/
+		}
 
 		@Override
 		public boolean mouseClicked(Click click, boolean doubled) {

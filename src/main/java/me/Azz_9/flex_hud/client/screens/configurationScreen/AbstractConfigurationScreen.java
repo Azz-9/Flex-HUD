@@ -75,7 +75,7 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 	public void close() {
 		super.close();
 		if (PARENT instanceof ModulesListScreen modulesListScreen) {
-			modulesListScreen.getModulesList().setScrollY(parentScrollAmount);
+			modulesListScreen.getModulesListWidget().setScrollY(parentScrollAmount);
 		}
 	}
 

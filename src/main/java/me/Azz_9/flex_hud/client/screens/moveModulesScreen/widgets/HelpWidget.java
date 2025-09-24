@@ -1,5 +1,6 @@
 package me.Azz_9.flex_hud.client.screens.moveModulesScreen.widgets;
 
+import me.Azz_9.flex_hud.client.utils.Cursors;
 import me.Azz_9.flex_hud.client.utils.EaseUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -25,7 +26,7 @@ public class HelpWidget extends ClickableWidget {
 	private long timestamp;
 	private boolean isFadingOut = false;
 
-	private Text[] helpLines;
+	private final Text[] helpLines;
 
 	public HelpWidget(int x, int y, int width, int height, Text[] helpLines) {
 		super(x, y, width, height, Text.translatable("flex_hud.help_widget"));
@@ -34,6 +35,10 @@ public class HelpWidget extends ClickableWidget {
 
 	@Override
 	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+		if (this.isHovered() && this.isInteractable()) {
+			context.setCursor(Cursors.POINTING_HAND);
+		}
+
 		context.drawTexture(RenderPipelines.GUI_TEXTURED, texture, getX(), getY(), 0, 0, getWidth(), getHeight(), 20, 20);
 
 		if (displayHelp || isFadingOut) {

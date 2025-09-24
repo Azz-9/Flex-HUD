@@ -27,6 +27,6 @@
 		"fabricloader": ">=${loader_version}",
 		"fabric": "*",
 		"fabric-key-binding-api-v1": "*",
-		"minecraft": "1.21.9-beta.3"
+		"minecraft": "1.21.9-beta.4"
 	}
 }

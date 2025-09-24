@@ -5,6 +5,7 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
+import me.Azz_9.flex_hud.client.utils.Cursors;
 import me.Azz_9.flex_hud.client.utils.EaseUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+import static me.Azz_9.flex_hud.client.utils.DrawingUtils.drawBorder;
 
 public class ConfigToggleButtonWidget<T> extends ToggleButtonWidget implements TrackableChange, DataGetter<Boolean>, ResetAware {
 	private final ConfigBoolean variable;
@@ -59,11 +61,12 @@ public class ConfigToggleButtonWidget<T> extends ToggleButtonWidget implements T
 	@Override
 	public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (this.active) {
+			if (this.isHovered()) context.setCursor(Cursors.POINTING_HAND);
 
 			drawSelectedTexture(context);
 
 			if (this.isSelected()) {
-				//TODO context.drawBorder(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+				drawBorder(context, getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
 			}
 		}
 
@@ -72,6 +75,8 @@ public class ConfigToggleButtonWidget<T> extends ToggleButtonWidget implements T
 		}
 
 		if (!this.active) {
+			if (this.isHovered()) context.setCursor(Cursors.NOT_ALLOWED);
+
 			context.fill(getRight() - getHeight(), getY(), getRight(), getBottom(), 0xcf4e4e4e);
 		}
 	}

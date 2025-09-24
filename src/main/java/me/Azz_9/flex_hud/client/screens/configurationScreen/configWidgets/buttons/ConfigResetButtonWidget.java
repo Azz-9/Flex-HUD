@@ -4,11 +4,13 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
 import me.Azz_9.flex_hud.client.screens.widgets.buttons.TexturedButtonWidget;
+import me.Azz_9.flex_hud.client.utils.Cursors;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.util.Identifier;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+import static me.Azz_9.flex_hud.client.utils.DrawingUtils.drawBorder;
 
 public class ConfigResetButtonWidget extends TexturedButtonWidget implements Observer {
 	public ConfigResetButtonWidget(int x, int y, int width, int height, PressAction pressAction, int textureWidth, int textureHeight) {
@@ -35,9 +37,15 @@ public class ConfigResetButtonWidget extends TexturedButtonWidget implements Obs
 		super.renderWidget(context, mouseX, mouseY, delta);
 
 		if (!this.active) {
+			if (this.isHovered()) context.setCursor(Cursors.NOT_ALLOWED);
+
 			context.fill(getX(), getY(), getRight(), getBottom(), 0xcf4e4e4e);
-		} else if (this.isSelected()) {
-			context.drawStrokedRectangle(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff); //todo check border
+		} else {
+			if (this.isHovered()) context.setCursor(Cursors.POINTING_HAND);
+
+			if (this.isSelected()) {
+				drawBorder(context, getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+			}
 		}
 	}
 

@@ -62,20 +62,24 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 		}
 
 		@Override
+		public void setX(int x) {
+			super.setX(x);
+			this.resetButtonWidget.setX(x + getWidth() - resetButtonWidget.getWidth());
+			this.textWidget.setX(x + TEXT_MARGIN_LEFT);
+		}
+
+		@Override
+		public void setY(int y) {
+			super.setY(y);
+			this.resetButtonWidget.setY(y);
+			this.textWidget.setY((int) (y + (this.resetButtonSize - MinecraftClient.getInstance().textRenderer.fontHeight) / 2.0));
+		}
+
+		@Override
 		public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
 			this.resetButtonWidget.render(context, mouseX, mouseY, deltaTicks);
 			this.textWidget.render(context, mouseX, mouseY, deltaTicks);
-			//TODO check render
 		}
-
-		/*@Override
-		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickProgress) {
-			this.resetButtonWidget.setPosition(x + entryWidth - resetButtonWidget.getWidth(), y);
-			this.textWidget.setPosition(x + TEXT_MARGIN_LEFT, (int) (y + (entryHeight - MinecraftClient.getInstance().textRenderer.fontHeight) / 2.0));
-
-			this.resetButtonWidget.render(context, mouseX, mouseY, tickProgress);
-			this.textWidget.render(context, mouseX, mouseY, tickProgress);
-		}*/
 
 		@Override
 		public List<? extends Element> children() {
