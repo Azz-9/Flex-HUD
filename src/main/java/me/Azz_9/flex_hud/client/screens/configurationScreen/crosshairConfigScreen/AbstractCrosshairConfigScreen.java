@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScre
 
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.crosshairEditor.CrosshairEditor;
-import me.Azz_9.flex_hud.client.screens.moveModulesScreen.widgets.HelpWidget;
+import me.Azz_9.flex_hud.client.screens.widgets.HelpWidget;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;

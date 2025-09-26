@@ -1,4 +1,4 @@
-package me.Azz_9.flex_hud.client.screens.moveModulesScreen.widgets;
+package me.Azz_9.flex_hud.client.screens.widgets;
 
 import me.Azz_9.flex_hud.client.utils.Cursors;
 import me.Azz_9.flex_hud.client.utils.EaseUtils;
