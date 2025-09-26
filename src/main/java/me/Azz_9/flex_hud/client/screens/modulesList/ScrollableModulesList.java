@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 
 public class ScrollableModulesList extends AbstractSmoothScrollableList<ScrollableModulesList.Entry> {
 
-	private final List<Entry> allEntries = new ArrayList<>();
+	private final List<Entry> entries = new ArrayList<>();
 	private int buttonWidth;
 	private int buttonHeight;
 	private int iconWidthHeight;
@@ -41,7 +41,7 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 			}
 		}
 		Entry entry = new Entry(modules, this);
-		this.allEntries.add(entry);
+		this.entries.add(entry);
 		this.addEntry(entry);
 	}
 
@@ -61,7 +61,7 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 			}
 		};
 
-		for (Entry entry : this.allEntries) {
+		for (Entry entry : this.entries) {
 			// Vérification pour les colonnes
 			for (Module module : entry.rowModules) {
 				if (module != null && (module.name.toLowerCase().contains(query) || module.id.replace("_", " ").contains(query.toLowerCase()))) {
@@ -102,8 +102,8 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 		return buttonHeight;
 	}
 
-	public List<Entry> getAllEntries() {
-		return this.allEntries;
+	public List<Entry> getEntries() {
+		return this.entries;
 	}
 
 	public void setColumns(int columns) {

@@ -20,7 +20,7 @@ import java.util.stream.IntStream;
 public class ModulesListScreen extends AbstractBackNavigableScreen {
 
 	private PlaceholderTextFieldWidget searchBar;
-	private ScrollableModulesList modulesList;
+	private ScrollableModulesList modulesListWidget;
 
 	private final List<Configurable> MODULES_LIST = JsonConfigHelper.getConfigurableModules();
 
@@ -49,7 +49,7 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 				.build(Math.clamp(this.width / 2 + 105 + (int) (this.width / 100.0F * 5), this.width / 2 + 105, Math.max(this.width - 105, this.width / 2 + 105)), 20, 100, 20, Text.translatable("flex_hud.configuration_screen.columns"), this::onColumnsUpdate);
 
 		// Initialisation de la liste défilante
-		this.modulesList = new ScrollableModulesList(this.client, this.width, this.height - 84, 50, BUTTON_HEIGHT + ICON_WIDTH_HEIGHT + PADDING, BUTTON_WIDTH, BUTTON_HEIGHT, ICON_WIDTH_HEIGHT, PADDING, columns);
+		this.modulesListWidget = new ScrollableModulesList(this.client, this.width, this.height - 84, 50, BUTTON_HEIGHT + ICON_WIDTH_HEIGHT + PADDING, BUTTON_WIDTH, BUTTON_HEIGHT, ICON_WIDTH_HEIGHT, PADDING, columns);
 
 		//Initialisation du bouton done
 		ButtonWidget doneButton = ButtonWidget.builder(Text.translatable("flex_hud.configuration_screen.done"), (btn) -> close())
@@ -58,7 +58,7 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 
 		this.addDrawableChild(this.searchBar);
 		this.addDrawableChild(columnsButton);
-		this.addSelectableChild(this.modulesList);
+		this.addSelectableChild(this.modulesListWidget);
 		this.addDrawableChild(doneButton);
 
 
@@ -66,8 +66,8 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 		addMods(BUTTON_WIDTH, BUTTON_HEIGHT, columns);
 	}
 
-	public ScrollableModulesList getModulesList() {
-		return this.modulesList;
+	public ScrollableModulesList getModulesListWidget() {
+		return this.modulesListWidget;
 	}
 
 	@Override
@@ -76,7 +76,7 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 
 		context.drawCenteredTextWithShadow(textRenderer, title, this.width / 2, 7, 0xffffffff);
 
-		this.modulesList.render(context, mouseX, mouseY, delta);
+		this.modulesListWidget.render(context, mouseX, mouseY, delta);
 	}
 
 	@Override
@@ -86,24 +86,23 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 	}
 
 	private void onColumnsUpdate(CyclingButtonWidget<Integer> integerCyclingButtonWidget, Integer columns) {
-		this.modulesList.setColumns(columns);
+		this.modulesListWidget.setColumns(columns);
 
-		this.modulesList.children().clear();
-		this.modulesList.getAllEntries().clear();
+		this.modulesListWidget.children().clear();
+		this.modulesListWidget.getEntries().clear();
 
-		addMods(this.modulesList.getButtonWidth(), this.modulesList.getButtonHeight(), columns);
+		addMods(this.modulesListWidget.getButtonWidth(), this.modulesListWidget.getButtonHeight(), columns);
 
 		onSearchUpdate(this.searchBar.getText());
 	}
 
 	private void onSearchUpdate(String text) {
-		this.modulesList.filterModules(text);
+		this.modulesListWidget.filterModules(text);
 	}
 
 	private void addMods(int buttonWidth, int buttonHeight, int columns) {
 		List<Module> modules = new ArrayList<>();
 		for (int i = 0; i < MODULES_LIST.size(); i++) {
-			Text moduleName = MODULES_LIST.get(i).getName();
 			String moduleId = MODULES_LIST.get(i).getID();
 
 			Supplier<Tooltip> getTooltip = switch (moduleId) {
@@ -114,7 +113,7 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 				default -> null;
 			};
 			modules.add(new Module(
-							moduleName.getString(),
+							MODULES_LIST.get(i).getName().getString(),
 							moduleId,
 							MODULES_LIST.get(i).getConfigScreen(this),
 							buttonWidth,
@@ -125,12 +124,12 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 			);
 
 			if ((i + 1) % columns == 0) {
-				this.modulesList.addModule(new ArrayList<>(modules)); // copie de la liste
+				this.modulesListWidget.addModule(new ArrayList<>(modules)); // copie de la liste
 				modules.clear();
 			}
 		}
 		if (!modules.isEmpty()) {
-			this.modulesList.addModule(new ArrayList<>(modules));
+			this.modulesListWidget.addModule(new ArrayList<>(modules));
 		}
 	}
 }

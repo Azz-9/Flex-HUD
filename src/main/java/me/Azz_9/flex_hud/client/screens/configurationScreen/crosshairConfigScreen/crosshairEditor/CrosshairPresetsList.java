@@ -307,7 +307,7 @@ public class CrosshairPresetsList extends AbstractSmoothScrollableList<Crosshair
 			if (this.isMouseOver(mouseX, mouseY)) {
 				context.fill(x, y, x + entryWidth, y + entryHeight, 0x10000000);
 			} else {
-				context.fill(x, y, x + entryWidth, y + entryHeight, 0x20000000);
+				context.fill(x, y, x + entryWidth, y + entryHeight, 0x50000000);
 			}
 		}
 

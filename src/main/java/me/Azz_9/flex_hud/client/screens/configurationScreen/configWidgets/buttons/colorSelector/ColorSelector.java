@@ -50,9 +50,9 @@ public class ColorSelector extends ColorUpdatable implements Element, Drawable {
 		int backgroundColor = 0xff1e1f22;
 		context.fill(getX(), getY(), getRight(), getBottom(), backgroundColor);
 
-		gradientWidget.renderWidget(context, mouseX, mouseY, deltaTicks);
-		hueWidget.renderWidget(context, mouseX, mouseY, deltaTicks);
-		colorFieldWidget.renderWidget(context, mouseX, mouseY, deltaTicks);
+		gradientWidget.render(context, mouseX, mouseY, deltaTicks);
+		hueWidget.render(context, mouseX, mouseY, deltaTicks);
+		colorFieldWidget.render(context, mouseX, mouseY, deltaTicks);
 	}
 
 	public void updatePosition(int scrollableListTop) {

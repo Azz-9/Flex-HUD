@@ -39,7 +39,7 @@ public class IntSliderEntry extends ScrollableConfigList.AbstractConfigEntry {
 		super.render(context, index, y, x, entryWidth, entryHeight, mouseX, mouseY, hovered, tickProgress);
 		sliderWidget.setPosition(x + entryWidth - resetButtonWidget.getWidth() - 10 - sliderWidget.getWidth(), y);
 
-		sliderWidget.renderWidget(context, mouseX, mouseY, tickProgress);
+		sliderWidget.render(context, mouseX, mouseY, tickProgress);
 	}
 
 	@Override

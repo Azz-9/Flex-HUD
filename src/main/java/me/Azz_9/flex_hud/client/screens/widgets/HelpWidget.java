@@ -1,4 +1,4 @@
-package me.Azz_9.flex_hud.client.screens.moveModulesScreen.widgets;
+package me.Azz_9.flex_hud.client.screens.widgets;
 
 import me.Azz_9.flex_hud.client.utils.EaseUtils;
 import net.minecraft.client.MinecraftClient;
@@ -24,7 +24,7 @@ public class HelpWidget extends ClickableWidget {
 	private long timestamp;
 	private boolean isFadingOut = false;
 
-	private Text[] helpLines;
+	private final Text[] helpLines;
 
 	public HelpWidget(int x, int y, int width, int height, Text[] helpLines) {
 		super(x, y, width, height, Text.translatable("flex_hud.help_widget"));
