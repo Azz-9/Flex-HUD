@@ -1,5 +1,6 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector;
 
+import me.Azz_9.flex_hud.client.utils.Cursors;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
@@ -50,12 +51,16 @@ public class ColorSelector extends ColorUpdatable implements Element, Drawable {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+		if (this.isMouseOver(mouseX, mouseY)) {
+			context.setCursor(Cursors.DEFAULT);
+		}
+
 		int backgroundColor = 0xff1e1f22;
 		context.fill(getX(), getY(), getRight(), getBottom(), backgroundColor);
 
-		gradientWidget.renderWidget(context, mouseX, mouseY, deltaTicks);
-		hueWidget.renderWidget(context, mouseX, mouseY, deltaTicks);
-		colorFieldWidget.renderWidget(context, mouseX, mouseY, deltaTicks);
+		gradientWidget.render(context, mouseX, mouseY, deltaTicks);
+		hueWidget.render(context, mouseX, mouseY, deltaTicks);
+		colorFieldWidget.render(context, mouseX, mouseY, deltaTicks);
 	}
 
 	public void updatePosition(int scrollableListTop) {

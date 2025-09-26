@@ -1,6 +1,7 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.crosshairEditor;
 
 import me.Azz_9.flex_hud.client.screens.AbstractSmoothScrollableList;
+import me.Azz_9.flex_hud.client.utils.Cursors;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
@@ -293,6 +294,13 @@ public class CrosshairPresetsList extends AbstractSmoothScrollableList<Crosshair
 
 		@Override
 		public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+			if (this.isMouseOver(mouseX, mouseY)) {
+				context.setCursor(Cursors.POINTING_HAND);
+				context.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), 0x10000000);
+			} else {
+				context.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), 0x50000000);
+			}
+
 			int centerX = getX() + (getWidth() - texture.length * PIXEL_SIZE) / 2;
 			int centerY = getY() + (getHeight() - texture.length * PIXEL_SIZE) / 2;
 			for (int textureY = 0; textureY < texture.length; textureY++) {
@@ -303,12 +311,6 @@ public class CrosshairPresetsList extends AbstractSmoothScrollableList<Crosshair
 						context.fill(pixelX, pixelY, pixelX + PIXEL_SIZE, pixelY + PIXEL_SIZE, texture[textureY][textureX]);
 					}
 				}
-			}
-
-			if (this.isMouseOver(mouseX, mouseY)) {
-				context.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), 0x10000000);
-			} else {
-				context.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), 0x20000000);
 			}
 		}
 

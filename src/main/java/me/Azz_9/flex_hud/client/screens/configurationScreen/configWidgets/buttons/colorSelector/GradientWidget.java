@@ -1,6 +1,7 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector;
 
 import me.Azz_9.flex_hud.client.utils.Cursors;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
@@ -9,6 +10,7 @@ import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.joml.Matrix3x2fStack;
+import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
 
@@ -33,9 +35,7 @@ public class GradientWidget extends ClickableWidget {
 
 	@Override
 	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-		if (isDraggingCursor) {
-			context.setCursor(Cursors.HIDDEN);
-		} else if (this.isInteractable() && this.isHovered()) {
+		if (this.isInteractable() && this.isHovered()) {
 			context.setCursor(Cursors.CROSSHAIR);
 		}
 
@@ -71,6 +71,8 @@ public class GradientWidget extends ClickableWidget {
 
 	@Override
 	public void onClick(Click click, boolean bl) {
+		long window = MinecraftClient.getInstance().getWindow().getHandle();
+		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);
 		moveCursor(click.x(), click.y());
 		isDraggingCursor = true;
 	}
@@ -98,6 +100,8 @@ public class GradientWidget extends ClickableWidget {
 
 	@Override
 	public void onRelease(Click click) {
+		long window = MinecraftClient.getInstance().getWindow().getHandle();
+		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
 		isDraggingCursor = false;
 	}
 

@@ -31,9 +31,7 @@ public class HueWidget extends ClickableWidget {
 
 	@Override
 	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-		if (isDraggingCursor) {
-			context.setCursor(Cursors.HIDDEN);
-		} else if (this.isInteractable() && this.isHovered()) {
+		if (this.isInteractable() && this.isHovered()) {
 			context.setCursor(Cursors.POINTING_HAND);
 		}
 

@@ -3,6 +3,7 @@ package me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScre
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector.ColorSelector;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.CrosshairButtonWidget;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.actions.UndoManager;
+import me.Azz_9.flex_hud.client.utils.Cursors;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -103,6 +104,10 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+		if (this.isMouseOver(mouseX, mouseY)) {
+			context.setCursor(Cursors.DEFAULT);
+		}
+
 		context.fill(getX(), getY(), getRight(), getBottom(), 0xff4a4a4a);
 
 		for (int y = 0; y < pixels.length; y++) {

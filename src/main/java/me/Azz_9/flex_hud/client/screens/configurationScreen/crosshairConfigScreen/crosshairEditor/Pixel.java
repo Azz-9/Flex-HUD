@@ -1,5 +1,6 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.crosshairEditor;
 
+import me.Azz_9.flex_hud.client.utils.Cursors;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
@@ -25,6 +26,10 @@ public class Pixel extends ClickableWidget {
 
 	@Override
 	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+		if (this.isHovered()) {
+			context.setCursor(Cursors.POINTING_HAND);
+		}
+
 		if (color >> 24 == 0) {
 			context.fill(getX() + getWidth() / 4, getY() + getHeight() / 4, getRight() - getWidth() / 4, getBottom() - getHeight() / 4, (isCenter ? 0xff424242 : 0xff3a3a3a));
 		} else {
