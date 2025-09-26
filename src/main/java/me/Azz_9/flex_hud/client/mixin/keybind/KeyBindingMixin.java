@@ -20,7 +20,7 @@ public abstract class KeyBindingMixin {
 		int scanCode = key.getCategory() == InputUtil.Type.SCANCODE ? key.getCode() : -1;
 
 		// open option screen
-		if (Flex_hudClient.openOptionScreenKeyBind.matchesKey(new KeyInput(keyCode, scanCode, 0))) { //TODO check
+		if (Flex_hudClient.openOptionScreenKeyBind.matchesKey(new KeyInput(keyCode, scanCode, 0))) {
 			MinecraftClient.getInstance().setScreen(new OptionsScreen());
 		}
 

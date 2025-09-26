@@ -6,6 +6,7 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.Tooltip;
@@ -13,7 +14,6 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.input.KeyInput;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 import java.util.function.Function;
@@ -62,8 +62,9 @@ public class ConfigCyclingButtonWidget<T, E extends Enum<E> & Translatable> exte
 
 	@Override
 	public boolean keyPressed(KeyInput input) {
-		if (input.key() == GLFW.GLFW_KEY_ENTER || input.key() == GLFW.GLFW_KEY_KP_ENTER) {
-			this.onClick(null, false); // TODO check le truc avec null
+		if (input.isEnterOrSpace()) {
+			this.onClick(null, false);
+			this.playDownSound(MinecraftClient.getInstance().getSoundManager());
 			return true;
 		}
 		return super.keyPressed(input);
