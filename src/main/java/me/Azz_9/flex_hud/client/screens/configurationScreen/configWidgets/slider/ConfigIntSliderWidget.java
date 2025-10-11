@@ -15,8 +15,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.function.Function;
 
-import static me.Azz_9.flex_hud.client.utils.DrawingUtils.drawBorder;
-
 public class ConfigIntSliderWidget<T> extends SliderWidget implements TrackableChange, DataGetter<Integer>, ResetAware {
 	private final Integer STEP;
 	private final int INITIAL_STATE;
@@ -42,7 +40,7 @@ public class ConfigIntSliderWidget<T> extends SliderWidget implements TrackableC
 	public void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
 		if (this.active) {
 			if (this.isSelected()) {
-				drawBorder(context, getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+				context.drawStrokedRectangle(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
 			}
 		}
 		super.renderWidget(context, mouseX, mouseY, deltaTicks);

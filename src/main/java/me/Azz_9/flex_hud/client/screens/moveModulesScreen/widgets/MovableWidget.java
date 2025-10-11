@@ -22,8 +22,6 @@ import org.lwjgl.glfw.GLFW;
 import java.util.HashSet;
 import java.util.Set;
 
-import static me.Azz_9.flex_hud.client.utils.DrawingUtils.drawBorder;
-
 public class MovableWidget extends ClickableWidget implements TrackableChange {
 	private final MoveModulesScreen PARENT;
 	private final MovableModule HUD_ELEMENT;
@@ -109,7 +107,7 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 			color = 0x7fa8a8ac;
 		}
 		// not using context.drawStrokedRectangle() because it makes the border drawn above the scale handle
-		drawBorder(context, getX(), getY(), getWidth(), getHeight(), color);
+		context.drawStrokedRectangle(getX(), getY(), getWidth(), getHeight(), color);
 
 		if (shouldDrawHorizontalSnapLine) {
 			context.drawHorizontalLine(0, context.getScaledWindowWidth(), snapLineY, 0x7fff0000);

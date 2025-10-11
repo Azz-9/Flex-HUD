@@ -7,8 +7,6 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.text.Text;
 
-import static me.Azz_9.flex_hud.client.utils.DrawingUtils.drawBorder;
-
 public class Pixel extends ClickableWidget {
 	private CrosshairEditor crosshairEditor;
 	private int color;
@@ -38,9 +36,9 @@ public class Pixel extends ClickableWidget {
 
 
 		if (this.isHovered()) {
-			drawBorder(context, getX(), getY(), getWidth(), getHeight(), 0xffdf1515);
+			context.drawStrokedRectangle(getX(), getY(), getWidth(), getHeight(), 0xffdf1515);
 		} else {
-			drawBorder(context, getX(), getY(), getWidth(), getHeight(), 0xffdfdfdf);
+			context.drawStrokedRectangle(getX(), getY(), getWidth(), getHeight(), 0xffdfdfdf);
 		}
 	}
 

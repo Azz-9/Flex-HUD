@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
-import static me.Azz_9.flex_hud.client.utils.DrawingUtils.drawBorder;
 
 public class CrosshairButtonWidget<T> extends ClickableWidget implements TrackableChange, DataGetter<int[][]>, ResetAware {
 	private ConfigIntGrid variable;
@@ -57,9 +56,9 @@ public class CrosshairButtonWidget<T> extends ClickableWidget implements Trackab
 			drawSelectedTexture(context);
 
 			if (this.isSelected()) {
-				drawBorder(context, getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+				context.drawStrokedRectangle(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
 			}
-			drawBorder(context, getRight() - getHeight(), getY(), getHeight(), getHeight(), (this.isHovered() ? 0xffd0d0d0 : 0xff404040));
+			context.drawStrokedRectangle(getRight() - getHeight(), getY(), getHeight(), getHeight(), (this.isHovered() ? 0xffd0d0d0 : 0xff404040));
 		} else {
 			if (this.isHovered()) context.setCursor(Cursors.NOT_ALLOWED);
 		}

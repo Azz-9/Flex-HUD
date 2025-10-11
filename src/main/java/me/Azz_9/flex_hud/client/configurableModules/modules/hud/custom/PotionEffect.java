@@ -125,7 +125,7 @@ public class PotionEffect extends AbstractTextElement {
 		float tickDelta = client.getRenderTickCounter().getDynamicDeltaTicks();
 
 		// Add tickDelta to world time for smooth animation
-		float ticks = client.world.getTime() + tickDelta;
+		float ticks = client.world.getTimeOfDay() + tickDelta;
 
 		// 20 ticks ~= 1 second at 20 TPS
 		float cycle = (ticks % 20.0f) / 20.0f;

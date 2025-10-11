@@ -10,7 +10,6 @@ import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.util.Identifier;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
-import static me.Azz_9.flex_hud.client.utils.DrawingUtils.drawBorder;
 
 public class ConfigResetButtonWidget extends TexturedButtonWidget implements Observer {
 	public ConfigResetButtonWidget(int x, int y, int width, int height, PressAction pressAction, int textureWidth, int textureHeight) {
@@ -44,7 +43,7 @@ public class ConfigResetButtonWidget extends TexturedButtonWidget implements Obs
 			if (this.isHovered()) context.setCursor(Cursors.POINTING_HAND);
 
 			if (this.isSelected()) {
-				drawBorder(context, getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+				context.drawStrokedRectangle(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
 			}
 		}
 	}

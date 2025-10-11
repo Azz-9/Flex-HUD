@@ -43,9 +43,8 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 		this.searchBar.setPlaceholder(Text.translatable("flex_hud.configuration_screen.searchbar_placeholder"));
 
 		// Initialisation du choix du nombre de colonnes
-		CyclingButtonWidget<Integer> columnsButton = CyclingButtonWidget.<Integer>builder(value -> Text.literal(value.toString()))
+		CyclingButtonWidget<Integer> columnsButton = CyclingButtonWidget.<Integer>builder(value -> Text.literal(value.toString()), columns)
 				.values(IntStream.rangeClosed(1, MAX_COLUMNS).boxed().toList())
-				.initially(columns)
 				.build(Math.clamp(this.width / 2 + 105 + (int) (this.width / 100.0F * 5), this.width / 2 + 105, Math.max(this.width - 105, this.width / 2 + 105)), 20, 100, 20, Text.translatable("flex_hud.configuration_screen.columns"), this::onColumnsUpdate);
 
 		// Initialisation de la liste défilante

@@ -26,7 +26,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
-import static me.Azz_9.flex_hud.client.utils.DrawingUtils.drawBorder;
 
 public class ConfigColorButtonWidget<T> extends ClickableWidget implements TrackableChange, DataGetter<Integer>, ResetAware, ColorBindable {
 	private ConfigInteger variable;
@@ -70,9 +69,9 @@ public class ConfigColorButtonWidget<T> extends ClickableWidget implements Track
 			drawSelectedTexture(context);
 
 			if (this.isSelected()) {
-				drawBorder(context, getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+				context.drawStrokedRectangle(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
 			}
-			drawBorder(context, getRight() - getHeight(), getY(), getHeight(), getHeight(), (this.isHovered() ? 0xffd0d0d0 : 0xff404040));
+			context.drawStrokedRectangle(getRight() - getHeight(), getY(), getHeight(), getHeight(), (this.isHovered() ? 0xffd0d0d0 : 0xff404040));
 		}
 		context.fill(getRight() - getHeight() + 1, getY() + 1, getRight() - 1, getBottom() - 1, variable.getValue() | 0xff000000);
 

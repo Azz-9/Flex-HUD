@@ -16,8 +16,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.function.Function;
 
-import static me.Azz_9.flex_hud.client.utils.DrawingUtils.drawBorder;
-
 public class ConfigIntFieldWidget<T> extends TextFieldWidget implements TrackableChange, DataGetter<Integer>, ResetAware {
 
 	private final int INITIAL_STATE;
@@ -100,7 +98,7 @@ public class ConfigIntFieldWidget<T> extends TextFieldWidget implements Trackabl
 	public void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
 		if (this.active) {
 			if (this.isSelected()) {
-				drawBorder(context, getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+				context.drawStrokedRectangle(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
 			}
 		}
 		super.renderWidget(context, mouseX, mouseY, deltaTicks);
