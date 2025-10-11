@@ -3,6 +3,8 @@ plugins {
     id 'maven-publish'
 }
 
+def includeModMenu = project.hasProperty("launch_with_modmenu") && project.launch_with_modmenu.toBoolean()
+
 version = project.mod_version
 group = project.maven_group
 
@@ -32,7 +34,9 @@ dependencies {
 
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-    modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
+    if (includeModMenu) {
+        modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
+    }
 }
 
 processResources {
@@ -92,5 +96,15 @@ publishing {
         // Notice: This block does NOT have the same function as the block in the top level.
         // The repositories here will be used for publishing your artifact, not for
         // retrieving dependencies.
+    }
+}
+
+sourceSets {
+    main {
+        if (!includeModMenu) {
+            java {
+                exclude 'me/Azz_9/flex_hud/compat/ModMenuCompat.java'
+            }
+        }
     }
 }
