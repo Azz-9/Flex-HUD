@@ -1,0 +1,26 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "me.Azz_9.flex_hud.client.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"cps.MouseMixin",
+		"reach.PlayerMixin",
+		"timeChanger.ClientWorldPropertiesMixin",
+		"weatherChanger.ClientWorldMixin"
+	],
+	"client": [
+		"CursorAccessor",
+		"bossBar.BossBarAccessor",
+		"bossBar.BossBarHudMixin",
+		"compass.InGameHudMixin",
+		"compass.LocatorBarMixin",
+		"cps.KeyboardMixin",
+		"crosshair.CrosshairMixin",
+		"keybind.KeyBindingMixin",
+		"potionEffect.PotionEffectMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

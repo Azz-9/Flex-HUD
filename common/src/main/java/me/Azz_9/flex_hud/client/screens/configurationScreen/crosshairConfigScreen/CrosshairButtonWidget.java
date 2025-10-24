@@ -1,0 +1,193 @@
+package me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen;
+
+import me.Azz_9.flex_hud.client.screens.TrackableChange;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigIntGrid;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
+import me.Azz_9.flex_hud.client.utils.Cursors;
+import me.Azz_9.flex_hud.client.utils.EaseUtils;
+import net.minecraft.client.gl.RenderPipelines;
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
+import org.joml.Matrix3x2fStack;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
+
+import static me.Azz_9.flex_hud.client.Flex_hud.MOD_ID;
+import static me.Azz_9.flex_hud.client.utils.DrawingUtils.drawBorder;
+
+public class CrosshairButtonWidget<T> extends ClickableWidget implements TrackableChange, DataGetter<int[][]>, ResetAware {
+	private ConfigIntGrid variable;
+	private final int[][] INITIAL_STATE;
+	private final List<Observer> observers;
+	private final T disableWhen;
+	private final Consumer<CrosshairButtonWidget<T>> onClickAction;
+
+	private long transitionStartTime = -1;
+	private boolean hovering = false;
+	private boolean transitioningIn = false;
+	private boolean transitioningOut = false;
+	private static final int TRANSITION_DURATION = 300;
+
+	public CrosshairButtonWidget(int width, int height, ConfigIntGrid variable, List<Observer> observers, T disableWhen, Consumer<CrosshairButtonWidget<T>> onClickAction) {
+		super(0, 0, width, height, Text.empty());
+		this.variable = variable;
+		this.INITIAL_STATE = new int[variable.getValue().length][];
+		for (int i = 0; i < variable.getValue().length; i++) {
+			this.INITIAL_STATE[i] = Arrays.copyOf(variable.getValue()[i], variable.getValue()[i].length);
+		}
+		this.observers = observers;
+		this.disableWhen = disableWhen;
+		this.onClickAction = onClickAction;
+	}
+
+	@Override
+	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+		if (this.active) {
+			if (this.isHovered()) context.setCursor(Cursors.POINTING_HAND);
+
+			drawSelectedTexture(context);
+
+			if (this.isSelected()) {
+				drawBorder(context, getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+			}
+			drawBorder(context, getRight() - getHeight(), getY(), getHeight(), getHeight(), (this.isHovered() ? 0xffd0d0d0 : 0xff404040));
+		} else {
+			if (this.isHovered()) context.setCursor(Cursors.NOT_ALLOWED);
+		}
+		float startX = getRight() - getHeight() + 1 + (getHeight() - 2 - variable.getValue()[0].length) / 2.0f;
+		float startY = getY() + 1 + (getHeight() - 2 - variable.getValue().length) / 2.0f;
+		Matrix3x2fStack matrices = context.getMatrices();
+		matrices.pushMatrix();
+		matrices.translate(startX, startY);
+
+		for (int y = 0; y < variable.getValue().length; y++) {
+			for (int x = 0; x < variable.getValue()[y].length; x++) {
+				context.fill(x, y, x + 1, y + 1, variable.getValue()[y][x]);
+			}
+		}
+
+		matrices.popMatrix();
+
+		if (!this.active) {
+			context.fill(getRight() - getHeight(), getY(), getRight(), getBottom(), 0xcf4e4e4e);
+		}
+	}
+
+	private void drawSelectedTexture(DrawContext context) {
+		boolean currentlyHovered = this.isHovered();
+
+		// Handle transition triggers
+		if (currentlyHovered && !hovering) {
+			hovering = true;
+			transitioningIn = true;
+			transitioningOut = false;
+			transitionStartTime = System.currentTimeMillis();
+		} else if (!currentlyHovered && hovering) {
+			hovering = false;
+			transitioningOut = true;
+			transitioningIn = false;
+			transitionStartTime = System.currentTimeMillis();
+		}
+
+		// Calculate alpha
+		int alpha = 0;
+		if (transitioningIn || transitioningOut) {
+			int elapsed = (int) (System.currentTimeMillis() - transitionStartTime);
+			if (elapsed <= TRANSITION_DURATION) {
+				float progress = (float) elapsed / TRANSITION_DURATION;
+				float eased = EaseUtils.getEaseOutQuad(progress);
+				if (transitioningOut) eased = 1 - eased;
+				alpha = (int) (0xFF * eased);
+			} else {
+				alpha = transitioningIn ? 0xFF : 0x00;
+				transitioningIn = false;
+				transitioningOut = false;
+			}
+		} else if (hovering) {
+			alpha = 0xFF;
+		}
+
+		if (alpha > 0) {
+			Identifier selectedTexture = Identifier.of(MOD_ID, "widgets/buttons/selected.png");
+			context.drawTexture(RenderPipelines.GUI_TEXTURED, selectedTexture, this.getX(), this.getY(), 0, 0, this.width - this.height, this.height, 120, 20, ColorHelper.withAlpha(alpha, 0xFFFFFF));
+		}
+	}
+
+	public void onReceivePixel(int x, int y, int color) {
+		if (this.variable.getValue()[y][x] != color) {
+			this.variable.getValue()[y][x] = color;
+
+			for (Observer observer : observers) {
+				observer.onChange(this);
+			}
+		}
+	}
+
+	public void setCrosshairTexture(int[][] texture) {
+		this.variable.setValue(texture);
+
+		for (Observer observer : observers) {
+			observer.onChange(this);
+		}
+	}
+
+	@Override
+	public void onClick(Click click, boolean bl) {
+		onClickAction.accept(this);
+	}
+
+	@Override
+	public void setToDefaultState() {
+		for (int y = 0; y < variable.getDefaultValue().length; y++) {
+			for (int x = 0; x < variable.getDefaultValue()[y].length; x++) {
+				onReceivePixel(x, y, variable.getDefaultValue()[y][x]);
+			}
+		}
+	}
+
+	@Override
+	public boolean hasChanged() {
+		return !Arrays.deepEquals(variable.getValue(), INITIAL_STATE);
+	}
+
+	@Override
+	public void cancel() {
+		variable.setValue(INITIAL_STATE);
+	}
+
+	@Override
+	public int[][] getData() {
+		return variable.getValue();
+	}
+
+	public T getDisableWhen() {
+		return disableWhen;
+	}
+
+	@Override
+	public boolean isCurrentValueDefault() {
+		return Arrays.deepEquals(variable.getValue(), variable.getDefaultValue());
+	}
+
+	public void addObserver(Observer observer) {
+		observers.add(observer);
+	}
+
+	@Override
+	public boolean isSelected() {
+		return this.isFocused();
+	}
+
+	@Override
+	protected void appendClickableNarrations(NarrationMessageBuilder builder) {
+	}
+}
