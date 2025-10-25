@@ -64,7 +64,7 @@ public abstract class AbstractCrosshairConfigScreen extends AbstractConfiguratio
 				return true;
 			}
 		}
-		return super.mouseClicked(mouseX, mouseY, button);
+		return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
 	}
 
 	@Override
