@@ -95,6 +95,7 @@ public class Flex_hudClient implements ClientModInitializer {
 					List<AbstractHudElement> hudElements = JsonConfigHelper.getHudElements();
 
 					for (int i = 0; i < hudElements.size(); i++) {
+						if (hudElements.get(i).getID().equals(JsonConfigHelper.getInstance().bossBar.getID())) continue;
 						hudElements.get(i).init();
 
 						HudElementRegistry.attachElementBefore(
