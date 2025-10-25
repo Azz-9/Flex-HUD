@@ -7,11 +7,11 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGe
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector.ColorBindable;
 import me.Azz_9.flex_hud.client.utils.EaseUtils;
-import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
@@ -111,7 +111,7 @@ public class ConfigColorButtonWidget<T> extends ClickableWidget implements Track
 
 		if (alpha > 0) {
 			Identifier selectedTexture = Identifier.of(MOD_ID, "widgets/buttons/selected.png");
-			context.drawTexture(RenderPipelines.GUI_TEXTURED, selectedTexture, this.getX(), this.getY(), 0, 0, this.width, this.height, 120, 20, ColorHelper.withAlpha(alpha, 0xFFFFFF));
+			context.drawTexture(RenderLayer::getGuiTextured, selectedTexture, this.getX(), this.getY(), 0, 0, this.width, this.height, 120, 20, ColorHelper.withAlpha(alpha, 0xFFFFFF));
 		}
 	}
 

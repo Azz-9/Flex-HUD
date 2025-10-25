@@ -6,14 +6,14 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.Conf
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
 import me.Azz_9.flex_hud.client.utils.EaseUtils;
-import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
-import org.joml.Matrix3x2fStack;
 
 import java.util.Arrays;
 import java.util.List;
@@ -59,9 +59,9 @@ public class CrosshairButtonWidget<T> extends ClickableWidget implements Trackab
 		}
 		float startX = getRight() - getHeight() + 1 + (getHeight() - 2 - variable.getValue()[0].length) / 2.0f;
 		float startY = getY() + 1 + (getHeight() - 2 - variable.getValue().length) / 2.0f;
-		Matrix3x2fStack matrices = context.getMatrices();
-		matrices.pushMatrix();
-		matrices.translate(startX, startY);
+		MatrixStack matrices = context.getMatrices();
+		matrices.push();
+		matrices.translate(startX, startY, 0);
 
 		for (int y = 0; y < variable.getValue().length; y++) {
 			for (int x = 0; x < variable.getValue()[y].length; x++) {
@@ -69,7 +69,7 @@ public class CrosshairButtonWidget<T> extends ClickableWidget implements Trackab
 			}
 		}
 
-		matrices.popMatrix();
+		matrices.pop();
 
 		if (!this.active) {
 			context.fill(getRight() - getHeight(), getY(), getRight(), getBottom(), 0xcf4e4e4e);
@@ -112,7 +112,7 @@ public class CrosshairButtonWidget<T> extends ClickableWidget implements Trackab
 
 		if (alpha > 0) {
 			Identifier selectedTexture = Identifier.of(MOD_ID, "widgets/buttons/selected.png");
-			context.drawTexture(RenderPipelines.GUI_TEXTURED, selectedTexture, this.getX(), this.getY(), 0, 0, this.width - this.height, this.height, 120, 20, ColorHelper.withAlpha(alpha, 0xFFFFFF));
+			context.drawTexture(RenderLayer::getGuiTextured, selectedTexture, this.getX(), this.getY(), 0, 0, this.width - this.height, this.height, 120, 20, ColorHelper.withAlpha(alpha, 0xFFFFFF));
 		}
 	}
 

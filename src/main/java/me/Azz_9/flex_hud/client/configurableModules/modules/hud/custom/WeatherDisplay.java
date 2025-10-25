@@ -6,14 +6,14 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfiguratio
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 
@@ -52,18 +52,18 @@ public class WeatherDisplay extends AbstractBackgroundElement {
 
 		if (client.world != null && client.world.getDimension().hasSkyLight() && !client.world.getDimension().hasCeiling()) {
 
-			Matrix3x2fStack matrices = context.getMatrices();
-			matrices.pushMatrix();
-			matrices.translate(getRoundedX(), getRoundedY());
-			matrices.scale(this.scale, this.scale);
+			MatrixStack matrices = context.getMatrices();
+			matrices.push();
+			matrices.translate(getRoundedX(), getRoundedY(), 0);
+			matrices.scale(scale, scale, 1.0f);
 
 			drawBackground(context);
 
 			String path = getWeatherIconPath(client);
 
-			context.drawTexture(RenderPipelines.GUI_TEXTURED, Identifier.of(MOD_ID, path), 0, 0, 0, 0, 16, 16, 16, 16);
+			context.drawTexture(RenderLayer::getGuiTextured, Identifier.of(MOD_ID, path), 0, 0, 0, 0, 16, 16, 16, 16);
 
-			matrices.popMatrix();
+			matrices.pop();
 		}
 	}
 

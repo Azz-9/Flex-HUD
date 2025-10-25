@@ -8,13 +8,13 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.Toggle
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.utils.FaviconUtils;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import org.joml.Matrix3x2fStack;
 
 public class ServerAddress extends AbstractTextElement {
 	private ConfigBoolean hideWhenOffline = new ConfigBoolean(true, "flex_hud.server_address.config.hide_when_offline");
@@ -87,17 +87,17 @@ public class ServerAddress extends AbstractTextElement {
 				this.width += textX;
 			}
 
-			Matrix3x2fStack matrices = context.getMatrices();
-			matrices.pushMatrix();
-			matrices.translate(getRoundedX(), getRoundedY());
-			matrices.scale(this.scale, this.scale);
+			MatrixStack matrices = context.getMatrices();
+			matrices.push();
+			matrices.translate(getRoundedX(), getRoundedY(), 0);
+			matrices.scale(this.scale, this.scale, 1.0f);
 
 			drawBackground(context);
 
-			context.drawTexture(RenderPipelines.GUI_TEXTURED, icon, 0, 0, 0, 0, faviconSize, faviconSize, faviconSize, faviconSize);
+			context.drawTexture(RenderLayer::getGuiTextured, icon, 0, 0, 0, 0, faviconSize, faviconSize, faviconSize, faviconSize);
 			context.drawText(client.textRenderer, text, textX, textY, getColor(), this.shadow.getValue());
 
-			matrices.popMatrix();
+			matrices.pop();
 		}
 	}
 

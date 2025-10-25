@@ -13,8 +13,6 @@
 	"client": [
 		"bossBar.BossBarAccessor",
 		"bossBar.BossBarHudMixin",
-		"compass.InGameHudMixin",
-		"compass.LocatorBarMixin",
 		"cps.KeyboardMixin",
 		"crosshair.CrosshairMixin",
 		"keybind.KeyBindingMixin",

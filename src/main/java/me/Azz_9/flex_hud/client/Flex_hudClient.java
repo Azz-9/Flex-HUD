@@ -14,11 +14,12 @@ import me.Azz_9.flex_hud.client.utils.reach.ReachUtils;
 import me.Azz_9.flex_hud.client.utils.speedometer.SpeedUtils;
 import me.Azz_9.flex_hud.compat.XaeroCompat;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
+import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.Identifier;
@@ -47,6 +48,35 @@ public class Flex_hudClient implements ClientModInitializer {
 		LOGGER.info("Flex HUD has started up.");
 
 		LOGGER.info("Xaeros Minimap {}found !", XaeroCompat.isXaerosMinimapLoaded() ? "" : "not ");
+
+		List<AbstractHudElement> hudElements = JsonConfigHelper.getHudElements();
+
+		HudLayerRegistrationCallback.EVENT.register(layeredDrawer -> {
+			for (int i = 0; i < hudElements.size(); i++) {
+				AbstractHudElement element = hudElements.get(i);
+				if (element.getID().equals(JsonConfigHelper.getInstance().bossBar.getID())) continue;
+				element.init();
+				Identifier id = Identifier.of(MOD_ID, "element-" + i);
+				layeredDrawer.attachLayerBefore(IdentifiedLayer.CHAT, id, element::render);
+			}
+		});
+
+		HudLayerRegistrationCallback.EVENT.register(layeredDrawer -> {
+			JsonConfigHelper.getInstance().crosshair.init();
+			Identifier id = Identifier.of(MOD_ID, "custom_crosshair");
+			layeredDrawer.attachLayerBefore(IdentifiedLayer.CHAT, id, JsonConfigHelper.getInstance().crosshair::render);
+		});
+
+		HudLayerRegistrationCallback.EVENT.register(layeredDrawer -> {
+			JsonConfigHelper.getInstance().bossBar.init();
+			Identifier id = Identifier.of(MOD_ID, "custom_boss_bar");
+			layeredDrawer.attachLayerBefore(IdentifiedLayer.CHAT, id, JsonConfigHelper.getInstance().bossBar::render);
+		});
+
+		JsonConfigHelper.getInstance().durabilityPing.init();
+		JsonConfigHelper.getInstance().tntCountdown.init();
+		JsonConfigHelper.getInstance().timeChanger.init();
+		JsonConfigHelper.getInstance().weatherChanger.init();
 
 		ItemDurabilityLostCallback.EVENT.register((stack, damage) -> {
 			if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().durabilityPing.enabled.getValue()) {
@@ -91,40 +121,6 @@ public class Flex_hudClient implements ClientModInitializer {
 
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
 			if (JsonConfigHelper.getInstance().isEnabled) {
-				if (!hudModulesInitialized) {
-					List<AbstractHudElement> hudElements = JsonConfigHelper.getHudElements();
-
-					for (int i = 0; i < hudElements.size(); i++) {
-						hudElements.get(i).init();
-
-						HudElementRegistry.attachElementBefore(
-								VanillaHudElements.CHAT,
-								Identifier.of(MOD_ID, "hud_element-" + i),
-								hudElements.get(i)::render
-						);
-					}
-
-					JsonConfigHelper.getInstance().crosshair.init();
-					HudElementRegistry.attachElementAfter(
-							VanillaHudElements.CROSSHAIR,
-							Identifier.of(MOD_ID, "custom_crosshair"),
-							JsonConfigHelper.getInstance().crosshair::render
-					);
-
-					JsonConfigHelper.getInstance().bossBar.init();
-					HudElementRegistry.attachElementAfter(
-							VanillaHudElements.BOSS_BAR,
-							Identifier.of(MOD_ID, "custom_boss_bar"),
-							JsonConfigHelper.getInstance().bossBar::render
-					);
-
-					JsonConfigHelper.getInstance().durabilityPing.init();
-					JsonConfigHelper.getInstance().tntCountdown.init();
-					JsonConfigHelper.getInstance().timeChanger.init();
-					JsonConfigHelper.getInstance().weatherChanger.init();
-
-					hudModulesInitialized = true;
-				}
 
 				if (client.getCurrentServerEntry() != null) { // joined a multiplayer server
 					FaviconUtils.registerServerIcon(client.getCurrentServerEntry().getFavicon());
@@ -141,6 +137,12 @@ public class Flex_hudClient implements ClientModInitializer {
 			if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().compass.showXaerosMapWaypoints.getValue() && XaeroCompat.isXaerosMinimapLoaded()) {
 				joinedWorld = false;
 				XaeroCompat.available = false;
+			}
+		});
+
+		ClientLifecycleEvents.CLIENT_STOPPING.register(client -> {
+			if (JsonConfigHelper.getInstance().crosshair.crosshairTexture != null) {
+				JsonConfigHelper.getInstance().crosshair.crosshairTexture.close();
 			}
 		});
 

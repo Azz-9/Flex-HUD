@@ -7,15 +7,15 @@ import me.Azz_9.flex_hud.client.screens.moveModulesScreen.MoveModulesScreen;
 import me.Azz_9.flex_hud.client.screens.widgets.buttons.IconButton;
 import me.Azz_9.flex_hud.client.utils.EaseUtils;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import org.joml.Matrix3x2fStack;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 import static me.Azz_9.flex_hud.client.Flex_hudClient.openOptionScreenKeyBind;
@@ -107,14 +107,14 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 
 		super.render(context, mouseX, mouseY, delta);
 
-		Matrix3x2fStack matrices = context.getMatrices();
-		matrices.pushMatrix();
-		matrices.translate((float) x, (float) y);
+		MatrixStack matrices = context.getMatrices();
+		matrices.push();
+		matrices.translate((float) x, (float) y, 0);
 
 		// Draw the icon
-		context.drawTexture(RenderPipelines.GUI_TEXTURED, modIcon, 0, 0, 0, 0, iconWidth, iconHeight, iconWidth, iconHeight);
+		context.drawTexture(RenderLayer::getGuiTextured, modIcon, 0, 0, 0, 0, iconWidth, iconHeight, iconWidth, iconHeight);
 
-		matrices.popMatrix();
+		matrices.pop();
 
 		//RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F); // Opacité à 100%
 

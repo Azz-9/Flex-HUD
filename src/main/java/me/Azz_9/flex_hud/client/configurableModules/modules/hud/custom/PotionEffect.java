@@ -14,13 +14,13 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.texture.MissingSprite;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,10 +91,10 @@ public class PotionEffect extends AbstractTextElement {
 			hudY += 25;
 		}
 
-		Matrix3x2fStack matrices = context.getMatrices();
-		matrices.pushMatrix();
-		matrices.translate(getRoundedX(), getRoundedY());
-		matrices.scale(this.scale, this.scale);
+		MatrixStack matrices = context.getMatrices();
+		matrices.push();
+		matrices.translate(getRoundedX(), getRoundedY(), 0);
+		matrices.scale(this.scale, this.scale, 1.0f);
 
 		drawBackground(context);
 
@@ -102,7 +102,7 @@ public class PotionEffect extends AbstractTextElement {
 			renderable.render(context, tickCounter);
 		}
 
-		matrices.popMatrix();
+		matrices.pop();
 	}
 
 	private String getDurationString(int duration) {
@@ -134,7 +134,8 @@ public class PotionEffect extends AbstractTextElement {
 		float alpha01 = (float) (Math.sin(cycle * Math.PI * 2.0) * 0.5 + 0.5);
 
 		if (duration <= 100) {
-			return (int) (alpha01 * 255); // faster pulse
+			// in this version alpha less than 4 make the text display like the alpha was 255
+			return (int) Math.max((alpha01 * 255), 4); // faster pulse
 		} else if (duration <= 200) {
 			return (int) ((alpha01 * 0.5f + 0.5f) * 255); // softer pulse
 		}

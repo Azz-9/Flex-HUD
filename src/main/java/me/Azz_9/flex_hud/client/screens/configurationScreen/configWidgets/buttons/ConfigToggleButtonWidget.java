@@ -7,11 +7,11 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGe
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
 import me.Azz_9.flex_hud.client.utils.EaseUtils;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
@@ -66,7 +66,7 @@ public class ConfigToggleButtonWidget<T> extends ToggleButtonWidget implements T
 		}
 
 		if (this.textures != null) {
-			context.drawTexture(RenderPipelines.GUI_TEXTURED, this.textures.get(this.toggled, this.isHovered() && this.active), this.getX() + this.width - this.height, this.getY(), 0, 0, this.height, this.height, 20, 20);
+			context.drawTexture(RenderLayer::getGuiTextured, this.textures.get(this.toggled, this.isHovered() && this.active), this.getX() + this.width - this.height, this.getY(), 0, 0, this.height, this.height, 20, 20);
 		}
 
 		if (!this.active) {
@@ -110,7 +110,7 @@ public class ConfigToggleButtonWidget<T> extends ToggleButtonWidget implements T
 
 		if (alpha > 0) {
 			Identifier selectedTexture = Identifier.of(MOD_ID, "widgets/buttons/selected.png");
-			context.drawTexture(RenderPipelines.GUI_TEXTURED, selectedTexture, this.getX(), this.getY(), 0, 0, this.width, this.height, 120, 20, ColorHelper.withAlpha(alpha, 0xFFFFFF));
+			context.drawTexture(RenderLayer::getGuiTextured, selectedTexture, this.getX(), this.getY(), 0, 0, this.width, this.height, 120, 20, ColorHelper.withAlpha(alpha, 0xFFFFFF));
 		}
 	}
 

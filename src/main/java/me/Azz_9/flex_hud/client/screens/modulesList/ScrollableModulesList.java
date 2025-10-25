@@ -3,10 +3,10 @@ package me.Azz_9.flex_hud.client.screens.modulesList;
 import me.Azz_9.flex_hud.client.configurableModules.JsonConfigHelper;
 import me.Azz_9.flex_hud.client.screens.AbstractSmoothScrollableList;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
+import net.minecraft.client.render.RenderLayer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -136,7 +136,7 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 					iconX = buttonX + (scrollableModulesList.buttonWidth - scrollableModulesList.iconWidthHeight) / 2;
 				}
 
-				drawContext.drawTexture(RenderPipelines.GUI_TEXTURED, this.rowModules.get(i).icon, iconX, y, 0, 0,
+				drawContext.drawTexture(RenderLayer::getGuiTextured, this.rowModules.get(i).icon, iconX, y, 0, 0,
 						scrollableModulesList.iconWidthHeight, scrollableModulesList.iconWidthHeight, scrollableModulesList.iconWidthHeight, scrollableModulesList.iconWidthHeight);
 				this.rowModules.get(i).button.setX(buttonX);
 				this.rowModules.get(i).button.setY(y + scrollableModulesList.iconWidthHeight + scrollableModulesList.padding / 2);

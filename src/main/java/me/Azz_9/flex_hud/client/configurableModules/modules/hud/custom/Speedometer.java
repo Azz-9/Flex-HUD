@@ -16,8 +16,8 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import org.joml.Matrix3x2fStack;
 
 public class Speedometer extends AbstractTextElement {
 	public ConfigInteger digits = new ConfigInteger(1, "flex_hud.speedometer.config.number_of_digits", 0, 16);
@@ -58,16 +58,16 @@ public class Speedometer extends AbstractTextElement {
 
 		setWidth(formattedSpeed);
 
-		Matrix3x2fStack matrices = context.getMatrices();
-		matrices.pushMatrix();
-		matrices.translate(getRoundedX(), getRoundedY());
-		matrices.scale(this.scale, this.scale);
+		MatrixStack matrices = context.getMatrices();
+		matrices.push();
+		matrices.translate(getRoundedX(), getRoundedY(), 0);
+		matrices.scale(this.scale, this.scale, 1.0f);
 
 		drawBackground(context);
 
 		context.drawText(client.textRenderer, formattedSpeed, 0, 0, getColor(), this.shadow.getValue());
 
-		matrices.popMatrix();
+		matrices.pop();
 	}
 
 	@Override

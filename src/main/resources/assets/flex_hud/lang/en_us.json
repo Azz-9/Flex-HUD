@@ -1,7 +1,6 @@
 {
 	"flex_hud.controls.open_menu": "Open menu",
 
-
 	"flex_hud.configuration_screen": "Modules configuration",
 	"flex_hud.configuration_screen.searchbar_placeholder": "Search...",
 	"flex_hud.configuration_screen.columns": "Columns",
@@ -56,7 +55,6 @@
 	"flex_hud.enum.speedometer.units.kph": "km/h",
 	"flex_hud.enum.speedometer.units.mph": "mph",
 	"flex_hud.enum.speedometer.units.mps": "m/s",
-
 
 	"flex_hud.global.config.quit_and_discard": "Quit & discard changes",
 	"flex_hud.global.config.callback.message_title": "Changes not saved",
@@ -123,7 +121,6 @@
 	"flex_hud.compass.config.show_intermediate_point": "Show intermediate points",
 	"flex_hud.compass.config.show_xaeros_map_waypoints": "Show Xaero's map waypoints",
 	"flex_hud.compass.config.show_xaeros_map_waypoints.not_installed_tooltip": "Xaero's Minimap is not installed",
-	"flex_hud.compass.config.override_locator_bar": "Override locator bar",
 	"flex_hud.compass.config.show_tamed_entities_point": "Show tamed entities points",
 	"flex_hud.compass.config.show_only_pets": "Show only pets",
 
@@ -199,7 +196,6 @@
 
 	"flex_hud.weather_display": "Weather display",
 	"flex_hud.weather_display.config.enable": "Enable weather display",
-
 
 	"flex_hud.coordinates.hud.direction.south": "South",
 	"flex_hud.coordinates.hud.direction.south_west": "South-West",

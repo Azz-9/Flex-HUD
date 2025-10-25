@@ -17,11 +17,11 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
-import org.joml.Matrix3x2fStack;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -131,10 +131,10 @@ public class ArmorStatus extends AbstractTextElement {
 			}
 		}
 
-		Matrix3x2fStack matrices = context.getMatrices();
-		matrices.pushMatrix();
-		matrices.translate(getRoundedX(), getRoundedY());
-		matrices.scale(this.scale, this.scale);
+		MatrixStack matrices = context.getMatrices();
+		matrices.push();
+		matrices.translate(getRoundedX(), getRoundedY(), 0);
+		matrices.scale(this.scale, this.scale, 1.0f);
 
 		drawBackground(context);
 
@@ -142,7 +142,7 @@ public class ArmorStatus extends AbstractTextElement {
 			renderable.render(context, tickCounter);
 		}
 
-		matrices.popMatrix();
+		matrices.pop();
 	}
 
 	//return width

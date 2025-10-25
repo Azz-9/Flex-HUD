@@ -9,11 +9,11 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
 public class NetherCoordinates extends AbstractTextElement {
 	private ConfigBoolean onlyWhenInOverworld = new ConfigBoolean(false, "flex_hud.nether_coordinates.config.only_show_in_overworld");
@@ -67,16 +67,16 @@ public class NetherCoordinates extends AbstractTextElement {
 
 		setWidth(text);
 
-		Matrix3x2fStack matrices = context.getMatrices();
-		matrices.pushMatrix();
-		matrices.translate(getRoundedX(), getRoundedY());
-		matrices.scale(this.scale, this.scale);
+		MatrixStack matrices = context.getMatrices();
+		matrices.push();
+		matrices.translate(getRoundedX(), getRoundedY(), 0);
+		matrices.scale(this.scale, this.scale, 1.0f);
 
 		drawBackground(context);
 
 		context.drawText(client.textRenderer, text, 0, 0, getColor(), this.shadow.getValue());
 
-		matrices.popMatrix();
+		matrices.pop();
 	}
 
 	@Override

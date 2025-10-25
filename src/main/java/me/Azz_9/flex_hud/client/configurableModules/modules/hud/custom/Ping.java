@@ -11,8 +11,8 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import org.joml.Matrix3x2fStack;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -79,16 +79,16 @@ public class Ping extends AbstractTextElement {
 
 			setWidth(text);
 
-			Matrix3x2fStack matrices = context.getMatrices();
-			matrices.pushMatrix();
-			matrices.translate(getRoundedX(), getRoundedY());
-			matrices.scale(this.scale, this.scale);
+			MatrixStack matrices = context.getMatrices();
+			matrices.push();
+			matrices.translate(getRoundedX(), getRoundedY(), 0);
+			matrices.scale(this.scale, this.scale, 1.0f);
 
 			drawBackground(context);
 
 			context.drawText(client.textRenderer, text, 0, 0, getColor(), this.shadow.getValue());
 
-			matrices.popMatrix();
+			matrices.pop();
 		}
 	}
 

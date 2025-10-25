@@ -3,13 +3,14 @@ package me.Azz_9.flex_hud.client.screens.widgets;
 import me.Azz_9.flex_hud.client.utils.EaseUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import org.joml.Matrix3x2fStack;
+import net.minecraft.util.math.RotationAxis;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 
@@ -33,7 +34,7 @@ public class HelpWidget extends ClickableWidget {
 
 	@Override
 	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-		context.drawTexture(RenderPipelines.GUI_TEXTURED, texture, getX(), getY(), 0, 0, getWidth(), getHeight(), 20, 20);
+		context.drawTexture(RenderLayer::getGuiTextured, texture, getX(), getY(), 0, 0, getWidth(), getHeight(), 20, 20);
 
 		if (displayHelp || isFadingOut) {
 
@@ -87,14 +88,14 @@ public class HelpWidget extends ClickableWidget {
 
 		context.enableScissor(getX(), getY() - marginBottom, getRight(), getY() - marginBottom + arrowSize);
 
-		Matrix3x2fStack matrices = context.getMatrices();
-		matrices.pushMatrix();
-		matrices.translate((float) (getX() + getWidth() / 2.0), (float) (getY() - marginBottom - Math.sqrt(Math.pow(arrowSize, 2) * 2) / 2));
-		matrices.rotate((float) Math.toRadians(45));
+		MatrixStack matrices = context.getMatrices();
+		matrices.push();
+		matrices.translate((float) (getX() + getWidth() / 2.0), (float) (getY() - marginBottom - Math.sqrt(Math.pow(arrowSize, 2) * 2) / 2), 0);
+		matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(45));
 
 		context.fill(0, 0, arrowSize, arrowSize, (alpha / 2 << 24) | BACKGROUND_COLOR);
 
-		matrices.popMatrix();
+		matrices.pop();
 
 		context.disableScissor();
 	}

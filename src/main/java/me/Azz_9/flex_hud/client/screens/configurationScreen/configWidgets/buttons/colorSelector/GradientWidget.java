@@ -1,13 +1,13 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import org.joml.Matrix3x2fStack;
 import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
@@ -35,14 +35,14 @@ public class GradientWidget extends ClickableWidget {
 	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
 		renderGradient(context);
 
-		Matrix3x2fStack matrices = context.getMatrices();
-		matrices.pushMatrix();
-		matrices.translate((float) (cursorX + getX()), (float) (cursorY + getY()));
+		MatrixStack matrices = context.getMatrices();
+		matrices.push();
+		matrices.translate((float) (cursorX + getX()), (float) (cursorY + getY()), 0);
 
 		// Draw the cursor
 		int cursorSize = 6;
 		context.drawTexture(
-				RenderPipelines.GUI_TEXTURED,
+				RenderLayer::getGuiTextured,
 				Identifier.of(MOD_ID, "widgets/color_selector/gradient_cursor.png"),
 				-cursorSize / 2, -cursorSize / 2,
 				0, 0,
@@ -50,7 +50,7 @@ public class GradientWidget extends ClickableWidget {
 				cursorSize, cursorSize
 		);
 
-		matrices.popMatrix();
+		matrices.pop();
 	}
 
 	private void renderGradient(DrawContext context) {

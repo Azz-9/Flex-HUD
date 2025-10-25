@@ -11,8 +11,8 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import org.joml.Matrix3x2fStack;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.HashSet;
@@ -117,14 +117,14 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 			}
 			int valueY = handleY;
 
-			Matrix3x2fStack matrices = context.getMatrices();
-			matrices.pushMatrix();
-			matrices.translate(valueX, valueY);
-			matrices.scale(0.75f, 0.75f);
+			MatrixStack matrices = context.getMatrices();
+			matrices.push();
+			matrices.translate(valueX, valueY, 0);
+			matrices.scale(0.75f, 0.75f, 1.0f);
 
 			context.drawText(MinecraftClient.getInstance().textRenderer, text, 0, 0, 0xffffffff, true);
 
-			matrices.popMatrix();
+			matrices.pop();
 		}
 	}
 

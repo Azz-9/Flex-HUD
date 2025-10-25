@@ -16,12 +16,12 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.text.Text;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
-import org.joml.Matrix3x2fStack;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -167,10 +167,10 @@ public class Coordinates extends AbstractTextElement {
 
 		}
 
-		Matrix3x2fStack matrices = context.getMatrices();
-		matrices.pushMatrix();
-		matrices.translate(getRoundedX(), getRoundedY());
-		matrices.scale(this.scale, this.scale);
+		MatrixStack matrices = context.getMatrices();
+		matrices.push();
+		matrices.translate(getRoundedX(), getRoundedY(), 0);
+		matrices.scale(this.scale, this.scale, 1.0f);
 
 		drawBackground(context);
 
@@ -178,7 +178,7 @@ public class Coordinates extends AbstractTextElement {
 			renderable.render(context, tickCounter);
 		}
 
-		matrices.popMatrix();
+		matrices.pop();
 	}
 
 	private String[] getDirection(PlayerEntity p) {

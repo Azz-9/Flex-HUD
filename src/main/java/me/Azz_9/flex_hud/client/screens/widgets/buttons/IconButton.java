@@ -1,8 +1,8 @@
 package me.Azz_9.flex_hud.client.screens.widgets.buttons;
 
-import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -25,7 +25,7 @@ public class IconButton extends ButtonWidget {
 
 		int iconX = this.getX() + (this.width - textureWidth) / 2;
 		int iconY = this.getY() + (this.height - textureHeight) / 2;
-		context.drawTexture(RenderPipelines.GUI_TEXTURED, texture, iconX, iconY, 0, 0, textureWidth, textureHeight, textureWidth, textureHeight);
+		context.drawTexture(RenderLayer::getGuiTextured, texture, iconX, iconY, 0, 0, textureWidth, textureHeight, textureWidth, textureHeight);
 	}
 
 	public void setTexture(Identifier texture) {

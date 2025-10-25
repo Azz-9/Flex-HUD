@@ -1,9 +1,5 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.vanilla;
 
-import com.mojang.blaze3d.pipeline.BlendFunction;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.platform.DestFactor;
-import com.mojang.blaze3d.platform.SourceFactor;
 import me.Azz_9.flex_hud.client.configurableModules.JsonConfigHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
@@ -12,13 +8,15 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.Conf
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigIntGrid;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.AbstractCrosshairConfigScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.CrosshairEditorEntry;
+import me.Azz_9.flex_hud.client.utils.crosshair.DynamicTexture;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.option.AttackIndicator;
 import net.minecraft.client.option.Perspective;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.text.Text;
@@ -30,15 +28,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix3x2fStack;
 
 public class Crosshair extends AbstractModule {
 
-	private static final RenderPipeline CROSSHAIR_PIPELINE = RenderPipelines.register(RenderPipeline.builder(RenderPipelines.GUI_SNIPPET)
-			.withLocation("pipeline/crosshair_no_tex")
-			.withBlend(new BlendFunction(SourceFactor.ONE_MINUS_DST_COLOR, DestFactor.ONE_MINUS_SRC_COLOR, SourceFactor.ONE, DestFactor.ZERO))
-			.build()
-	);
+	public transient DynamicTexture crosshairTexture;
 
 	private static final Identifier CROSSHAIR_ATTACK_INDICATOR_FULL_TEXTURE = Identifier.ofVanilla("hud/crosshair_attack_indicator_full");
 	private static final Identifier CROSSHAIR_ATTACK_INDICATOR_BACKGROUND_TEXTURE = Identifier.ofVanilla("hud/crosshair_attack_indicator_background");
@@ -76,6 +69,9 @@ public class Crosshair extends AbstractModule {
 	@Override
 	public void init() {
 		this.enabled.setConfigTextTranslationKey("flex_hud.crosshair.config.enable");
+
+		this.crosshairTexture = new DynamicTexture("crosshair_texture", size, size);
+		this.crosshairTexture.updatePixels(this.pixels.getValue());
 	}
 
 	@Override
@@ -103,24 +99,14 @@ public class Crosshair extends AbstractModule {
 		double startX = screenWidth / 2.0 - (size / 2.0) * scale;
 		double startY = screenHeight / 2.0 - (size / 2.0) * scale;
 
-		Matrix3x2fStack matrices = context.getMatrices();
-		matrices.pushMatrix();
-		matrices.translate((float) startX, (float) startY);
-		matrices.scale(scale, scale);
+		MatrixStack matrices = context.getMatrices();
+		matrices.push();
+		matrices.translate((float) startX, (float) startY, 0);
+		matrices.scale(scale, scale, 1.0f);
 
-		for (int x = 0; x < size; x++) {
-			for (int y = 0; y < size; y++) {
-				if (pixels.getValue()[y][x] >> 24 != 0) {
-					if (disableBlending.getValue()) {
-						context.fill(x, y, x + 1, y + 1, pixels.getValue()[y][x]);
-					} else {
-						context.fill(CROSSHAIR_PIPELINE, x, y, x + 1, y + 1, pixels.getValue()[y][x]);
-					}
-				}
-			}
-		}
+		context.drawGuiTexture((disableBlending.getValue() ? RenderLayer::getGuiTextured : RenderLayer::getCrosshair), crosshairTexture.getId(), 0, 0, size, size);
 
-		matrices.popMatrix();
+		matrices.pop();
 
 		if (client.options.getAttackIndicator().getValue() == AttackIndicator.CROSSHAIR) {
 			float attackCooldownProgress = client.player.getAttackCooldownProgress(0.0F);
@@ -133,11 +119,11 @@ public class Crosshair extends AbstractModule {
 			int y = context.getScaledWindowHeight() / 2 - 7 + 16;
 			int x = context.getScaledWindowWidth() / 2 - 8;
 			if (renderFullAttackIndicator) {
-				context.drawGuiTexture((disableBlending.getValue() ? RenderPipelines.GUI_TEXTURED : RenderPipelines.CROSSHAIR), CROSSHAIR_ATTACK_INDICATOR_FULL_TEXTURE, x, y, 16, 16);
+				context.drawGuiTexture((disableBlending.getValue() ? RenderLayer::getGuiTextured : RenderLayer::getCrosshair), CROSSHAIR_ATTACK_INDICATOR_FULL_TEXTURE, x, y, 16, 16);
 			} else if (attackCooldownProgress < 1.0F) {
 				int l = (int) (attackCooldownProgress * 17.0F);
-				context.drawGuiTexture((disableBlending.getValue() ? RenderPipelines.GUI_TEXTURED : RenderPipelines.CROSSHAIR), CROSSHAIR_ATTACK_INDICATOR_BACKGROUND_TEXTURE, x, y, 16, 4);
-				context.drawGuiTexture((disableBlending.getValue() ? RenderPipelines.GUI_TEXTURED : RenderPipelines.CROSSHAIR), CROSSHAIR_ATTACK_INDICATOR_PROGRESS_TEXTURE, 16, 4, 0, 0, x, y, l, 4);
+				context.drawGuiTexture((disableBlending.getValue() ? RenderLayer::getGuiTextured : RenderLayer::getCrosshair), CROSSHAIR_ATTACK_INDICATOR_BACKGROUND_TEXTURE, x, y, 16, 4);
+				context.drawGuiTexture((disableBlending.getValue() ? RenderLayer::getGuiTextured : RenderLayer::getCrosshair), CROSSHAIR_ATTACK_INDICATOR_PROGRESS_TEXTURE, 16, 4, 0, 0, x, y, l, 4);
 			}
 		}
 	}

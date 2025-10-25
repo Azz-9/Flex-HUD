@@ -1,5 +1,6 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen;
 
+import me.Azz_9.flex_hud.client.configurableModules.JsonConfigHelper;
 import me.Azz_9.flex_hud.client.screens.TrackableChange;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.ScrollableConfigList;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigIntGrid;
@@ -107,6 +108,7 @@ public class CrosshairEditorEntry extends ScrollableConfigList.AbstractConfigEnt
 		}
 
 		public Builder setVariable(ConfigIntGrid variable) {
+			JsonConfigHelper.getInstance().crosshair.crosshairTexture.updatePixels(variable.getValue());
 			this.variable = variable;
 			return this;
 		}

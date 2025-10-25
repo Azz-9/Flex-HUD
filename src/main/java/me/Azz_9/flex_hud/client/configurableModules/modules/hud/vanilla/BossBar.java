@@ -8,16 +8,16 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfiguratio
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.ClientBossBar;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -69,23 +69,23 @@ public class BossBar extends AbstractHudElement implements MovableModule {
 		}
 
 		if (Flex_hudClient.isInMoveElementScreen) {
-			Matrix3x2fStack matrices = context.getMatrices();
-			matrices.pushMatrix();
-			matrices.translate(getRoundedX(), getRoundedY());
-			matrices.scale(scale, scale);
+			MatrixStack matrices = context.getMatrices();
+			matrices.push();
+			matrices.translate(getRoundedX(), getRoundedY(), 0);
+			matrices.scale(scale, scale, 1.0f);
 
 			int bossBarWidth = width;
 			int bossBarHeight = 5;
 
-			context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, BACKGROUND_TEXTURES[0], bossBarWidth, bossBarHeight, 0, 0, 0, 9, bossBarWidth, bossBarHeight);
-			context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, PROGRESS_TEXTURES[0], bossBarWidth, bossBarHeight, 0, 0, 0, 9, bossBarWidth, bossBarHeight);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, BACKGROUND_TEXTURES[0], bossBarWidth, bossBarHeight, 0, 0, 0, 9, bossBarWidth, bossBarHeight);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, PROGRESS_TEXTURES[0], bossBarWidth, bossBarHeight, 0, 0, 0, 9, bossBarWidth, bossBarHeight);
 
 			Text text = Text.of("Boss bar");
 			int textX = (bossBarWidth - client.textRenderer.getWidth(text)) / 2;
 			int textY = 0;
 			context.drawTextWithShadow(client.textRenderer, text, textX, textY, 0xffffffff);
 
-			matrices.popMatrix();
+			matrices.pop();
 			return;
 		}
 
@@ -94,10 +94,10 @@ public class BossBar extends AbstractHudElement implements MovableModule {
 			return;
 		}
 
-		Matrix3x2fStack matrices = context.getMatrices();
-		matrices.pushMatrix();
-		matrices.translate(getRoundedX(), getRoundedY());
-		matrices.scale(scale, scale);
+		MatrixStack matrices = context.getMatrices();
+		matrices.push();
+		matrices.translate(getRoundedX(), getRoundedY(), 0);
+		matrices.scale(scale, scale, 1.0f);
 
 		int bossBarWidth = width;
 		int bossBarHeight = 5;
@@ -120,7 +120,7 @@ public class BossBar extends AbstractHudElement implements MovableModule {
 			counter += 1;
 		}
 
-		matrices.popMatrix();
+		matrices.pop();
 	}
 
 	private void renderBossBar(DrawContext context, int x, int y, int width, int height, net.minecraft.entity.boss.BossBar bossBar) {
@@ -133,9 +133,9 @@ public class BossBar extends AbstractHudElement implements MovableModule {
 	}
 
 	private void renderBossBar(DrawContext context, int x, int y, net.minecraft.entity.boss.BossBar bossBar, int width, int height, int progressWidth, Identifier[] textures, Identifier[] notchedTextures) {
-		context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, textures[bossBar.getColor().ordinal()], width, height, 0, 0, x, y, progressWidth, height);
+		context.drawGuiTexture(RenderLayer::getGuiTextured, textures[bossBar.getColor().ordinal()], width, height, 0, 0, x, y, progressWidth, height);
 		if (bossBar.getStyle() != net.minecraft.entity.boss.BossBar.Style.PROGRESS) {
-			context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, notchedTextures[bossBar.getStyle().ordinal() - 1], width, height, 0, 0, x, y, progressWidth, height);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, notchedTextures[bossBar.getStyle().ordinal() - 1], width, height, 0, 0, x, y, progressWidth, height);
 		}
 
 	}
