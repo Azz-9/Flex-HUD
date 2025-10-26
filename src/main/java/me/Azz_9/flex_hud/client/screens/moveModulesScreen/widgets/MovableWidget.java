@@ -340,6 +340,9 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 	}
 
 	private void snapElement(double x, double y) {
+		x = Math.clamp(x, 0, MinecraftClient.getInstance().getWindow().getScaledWidth() - this.getWidth());
+		y = Math.clamp(y, 0, MinecraftClient.getInstance().getWindow().getScaledHeight() - this.getHeight());
+
 		double centerY = MinecraftClient.getInstance().getWindow().getScaledHeight() / 2.0;
 		double centerX = MinecraftClient.getInstance().getWindow().getScaledWidth() / 2.0;
 
@@ -383,8 +386,8 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 					if (!widget.HUD_ELEMENT.getID().equals(this.HUD_ELEMENT.getID())) {
 						double otherX = widget.getX();
 						double otherY = widget.getY();
-						double otherRight = widget.getRight();   // should be getX() + widget.getScaledWidth()
-						double otherBottom = widget.getBottom(); // should be getY() + widget.getScaledHeight()
+						double otherRight = widget.getRight();
+						double otherBottom = widget.getBottom();
 
 						// ---------- Horizontal snapping (align tops/bottoms) ----------
 						// Build candidate pairs: (posYToApply, guideLineYToDraw)
@@ -429,8 +432,7 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 				}
 			}
 		}
-
-		// Apply guides if any
+		
 		if (guideX != null) snapLineX = guideX;
 		if (guideY != null) snapLineY = guideY;
 
