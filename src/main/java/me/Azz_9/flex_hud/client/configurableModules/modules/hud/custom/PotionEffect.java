@@ -11,12 +11,11 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorB
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
@@ -82,7 +81,7 @@ public class PotionEffect extends AbstractTextElement {
 			effectWidth = Math.max(effectWidth, client.textRenderer.getWidth(durationString));
 			this.height = hudY + client.textRenderer.fontHeight;
 
-			Identifier icon = effect.getEffectType().getKey().map(RegistryKey::getValue).map((id) -> id.withPrefixedPath("mob_effect/")).orElseGet(MissingSprite::getMissingSpriteId);
+			Identifier icon = InGameHud.getEffectTexture(effect.getEffectType());
 			int iconSize = 18;
 			renderables.add(new RenderableImage(effectWidth + 2, hudY, icon, iconSize, iconSize));
 			this.width = Math.max(this.width, effectWidth + 2 + iconSize);
