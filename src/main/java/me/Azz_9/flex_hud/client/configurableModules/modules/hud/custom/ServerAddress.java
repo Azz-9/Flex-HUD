@@ -102,7 +102,9 @@ public class ServerAddress extends AbstractTextElement {
 
 			drawBackground(context);
 
-			context.drawTexture(RenderLayer::getGuiTextured, icon, 0, 0, 0, 0, faviconSize, faviconSize, faviconSize, faviconSize);
+			if (icon != null) {
+				context.drawTexture(RenderLayer::getGuiTextured, icon, 0, 0, 0, 0, faviconSize, faviconSize, faviconSize, faviconSize);
+			}
 			context.drawText(client.textRenderer, text, textX, textY, getColor(), this.shadow.getValue());
 
 			matrices.pop();
