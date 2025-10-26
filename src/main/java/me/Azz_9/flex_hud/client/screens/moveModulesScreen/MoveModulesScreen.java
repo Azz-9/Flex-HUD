@@ -7,8 +7,10 @@ import me.Azz_9.flex_hud.client.screens.AbstractCallbackScreen;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.actions.UndoManager;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.widgets.MovableWidget;
 import me.Azz_9.flex_hud.client.screens.widgets.HelpWidget;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
@@ -59,6 +61,16 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+		if (MinecraftClient.getInstance().world == null) {
+			super.renderBackground(context, mouseX, mouseY, deltaTicks);
+		}
+
+		if (renderCallback(context, mouseX, mouseY, deltaTicks)) {
+			return;
+		}
+
+		JsonConfigHelper.getHudElements().forEach(hudElement -> hudElement.render(context, RenderTickCounter.ZERO));
+
 		if (firstFrame) {
 			getMovableWidgets().forEach((movableWidget) -> {
 				movableWidget.updateDimensionAndPosition();
@@ -67,11 +79,7 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 			firstFrame = false;
 		}
 
-		if (renderCallback(context, mouseX, mouseY, deltaTicks)) {
-			return;
-		}
-
-		movableWidgets.forEach(widget -> widget.render(context, deltaTicks));
+		movableWidgets.forEach(widget -> widget.render(context, mouseX, mouseY, deltaTicks));
 
 		helpWidget.render(context, mouseX, mouseY, deltaTicks);
 	}

@@ -50,7 +50,7 @@ public class WeatherDisplay extends AbstractBackgroundElement {
 			return;
 		}
 
-		if (client.world != null && client.world.getDimension().hasSkyLight() && !client.world.getDimension().hasCeiling()) {
+		if (client.world != null && client.world.getDimension().hasSkyLight() && !client.world.getDimension().hasCeiling() || Flex_hudClient.isInMoveElementScreen) {
 
 			MatrixStack matrices = context.getMatrices();
 			matrices.push();

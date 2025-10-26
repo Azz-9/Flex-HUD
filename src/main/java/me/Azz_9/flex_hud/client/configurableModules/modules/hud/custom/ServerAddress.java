@@ -16,6 +16,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+
 public class ServerAddress extends AbstractTextElement {
 	private ConfigBoolean hideWhenOffline = new ConfigBoolean(true, "flex_hud.server_address.config.hide_when_offline");
 	private ConfigBoolean showServerIcon = new ConfigBoolean(true, "flex_hud.server_address.config.show_server_icon");
@@ -51,18 +53,20 @@ public class ServerAddress extends AbstractTextElement {
 
 		String text = "";
 
-		if (client.getCurrentServerEntry() != null) {
-
-			text = client.getCurrentServerEntry().address;
-
-		} else if (!this.hideWhenOffline.getValue()) {
-
-			text = Text.translatable("flex_hud.server_address.hud.offline").getString();
-
-		} else if (Flex_hudClient.isInMoveElementScreen) {
+		if (Flex_hudClient.isInMoveElementScreen) {
 
 			text = "play.hypixel.net";
 
+		} else {
+			if (client.getCurrentServerEntry() != null) {
+
+				text = client.getCurrentServerEntry().address;
+
+			} else if (!this.hideWhenOffline.getValue()) {
+
+				text = Text.translatable("flex_hud.server_address.hud.offline").getString();
+
+			}
 		}
 
 		if (!text.isEmpty()) {
@@ -74,10 +78,14 @@ public class ServerAddress extends AbstractTextElement {
 			int textY = 0;
 			int faviconSize = 14;
 			Identifier icon = null;
-			if (showServerIcon.getValue() && client.getCurrentServerEntry() != null) {
-				icon = FaviconUtils.getCurrentServerFavicon();
-				if (icon == null) {
-					icon = Identifier.of("minecraft", "textures/misc/unknown_server.png");
+			if (showServerIcon.getValue() && (client.getCurrentServerEntry() != null || Flex_hudClient.isInMoveElementScreen)) {
+				if (Flex_hudClient.isInMoveElementScreen) {
+					icon = Identifier.of(MOD_ID, "misc/hypixel-logo.png");
+				} else {
+					icon = FaviconUtils.getCurrentServerFavicon();
+					if (icon == null) {
+						icon = Identifier.of("minecraft", "textures/misc/unknown_server.png");
+					}
 				}
 
 				textX = faviconSize + 2;
@@ -103,7 +111,7 @@ public class ServerAddress extends AbstractTextElement {
 
 	@Override
 	protected boolean shouldNotRender() {
-		return super.shouldNotRender() || (this.hideWhenOffline.getValue() && MinecraftClient.getInstance().getCurrentServerEntry() == null);
+		return super.shouldNotRender() || (this.hideWhenOffline.getValue() && MinecraftClient.getInstance().getCurrentServerEntry() == null && !Flex_hudClient.isInMoveElementScreen);
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.modules.Translatable;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
@@ -54,7 +55,12 @@ public class Speedometer extends AbstractTextElement {
 			return;
 		}
 
-		String formattedSpeed = SpeedUtils.getFormattedSpeed();
+		String formattedSpeed;
+		if (Flex_hudClient.isInMoveElementScreen) {
+			formattedSpeed = SpeedUtils.getString(null, 0);
+		} else {
+			formattedSpeed = SpeedUtils.getFormattedSpeed();
+		}
 
 		setWidth(formattedSpeed);
 

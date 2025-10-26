@@ -1,5 +1,6 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
@@ -39,12 +40,17 @@ public class DayCounter extends AbstractTextElement {
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
 		MinecraftClient client = MinecraftClient.getInstance();
 
-		if (shouldNotRender() || client.world == null) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && client.world == null) {
 			return;
 		}
 
-		long time = client.world.getTimeOfDay() / 24000;
-		Text text = Text.translatable("flex_hud.day_counter.hud.prefix").append(" " + (int) time);
+		long day;
+		if (Flex_hudClient.isInMoveElementScreen) {
+			day = 5;
+		} else {
+			day = client.world.getTimeOfDay() / 24000;
+		}
+		Text text = Text.translatable("flex_hud.day_counter.hud.prefix").append(" " + (int) day);
 
 		setWidth(text.getString());
 

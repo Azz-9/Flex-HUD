@@ -1,6 +1,7 @@
 package me.Azz_9.flex_hud.client;
 
 import me.Azz_9.flex_hud.client.configurableModules.JsonConfigHelper;
+import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractHudElement;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.durabilityPing.DurabilityPing;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.durabilityPing.ItemDurabilityLostCallback;
@@ -34,7 +35,6 @@ public class Flex_hudClient implements ClientModInitializer {
 	public static final String MOD_ID = "flex_hud";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 	public static KeyBinding openOptionScreenKeyBind;
-	private boolean hudModulesInitialized = false;
 
 	public static boolean isInMoveElementScreen;
 
@@ -49,34 +49,25 @@ public class Flex_hudClient implements ClientModInitializer {
 
 		LOGGER.info("Xaeros Minimap {}found !", XaeroCompat.isXaerosMinimapLoaded() ? "" : "not ");
 
-		List<AbstractHudElement> hudElements = JsonConfigHelper.getHudElements();
-
-		HudLayerRegistrationCallback.EVENT.register(layeredDrawer -> {
-			for (int i = 0; i < hudElements.size(); i++) {
-				AbstractHudElement element = hudElements.get(i);
-				if (element.getID().equals(JsonConfigHelper.getInstance().bossBar.getID())) continue;
-				element.init();
-				Identifier id = Identifier.of(MOD_ID, "element-" + i);
-				layeredDrawer.attachLayerBefore(IdentifiedLayer.CHAT, id, element::render);
+		ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
+			for (AbstractModule module : JsonConfigHelper.getModules()) {
+				module.init();
 			}
-		});
 
-		HudLayerRegistrationCallback.EVENT.register(layeredDrawer -> {
-			JsonConfigHelper.getInstance().crosshair.init();
-			Identifier id = Identifier.of(MOD_ID, "custom_crosshair");
-			layeredDrawer.attachLayerBefore(IdentifiedLayer.CHAT, id, JsonConfigHelper.getInstance().crosshair::render);
-		});
+			List<AbstractHudElement> hudElements = JsonConfigHelper.getHudElements();
 
-		HudLayerRegistrationCallback.EVENT.register(layeredDrawer -> {
-			JsonConfigHelper.getInstance().bossBar.init();
-			Identifier id = Identifier.of(MOD_ID, "custom_boss_bar");
-			layeredDrawer.attachLayerBefore(IdentifiedLayer.CHAT, id, JsonConfigHelper.getInstance().bossBar::render);
-		});
+			HudLayerRegistrationCallback.EVENT.register(layeredDrawer -> {
+				for (int i = 0; i < hudElements.size(); i++) {
+					AbstractHudElement element = hudElements.get(i);
+					Identifier id = Identifier.of(MOD_ID, "element-" + i);
+					Identifier layer = element.getID().equals(JsonConfigHelper.getInstance().bossBar.getID()) ? IdentifiedLayer.BOSS_BAR : IdentifiedLayer.CHAT;
+					layeredDrawer.attachLayerBefore(layer, id, element::render);
+				}
 
-		JsonConfigHelper.getInstance().durabilityPing.init();
-		JsonConfigHelper.getInstance().tntCountdown.init();
-		JsonConfigHelper.getInstance().timeChanger.init();
-		JsonConfigHelper.getInstance().weatherChanger.init();
+				Identifier id = Identifier.of(MOD_ID, "custom_crosshair");
+				layeredDrawer.attachLayerBefore(IdentifiedLayer.CROSSHAIR, id, JsonConfigHelper.getInstance().crosshair::render);
+			});
+		});
 
 		ItemDurabilityLostCallback.EVENT.register((stack, damage) -> {
 			if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().durabilityPing.enabled.getValue()) {
@@ -120,21 +111,18 @@ public class Flex_hudClient implements ClientModInitializer {
 		});
 
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
-			if (JsonConfigHelper.getInstance().isEnabled) {
+			if (client.getCurrentServerEntry() != null) { // joined a multiplayer server
+				FaviconUtils.registerServerIcon(client.getCurrentServerEntry().getFavicon());
+			}
 
-				if (client.getCurrentServerEntry() != null) { // joined a multiplayer server
-					FaviconUtils.registerServerIcon(client.getCurrentServerEntry().getFavicon());
-				}
-
-				if (JsonConfigHelper.getInstance().compass.showXaerosMapWaypoints.getValue() && XaeroCompat.isXaerosMinimapLoaded()) {
-					XaeroCompat.init();
-					joinedWorld = true;
-				}
+			if (XaeroCompat.isXaerosMinimapLoaded()) {
+				XaeroCompat.init();
+				joinedWorld = true;
 			}
 		});
 
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
-			if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().compass.showXaerosMapWaypoints.getValue() && XaeroCompat.isXaerosMinimapLoaded()) {
+			if (XaeroCompat.isXaerosMinimapLoaded()) {
 				joinedWorld = false;
 				XaeroCompat.available = false;
 			}

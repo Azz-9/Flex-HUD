@@ -50,7 +50,7 @@ public class PotionEffect extends AbstractTextElement {
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
 		MinecraftClient client = MinecraftClient.getInstance();
 
-		if (shouldNotRender() || client.player == null) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && client.player == null) {
 			return;
 		}
 
@@ -82,6 +82,7 @@ public class PotionEffect extends AbstractTextElement {
 			effectWidth = Math.max(effectWidth, client.textRenderer.getWidth(durationString));
 			this.height = hudY + client.textRenderer.fontHeight;
 
+			//FIXME l'asset n'est pas bien trouvé la ↓
 			Identifier icon = effect.getEffectType().getKey().map(RegistryKey::getValue).map((id) -> id.withPrefixedPath("mob_effect/")).orElseGet(MissingSprite::getMissingSpriteId);
 			int iconSize = 18;
 			renderables.add(new RenderableImage(effectWidth + 2, hudY, icon, iconSize, iconSize));

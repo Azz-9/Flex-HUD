@@ -1,5 +1,6 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.DisplayMode;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable.Renderable;
@@ -66,7 +67,7 @@ public class Coordinates extends AbstractTextElement {
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
 		MinecraftClient client = MinecraftClient.getInstance();
 
-		if (shouldNotRender() || client.player == null) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && client.player == null) {
 			return;
 		}
 
@@ -78,10 +79,23 @@ public class Coordinates extends AbstractTextElement {
 		this.height = 0;
 		this.width = 0;
 
+		double playerX;
+		double playerY;
+		double playerZ;
+		if (Flex_hudClient.isInMoveElementScreen) {
+			playerX = 12;
+			playerY = 73;
+			playerZ = -48;
+		} else {
+			playerX = player.getX();
+			playerY = player.getY();
+			playerZ = player.getZ();
+		}
+
 		// Get the truncated coordinates with the correct number of digits
-		String xCoords = "X: " + BigDecimal.valueOf(player.getX()).setScale(this.numberOfDigits.getValue(), RoundingMode.FLOOR);
-		String yCoords = "Y: " + BigDecimal.valueOf(player.getY()).setScale(this.numberOfDigits.getValue(), RoundingMode.FLOOR);
-		String zCoords = "Z: " + BigDecimal.valueOf(player.getZ()).setScale(this.numberOfDigits.getValue(), RoundingMode.FLOOR);
+		String xCoords = "X: " + BigDecimal.valueOf(playerX).setScale(this.numberOfDigits.getValue(), RoundingMode.FLOOR);
+		String yCoords = "Y: " + BigDecimal.valueOf(playerY).setScale(this.numberOfDigits.getValue(), RoundingMode.FLOOR);
+		String zCoords = "Z: " + BigDecimal.valueOf(playerZ).setScale(this.numberOfDigits.getValue(), RoundingMode.FLOOR);
 
 		if (this.displayMode.getValue() == DisplayMode.VERTICAL) {
 
@@ -182,7 +196,12 @@ public class Coordinates extends AbstractTextElement {
 	}
 
 	private String[] getDirection(PlayerEntity p) {
-		float yaw = (p.getYaw() % 360 + 360) % 360;
+		float yaw;
+		if (Flex_hudClient.isInMoveElementScreen) {
+			yaw = 45;
+		} else {
+			yaw = (p.getYaw() % 360 + 360) % 360;
+		}
 
 		if (337.5 < yaw || yaw < 22.5) {
 			return new String[]{Text.translatable("flex_hud.coordinates.hud.direction.south").getString(),
@@ -214,14 +233,24 @@ public class Coordinates extends AbstractTextElement {
 
 	private void renderBiome(int hudX, int hudY, List<Renderable> renderables) {
 		MinecraftClient client = MinecraftClient.getInstance();
-		PlayerEntity p = client.player;
 
-		if (client.world == null || p == null) {
-			return;
+		RegistryKey<Biome> biomeKey;
+		String biomeName;
+
+		if (Flex_hudClient.isInMoveElementScreen) {
+			biomeKey = BiomeKeys.PLAINS;
+			biomeName = "plains";
+		} else {
+			PlayerEntity p = client.player;
+
+			if (client.world == null || p == null) {
+				return;
+			}
+
+			biomeKey = client.world.getBiome(p.getBlockPos()).getKey().orElse(null);
+			biomeName = client.world.getBiome(p.getBlockPos()).getIdAsString().replace("minecraft:", "");
 		}
 
-		RegistryKey<Biome> biomeKey = client.world.getBiome(p.getBlockPos()).getKey().orElse(null);
-		String biomeName = client.world.getBiome(p.getBlockPos()).getIdAsString().replace("minecraft:", "");
 		renderables.add(new RenderableText(hudX, hudY, Text.of("Biome: "), getColor(), this.shadow.getValue()));
 		hudX += client.textRenderer.getWidth("Biome: ");
 		int textColor = (biomeSpecificColor.getValue() ? BIOME_COLORS.getOrDefault(biomeKey, 0xffffffff) : getColor());
