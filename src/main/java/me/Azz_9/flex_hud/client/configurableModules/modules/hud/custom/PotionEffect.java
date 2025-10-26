@@ -4,7 +4,7 @@ import com.google.common.collect.Ordering;
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable.Renderable;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable.RenderableImage;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable.RenderableSprite;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable.RenderableText;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
@@ -13,13 +13,11 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.client.texture.MissingSprite;
+import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -82,10 +80,9 @@ public class PotionEffect extends AbstractTextElement {
 			effectWidth = Math.max(effectWidth, client.textRenderer.getWidth(durationString));
 			this.height = hudY + client.textRenderer.fontHeight;
 
-			//FIXME l'asset n'est pas bien trouvé la ↓
-			Identifier icon = effect.getEffectType().getKey().map(RegistryKey::getValue).map((id) -> id.withPrefixedPath("mob_effect/")).orElseGet(MissingSprite::getMissingSpriteId);
+			Sprite sprite = client.getStatusEffectSpriteManager().getSprite(effect.getEffectType());
 			int iconSize = 18;
-			renderables.add(new RenderableImage(effectWidth + 2, hudY, icon, iconSize, iconSize));
+			renderables.add(new RenderableSprite(effectWidth + 2, hudY, sprite, iconSize, iconSize));
 			this.width = Math.max(this.width, effectWidth + 2 + iconSize);
 			this.height = Math.max(this.height, hudY + iconSize);
 
