@@ -1,5 +1,6 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
@@ -45,22 +46,28 @@ public class NetherCoordinates extends AbstractTextElement {
 		MinecraftClient client = MinecraftClient.getInstance();
 		PlayerEntity player = client.player;
 
-		if (shouldNotRender() || player == null || !player.getEntityWorld().getRegistryKey().equals(World.OVERWORLD) && this.onlyWhenInOverworld.getValue() || player.getEntityWorld().getRegistryKey().equals(World.END)) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && (player == null || !player.getEntityWorld().getRegistryKey().equals(World.OVERWORLD) && this.onlyWhenInOverworld.getValue() || player.getEntityWorld().getRegistryKey().equals(World.END))) {
 			return;
 		}
 
 		int x, z;
 		String dimension;
-		if (player.getEntityWorld().getRegistryKey().equals(World.OVERWORLD)) {
-			x = (int) Math.floor(player.getX() / 8);
-			z = (int) Math.floor(player.getZ() / 8);
-
+		if (Flex_hudClient.isInMoveElementScreen) {
+			x = 1;
+			z = -6;
 			dimension = "Nether";
 		} else {
-			x = (int) Math.floor(player.getX() * 8);
-			z = (int) Math.floor(player.getZ() * 8);
+			if (player.getEntityWorld().getRegistryKey().equals(World.OVERWORLD)) {
+				x = (int) Math.floor(player.getX() / 8);
+				z = (int) Math.floor(player.getZ() / 8);
 
-			dimension = "Overworld";
+				dimension = "Nether";
+			} else {
+				x = (int) Math.floor(player.getX() * 8);
+				z = (int) Math.floor(player.getZ() * 8);
+
+				dimension = "Overworld";
+			}
 		}
 
 		String text = dimension + ": " + x + " " + z;

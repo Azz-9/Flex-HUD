@@ -40,15 +40,15 @@ public class SpeedUtils {
 		}
 		previousPosition = currentPosition;
 
-		formattedSpeed = getString(player);
+		formattedSpeed = getString(player, speed);
 	}
 
-	private static @NotNull String getString(PlayerEntity player) {
+	public static @NotNull String getString(PlayerEntity player, double speed) {
 		Speedometer speedometer = JsonConfigHelper.getInstance().speedometer;
 		String format = "%." + speedometer.digits.getValue() + "f";
-		String formattedSpeed = String.format(format, SpeedUtils.getSpeed());
+		String formattedSpeed = String.format(format, speed);
 
-		if (speedometer.units.getValue() == Speedometer.SpeedometerUnits.KNOT || (speedometer.useKnotInBoat.getValue() && player.getVehicle() instanceof BoatEntity)) {
+		if (speedometer.units.getValue() == Speedometer.SpeedometerUnits.KNOT || (speedometer.useKnotInBoat.getValue() && player != null && player.getVehicle() instanceof BoatEntity)) {
 			formattedSpeed += " " + Text.translatable(Speedometer.SpeedometerUnits.KNOT.getTranslationKey()).getString();
 		} else {
 			formattedSpeed += " " + Text.translatable(speedometer.units.getValue().getTranslationKey()).getString();

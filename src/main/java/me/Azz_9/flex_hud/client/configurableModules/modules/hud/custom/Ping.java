@@ -14,12 +14,8 @@ import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
 import org.joml.Matrix3x2fStack;
 
-import java.util.LinkedList;
-import java.util.List;
-
 public class Ping extends AbstractTextElement {
 	private ConfigBoolean hideWhenOffline = new ConfigBoolean(true, "flex_hud.ping.config.hide_when_offline");
-	public static List<Long> times = new LinkedList<>();
 
 	public Ping(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
@@ -47,32 +43,34 @@ public class Ping extends AbstractTextElement {
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
 		MinecraftClient client = MinecraftClient.getInstance();
 
-		if (shouldNotRender() || client.player == null) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && client.player == null) {
 			return;
 		}
 
 		String text = "";
 
-		if (client.getCurrentServerEntry() != null) {
-
-			if (client.getNetworkHandler() != null) {
-				PlayerListEntry entry = client.getNetworkHandler().getPlayerListEntry(client.player.getUuid());
-
-				if (entry != null) {
-					int latency = entry.getLatency();
-
-					text = latency + " ms";
-				}
-			}
-
-		} else if (!this.hideWhenOffline.getValue()) {
-
-			text = Text.translatable("flex_hud.ping.hud.offline").getString();
-
-		} else if (Flex_hudClient.isInMoveElementScreen) {
+		if (Flex_hudClient.isInMoveElementScreen) {
 
 			text = "20 ms";
 
+		} else {
+			if (client.getCurrentServerEntry() != null) {
+
+				if (client.getNetworkHandler() != null) {
+					PlayerListEntry entry = client.getNetworkHandler().getPlayerListEntry(client.player.getUuid());
+
+					if (entry != null) {
+						int latency = entry.getLatency();
+
+						text = latency + " ms";
+					}
+				}
+
+			} else if (!this.hideWhenOffline.getValue()) {
+
+				text = Text.translatable("flex_hud.ping.hud.offline").getString();
+
+			}
 		}
 
 		if (!text.isEmpty()) {
@@ -94,7 +92,7 @@ public class Ping extends AbstractTextElement {
 
 	@Override
 	protected boolean shouldNotRender() {
-		return super.shouldNotRender() || (this.hideWhenOffline.getValue() && MinecraftClient.getInstance().getCurrentServerEntry() == null);
+		return super.shouldNotRender() || (this.hideWhenOffline.getValue() && MinecraftClient.getInstance().getCurrentServerEntry() == null && !Flex_hudClient.isInMoveElementScreen);
 	}
 
 	@Override
