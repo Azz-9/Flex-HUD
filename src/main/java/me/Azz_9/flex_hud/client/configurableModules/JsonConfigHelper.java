@@ -2,6 +2,7 @@ package me.Azz_9.flex_hud.client.configurableModules;
 
 import com.google.gson.*;
 import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractHudElement;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.MovableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom.*;
@@ -33,7 +34,7 @@ public class JsonConfigHelper {
 	public MemoryUsage memoryUsage = new MemoryUsage(75, 2, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.START);
 	public Speedometer speedometer = new Speedometer(2, 70, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.START);
 	public Reach reach = new Reach(2, 100, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.START);
-	public Playtime playtime = new Playtime(2, 140, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.START);
+	public Playtime playtime = new Playtime(2, 100, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.START);
 	//public ResourcePack resourcePack = new ResourcePack(0, 100, AbstractHudElement.AnchorPosition.END, AbstractHudElement.AnchorPosition.START);
 	public PotionEffect potionEffect = new PotionEffect(0, 20, AbstractHudElement.AnchorPosition.END, AbstractHudElement.AnchorPosition.START);
 	public Crosshair crosshair = new Crosshair();
@@ -167,15 +168,21 @@ public class JsonConfigHelper {
 		return new ArrayList<>(getHudElements());
 	}
 
-	public static List<Configurable> getConfigurableModules() {
-		List<Configurable> configurables = new ArrayList<>(getHudElements());
-		configurables.addAll(List.of(
+	public static List<AbstractModule> getModules() {
+		List<AbstractModule> modules = new ArrayList<>(getHudElements());
+		modules.addAll(List.of(
 				getInstance().weatherChanger,
 				getInstance().timeChanger,
 				//getInstance().durabilityPing,
 				getInstance().crosshair,
 				getInstance().tntCountdown
 		));
-		return configurables;
+		return modules;
 	}
+
+	public static List<Configurable> getConfigurableModules() {
+		return new ArrayList<>(getModules());
+	}
+
+
 }
