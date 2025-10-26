@@ -56,17 +56,17 @@ public class Flex_hudClient implements ClientModInitializer {
 
 			List<AbstractHudElement> hudElements = JsonConfigHelper.getHudElements();
 
-			for (int i = 0; i < hudElements.size(); i++) {
+			for (AbstractHudElement hudElement : hudElements) {
 				HudElementRegistry.attachElementBefore(
-						hudElements.get(i).getID().equals(JsonConfigHelper.getInstance().bossBar.getID()) ? VanillaHudElements.BOSS_BAR : VanillaHudElements.CHAT,
-						Identifier.of(MOD_ID, "hud_element-" + i),
-						hudElements.get(i)::render
+						hudElement.getID().equals(JsonConfigHelper.getInstance().bossBar.getID()) ? VanillaHudElements.BOSS_BAR : VanillaHudElements.CHAT,
+						Identifier.of(MOD_ID, hudElement.getID()),
+						hudElement::render
 				);
 			}
 
 			HudElementRegistry.attachElementAfter(
 					VanillaHudElements.CROSSHAIR,
-					Identifier.of(MOD_ID, "custom_crosshair"),
+					Identifier.of(MOD_ID, JsonConfigHelper.getInstance().crosshair.getID()),
 					JsonConfigHelper.getInstance().crosshair::render
 			);
 		});
