@@ -226,7 +226,7 @@ public class Compass extends AbstractTextElement {
 				int colorIndex = XaeroCompat.WaypointReflect.getColor(waypoint);
 
 				if (!disabled && player != null) {
-					Position lerpedPosition = player.getLerpedPos(tickCounter.getTickProgress(true));
+					Position lerpedPosition = player.getLerpedPos(tickCounter.getTickDelta(true));
 					float angle = calculateAngle(lerpedPosition.getX(), lerpedPosition.getZ(), x, z);
 
 					float angleDifference = (angle - yaw + 540) % 360 - 180;
@@ -290,8 +290,8 @@ public class Compass extends AbstractTextElement {
 
 			int textureSize = 9;
 
-			Position lerpedPosition = player.getLerpedPos(tickCounter.getTickProgress(true));
-			Vec3d entityLerpedPos = entity.getLerpedPos(tickCounter.getTickProgress(true));
+			Position lerpedPosition = player.getLerpedPos(tickCounter.getTickDelta(true));
+			Vec3d entityLerpedPos = entity.getLerpedPos(tickCounter.getTickDelta(true));
 			float angle = calculateAngle(lerpedPosition.getX(), lerpedPosition.getZ(), entityLerpedPos.x, entityLerpedPos.z);
 			float angleDifference = (angle - yaw + 540) % 360 - 180;
 
@@ -317,7 +317,7 @@ public class Compass extends AbstractTextElement {
 				} else {
 					Identifier texture = null;
 					if (entity instanceof HorseEntity horseEntity && !showOnlyPets.getValue()) {
-						texture = Identifier.of(MOD_ID, "tamed_entities_icons/horse/" + horseEntity.getHorseColor().toString().toLowerCase() + ".png");
+						texture = Identifier.of(MOD_ID, "tamed_entities_icons/horse/" + horseEntity.getVariant().toString().toLowerCase() + ".png");
 					} else if (entity instanceof LlamaEntity llamaEntity && !showOnlyPets.getValue()) {
 						texture = Identifier.of(MOD_ID, "tamed_entities_icons/" + (entity instanceof TraderLlamaEntity ? "trader_llama/" : "llama/") + llamaEntity.getVariant().toString().toLowerCase() + ".png");
 					} else if (entity instanceof ParrotEntity parrotEntity) {

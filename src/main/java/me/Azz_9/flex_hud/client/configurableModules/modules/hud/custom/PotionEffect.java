@@ -123,7 +123,7 @@ public class PotionEffect extends AbstractTextElement {
 		}
 
 		// Smooth fraction of current tick [0..1]; works on Fabric/Yarn
-		float tickDelta = client.getRenderTickCounter().getDynamicDeltaTicks();
+		float tickDelta = client.getRenderTickCounter().getTickDelta(true);
 
 		// Add tickDelta to world time for smooth animation
 		float ticks = client.world.getTime() + tickDelta;

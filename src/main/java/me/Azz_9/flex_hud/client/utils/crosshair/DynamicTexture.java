@@ -16,7 +16,7 @@ public class DynamicTexture {
 	public DynamicTexture(String name, int width, int height) {
 		this.width = width;
 		this.height = height;
-		this.texture = new NativeImageBackedTexture(name, width, height, true);
+		this.texture = new NativeImageBackedTexture(width, height, true);
 		this.id = Identifier.of(MOD_ID, name);
 		MinecraftClient.getInstance().getTextureManager().registerTexture(id, texture);
 	}
@@ -33,7 +33,7 @@ public class DynamicTexture {
 
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				texture.getImage().setColor(x, y, pixels[y][x]);
+				texture.getImage().setColorArgb(x, y, pixels[y][x]);
 			}
 		}
 		texture.upload();

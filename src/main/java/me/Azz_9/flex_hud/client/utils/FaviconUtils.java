@@ -34,7 +34,7 @@ public class FaviconUtils {
 		try {
 			InputStream stream = new ByteArrayInputStream(favicon);
 			NativeImage image = NativeImage.read(stream);
-			return new NativeImageBackedTexture(() -> "server_icon", image);
+			return new NativeImageBackedTexture(image);
 		} catch (Exception e) {
 			Flex_hudClient.LOGGER.warn("Failed to load server favicon: {}", e.getMessage());
 			return null;
