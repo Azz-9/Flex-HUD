@@ -12,6 +12,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
@@ -105,7 +106,7 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-		context.fill(getX(), getY(), getRight(), getBottom(), 0xff4a4a4a);
+		context.fill(RenderLayer.getGuiOverlay(), getX(), getY(), getRight(), getBottom(), 0xff4a4a4a);
 
 		for (int y = 0; y < pixels.length; y++) {
 			for (int x = 0; x < pixels[y].length; x++) {
@@ -117,7 +118,7 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 		colorButton.render(context, mouseX, mouseY, deltaTicks);
 
 		clearButton.render(context, mouseX, mouseY, deltaTicks);
-		
+
 		presetText.render(context, mouseX, mouseY, deltaTicks);
 		crosshairPresetsList.render(context, mouseX, mouseY, deltaTicks);
 
