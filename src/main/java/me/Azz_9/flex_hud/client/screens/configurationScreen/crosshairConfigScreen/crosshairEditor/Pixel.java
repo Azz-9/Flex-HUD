@@ -3,6 +3,7 @@ package me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScre
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 
 public class Pixel extends ClickableWidget {
@@ -23,17 +24,23 @@ public class Pixel extends ClickableWidget {
 	@Override
 	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
 		if (color >> 24 == 0) {
-			context.fill(getX() + getWidth() / 4, getY() + getHeight() / 4, getRight() - getWidth() / 4, getBottom() - getHeight() / 4, (isCenter ? 0xff424242 : 0xff3a3a3a));
+			context.fill(RenderLayer.getGuiOverlay(), getX() + getWidth() / 4, getY() + getHeight() / 4, getRight() - getWidth() / 4, getBottom() - getHeight() / 4, (isCenter ? 0xff424242 : 0xff3a3a3a));
 		} else {
-			context.fill(getX(), getY(), getRight(), getBottom(), color);
+			context.fill(RenderLayer.getGuiOverlay(), getX(), getY(), getRight(), getBottom(), color);
 		}
 
 
+		int color;
 		if (this.isHovered()) {
-			context.drawBorder(getX(), getY(), getWidth(), getHeight(), 0xffdf1515);
+			color = 0xffdf1515;
 		} else {
-			context.drawBorder(getX(), getY(), getWidth(), getHeight(), 0xffdfdfdf);
+			color = 0xffdfdfdf;
 		}
+
+		context.fill(RenderLayer.getGuiOverlay(), getX(), getY(), getX() + getWidth(), getY() + 1, color);
+		context.fill(RenderLayer.getGuiOverlay(), getX(), getY() + getHeight() - 1, getX() + getWidth(), getY() + getHeight(), color);
+		context.fill(RenderLayer.getGuiOverlay(), getX(), getY() + 1, getX() + 1, getY() + getHeight() - 1, color);
+		context.fill(RenderLayer.getGuiOverlay(), getX() + getWidth() - 1, getY() + 1, getX() + getWidth(), getY() + getHeight() - 1, color);
 	}
 
 	@Override
