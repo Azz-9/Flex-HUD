@@ -415,7 +415,7 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 				}
 			}
 		}
-		
+
 		if (guideX != null) snapLineX = guideX;
 		if (guideY != null) snapLineY = guideY;
 

@@ -49,24 +49,21 @@ public class Flex_hudClient implements ClientModInitializer {
 
 		LOGGER.info("Xaeros Minimap {}found !", XaeroCompat.isXaerosMinimapLoaded() ? "" : "not ");
 
-		ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
+		List<AbstractHudElement> hudElements = JsonConfigHelper.getHudElements();
+
+		HudLayerRegistrationCallback.EVENT.register(layeredDrawer -> {
 			for (AbstractModule module : JsonConfigHelper.getModules()) {
 				module.init();
 			}
 
-			List<AbstractHudElement> hudElements = JsonConfigHelper.getHudElements();
+			for (AbstractHudElement element : hudElements) {
+				Identifier id = Identifier.of(MOD_ID, element.getID());
+				Identifier layer = element.getID().equals(JsonConfigHelper.getInstance().bossBar.getID()) ? IdentifiedLayer.BOSS_BAR : IdentifiedLayer.CHAT;
+				layeredDrawer.attachLayerBefore(layer, id, element::render);
+			}
 
-			HudLayerRegistrationCallback.EVENT.register(layeredDrawer -> {
-				for (int i = 0; i < hudElements.size(); i++) {
-					AbstractHudElement element = hudElements.get(i);
-					Identifier id = Identifier.of(MOD_ID, "element-" + i);
-					Identifier layer = element.getID().equals(JsonConfigHelper.getInstance().bossBar.getID()) ? IdentifiedLayer.BOSS_BAR : IdentifiedLayer.CHAT;
-					layeredDrawer.attachLayerBefore(layer, id, element::render);
-				}
-
-				Identifier id = Identifier.of(MOD_ID, "custom_crosshair");
-				layeredDrawer.attachLayerBefore(IdentifiedLayer.CROSSHAIR, id, JsonConfigHelper.getInstance().crosshair::render);
-			});
+			Identifier id = Identifier.of(MOD_ID, JsonConfigHelper.getInstance().crosshair.getID());
+			layeredDrawer.attachLayerBefore(IdentifiedLayer.CROSSHAIR, id, JsonConfigHelper.getInstance().crosshair::render);
 		});
 
 		ItemDurabilityLostCallback.EVENT.register((stack, damage) -> {
