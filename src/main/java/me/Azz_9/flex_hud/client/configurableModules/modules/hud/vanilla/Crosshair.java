@@ -40,7 +40,7 @@ public class Crosshair extends AbstractModule {
 	public transient int size = 15;
 	public float scale = 1.0f;
 
-	private final ConfigIntGrid pixels = new ConfigIntGrid(
+	public final ConfigIntGrid pixels = new ConfigIntGrid(
 			new int[][]{
 					{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 					{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -104,7 +104,7 @@ public class Crosshair extends AbstractModule {
 		matrices.translate((float) startX, (float) startY, 0);
 		matrices.scale(scale, scale, 1.0f);
 
-		context.drawGuiTexture((disableBlending.getValue() ? RenderLayer::getGuiTextured : RenderLayer::getCrosshair), crosshairTexture.getId(), 0, 0, size, size);
+		context.drawTexture((disableBlending.getValue() ? RenderLayer::getGuiTextured : RenderLayer::getCrosshair), crosshairTexture.getId(), 0, 0, 0, 0, size, size, size, size);
 
 		matrices.pop();
 
@@ -121,9 +121,9 @@ public class Crosshair extends AbstractModule {
 			if (renderFullAttackIndicator) {
 				context.drawGuiTexture((disableBlending.getValue() ? RenderLayer::getGuiTextured : RenderLayer::getCrosshair), CROSSHAIR_ATTACK_INDICATOR_FULL_TEXTURE, x, y, 16, 16);
 			} else if (attackCooldownProgress < 1.0F) {
-				int l = (int) (attackCooldownProgress * 17.0F);
+				int width = (int) (attackCooldownProgress * 17.0F);
 				context.drawGuiTexture((disableBlending.getValue() ? RenderLayer::getGuiTextured : RenderLayer::getCrosshair), CROSSHAIR_ATTACK_INDICATOR_BACKGROUND_TEXTURE, x, y, 16, 4);
-				context.drawGuiTexture((disableBlending.getValue() ? RenderLayer::getGuiTextured : RenderLayer::getCrosshair), CROSSHAIR_ATTACK_INDICATOR_PROGRESS_TEXTURE, 16, 4, 0, 0, x, y, l, 4);
+				context.drawGuiTexture((disableBlending.getValue() ? RenderLayer::getGuiTextured : RenderLayer::getCrosshair), CROSSHAIR_ATTACK_INDICATOR_PROGRESS_TEXTURE, 16, 4, 0, 0, x, y, width, 4);
 			}
 		}
 	}

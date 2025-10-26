@@ -67,6 +67,8 @@ public class CrosshairEditorEntry extends ScrollableConfigList.AbstractConfigEnt
 
 	@Override
 	public void onChange(DataGetter<?> dataGetter) {
+		JsonConfigHelper.getInstance().crosshair.crosshairTexture.updatePixels((int[][]) dataGetter.getData());
+
 		boolean active = !crosshairButtonWidget.getDisableWhen().equals(dataGetter.getData());
 		crosshairButtonWidget.active = active;
 		setActive(active);
@@ -89,7 +91,7 @@ public class CrosshairEditorEntry extends ScrollableConfigList.AbstractConfigEnt
 	}
 
 	// Builder
-	public static class Builder extends AbstractBuilder {
+	public static class Builder extends AbstractBuilder<int[][]> {
 		private int crosshairButtonWidth;
 		private int crosshairButtonHeight = 20;
 		private ConfigIntGrid variable;
@@ -108,7 +110,6 @@ public class CrosshairEditorEntry extends ScrollableConfigList.AbstractConfigEnt
 		}
 
 		public Builder setVariable(ConfigIntGrid variable) {
-			JsonConfigHelper.getInstance().crosshair.crosshairTexture.updatePixels(variable.getValue());
 			this.variable = variable;
 			return this;
 		}
