@@ -1,6 +1,7 @@
 package me.Azz_9.flex_hud.client;
 
 import me.Azz_9.flex_hud.client.configurableModules.JsonConfigHelper;
+import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractHudElement;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.durabilityPing.DurabilityPing;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.durabilityPing.ItemDurabilityLostCallback;
@@ -14,6 +15,7 @@ import me.Azz_9.flex_hud.client.utils.reach.ReachUtils;
 import me.Azz_9.flex_hud.client.utils.speedometer.SpeedUtils;
 import me.Azz_9.flex_hud.compat.XaeroCompat;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
@@ -33,7 +35,6 @@ public class Flex_hudClient implements ClientModInitializer {
 	public static final String MOD_ID = "flex_hud";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 	public static KeyBinding openOptionScreenKeyBind;
-	private boolean hudModulesInitialized = false;
 
 	public static boolean isInMoveElementScreen;
 
@@ -47,6 +48,28 @@ public class Flex_hudClient implements ClientModInitializer {
 		LOGGER.info("Flex HUD has started up.");
 
 		LOGGER.info("Xaeros Minimap {}found !", XaeroCompat.isXaerosMinimapLoaded() ? "" : "not ");
+
+		ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
+			for (AbstractModule module : JsonConfigHelper.getModules()) {
+				module.init();
+			}
+
+			List<AbstractHudElement> hudElements = JsonConfigHelper.getHudElements();
+
+			for (int i = 0; i < hudElements.size(); i++) {
+				HudElementRegistry.attachElementBefore(
+						hudElements.get(i).getID().equals(JsonConfigHelper.getInstance().bossBar.getID()) ? VanillaHudElements.BOSS_BAR : VanillaHudElements.CHAT,
+						Identifier.of(MOD_ID, "hud_element-" + i),
+						hudElements.get(i)::render
+				);
+			}
+
+			HudElementRegistry.attachElementAfter(
+					VanillaHudElements.CROSSHAIR,
+					Identifier.of(MOD_ID, "custom_crosshair"),
+					JsonConfigHelper.getInstance().crosshair::render
+			);
+		});
 
 		ItemDurabilityLostCallback.EVENT.register((stack, damage) -> {
 			if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().durabilityPing.enabled.getValue()) {
@@ -90,56 +113,18 @@ public class Flex_hudClient implements ClientModInitializer {
 		});
 
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
-			if (JsonConfigHelper.getInstance().isEnabled) {
-				if (!hudModulesInitialized) {
-					List<AbstractHudElement> hudElements = JsonConfigHelper.getHudElements();
+			if (client.getCurrentServerEntry() != null) { // joined a multiplayer server
+				FaviconUtils.registerServerIcon(client.getCurrentServerEntry().getFavicon());
+			}
 
-					for (int i = 0; i < hudElements.size(); i++) {
-						if (hudElements.get(i).getID().equals(JsonConfigHelper.getInstance().bossBar.getID())) continue;
-						hudElements.get(i).init();
-
-						HudElementRegistry.attachElementBefore(
-								VanillaHudElements.CHAT,
-								Identifier.of(MOD_ID, "hud_element-" + i),
-								hudElements.get(i)::render
-						);
-					}
-
-					JsonConfigHelper.getInstance().crosshair.init();
-					HudElementRegistry.attachElementAfter(
-							VanillaHudElements.CROSSHAIR,
-							Identifier.of(MOD_ID, "custom_crosshair"),
-							JsonConfigHelper.getInstance().crosshair::render
-					);
-
-					JsonConfigHelper.getInstance().bossBar.init();
-					HudElementRegistry.attachElementAfter(
-							VanillaHudElements.BOSS_BAR,
-							Identifier.of(MOD_ID, "custom_boss_bar"),
-							JsonConfigHelper.getInstance().bossBar::render
-					);
-
-					JsonConfigHelper.getInstance().durabilityPing.init();
-					JsonConfigHelper.getInstance().tntCountdown.init();
-					JsonConfigHelper.getInstance().timeChanger.init();
-					JsonConfigHelper.getInstance().weatherChanger.init();
-
-					hudModulesInitialized = true;
-				}
-
-				if (client.getCurrentServerEntry() != null) { // joined a multiplayer server
-					FaviconUtils.registerServerIcon(client.getCurrentServerEntry().getFavicon());
-				}
-
-				if (JsonConfigHelper.getInstance().compass.showXaerosMapWaypoints.getValue() && XaeroCompat.isXaerosMinimapLoaded()) {
-					XaeroCompat.init();
-					joinedWorld = true;
-				}
+			if (XaeroCompat.isXaerosMinimapLoaded()) {
+				XaeroCompat.init();
+				joinedWorld = true;
 			}
 		});
 
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
-			if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().compass.showXaerosMapWaypoints.getValue() && XaeroCompat.isXaerosMinimapLoaded()) {
+			if (XaeroCompat.isXaerosMinimapLoaded()) {
 				joinedWorld = false;
 				XaeroCompat.available = false;
 			}
