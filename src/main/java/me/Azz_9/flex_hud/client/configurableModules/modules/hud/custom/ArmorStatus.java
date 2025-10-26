@@ -108,6 +108,7 @@ public class ArmorStatus extends AbstractTextElement {
 
 		List<Renderable> renderables = new LinkedList<>();
 
+		boolean shouldDrawArrows = false;
 		for (int i = 0; i < booleans.length; i++) {
 			if (booleans[i]) {
 				ItemStack stack = items[i];
@@ -125,10 +126,14 @@ public class ArmorStatus extends AbstractTextElement {
 					}
 
 					if ((i == 4 || i == 5) && this.showArrowsWhenBowInHand.getValue() && (stack.getItem() == Items.BOW || stack.getItem() == Items.CROSSBOW)) {
-						drawArrowsStacks(hudX, hudY, horizontalGap, verticalGap, renderables);
+						shouldDrawArrows = true;
 					}
 				}
 			}
+		}
+
+		if (shouldDrawArrows) {
+			drawArrowsStacks(hudX, hudY, horizontalGap, verticalGap, renderables);
 		}
 
 		MatrixStack matrices = context.getMatrices();
