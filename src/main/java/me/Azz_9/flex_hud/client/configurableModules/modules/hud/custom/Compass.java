@@ -1,5 +1,6 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
@@ -66,7 +67,7 @@ public class Compass extends AbstractTextElement {
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
 		MinecraftClient client = MinecraftClient.getInstance();
 
-		if (shouldNotRender() || client.player == null) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && client.player == null) {
 			return;
 		}
 
@@ -75,8 +76,13 @@ public class Compass extends AbstractTextElement {
 		int screenWidth = context.getScaledWindowWidth();
 		this.width = screenWidth / 4;
 
-		// Calcul de la direction (yaw)
-		float yaw = (player.getYaw() % 360 + 360) % 360;
+		float yaw;
+		if (Flex_hudClient.isInMoveElementScreen) {
+			yaw = 180;
+		} else {
+			// Calcul de la direction (yaw)
+			yaw = (player.getYaw() % 360 + 360) % 360;
+		}
 
 		Matrix3x2fStack matrices = context.getMatrices();
 		matrices.pushMatrix();
@@ -105,19 +111,21 @@ public class Compass extends AbstractTextElement {
 			}
 		}
 
-		// Affichage des waypoints Xaero's minimap
-		if (this.showXaerosMapWaypoints.getValue() && XaeroCompat.isXaerosMinimapLoaded()) {
-			drawXaerosMapWaypoints(context, matrices, yaw, tickCounter);
-		}
+		if (!Flex_hudClient.isInMoveElementScreen) {
+			// Affichage des waypoints Xaero's minimap
+			if (this.showXaerosMapWaypoints.getValue() && XaeroCompat.isXaerosMinimapLoaded()) {
+				drawXaerosMapWaypoints(context, matrices, yaw, tickCounter);
+			}
 
-		// Override locator bar
-		if (overrideLocatorBar.getValue()) {
-			renderLocatorBarWaypoints(context, matrices, tickCounter);
-		}
+			// Override locator bar
+			if (overrideLocatorBar.getValue()) {
+				renderLocatorBarWaypoints(context, matrices, tickCounter);
+			}
 
-		// tamed entities
-		if (showTamedEntitiesPoint.getValue()) {
-			renderTamedEntityPoint(context, tickCounter, yaw, matrices);
+			// tamed entities
+			if (showTamedEntitiesPoint.getValue()) {
+				renderTamedEntityPoint(context, tickCounter, yaw, matrices);
+			}
 		}
 
 		context.disableScissor();

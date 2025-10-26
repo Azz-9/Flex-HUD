@@ -62,18 +62,16 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 				.build();
 		this.addDrawableChild(modsButton);
 
-		if (MinecraftClient.getInstance().world != null) {
-			IconButton moveButton = new IconButton(
-					(width - squareButtonSize + centralButtonWidth) / 2 + buttonGap,
-					(height - squareButtonSize) / 2,
-					squareButtonSize, squareButtonSize,
-					Identifier.of(MOD_ID, "widgets/buttons/options_menu_buttons/move.png"),
-					14, 14, (btn) -> {
-				MinecraftClient.getInstance().setScreen(new MoveModulesScreen(this));
-				Flex_hudClient.isInMoveElementScreen = true;
-			});
-			this.addDrawableChild(moveButton);
-		}
+		IconButton moveButton = new IconButton(
+				(width - squareButtonSize + centralButtonWidth) / 2 + buttonGap,
+				(height - squareButtonSize) / 2,
+				squareButtonSize, squareButtonSize,
+				Identifier.of(MOD_ID, "widgets/buttons/options_menu_buttons/move.png"),
+				14, 14, (btn) -> {
+			MinecraftClient.getInstance().setScreen(new MoveModulesScreen(this));
+			Flex_hudClient.isInMoveElementScreen = true;
+		});
+		this.addDrawableChild(moveButton);
 	}
 
 	private void updateEnableButton() {
