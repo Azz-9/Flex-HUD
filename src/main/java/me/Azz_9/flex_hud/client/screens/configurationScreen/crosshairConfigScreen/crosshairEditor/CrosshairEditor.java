@@ -211,7 +211,7 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 			if (clicked) {
 				clicked = false;
 
-				undoManager.addAction(new TextureAction(this, onClickTexture, this.crosshairButtonWidget.getData()));
+				undoManager.addAction(new TextureAction(this, onClickTexture, getTexture()));
 			}
 			return true;
 		} else if (colorSelector.isFocused() && colorSelector.mouseReleased(click)) {
