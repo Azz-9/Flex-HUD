@@ -15,7 +15,6 @@ public class TextureAction implements Action {
 	@Override
 	public void redo() {
 		editor.setTexture(newTexture);
-
 	}
 
 	@Override
