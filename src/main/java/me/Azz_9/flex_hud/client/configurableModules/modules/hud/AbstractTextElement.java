@@ -4,6 +4,7 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.Conf
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 import me.Azz_9.flex_hud.client.utils.ChromaColorUtils;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractTextElement extends AbstractBackgroundElement {
@@ -38,6 +39,6 @@ public abstract class AbstractTextElement extends AbstractBackgroundElement {
 		if (chromaColor.getValue()) {
 			return ChromaColorUtils.getColor();
 		}
-		return color.getValue() | 0xff000000;
+		return ColorHelper.withAlpha(255, color.getValue());
 	}
 }
