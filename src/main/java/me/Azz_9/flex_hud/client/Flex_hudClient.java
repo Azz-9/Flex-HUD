@@ -24,7 +24,6 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.Identifier;
-import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -130,10 +129,10 @@ public class Flex_hudClient implements ClientModInitializer {
 			}
 		});
 
-		final KeyBinding.Category FLEX_HUD = KeyBinding.Category.create(Identifier.of("flex-hud"));
+		final KeyBinding.Category FLEX_HUD = KeyBinding.Category.create(Identifier.of(MOD_ID, "flex-hud"));
 
 		// see KeyBindingMixin
-		openOptionScreenKeyBind = KeyBindingHelper.registerKeyBinding(new KeyBinding("flex_hud.controls.open_menu", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_RIGHT_SHIFT, FLEX_HUD));
+		openOptionScreenKeyBind = KeyBindingHelper.registerKeyBinding(new KeyBinding("flex_hud.controls.open_menu", InputUtil.Type.KEYSYM, InputUtil.GLFW_KEY_RIGHT_SHIFT, FLEX_HUD));
 	}
 
 	public static long getLaunchTime() {
