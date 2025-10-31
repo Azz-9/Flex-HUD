@@ -17,13 +17,9 @@ public class TimeChanger extends AbstractModule {
 	public ConfigBoolean useRealTime = new ConfigBoolean(false, "flex_hud.time_changer.config.use_real_time");
 
 	public TimeChanger() {
+		this.enabled.setConfigTextTranslationKey("flex_hud.time_changer.config.enable");
 		this.enabled.setDefaultValue(false);
 		this.enabled.setValue(false);
-	}
-
-	@Override
-	public void init() {
-		this.enabled.setConfigTextTranslationKey("flex_hud.time_changer.config.enable");
 	}
 
 	@Override

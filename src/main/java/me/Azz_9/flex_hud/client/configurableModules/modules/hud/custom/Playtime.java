@@ -18,6 +18,7 @@ public class Playtime extends AbstractTextElement {
 
 	public Playtime(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		this.enabled.setConfigTextTranslationKey("flex_hud.playtime.config.enable");
 		this.enabled.setDefaultValue(false);
 		this.enabled.setValue(false);
 	}
@@ -25,7 +26,6 @@ public class Playtime extends AbstractTextElement {
 	@Override
 	public void init() {
 		this.height = MinecraftClient.getInstance().textRenderer.fontHeight;
-		this.enabled.setConfigTextTranslationKey("flex_hud.playtime.config.enable");
 	}
 
 	@Override

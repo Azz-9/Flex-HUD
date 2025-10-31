@@ -40,11 +40,7 @@ public class ArmorStatus extends AbstractTextElement {
 
 	public ArmorStatus(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
-	}
-
-	@Override
-	public void init() {
-		enabled.setConfigTextTranslationKey("flex_hud.armor_status.config.enable");
+		this.enabled.setConfigTextTranslationKey("flex_hud.armor_status.config.enable");
 	}
 
 	@Override

@@ -16,13 +16,9 @@ import java.util.List;
 
 public class TntCountdown extends AbstractModule {
 	public TntCountdown() {
+		this.enabled.setConfigTextTranslationKey("flex_hud.tnt_countdown.config.enable");
 		this.enabled.setDefaultValue(false);
 		this.enabled.setValue(false);
-	}
-
-	@Override
-	public void init() {
-		this.enabled.setConfigTextTranslationKey("flex_hud.tnt_countdown.config.enable");
 	}
 
 	@Override
