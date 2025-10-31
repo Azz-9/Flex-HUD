@@ -46,10 +46,6 @@ public class Coordinates extends AbstractTextElement {
 
 	public Coordinates(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
-	}
-
-	@Override
-	public void init() {
 		this.enabled.setConfigTextTranslationKey("flex_hud.coordinates.config.enable");
 	}
 

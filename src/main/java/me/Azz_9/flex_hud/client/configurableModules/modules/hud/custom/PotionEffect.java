@@ -27,10 +27,6 @@ public class PotionEffect extends AbstractTextElement {
 
 	public PotionEffect(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
-	}
-
-	@Override
-	public void init() {
 		this.enabled.setConfigTextTranslationKey("flex_hud.potion_effect.config.enable");
 	}
 

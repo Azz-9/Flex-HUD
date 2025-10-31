@@ -13,13 +13,9 @@ public class WeatherChanger extends AbstractModule {
 	public ConfigEnum<Weather> selectedWeather = new ConfigEnum<>(Weather.CLEAR, "flex_hud.weather_changer.config.selected_weather");
 
 	public WeatherChanger() {
+		this.enabled.setConfigTextTranslationKey("flex_hud.weather_changer.config.enable");
 		this.enabled.setDefaultValue(false);
 		this.enabled.setValue(false);
-	}
-
-	@Override
-	public void init() {
-		this.enabled.setConfigTextTranslationKey("flex_hud.weather_changer.config.enable");
 	}
 
 	@Override
