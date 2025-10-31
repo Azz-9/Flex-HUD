@@ -69,13 +69,9 @@ public class Crosshair extends AbstractModule {
 	public ConfigBoolean disableBlending = new ConfigBoolean(false, "flex_hud.crosshair.config.disable_blending");
 
 	public Crosshair() {
+		this.enabled.setConfigTextTranslationKey("flex_hud.crosshair.config.enable");
 		this.enabled.setDefaultValue(false);
 		this.enabled.setValue(false);
-	}
-
-	@Override
-	public void init() {
-		this.enabled.setConfigTextTranslationKey("flex_hud.crosshair.config.enable");
 	}
 
 	@Override

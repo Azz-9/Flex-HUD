@@ -45,12 +45,12 @@ public class Compass extends AbstractTextElement {
 
 	public Compass(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		this.enabled.setConfigTextTranslationKey("flex_hud.compass.config.enable");
 	}
 
 	@Override
 	public void init() {
 		this.height = 35;
-		this.enabled.setConfigTextTranslationKey("flex_hud.compass.config.enable");
 	}
 
 	@Override

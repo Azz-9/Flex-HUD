@@ -21,6 +21,7 @@ public class WeatherDisplay extends AbstractBackgroundElement {
 
 	public WeatherDisplay(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		this.enabled.setConfigTextTranslationKey("flex_hud.weather_display.config.enable");
 		this.enabled.setDefaultValue(false);
 		this.enabled.setValue(false);
 	}
@@ -29,7 +30,6 @@ public class WeatherDisplay extends AbstractBackgroundElement {
 	public void init() {
 		this.height = 16;
 		this.width = 16;
-		this.enabled.setConfigTextTranslationKey("flex_hud.weather_display.config.enable");
 	}
 
 	@Override

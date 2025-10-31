@@ -16,6 +16,7 @@ public class MemoryUsage extends AbstractTextElement {
 
 	public MemoryUsage(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		this.enabled.setConfigTextTranslationKey("flex_hud.memory_usage.config.enable");
 		this.enabled.setDefaultValue(false);
 		this.enabled.setValue(false);
 	}
@@ -23,7 +24,6 @@ public class MemoryUsage extends AbstractTextElement {
 	@Override
 	public void init() {
 		this.height = MinecraftClient.getInstance().textRenderer.fontHeight;
-		this.enabled.setConfigTextTranslationKey("flex_hud.memory_usage.config.enable");
 	}
 
 	@Override
