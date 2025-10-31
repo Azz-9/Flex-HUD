@@ -2,7 +2,6 @@
 	"key.category.flex_hud.flex-hud": "Flex HUD",
 	"flex_hud.controls.open_menu": "Open menu",
 
-
 	"flex_hud.configuration_screen": "Modules configuration",
 	"flex_hud.configuration_screen.searchbar_placeholder": "Search...",
 	"flex_hud.configuration_screen.columns": "Columns",
@@ -57,7 +56,6 @@
 	"flex_hud.enum.speedometer.units.kph": "km/h",
 	"flex_hud.enum.speedometer.units.mph": "mph",
 	"flex_hud.enum.speedometer.units.mps": "m/s",
-
 
 	"flex_hud.global.config.quit_and_discard": "Quit & discard changes",
 	"flex_hud.global.config.callback.message_title": "Changes not saved",
@@ -201,6 +199,16 @@
 	"flex_hud.weather_display": "Weather display",
 	"flex_hud.weather_display.config.enable": "Enable weather display",
 
+	"flex_hud.key_strokes": "Key Strokes",
+	"flex_hud.key_strokes.config.enable": "Show key strokes",
+	"flex_hud.key_strokes.config.chroma_color_pressed": "Chroma color pressed",
+	"flex_hud.key_strokes.config.color_pressed": "Color pressed",
+	"flex_hud.key_strokes.config.show_background_pressed": "Show background pressed",
+	"flex_hud.key_strokes.config.background_color_pressed": "Background color pressed",
+	"flex_hud.key_strokes.config.show_border": "Show border",
+	"flex_hud.key_strokes.config.border_color": "Border color",
+	"flex_hud.key_strokes.config.display_cps": "Display CPS",
+	"flex_hud.key_strokes.config.use_arrow": "Replace names with arrows",
 
 	"flex_hud.coordinates.hud.direction.south": "South",
 	"flex_hud.coordinates.hud.direction.south_west": "South-West",
