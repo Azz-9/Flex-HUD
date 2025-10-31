@@ -74,7 +74,7 @@ public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 
 	@Override
 	public List<? extends Element> children() {
-		return List.of(colorButtonWidget, resetButtonWidget, textWidget);
+		return List.of(colorButtonWidget, resetButtonWidget);
 	}
 
 	@Override

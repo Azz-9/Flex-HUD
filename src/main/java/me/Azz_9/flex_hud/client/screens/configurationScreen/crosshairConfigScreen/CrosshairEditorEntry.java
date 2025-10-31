@@ -95,11 +95,11 @@ public class CrosshairEditorEntry extends ScrollableConfigList.AbstractConfigEnt
 
 	@Override
 	public List<? extends Element> children() {
-		return List.of(crosshairButtonWidget, resetButtonWidget, textWidget);
+		return List.of(crosshairButtonWidget, resetButtonWidget);
 	}
 
 	// Builder
-	public static class Builder extends AbstractBuilder {
+	public static class Builder extends AbstractBuilder<int[][]> {
 		private int crosshairButtonWidth;
 		private int crosshairButtonHeight = 20;
 		private ConfigIntGrid variable;

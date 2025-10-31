@@ -1,6 +1,5 @@
 package me.Azz_9.flex_hud.client.screens.widgets.buttons;
 
-import me.Azz_9.flex_hud.client.utils.Cursors;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ButtonTextures;
@@ -34,15 +33,7 @@ public class TexturedButtonWidget extends net.minecraft.client.gui.widget.Textur
 	}
 
 	@Override
-	public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-		if (this.isHovered()) {
-			if (this.isInteractable()) {
-				context.setCursor(Cursors.POINTING_HAND);
-			} else {
-				context.setCursor(Cursors.NOT_ALLOWED);
-			}
-		}
-
+	public void drawIcon(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
 		Identifier identifier = this.textures.get(this.isInteractable(), this.isHovered() && this.active);
 		context.drawTexture(RenderPipelines.GUI_TEXTURED, identifier, this.getX(), this.getY(), 0, 0, this.width, this.height, TEXTURE_WIDTH, TEXTURE_HEIGHT);
 	}

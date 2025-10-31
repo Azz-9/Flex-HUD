@@ -60,7 +60,7 @@ public class IntSliderEntry extends ScrollableConfigList.AbstractConfigEntry {
 
 	@Override
 	public List<? extends Element> children() {
-		return List.of(sliderWidget, resetButtonWidget, textWidget);
+		return List.of(sliderWidget, resetButtonWidget);
 	}
 
 	@Override

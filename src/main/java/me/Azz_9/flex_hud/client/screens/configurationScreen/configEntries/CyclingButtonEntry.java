@@ -61,7 +61,7 @@ public class CyclingButtonEntry<E extends Enum<E> & Translatable> extends Scroll
 
 	@Override
 	public List<? extends Element> children() {
-		return List.of(cyclingButtonWidget, resetButtonWidget, textWidget);
+		return List.of(cyclingButtonWidget, resetButtonWidget);
 	}
 
 	@Override

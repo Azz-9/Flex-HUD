@@ -69,7 +69,7 @@ public class ToggleButtonEntry extends ScrollableConfigList.AbstractConfigEntry 
 
 	@Override
 	public List<? extends Element> children() {
-		return List.of(toggleButtonWidget, resetButtonWidget, textWidget);
+		return List.of(toggleButtonWidget, resetButtonWidget);
 	}
 
 	@Override

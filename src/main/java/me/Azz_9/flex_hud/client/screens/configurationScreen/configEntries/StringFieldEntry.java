@@ -70,7 +70,7 @@ public class StringFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 
 	@Override
 	public List<? extends Element> children() {
-		return List.of(resetButtonWidget, textWidget, textFieldWidget);
+		return List.of(resetButtonWidget, textFieldWidget);
 	}
 
 	@Override

@@ -100,7 +100,7 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 
 	@Override
 	public List<? extends Element> children() {
-		return List.of(intFieldWidget, increaseButton, decreaseButton, resetButtonWidget, textWidget);
+		return List.of(intFieldWidget, increaseButton, decreaseButton, resetButtonWidget);
 	}
 
 	@Override
