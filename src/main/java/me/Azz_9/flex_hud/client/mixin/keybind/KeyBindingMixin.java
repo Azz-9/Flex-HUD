@@ -15,13 +15,9 @@ public abstract class KeyBindingMixin {
 
 	@Inject(method = "onKeyPressed", at = @At(value = "TAIL"))
 	private static void onKeyPressed(InputUtil.Key key, CallbackInfo ci) {
-		int keyCode = key.getCategory() == InputUtil.Type.KEYSYM ? key.getCode() : -1;
-		int scanCode = key.getCategory() == InputUtil.Type.SCANCODE ? key.getCode() : -1;
-
 		// open option screen
-		if (Flex_hudClient.openOptionScreenKeyBind.matchesKey(keyCode, scanCode)) {
+		if (Flex_hudClient.openOptionScreenKeyBind.isPressed()) {
 			MinecraftClient.getInstance().setScreen(new OptionsScreen());
 		}
-
 	}
 }
