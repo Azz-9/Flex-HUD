@@ -3,7 +3,6 @@ package me.Azz_9.flex_hud.client.mixin.keybind;
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.screens.OptionsScreen;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,13 +15,9 @@ public abstract class KeyBindingMixin {
 
 	@Inject(method = "onKeyPressed", at = @At(value = "TAIL"))
 	private static void onKeyPressed(InputUtil.Key key, CallbackInfo ci) {
-		int keyCode = key.getCategory() == InputUtil.Type.KEYSYM ? key.getCode() : -1;
-		int scanCode = key.getCategory() == InputUtil.Type.SCANCODE ? key.getCode() : -1;
-
 		// open option screen
-		if (Flex_hudClient.openOptionScreenKeyBind.matchesKey(new KeyInput(keyCode, scanCode, 0))) {
+		if (Flex_hudClient.openOptionScreenKeyBind.isPressed()) {
 			MinecraftClient.getInstance().setScreen(new OptionsScreen());
 		}
-
 	}
 }
