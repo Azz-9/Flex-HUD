@@ -19,6 +19,7 @@ public class Ping extends AbstractTextElement {
 
 	public Ping(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		this.enabled.setConfigTextTranslationKey("flex_hud.ping.config.enable");
 		this.enabled.setDefaultValue(false);
 		this.enabled.setValue(false);
 	}
@@ -26,7 +27,6 @@ public class Ping extends AbstractTextElement {
 	@Override
 	public void init() {
 		this.height = MinecraftClient.getInstance().textRenderer.fontHeight;
-		this.enabled.setConfigTextTranslationKey("flex_hud.ping.config.enable");
 	}
 
 	@Override

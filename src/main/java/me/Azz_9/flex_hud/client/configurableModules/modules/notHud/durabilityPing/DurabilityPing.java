@@ -41,13 +41,9 @@ public class DurabilityPing extends AbstractModule {
 	public ConfigBoolean checkElytraOnly = new ConfigBoolean(false, "flex_hud.durability_ping.config.check_elytra_only");
 
 	public DurabilityPing() {
+		this.enabled.setConfigTextTranslationKey("flex_hud.durability_ping.config.enable");
 		this.enabled.setDefaultValue(false);
 		this.enabled.setValue(false);
-	}
-
-	@Override
-	public void init() {
-		this.enabled.setConfigTextTranslationKey("flex_hud.durability_ping.config.enable");
 	}
 
 	@Override

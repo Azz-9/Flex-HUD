@@ -52,13 +52,12 @@ public class BossBar extends AbstractHudElement implements MovableModule {
 
 	public BossBar(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		this.enabled.setConfigTextTranslationKey("flex_hud.bossbar.config.enable");
 	}
 
 	public void init() {
 		this.width = 182;
 		this.height = (BOSS_BAR_GAP + MinecraftClient.getInstance().textRenderer.fontHeight);
-
-		this.enabled.setConfigTextTranslationKey("flex_hud.bossbar.config.enable");
 	}
 
 	public void render(DrawContext context, RenderTickCounter tickCounter) {

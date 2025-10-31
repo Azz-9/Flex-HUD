@@ -21,6 +21,7 @@ public class NetherCoordinates extends AbstractTextElement {
 
 	public NetherCoordinates(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		this.enabled.setConfigTextTranslationKey("flex_hud.nether_coordinates.config.enable");
 		this.enabled.setDefaultValue(false);
 		this.enabled.setValue(false);
 	}
@@ -28,7 +29,6 @@ public class NetherCoordinates extends AbstractTextElement {
 	@Override
 	public void init() {
 		this.height = MinecraftClient.getInstance().textRenderer.fontHeight;
-		this.enabled.setConfigTextTranslationKey("flex_hud.nether_coordinates.config.enable");
 	}
 
 	@Override

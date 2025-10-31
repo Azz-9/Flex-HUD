@@ -21,12 +21,12 @@ public class Cps extends AbstractTextElement {
 
 	public Cps(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		this.enabled.setConfigTextTranslationKey("flex_hud.cps.config.enable");
 	}
 
 	@Override
 	public void init() {
 		this.height = MinecraftClient.getInstance().textRenderer.fontHeight;
-		this.enabled.setConfigTextTranslationKey("flex_hud.cps.config.enable");
 	}
 
 	@Override

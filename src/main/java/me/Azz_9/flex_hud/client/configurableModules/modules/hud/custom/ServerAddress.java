@@ -24,13 +24,9 @@ public class ServerAddress extends AbstractTextElement {
 
 	public ServerAddress(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		this.enabled.setConfigTextTranslationKey("flex_hud.server_address.config.enable");
 		this.enabled.setDefaultValue(false);
 		this.enabled.setValue(false);
-	}
-
-	@Override
-	public void init() {
-		this.enabled.setConfigTextTranslationKey("flex_hud.server_address.config.enable");
 	}
 
 	@Override
