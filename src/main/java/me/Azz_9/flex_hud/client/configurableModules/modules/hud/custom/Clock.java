@@ -26,6 +26,8 @@ public class Clock extends AbstractTextElement {
 
 	public Clock(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		this.enabled.setConfigTextTranslationKey("flex_hud.clock.config.enable");
+
 		// get the time format depending on the locale
 		isTwentyFourHourFormat = new ConfigBoolean(ClockUtils.is24HourFormat(Locale.getDefault()), "flex_hud.clock.config.24-hour_format");
 	}
@@ -33,7 +35,6 @@ public class Clock extends AbstractTextElement {
 	@Override
 	public void init() {
 		height = MinecraftClient.getInstance().textRenderer.fontHeight;
-		this.enabled.setConfigTextTranslationKey("flex_hud.clock.config.enable");
 	}
 
 	@Override
