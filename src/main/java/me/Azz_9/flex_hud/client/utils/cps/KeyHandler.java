@@ -11,7 +11,7 @@ public class KeyHandler {
 
 	public static void onKey(int button, int action) {
 
-		if (!JsonConfigHelper.getInstance().isEnabled || !JsonConfigHelper.getInstance().cps.isEnabled()) {
+		if (!JsonConfigHelper.getInstance().isEnabled || !JsonConfigHelper.getInstance().cps.isEnabled() && !JsonConfigHelper.getInstance().keyStrokes.isEnabled()) {
 			isAttackKeyPressed = false;
 			isUseKeyPressed = false;
 			return;
@@ -20,7 +20,9 @@ public class KeyHandler {
 		int attackKeyCode = KeyBindingHelper.getBoundKeyOf(MinecraftClient.getInstance().options.attackKey).getCode();
 		int useKeyCode = KeyBindingHelper.getBoundKeyOf(MinecraftClient.getInstance().options.useKey).getCode();
 
-		if ((button != attackKeyCode && button != useKeyCode) || (button == attackKeyCode && !JsonConfigHelper.getInstance().cps.showLeftClick.getValue()) || (button == useKeyCode && !JsonConfigHelper.getInstance().cps.showRightClick.getValue())) {
+		if ((button != attackKeyCode && button != useKeyCode) ||
+				(button == attackKeyCode && !JsonConfigHelper.getInstance().cps.showLeftClick.getValue() && !JsonConfigHelper.getInstance().keyStrokes.isEnabled()) ||
+				(button == useKeyCode && !JsonConfigHelper.getInstance().cps.showRightClick.getValue() && !JsonConfigHelper.getInstance().keyStrokes.isEnabled())) {
 			isAttackKeyPressed = false;
 			isUseKeyPressed = false;
 			return;
