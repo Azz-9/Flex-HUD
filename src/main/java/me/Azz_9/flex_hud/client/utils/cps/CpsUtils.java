@@ -1,7 +1,5 @@
 package me.Azz_9.flex_hud.client.utils.cps;
 
-import me.Azz_9.flex_hud.client.configurableModules.JsonConfigHelper;
-
 import java.util.Deque;
 import java.util.LinkedList;
 
@@ -10,15 +8,11 @@ public class CpsUtils {
 	private static final Deque<Long> rightClickTimestamps = new LinkedList<>();
 
 	public static void onAttackKeyPress() {
-		if (JsonConfigHelper.getInstance().cps.showLeftClick.getValue()) {
-			leftClickTimestamps.add(System.currentTimeMillis());
-		}
+		leftClickTimestamps.add(System.currentTimeMillis());
 	}
 
 	public static void onUseKeyPress() {
-		if (JsonConfigHelper.getInstance().cps.showRightClick.getValue()) {
-			rightClickTimestamps.add(System.currentTimeMillis());
-		}
+		rightClickTimestamps.add(System.currentTimeMillis());
 	}
 
 	public static void updateLeftCPS() {
