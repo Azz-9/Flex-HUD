@@ -32,7 +32,7 @@ public class KeyStrokes extends AbstractTextElement {
 	private ConfigInteger backgroundColorPressed = new ConfigInteger(0xffffff, "flex_hud.key_strokes.config.background_color_pressed");
 	private ConfigBoolean showBorder = new ConfigBoolean(false, "flex_hud.key_strokes.config.show_border");
 	private ConfigInteger borderColor = new ConfigInteger(0xffffff, "flex_hud.key_strokes.config.border_color");
-	private ConfigBoolean displayCps = new ConfigBoolean(true, "flex_hud.key_strokes.config.display_cps");
+	public ConfigBoolean displayCps = new ConfigBoolean(true, "flex_hud.key_strokes.config.display_cps");
 	private ConfigBoolean useArrow = new ConfigBoolean(false, "flex_hud.key_strokes.config.use_arrow");
 
 	private transient int borderThickness;
