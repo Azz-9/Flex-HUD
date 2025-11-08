@@ -32,6 +32,8 @@ public class SignReader extends AbstractHudElement {
 
 	public SignReader(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		this.enabled.setValue(false);
+		this.enabled.setDefaultValue(false);
 		this.enabled.setConfigTextTranslationKey("flex_hud.sign_reader.config.enable");
 	}
 
@@ -213,6 +215,10 @@ public class SignReader extends AbstractHudElement {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
+				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+					buttonWidth = 190;
+				}
+
 				super.init();
 
 				this.addAllEntries(
