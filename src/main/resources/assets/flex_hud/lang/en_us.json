@@ -210,6 +210,9 @@
 	"flex_hud.key_strokes.config.display_cps": "Display CPS",
 	"flex_hud.key_strokes.config.use_arrow": "Replace names with arrows",
 
+	"flex_hud.sign_reader": "Sign reader",
+	"flex_hud.sign_reader.config.enable": "Enable sign reader",
+
 	"flex_hud.coordinates.hud.direction.south": "South",
 	"flex_hud.coordinates.hud.direction.south_west": "South-West",
 	"flex_hud.coordinates.hud.direction.west": "West",
@@ -248,5 +251,7 @@
 
 	"flex_hud.shrieker_warning_level.hud.prefix": "Warning level",
 
-	"flex_hud.durability_ping.message": "durability low!"
+	"flex_hud.durability_ping.message": "durability low!",
+
+	"flex_hud.sign_reader.placeholder_content": "text"
 }
