@@ -215,6 +215,10 @@
 	"flex_hud.full_inventory_indicator": "Indicateur d'inventaire plein",
 	"flex_hud.full_inventory_indicator.config.enable": "Afficher l'indicateur d'inventaire plein",
 
+	"flex_hud.light_level": "Niveau de lumière",
+	"flex_hud.light_level.config.enable": "Afficher le niveau de lumière",
+	"flex_hud.light_level.color_depends_on_light_level": "Couleur du texte dépend du niveau de lumière",
+
 	"flex_hud.coordinates.hud.direction.south": "Sud",
 	"flex_hud.coordinates.hud.direction.south_west": "Sud-Ouest",
 	"flex_hud.coordinates.hud.direction.west": "Ouest",

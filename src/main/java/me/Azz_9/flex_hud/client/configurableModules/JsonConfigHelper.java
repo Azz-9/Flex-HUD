@@ -43,7 +43,8 @@ public class JsonConfigHelper {
 	public WeatherDisplay weatherDisplay = new WeatherDisplay(-4, -4, AbstractHudElement.AnchorPosition.END, AbstractHudElement.AnchorPosition.END);
 	public KeyStrokes keyStrokes = new KeyStrokes(-5, 68, AbstractHudElement.AnchorPosition.END, AbstractHudElement.AnchorPosition.START);
 	public SignReader signReader = new SignReader(2, 60, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.CENTER);
-	public FullInventoryIndicator fullInventoryIndicator = new FullInventoryIndicator(2, 100, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.CENTER);
+	public FullInventoryIndicator fullInventoryIndicator = new FullInventoryIndicator(2, 96, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.CENTER);
+	public LightLevel lightLevel = new LightLevel(2, 112, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.START);
 	//others
 	public WeatherChanger weatherChanger = new WeatherChanger();
 	public TimeChanger timeChanger = new TimeChanger();
@@ -167,7 +168,8 @@ public class JsonConfigHelper {
 				getInstance().keyStrokes,
 				getInstance().bossBar,
 				getInstance().signReader,
-				getInstance().fullInventoryIndicator
+				getInstance().fullInventoryIndicator,
+				getInstance().lightLevel
 		);
 	}
 
