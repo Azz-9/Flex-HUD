@@ -213,6 +213,9 @@
 	"flex_hud.sign_reader": "Sign reader",
 	"flex_hud.sign_reader.config.enable": "Enable sign reader",
 
+	"flex_hud.full_inventory_indicator": "Full inventory indicator",
+	"flex_hud.full_inventory_indicator.config.enable": "Show full inventory indicator",
+
 	"flex_hud.coordinates.hud.direction.south": "South",
 	"flex_hud.coordinates.hud.direction.south_west": "South-West",
 	"flex_hud.coordinates.hud.direction.west": "West",
@@ -253,5 +256,7 @@
 
 	"flex_hud.durability_ping.message": "durability low!",
 
-	"flex_hud.sign_reader.placeholder_content": "text"
+	"flex_hud.sign_reader.placeholder_content": "text",
+
+	"flex_hud.full_inventory_indicator.label": "Inventory full !"
 }

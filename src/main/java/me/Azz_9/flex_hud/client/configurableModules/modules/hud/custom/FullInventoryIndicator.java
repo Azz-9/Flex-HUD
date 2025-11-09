@@ -1,5 +1,6 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.modules.Tickable;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
@@ -9,21 +10,24 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryMXBean;
+public class FullInventoryIndicator extends AbstractTextElement implements Tickable {
 
-public class MemoryUsage extends AbstractTextElement implements Tickable {
+	private transient boolean isInventoryFull;
 
-	private int memoryUsage;
-
-	public MemoryUsage(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
+	public FullInventoryIndicator(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
-		this.enabled.setConfigTextTranslationKey("flex_hud.memory_usage.config.enable");
-		this.enabled.setDefaultValue(false);
 		this.enabled.setValue(false);
+		this.enabled.setDefaultValue(false);
+		this.enabled.setConfigTextTranslationKey("flex_hud.full_inventory_indicator.config.enable");
+
+		this.color.setValue(0xff0000);
+		this.color.setDefaultValue(0xff0000);
 	}
 
 	@Override
@@ -32,37 +36,36 @@ public class MemoryUsage extends AbstractTextElement implements Tickable {
 	}
 
 	@Override
-	public String getID() {
-		return "memory_usage";
+	public Text getName() {
+		return Text.translatable("flex_hud.full_inventory_indicator");
 	}
 
 	@Override
-	public Text getName() {
-		return Text.translatable("flex_hud.memory_usage");
+	public String getID() {
+		return "full_inventory_indicator";
 	}
 
 	@Override
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
-
-		if (shouldNotRender()) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && MinecraftClient.getInstance().player == null) {
 			return;
 		}
 
-		String text = "Mem: " + memoryUsage + "%";
+		if (isInventoryFull) {
+			Text label = Text.translatable("flex_hud.full_inventory_indicator.label");
+			setWidth(label.getString());
 
-		setWidth(text);
+			Matrix3x2fStack matrices = context.getMatrices();
+			matrices.pushMatrix();
+			matrices.translate(getRoundedX(), getRoundedY());
+			matrices.scale(getScale());
 
-		Matrix3x2fStack matrices = context.getMatrices();
-		matrices.pushMatrix();
-		matrices.translate(getRoundedX(), getRoundedY());
-		matrices.scale(getScale());
+			drawBackground(context);
 
-		drawBackground(context);
+			context.drawText(MinecraftClient.getInstance().textRenderer, Text.translatable("flex_hud.full_inventory_indicator.label"), 0, 0, getColor(), shadow.getValue());
 
-		context.drawText(client.textRenderer, text, 0, 0, getColor(), this.shadow.getValue());
-
-		matrices.popMatrix();
+			matrices.popMatrix();
+		}
 	}
 
 	@Override
@@ -71,7 +74,9 @@ public class MemoryUsage extends AbstractTextElement implements Tickable {
 			@Override
 			protected void init() {
 				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
-					buttonWidth = 200;
+					buttonWidth = 205;
+				} else {
+					buttonWidth = 175;
 				}
 
 				super.init();
@@ -118,17 +123,20 @@ public class MemoryUsage extends AbstractTextElement implements Tickable {
 
 	@Override
 	public void tick() {
-		// Accéder au gestionnaire de mémoire de la JVM
-		MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
+		if (MinecraftClient.getInstance().player == null) {
+			return;
+		}
 
-		// Obtenir les informations sur la mémoire heap
-		java.lang.management.MemoryUsage heapMemoryUsage = memoryBean.getHeapMemoryUsage();
+		if (!Flex_hudClient.isInMoveElementScreen) {
+			for (int i = 0; i < 36; i++) {
+				ItemStack stack = MinecraftClient.getInstance().player.getInventory().getStack(i);
+				if (stack.getItem() == Items.AIR) {
+					isInventoryFull = false;
+					return;
+				}
+			}
+		}
 
-		// Mémoire utilisée et maximum allouée
-		long usedMemory = heapMemoryUsage.getUsed();
-		long maxMemory = heapMemoryUsage.getMax();
-
-		// Calculer le pourcentage
-		memoryUsage = (int) ((double) usedMemory / maxMemory * 100);
+		isInventoryFull = true;
 	}
 }
