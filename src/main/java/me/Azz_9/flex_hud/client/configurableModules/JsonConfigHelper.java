@@ -3,6 +3,7 @@ package me.Azz_9.flex_hud.client.configurableModules;
 import com.google.gson.*;
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
+import me.Azz_9.flex_hud.client.configurableModules.modules.Tickable;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractHudElement;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.MovableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom.*;
@@ -42,6 +43,7 @@ public class JsonConfigHelper {
 	public WeatherDisplay weatherDisplay = new WeatherDisplay(-4, -4, AbstractHudElement.AnchorPosition.END, AbstractHudElement.AnchorPosition.END);
 	public KeyStrokes keyStrokes = new KeyStrokes(-5, 68, AbstractHudElement.AnchorPosition.END, AbstractHudElement.AnchorPosition.START);
 	public SignReader signReader = new SignReader(2, 60, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.CENTER);
+	public FullInventoryIndicator fullInventoryIndicator = new FullInventoryIndicator(2, 100, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.CENTER);
 	//others
 	public WeatherChanger weatherChanger = new WeatherChanger();
 	public TimeChanger timeChanger = new TimeChanger();
@@ -164,7 +166,8 @@ public class JsonConfigHelper {
 				getInstance().weatherDisplay,
 				getInstance().keyStrokes,
 				getInstance().bossBar,
-				getInstance().signReader
+				getInstance().signReader,
+				getInstance().fullInventoryIndicator
 		);
 	}
 
@@ -188,5 +191,10 @@ public class JsonConfigHelper {
 		return new ArrayList<>(getModules());
 	}
 
-
+	public static List<Tickable> getTickables() {
+		return List.of(
+				getInstance().fullInventoryIndicator,
+				getInstance().memoryUsage
+		);
+	}
 }

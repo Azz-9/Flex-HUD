@@ -492,9 +492,10 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 
 	@Override
 	public boolean hasChanged() {
-		return INITIAL_OFFSET_X != HUD_ELEMENT.getOffsetX() || INITIAL_OFFSET_Y != HUD_ELEMENT.getOffsetY() ||
-				INITIAL_ANCHOR_X != HUD_ELEMENT.getAnchorX() || INITIAL_ANCHOR_Y != HUD_ELEMENT.getAnchorY() ||
-				INITIAL_SCALE != HUD_ELEMENT.getScale();
+		return Math.round(INITIAL_OFFSET_X) != Math.round(HUD_ELEMENT.getOffsetX()) || // x coord
+				Math.round(INITIAL_OFFSET_Y) != Math.round(HUD_ELEMENT.getOffsetY()) || // y coord
+				INITIAL_ANCHOR_X != HUD_ELEMENT.getAnchorX() || INITIAL_ANCHOR_Y != HUD_ELEMENT.getAnchorY() || // anchors
+				INITIAL_SCALE != HUD_ELEMENT.getScale(); // scale
 	}
 
 	@Override
