@@ -2,6 +2,7 @@ package me.Azz_9.flex_hud.client;
 
 import me.Azz_9.flex_hud.client.configurableModules.JsonConfigHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
+import me.Azz_9.flex_hud.client.configurableModules.modules.Tickable;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractHudElement;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.durabilityPing.DurabilityPing;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.durabilityPing.ItemDurabilityLostCallback;
@@ -10,7 +11,6 @@ import me.Azz_9.flex_hud.client.utils.FaviconUtils;
 import me.Azz_9.flex_hud.client.utils.clock.ClockUtils;
 import me.Azz_9.flex_hud.client.utils.compass.DimensionTracker;
 import me.Azz_9.flex_hud.client.utils.compass.TamedEntityUtils;
-import me.Azz_9.flex_hud.client.utils.memoryUsage.MemoryUsageUtils;
 import me.Azz_9.flex_hud.client.utils.reach.ReachUtils;
 import me.Azz_9.flex_hud.client.utils.speedometer.SpeedUtils;
 import me.Azz_9.flex_hud.compat.XaeroCompat;
@@ -93,8 +93,14 @@ public class Flex_hudClient implements ClientModInitializer {
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			if (JsonConfigHelper.getInstance().isEnabled) {
 				ChromaColorUtils.updateColor();
+
+				for (Tickable tickable : JsonConfigHelper.getTickables()) {
+					if (tickable.isEnabled()) {
+						tickable.tick();
+					}
+				}
+
 				if (JsonConfigHelper.getInstance().clock.enabled.getValue()) ClockUtils.updateTime();
-				if (JsonConfigHelper.getInstance().memoryUsage.enabled.getValue()) MemoryUsageUtils.updateMemoryUsage();
 				if (JsonConfigHelper.getInstance().speedometer.enabled.getValue()) SpeedUtils.calculateSpeed();
 				if (JsonConfigHelper.getInstance().tntCountdown.enabled.getValue())
 					JsonConfigHelper.getInstance().tntCountdown.renderCountdown();

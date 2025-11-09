@@ -212,6 +212,9 @@
 	"flex_hud.sign_reader": "Lecteur de panneaux",
 	"flex_hud.sign_reader.config.enable": "Activer le lecteur de panneaux",
 
+	"flex_hud.full_inventory_indicator": "Indicateur d'inventaire plein",
+	"flex_hud.full_inventory_indicator.config.enable": "Afficher l'indicateur d'inventaire plein",
+
 	"flex_hud.coordinates.hud.direction.south": "Sud",
 	"flex_hud.coordinates.hud.direction.south_west": "Sud-Ouest",
 	"flex_hud.coordinates.hud.direction.west": "Ouest",
@@ -252,5 +255,7 @@
 
 	"flex_hud.durability_ping.message": "durabilité faible!",
 
-	"flex_hud.sign_reader.placeholder_content": "texte"
+	"flex_hud.sign_reader.placeholder_content": "texte",
+
+	"flex_hud.full_inventory_indicator.label": "Inventaire plein !"
 }
