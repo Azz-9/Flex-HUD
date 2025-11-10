@@ -218,6 +218,10 @@
 	"flex_hud.light_level.config.enable": "Show light level",
 	"flex_hud.light_level.color_depends_on_light_level": "Color depends on light level",
 
+	"flex_hud.in_game_time": "In game time",
+	"flex_hud.in_game_time.config.enable": "Show in game time",
+	"flex_hud.in_game_time.config.24-hour_format": "24-hour format",
+
 	"flex_hud.coordinates.hud.direction.south": "South",
 	"flex_hud.coordinates.hud.direction.south_west": "South-West",
 	"flex_hud.coordinates.hud.direction.west": "West",

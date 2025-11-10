@@ -45,6 +45,7 @@ public class JsonConfigHelper {
 	public SignReader signReader = new SignReader(2, 60, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.CENTER);
 	public FullInventoryIndicator fullInventoryIndicator = new FullInventoryIndicator(2, 96, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.CENTER);
 	public LightLevel lightLevel = new LightLevel(2, 112, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.START);
+	public InGameTime inGameTime = new InGameTime(-5, 2, AbstractHudElement.AnchorPosition.END, AbstractHudElement.AnchorPosition.START);
 	//others
 	public WeatherChanger weatherChanger = new WeatherChanger();
 	public TimeChanger timeChanger = new TimeChanger();
@@ -169,7 +170,8 @@ public class JsonConfigHelper {
 				getInstance().bossBar,
 				getInstance().signReader,
 				getInstance().fullInventoryIndicator,
-				getInstance().lightLevel
+				getInstance().lightLevel,
+				getInstance().inGameTime
 		);
 	}
 
@@ -196,7 +198,8 @@ public class JsonConfigHelper {
 	public static List<Tickable> getTickables() {
 		return List.of(
 				getInstance().fullInventoryIndicator,
-				getInstance().memoryUsage
+				getInstance().memoryUsage,
+				getInstance().inGameTime
 		);
 	}
 }

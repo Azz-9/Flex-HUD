@@ -34,8 +34,13 @@ public class ClockUtils {
 		} else {
 			textFormat += " a";
 		}
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(textFormat);
-		formattedTime = LocalTime.now().format(formatter);
+		try {
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(textFormat);
+			formattedTime = LocalTime.now().format(formatter);
+		} catch (Exception e) {
+			// if the text format is not valid, reset to default
+			JsonConfigHelper.getInstance().clock.textFormat.setToDefault();
+		}
 	}
 
 	public static String getFormattedTime() {
