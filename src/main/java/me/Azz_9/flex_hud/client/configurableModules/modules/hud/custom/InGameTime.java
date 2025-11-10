@@ -156,7 +156,7 @@ public class InGameTime extends AbstractTextElement implements Tickable {
 		if (Flex_hudClient.isInMoveElementScreen) {
 			timeOfDay = 12000;
 		} else {
-			timeOfDay = (int) (MinecraftClient.getInstance().world.getTimeOfDay() % 24000);
+			timeOfDay = (int) (MinecraftClient.getInstance().world.getTimeOfDay() % 24000 + 6000) % 24000;
 		}
 
 		int totalSeconds = (int) Math.round(timeOfDay * 3.6);
