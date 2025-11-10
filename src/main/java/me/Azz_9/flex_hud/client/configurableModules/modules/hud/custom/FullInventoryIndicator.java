@@ -51,7 +51,7 @@ public class FullInventoryIndicator extends AbstractTextElement implements Ticka
 			return;
 		}
 
-		if (isInventoryFull) {
+		if (isInventoryFull || Flex_hudClient.isInMoveElementScreen) {
 			Text label = Text.translatable("flex_hud.full_inventory_indicator.label");
 			setWidth(label.getString());
 
@@ -127,16 +127,15 @@ public class FullInventoryIndicator extends AbstractTextElement implements Ticka
 			return;
 		}
 
-		if (!Flex_hudClient.isInMoveElementScreen) {
-			for (int i = 0; i < 36; i++) {
-				ItemStack stack = MinecraftClient.getInstance().player.getInventory().getStack(i);
-				if (stack.getItem() == Items.AIR) {
-					isInventoryFull = false;
-					return;
-				}
+
+		for (int i = 0; i < 36; i++) {
+			ItemStack stack = MinecraftClient.getInstance().player.getInventory().getStack(i);
+			if (stack.getItem() == Items.AIR) {
+				isInventoryFull = false;
+				return;
 			}
 		}
-
+		
 		isInventoryFull = true;
 	}
 }

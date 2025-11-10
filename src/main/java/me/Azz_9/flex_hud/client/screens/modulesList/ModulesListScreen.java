@@ -104,7 +104,7 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 			String moduleId = MODULES_LIST.get(i).getID();
 
 			Supplier<Tooltip> getTooltip = switch (moduleId) {
-				case "day_counter" ->
+				case "in_game_time", "day_counter" ->
 						() -> JsonConfigHelper.getInstance().timeChanger.enabled.getValue() ? Tooltip.of(Text.literal("⚠ ").append(Text.translatable("flex_hud.configuration_screen.module_compatibility_warning")).append(Text.translatable("flex_hud.time_changer")).formatted(Formatting.RED)) : null;
 				case "weather_display" ->
 						() -> JsonConfigHelper.getInstance().weatherChanger.enabled.getValue() ? Tooltip.of(Text.literal("⚠ ").append(Text.translatable("flex_hud.configuration_screen.module_compatibility_warning")).append(Text.translatable("flex_hud.weather_changer")).formatted(Formatting.RED)) : null;
