@@ -18,6 +18,7 @@
 		"compass.LocatorBarMixin",
 		"cps.KeyboardMixin",
 		"crosshair.CrosshairMixin",
+		"drawContext.DrawContextAccessor",
 		"keybind.KeyBindingMixin",
 		"potionEffect.PotionEffectMixin"
 	],

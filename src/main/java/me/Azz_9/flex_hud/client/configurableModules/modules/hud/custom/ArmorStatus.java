@@ -13,6 +13,7 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.Cyclin
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
+import me.Azz_9.flex_hud.client.utils.SpeedTester;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -35,6 +36,7 @@ public class ArmorStatus extends AbstractTextElement {
 	private final ConfigBoolean showOffHandItem = new ConfigBoolean(true, "flex_hud.armor_status.config.show_off_hand_item");
 	private final ConfigBoolean showArrowsWhenBowInHand = new ConfigBoolean(true, "flex_hud.armor_status.config.show_arrows");
 	private final ConfigBoolean separateArrowTypes = new ConfigBoolean(false, "flex_hud.armor_status.config.separate_arrow_types");
+	private final ConfigBoolean showDurabilityBar = new ConfigBoolean(false, "flex_hud.armor_status.config.show_durability_bar");
 	private final ConfigEnum<DurabilityType> durabilityType = new ConfigEnum<>(DurabilityType.PERCENTAGE, "flex_hud.armor_status.config.show_durability");
 	private final ConfigEnum<DisplayMode> displayMode = new ConfigEnum<>(DisplayMode.VERTICAL, "flex_hud.armor_status.config.orientation");
 
@@ -59,6 +61,8 @@ public class ArmorStatus extends AbstractTextElement {
 		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && client.player == null) {
 			return;
 		}
+
+		SpeedTester.start(getID());
 
 		PlayerEntity player = client.player;
 
@@ -144,11 +148,13 @@ public class ArmorStatus extends AbstractTextElement {
 		}
 
 		matrices.popMatrix();
+
+		SpeedTester.end(getID());
 	}
 
 	//return width
 	private int drawItemStack(ItemStack stack, int x, int y, List<Renderable> renderables) {
-		renderables.add(new RenderableItem(x, y, stack));
+		renderables.add(new RenderableItem(x, y, stack, showDurabilityBar.getValue()));
 		int drawingWidth = 16;
 
 		if (new ItemStack(stack.getItem()).isDamageable()) {
@@ -179,7 +185,7 @@ public class ArmorStatus extends AbstractTextElement {
 		if (separateArrowTypes.getValue()) {
 			arrows = new ItemStack[]{new ItemStack(Items.ARROW), new ItemStack(Items.SPECTRAL_ARROW), new ItemStack(Items.TIPPED_ARROW)};
 			for (ItemStack arrowStack : arrows) {
-				renderables.add(new RenderableItem(x, y, arrowStack));
+				renderables.add(new RenderableItem(x, y, arrowStack, showDurabilityBar.getValue()));
 				String text = String.valueOf(getStackCount(arrowStack, MinecraftClient.getInstance().player));
 				renderables.add(new RenderableText(x + 17, y + 4, Text.of(text), getColor(), shadow.getValue()));
 				if (displayMode.getValue() == DisplayMode.VERTICAL) {
@@ -193,7 +199,7 @@ public class ArmorStatus extends AbstractTextElement {
 			}
 		} else {
 			ItemStack arrowStack = new ItemStack(Items.ARROW);
-			renderables.add(new RenderableItem(x, y, arrowStack));
+			renderables.add(new RenderableItem(x, y, arrowStack, showDurabilityBar.getValue()));
 
 			int totalCount = getStackCount(arrowStack, MinecraftClient.getInstance().player);
 			totalCount += getStackCount(new ItemStack(Items.SPECTRAL_ARROW), MinecraftClient.getInstance().player);
@@ -303,6 +309,10 @@ public class ArmorStatus extends AbstractTextElement {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(separateArrowTypes)
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(showDurabilityBar)
 								.build(),
 						new CyclingButtonEntry.Builder<DurabilityType>()
 								.setCyclingButtonWidth(80)
