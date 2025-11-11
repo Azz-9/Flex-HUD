@@ -83,6 +83,7 @@
 	"flex_hud.armor_status.config.show_off_hand_item": "Afficher l'objet de la main secondaire",
 	"flex_hud.armor_status.config.show_arrows": "Afficher les flèches si un arc est tenu",
 	"flex_hud.armor_status.config.separate_arrow_types": "Séparer les flèches par type",
+	"flex_hud.armor_status.config.show_durability_bar": "Afficher la barre de durabilité",
 	"flex_hud.armor_status.config.show_durability": "Afficher la durabilité",
 	"flex_hud.armor_status.config.orientation": "Orientation",
 
