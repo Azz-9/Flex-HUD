@@ -11,7 +11,7 @@ public class RenderableText extends Renderable {
 	private boolean shadow;
 
 	public RenderableText(int x, int y, Text text, int textColor, boolean shadow) {
-		super(x, y);
+		super(x, y, MinecraftClient.getInstance().textRenderer.getWidth(text.getString()));
 		this.text = text;
 		this.textColor = textColor;
 		this.shadow = shadow;
@@ -19,6 +19,8 @@ public class RenderableText extends Renderable {
 
 	@Override
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		context.drawText(MinecraftClient.getInstance().textRenderer, text, x, y, textColor, shadow);
+		if (text == null || !text.getString().isBlank()) {
+			context.drawText(MinecraftClient.getInstance().textRenderer, text, x, y, textColor, shadow);
+		}
 	}
 }
