@@ -1,6 +1,5 @@
 package me.Azz_9.flex_hud.client.mixin.reach;
 
-import me.Azz_9.flex_hud.client.configurableModules.JsonConfigHelper;
 import me.Azz_9.flex_hud.client.utils.reach.ReachUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
@@ -15,9 +14,9 @@ public abstract class PlayerMixin {
 
 	@Inject(method = "attack", at = @At("HEAD"))
 	private void onAttack(Entity target, CallbackInfo ci) {
-		if (!JsonConfigHelper.getInstance().isEnabled || !JsonConfigHelper.getInstance().reach.enabled.getValue()) {
+		/*if (!JsonConfigHelper.getInstance().isEnabled || !JsonConfigHelper.getInstance().reach.enabled.getValue()) {
 			return;
-		}
+		}*/
 
 		PlayerEntity player = (PlayerEntity) (Object) this;
 

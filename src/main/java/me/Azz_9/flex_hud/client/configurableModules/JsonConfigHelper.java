@@ -34,7 +34,7 @@ public class JsonConfigHelper {
 	public ServerAddress serverAddress = new ServerAddress(200, 2, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.START);
 	public MemoryUsage memoryUsage = new MemoryUsage(75, 2, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.START);
 	public Speedometer speedometer = new Speedometer(2, 70, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.START);
-	public Reach reach = new Reach(2, 100, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.START);
+	//public Reach reach = new Reach(2, 100, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.START);
 	public Playtime playtime = new Playtime(2, 100, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.START);
 	//public ResourcePack resourcePack = new ResourcePack(0, 100, AbstractHudElement.AnchorPosition.END, AbstractHudElement.AnchorPosition.START);
 	public PotionEffect potionEffect = new PotionEffect(0, 20, AbstractHudElement.AnchorPosition.END, AbstractHudElement.AnchorPosition.START);
@@ -59,10 +59,59 @@ public class JsonConfigHelper {
 	private static final File CONFIG_FILE = new File("config/flex_hud.json");
 	private static JsonConfigHelper INSTANCE;
 
+	private transient List<AbstractModule> modules;
+	private transient List<AbstractHudElement> hudElements;
+	private transient List<MovableModule> movableModules;
+	private transient List<Configurable> configurables;
+	private transient List<Tickable> tickables;
+
+	private void init() {
+		hudElements = new ArrayList<>();
+		movableModules = new ArrayList<>();
+		configurables = new ArrayList<>();
+		tickables = new ArrayList<>();
+
+		modules = List.of(
+				getInstance().armorStatus,
+				getInstance().cps,
+				getInstance().clock,
+				getInstance().fps,
+				getInstance().coordinates,
+				getInstance().netherCoordinates,
+				getInstance().compass,
+				getInstance().dayCounter,
+				getInstance().ping,
+				getInstance().serverAddress,
+				getInstance().memoryUsage,
+				getInstance().speedometer,
+				getInstance().playtime,
+				getInstance().potionEffect,
+				getInstance().weatherDisplay,
+				getInstance().keyStrokes,
+				getInstance().bossBar,
+				getInstance().signReader,
+				getInstance().fullInventoryIndicator,
+				getInstance().lightLevel,
+				getInstance().inGameTime,
+				getInstance().weatherChanger,
+				getInstance().timeChanger,
+				getInstance().crosshair,
+				getInstance().tntCountdown
+		);
+
+		for (AbstractModule module : modules) {
+			if (module instanceof AbstractHudElement hudElement) hudElements.add(hudElement);
+			if (module instanceof MovableModule movableModule) movableModules.add(movableModule);
+			if (module instanceof Configurable configurable) configurables.add(configurable);
+			if (module instanceof Tickable tickable) tickables.add(tickable);
+		}
+	}
+
 	// Méthode pour obtenir l'instance de la configuration
 	public static JsonConfigHelper getInstance() {
 		if (INSTANCE == null) {
 			INSTANCE = loadConfig();
+			INSTANCE.init();
 		}
 		return INSTANCE;
 	}
@@ -147,59 +196,23 @@ public class JsonConfigHelper {
 		}
 	}
 
+	public static List<AbstractModule> getModules() {
+		return getInstance().modules;
+	}
+
 	public static List<AbstractHudElement> getHudElements() {
-		return List.of(
-				getInstance().armorStatus,
-				getInstance().cps,
-				getInstance().clock,
-				getInstance().fps,
-				getInstance().coordinates,
-				getInstance().netherCoordinates,
-				getInstance().compass,
-				getInstance().dayCounter,
-				getInstance().ping,
-				getInstance().serverAddress,
-				getInstance().memoryUsage,
-				getInstance().speedometer,
-				//getInstance().reach,
-				getInstance().playtime,
-				//getInstance().resourcePack,
-				getInstance().potionEffect,
-				getInstance().weatherDisplay,
-				getInstance().keyStrokes,
-				getInstance().bossBar,
-				getInstance().signReader,
-				getInstance().fullInventoryIndicator,
-				getInstance().lightLevel,
-				getInstance().inGameTime
-		);
+		return getInstance().hudElements;
 	}
 
 	public static List<MovableModule> getMovableModules() {
-		return new ArrayList<>(getHudElements());
-	}
-
-	public static List<AbstractModule> getModules() {
-		List<AbstractModule> modules = new ArrayList<>(getHudElements());
-		modules.addAll(List.of(
-				getInstance().weatherChanger,
-				getInstance().timeChanger,
-				//getInstance().durabilityPing,
-				getInstance().crosshair,
-				getInstance().tntCountdown
-		));
-		return modules;
+		return getInstance().movableModules;
 	}
 
 	public static List<Configurable> getConfigurableModules() {
-		return new ArrayList<>(getModules());
+		return getInstance().configurables;
 	}
 
 	public static List<Tickable> getTickables() {
-		return List.of(
-				getInstance().fullInventoryIndicator,
-				getInstance().memoryUsage,
-				getInstance().inGameTime
-		);
+		return getInstance().tickables;
 	}
 }

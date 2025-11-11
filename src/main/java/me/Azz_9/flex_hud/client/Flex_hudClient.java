@@ -8,10 +8,10 @@ import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.durabilityPin
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.durabilityPing.ItemDurabilityLostCallback;
 import me.Azz_9.flex_hud.client.utils.ChromaColorUtils;
 import me.Azz_9.flex_hud.client.utils.FaviconUtils;
+import me.Azz_9.flex_hud.client.utils.SpeedTester;
 import me.Azz_9.flex_hud.client.utils.clock.ClockUtils;
 import me.Azz_9.flex_hud.client.utils.compass.DimensionTracker;
 import me.Azz_9.flex_hud.client.utils.compass.TamedEntityUtils;
-import me.Azz_9.flex_hud.client.utils.reach.ReachUtils;
 import me.Azz_9.flex_hud.client.utils.speedometer.SpeedUtils;
 import me.Azz_9.flex_hud.compat.XaeroCompat;
 import net.fabricmc.api.ClientModInitializer;
@@ -87,6 +87,8 @@ public class Flex_hudClient implements ClientModInitializer {
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			if (JsonConfigHelper.getInstance().isEnabled) {
+				SpeedTester.tick();
+
 				ChromaColorUtils.updateColor();
 
 				for (Tickable tickable : JsonConfigHelper.getTickables()) {
@@ -97,9 +99,6 @@ public class Flex_hudClient implements ClientModInitializer {
 
 				if (JsonConfigHelper.getInstance().clock.enabled.getValue()) ClockUtils.updateTime();
 				if (JsonConfigHelper.getInstance().speedometer.enabled.getValue()) SpeedUtils.calculateSpeed();
-				if (JsonConfigHelper.getInstance().tntCountdown.enabled.getValue())
-					JsonConfigHelper.getInstance().tntCountdown.renderCountdown();
-				if (JsonConfigHelper.getInstance().reach.enabled.getValue()) ReachUtils.tick();
 
 				if (JsonConfigHelper.getInstance().compass.showTamedEntitiesPoint.getValue()) TamedEntityUtils.update();
 				if (JsonConfigHelper.getInstance().compass.showXaerosMapWaypoints.getValue() && XaeroCompat.isXaerosMinimapLoaded()) {
