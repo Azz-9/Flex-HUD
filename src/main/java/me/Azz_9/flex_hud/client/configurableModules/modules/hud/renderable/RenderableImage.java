@@ -10,7 +10,7 @@ public class RenderableImage extends Renderable {
 	private int width, height;
 
 	public RenderableImage(int x, int y, Identifier image, int width, int height) {
-		super(x, y);
+		super(x, y, width);
 		this.image = image;
 		this.width = width;
 		this.height = height;

@@ -3,7 +3,7 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 import com.google.common.collect.Ordering;
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable.Renderable;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable.MultiRenderable;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable.RenderableImage;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable.RenderableText;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
@@ -51,7 +51,8 @@ public class PotionEffect extends AbstractTextElement {
 
 		this.width = 0;
 
-		List<Renderable> renderables = new ArrayList<>();
+		//List<Renderable> renderables = new ArrayList<>();
+		List<MultiRenderable> renderables = new ArrayList<>();
 
 		int hudX = 0, hudY = 0;
 
@@ -68,22 +69,32 @@ public class PotionEffect extends AbstractTextElement {
 			int effectWidth;
 
 			String effectString = Text.translatable(effect.getTranslationKey()).getString() + " " + (effect.getAmplifier() + 1);
-			renderables.add(new RenderableText(hudX, hudY, Text.of(effectString), getColor(), shadow.getValue()));
 			effectWidth = client.textRenderer.getWidth(effectString);
 
 			String durationString = effect.isInfinite() ? "∞" : getDurationString(effect.getDuration() / 20);
 			int textColor = (effect.isInfinite() ? getColor() : (getColor() & 0x00ffffff) | (getTimestampAlpha(effect.getDuration()) << 24));
-			renderables.add(new RenderableText(hudX, hudY + 10, Text.of(durationString), textColor, shadow.getValue()));
 			effectWidth = Math.max(effectWidth, client.textRenderer.getWidth(durationString));
 			this.height = hudY + client.textRenderer.fontHeight;
 
 			Identifier icon = InGameHud.getEffectTexture(effect.getEffectType());
 			int iconSize = 18;
-			renderables.add(new RenderableImage(effectWidth + 2, hudY, icon, iconSize, iconSize));
-			this.width = Math.max(this.width, effectWidth + 2 + iconSize);
+			int currentWidth = effectWidth + 2 + iconSize;
+			this.width = Math.max(this.width, currentWidth);
 			this.height = Math.max(this.height, hudY + iconSize);
 
+			renderables.add(new MultiRenderable(hudX, currentWidth,
+					new RenderableText(hudX, hudY, Text.of(effectString), getColor(), shadow.getValue()),
+					new RenderableText(hudX, hudY + 10, Text.of(durationString), textColor, shadow.getValue()),
+					new RenderableImage(effectWidth + 2, hudY, icon, iconSize, iconSize)
+			));
+
 			hudY += 25;
+		}
+
+		if (anchorX == AnchorPosition.END) {
+			MultiRenderable.alignRight(renderables, this.width);
+		} else if (anchorX == AnchorPosition.CENTER) {
+			MultiRenderable.alignCenter(renderables, this.width / 2);
 		}
 
 		Matrix3x2fStack matrices = context.getMatrices();
@@ -93,8 +104,8 @@ public class PotionEffect extends AbstractTextElement {
 
 		drawBackground(context);
 
-		for (Renderable renderable : renderables) {
-			renderable.render(context, tickCounter);
+		for (MultiRenderable multiRenderable : renderables) {
+			multiRenderable.render(context, tickCounter);
 		}
 
 		matrices.popMatrix();
