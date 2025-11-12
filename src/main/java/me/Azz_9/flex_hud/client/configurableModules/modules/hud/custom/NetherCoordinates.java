@@ -1,6 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
@@ -24,6 +25,8 @@ public class NetherCoordinates extends AbstractTextElement {
 		this.enabled.setConfigTextTranslationKey("flex_hud.nether_coordinates.config.enable");
 		this.enabled.setDefaultValue(false);
 		this.enabled.setValue(false);
+
+		ConfigRegistry.register(getID(), "onlyWhenInOverworld", onlyWhenInOverworld);
 	}
 
 	@Override
@@ -77,7 +80,7 @@ public class NetherCoordinates extends AbstractTextElement {
 		Matrix3x2fStack matrices = context.getMatrices();
 		matrices.pushMatrix();
 		matrices.translate(getRoundedX(), getRoundedY());
-		matrices.scale(this.scale, this.scale);
+		matrices.scale(getScale());
 
 		drawBackground(context);
 

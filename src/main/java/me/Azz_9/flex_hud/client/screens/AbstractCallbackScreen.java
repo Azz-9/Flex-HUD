@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.client.screens;
 
-import me.Azz_9.flex_hud.client.configurableModules.JsonConfigHelper;
+import me.Azz_9.flex_hud.client.configurableModules.ConfigLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -118,7 +118,7 @@ public abstract class AbstractCallbackScreen extends AbstractBackNavigableScreen
 	}
 
 	protected void saveAndClose() {
-		JsonConfigHelper.saveConfig();
+		ConfigLoader.saveConfig();
 		close();
 	}
 

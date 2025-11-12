@@ -10,7 +10,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 
 public class WeatherChanger extends AbstractModule {
-	public ConfigEnum<Weather> selectedWeather = new ConfigEnum<>(Weather.CLEAR, "flex_hud.weather_changer.config.selected_weather");
+	public ConfigEnum<Weather> selectedWeather = new ConfigEnum<>(Weather.class, Weather.CLEAR, "flex_hud.weather_changer.config.selected_weather");
 
 	public WeatherChanger() {
 		this.enabled.setConfigTextTranslationKey("flex_hud.weather_changer.config.enable");

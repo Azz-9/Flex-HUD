@@ -18,7 +18,7 @@ import org.joml.Matrix3x2fStack;
 
 public class FullInventoryIndicator extends AbstractTextElement implements Tickable {
 
-	private transient boolean isInventoryFull;
+	private boolean isInventoryFull;
 
 	public FullInventoryIndicator(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
@@ -135,7 +135,7 @@ public class FullInventoryIndicator extends AbstractTextElement implements Ticka
 				return;
 			}
 		}
-		
+
 		isInventoryFull = true;
 	}
 }

@@ -1,8 +1,12 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud;
 
-import me.Azz_9.flex_hud.client.configurableModules.JsonConfigHelper;
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigDouble;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigFloat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
@@ -10,10 +14,10 @@ import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractHudElement extends AbstractModule implements MovableModule {
 
-	public double offsetX, offsetY;
+	public ConfigDouble offsetX, offsetY;
 	@NotNull
-	public AnchorPosition anchorX, anchorY;
-	public float scale = 1.0f;
+	public ConfigEnum<AnchorPosition> anchorX, anchorY;
+	public ConfigFloat scale;
 
 	public ConfigBoolean hideInF3 = new ConfigBoolean(true, "flex_hud.global.config.hide_in_f3");
 
@@ -21,16 +25,24 @@ public abstract class AbstractHudElement extends AbstractModule implements Movab
 
 	public AbstractHudElement(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super();
-		this.offsetX = defaultOffsetX;
-		this.offsetY = defaultOffsetY;
-		this.anchorX = defaultAnchorX;
-		this.anchorY = defaultAnchorY;
+		this.offsetX = new ConfigDouble(defaultOffsetX);
+		this.offsetY = new ConfigDouble(defaultOffsetY);
+		this.anchorX = new ConfigEnum<>(AnchorPosition.class, defaultAnchorX);
+		this.anchorY = new ConfigEnum<>(AnchorPosition.class, defaultAnchorY);
+		this.scale = new ConfigFloat(1.0f);
+
+		ConfigRegistry.register(getID(), "offsetX", offsetX);
+		ConfigRegistry.register(getID(), "offsetY", offsetY);
+		ConfigRegistry.register(getID(), "anchorX", anchorX);
+		ConfigRegistry.register(getID(), "anchorY", anchorY);
+		ConfigRegistry.register(getID(), "scale", scale);
+		ConfigRegistry.register(getID(), "hideInF3", hideInF3);
 	}
 
 	public abstract void render(DrawContext context, RenderTickCounter tickCounter);
 
 	protected boolean shouldNotRender() {
-		return !JsonConfigHelper.getInstance().isEnabled || !this.enabled.getValue() || (this.hideInF3.getValue() && MinecraftClient.getInstance().getDebugHud().shouldShowDebugHud());
+		return !ModulesHelper.getInstance().isEnabled.getValue() || !this.enabled.getValue() || (this.hideInF3.getValue() && MinecraftClient.getInstance().getDebugHud().shouldShowDebugHud());
 	}
 
 	@Override
@@ -45,45 +57,40 @@ public abstract class AbstractHudElement extends AbstractModule implements Movab
 
 	@Override
 	public double getOffsetX() {
-		return offsetX;
+		return offsetX.getValue();
 	}
 
 	@Override
 	public double getOffsetY() {
-		return offsetY;
+		return offsetY.getValue();
 	}
 
 	@Override
 	public @NotNull AnchorPosition getAnchorX() {
-		return anchorX;
+		return anchorX.getValue();
 	}
 
 	@Override
 	public @NotNull AnchorPosition getAnchorY() {
-		return anchorY;
+		return anchorY.getValue();
 	}
 
 	@Override
 	public void setPos(double offsetX, double offsetY, AnchorPosition anchorX, AnchorPosition anchorY) {
-		this.offsetX = offsetX;
-		this.offsetY = offsetY;
-		this.anchorX = anchorX;
-		this.anchorY = anchorY;
+		this.offsetX.setValue(offsetX);
+		this.offsetY.setValue(offsetY);
+		this.anchorX.setValue(anchorX);
+		this.anchorY.setValue(anchorY);
 	}
 
 	@Override
 	public float getScale() {
-		return scale;
+		return scale.getValue();
 	}
 
 	@Override
 	public void setScale(float scale) {
-		this.scale = scale;
-	}
-
-	@Override
-	public void setEnabled(boolean enabled) {
-		this.enabled.setValue(enabled);
+		this.scale.setValue(scale);
 	}
 
 	public enum AnchorPosition {

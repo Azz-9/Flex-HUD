@@ -1,6 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.vanilla;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractHudElement;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.MovableModule;
 import me.Azz_9.flex_hud.client.mixin.bossBar.BossBarAccessor;
@@ -45,14 +46,16 @@ public class BossBar extends AbstractHudElement implements MovableModule {
 			Identifier.ofVanilla("boss_bar/notched_12_progress"), Identifier.ofVanilla("boss_bar/notched_20_progress")
 	};
 
-	private transient Map<UUID, ClientBossBar> bossBars = new LinkedHashMap<>();
-	private final transient int BOSS_BAR_GAP = 10;
+	private Map<UUID, ClientBossBar> bossBars = new LinkedHashMap<>();
+	private final int BOSS_BAR_GAP = 10;
 
 	public final ConfigBoolean showBossBar = new ConfigBoolean(true, "flex_hud.bossbar.config.show_bossbar");
 
 	public BossBar(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.bossbar.config.enable");
+
+		ConfigRegistry.register(getID(), "showBossBar", showBossBar);
 	}
 
 	public void init() {
@@ -71,7 +74,7 @@ public class BossBar extends AbstractHudElement implements MovableModule {
 			Matrix3x2fStack matrices = context.getMatrices();
 			matrices.pushMatrix();
 			matrices.translate(getRoundedX(), getRoundedY());
-			matrices.scale(scale, scale);
+			matrices.scale(getScale());
 
 			int bossBarWidth = width;
 			int bossBarHeight = 5;
@@ -96,7 +99,7 @@ public class BossBar extends AbstractHudElement implements MovableModule {
 		Matrix3x2fStack matrices = context.getMatrices();
 		matrices.pushMatrix();
 		matrices.translate(getRoundedX(), getRoundedY());
-		matrices.scale(scale, scale);
+		matrices.scale(getScale());
 
 		int bossBarWidth = width;
 		int bossBarHeight = 5;

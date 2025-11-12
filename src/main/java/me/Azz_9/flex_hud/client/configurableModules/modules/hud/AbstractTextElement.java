@@ -1,5 +1,6 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud;
 
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 import me.Azz_9.flex_hud.client.utils.ChromaColorUtils;
@@ -15,6 +16,10 @@ public abstract class AbstractTextElement extends AbstractBackgroundElement {
 
 	public AbstractTextElement(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+
+		ConfigRegistry.register(getID(), "shadow", shadow);
+		ConfigRegistry.register(getID(), "chroma_color", chromaColor);
+		ConfigRegistry.register(getID(), "color", color);
 	}
 
 	protected void updateWidth(String text) {
