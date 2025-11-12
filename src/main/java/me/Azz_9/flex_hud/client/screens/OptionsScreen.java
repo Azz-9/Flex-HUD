@@ -1,7 +1,7 @@
 package me.Azz_9.flex_hud.client.screens;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
-import me.Azz_9.flex_hud.client.configurableModules.JsonConfigHelper;
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.screens.modulesList.ModulesListScreen;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.MoveModulesScreen;
 import me.Azz_9.flex_hud.client.screens.widgets.buttons.IconButton;
@@ -47,7 +47,7 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 				null,
 				14, 14,
 				(btn) -> {
-					JsonConfigHelper.getInstance().isEnabled = !JsonConfigHelper.getInstance().isEnabled;
+					ModulesHelper.getInstance().isEnabled.setValue(!ModulesHelper.getInstance().isEnabled.getValue());
 					updateEnableButton();
 				}
 		);
@@ -73,7 +73,7 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 	}
 
 	private void updateEnableButton() {
-		if (JsonConfigHelper.getInstance().isEnabled) {
+		if (ModulesHelper.getInstance().isEnabled.getValue()) {
 			enableModButton.setTooltip(Tooltip.of(Text.translatable("flex_hud.options_screen.disable.tooltip")));
 			enableModButton.setTexture(Identifier.of(MOD_ID, "widgets/buttons/options_menu_buttons/enabled.png"));
 		} else {
@@ -116,7 +116,7 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 
 		//RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F); // Opacité à 100%
 
-		if (!JsonConfigHelper.getInstance().isEnabled) {
+		if (!ModulesHelper.getInstance().isEnabled.getValue()) {
 			context.drawCenteredTextWithShadow(MinecraftClient.getInstance().textRenderer, Text.translatable("flex_hud.options_screen.mod_is_disabled_warning").formatted(Formatting.RED, Formatting.ITALIC), this.width / 2, this.height / 2 + 20, 0xffffffff);
 		}
 	}

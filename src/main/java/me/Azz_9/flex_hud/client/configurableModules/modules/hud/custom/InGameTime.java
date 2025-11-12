@@ -1,6 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.Tickable;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
@@ -28,7 +29,7 @@ public class InGameTime extends AbstractTextElement implements Tickable {
 	public ConfigString textFormat = new ConfigString("hh:mm", "flex_hud.clock.config.text_format");
 	private ConfigBoolean isTwentyFourHourFormat;
 
-	private transient String formattedTime;
+	private String formattedTime;
 
 	public InGameTime(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
@@ -36,7 +37,11 @@ public class InGameTime extends AbstractTextElement implements Tickable {
 		this.enabled.setDefaultValue(false);
 		this.enabled.setConfigTextTranslationKey("flex_hud.in_game_time.config.enable");
 
+		// get the time format depending on the locale
 		isTwentyFourHourFormat = new ConfigBoolean(ClockUtils.is24HourFormat(Locale.getDefault()), "flex_hud.in_game_time.config.24-hour_format");
+
+		ConfigRegistry.register(getID(), "textFormat", textFormat);
+		ConfigRegistry.register(getID(), "isTwentyFourHourFormat", isTwentyFourHourFormat);
 	}
 
 	@Override

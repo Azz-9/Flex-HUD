@@ -36,7 +36,7 @@ public class DurabilityPing extends AbstractModule {
 	);
 	private static final Map<String, Long> lastPingTime = new HashMap<>();
 	public ConfigInteger threshold = new ConfigInteger(10, "flex_hud.durability_ping.config.threshold", 0, 100); // percentage
-	public ConfigEnum<PingType> pingType = new ConfigEnum<>(PingType.BOTH, "flex_hud.durability_ping.config.ping_type");
+	public ConfigEnum<PingType> pingType = new ConfigEnum<>(PingType.class, PingType.BOTH, "flex_hud.durability_ping.config.ping_type");
 	public ConfigBoolean checkArmorPieces = new ConfigBoolean(true, "flex_hud.durability_ping.config.check_armor_pieces");
 	public ConfigBoolean checkElytraOnly = new ConfigBoolean(false, "flex_hud.durability_ping.config.check_elytra_only");
 

@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.client.utils.clock;
 
-import me.Azz_9.flex_hud.client.configurableModules.JsonConfigHelper;
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -28,8 +28,8 @@ public class ClockUtils {
 	}
 
 	public static void updateTime() {
-		String textFormat = JsonConfigHelper.getInstance().clock.textFormat.getValue().toLowerCase();
-		if (JsonConfigHelper.getInstance().clock.isTwentyFourHourFormat.getValue()) {
+		String textFormat = ModulesHelper.getInstance().clock.textFormat.getValue().toLowerCase();
+		if (ModulesHelper.getInstance().clock.isTwentyFourHourFormat.getValue()) {
 			textFormat = textFormat.replace("hh", "HH").replace("h", "HH");
 		} else {
 			textFormat += " a";
@@ -39,7 +39,7 @@ public class ClockUtils {
 			formattedTime = LocalTime.now().format(formatter);
 		} catch (Exception e) {
 			// if the text format is not valid, reset to default
-			JsonConfigHelper.getInstance().clock.textFormat.setToDefault();
+			ModulesHelper.getInstance().clock.textFormat.setToDefault();
 		}
 	}
 

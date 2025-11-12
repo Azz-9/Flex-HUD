@@ -1,6 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
@@ -22,6 +23,10 @@ public class Cps extends AbstractTextElement {
 	public Cps(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.cps.config.enable");
+
+		ConfigRegistry.register(getID(), "showLeftClick", showLeftClick);
+		ConfigRegistry.register(getID(), "showRightClick", showRightClick);
+		ConfigRegistry.register(getID(), "showSuffix", showSuffix);
 	}
 
 	@Override
@@ -71,7 +76,7 @@ public class Cps extends AbstractTextElement {
 		MatrixStack matrices = context.getMatrices();
 		matrices.push();
 		matrices.translate(getRoundedX(), getRoundedY(), 0);
-		matrices.scale(this.scale, this.scale, 1.0f);
+		matrices.scale(getScale(), getScale(), 1.0f);
 
 		drawBackground(context);
 

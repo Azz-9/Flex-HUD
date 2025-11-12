@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.client.utils.speedometer;
 
-import me.Azz_9.flex_hud.client.configurableModules.JsonConfigHelper;
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom.Speedometer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
@@ -29,11 +29,11 @@ public class SpeedUtils {
 			);
 			speed = Math.sqrt(Math.pow(currentVector.x, 2) + Math.pow(currentVector.y, 2) + Math.pow(currentVector.z, 2)) * 20; // speed in blocks per seconds
 
-			if (JsonConfigHelper.getInstance().speedometer.units.getValue() == Speedometer.SpeedometerUnits.KNOT || (JsonConfigHelper.getInstance().speedometer.useKnotInBoat.getValue() && player.getVehicle() instanceof BoatEntity)) {
+			if (ModulesHelper.getInstance().speedometer.units.getValue() == Speedometer.SpeedometerUnits.KNOT || (ModulesHelper.getInstance().speedometer.useKnotInBoat.getValue() && player.getVehicle() instanceof BoatEntity)) {
 				speed = speed * 1.9438452492;
-			} else if (JsonConfigHelper.getInstance().speedometer.units.getValue() == Speedometer.SpeedometerUnits.KPH) {
+			} else if (ModulesHelper.getInstance().speedometer.units.getValue() == Speedometer.SpeedometerUnits.KPH) {
 				speed = speed * 3.6;
-			} else if (JsonConfigHelper.getInstance().speedometer.units.getValue() == Speedometer.SpeedometerUnits.MPH) {
+			} else if (ModulesHelper.getInstance().speedometer.units.getValue() == Speedometer.SpeedometerUnits.MPH) {
 				speed = speed * 2.2369362921;
 			} // no need MPS because the speed is already in meters per seconds
 
@@ -44,7 +44,7 @@ public class SpeedUtils {
 	}
 
 	public static @NotNull String getString(PlayerEntity player, double speed) {
-		Speedometer speedometer = JsonConfigHelper.getInstance().speedometer;
+		Speedometer speedometer = ModulesHelper.getInstance().speedometer;
 		String format = "%." + speedometer.digits.getValue() + "f";
 		String formattedSpeed = String.format(format, speed);
 

@@ -1,7 +1,7 @@
 package me.Azz_9.flex_hud.client.screens.moveModulesScreen;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
-import me.Azz_9.flex_hud.client.configurableModules.JsonConfigHelper;
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.MovableModule;
 import me.Azz_9.flex_hud.client.screens.AbstractCallbackScreen;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.actions.UndoManager;
@@ -49,7 +49,7 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 
 		this.addDrawableChild(helpWidget);
 
-		for (MovableModule movableModule : JsonConfigHelper.getMovableModules()) {
+		for (MovableModule movableModule : ModulesHelper.getMovableModules()) {
 			if (movableModule.isEnabled()) {
 				MovableWidget movableWidget = new MovableWidget(movableModule, this);
 				movableWidgets.add(movableWidget);
@@ -69,7 +69,7 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 			return;
 		}
 
-		JsonConfigHelper.getHudElements().forEach(hudElement -> hudElement.render(context, RenderTickCounter.ZERO));
+		ModulesHelper.getHudElements().forEach(hudElement -> hudElement.render(context, RenderTickCounter.ZERO));
 
 		if (firstFrame) {
 			getMovableWidgets().forEach((movableWidget) -> {

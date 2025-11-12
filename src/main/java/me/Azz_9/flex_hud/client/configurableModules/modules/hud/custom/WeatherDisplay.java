@@ -55,7 +55,7 @@ public class WeatherDisplay extends AbstractBackgroundElement {
 			MatrixStack matrices = context.getMatrices();
 			matrices.push();
 			matrices.translate(getRoundedX(), getRoundedY(), 0);
-			matrices.scale(scale, scale, 1.0f);
+			matrices.scale(getScale(), getScale(), 1.0f);
 
 			drawBackground(context);
 

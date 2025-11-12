@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.client.screens.modulesList;
 
-import me.Azz_9.flex_hud.client.configurableModules.JsonConfigHelper;
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.screens.AbstractSmoothScrollableList;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -108,7 +108,7 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 
 	public void setColumns(int columns) {
 		this.columns = columns;
-		JsonConfigHelper.getInstance().numberOfColumns = columns;
+		ModulesHelper.getInstance().numberOfColumns.setValue(columns);
 	}
 
 	public static class Entry extends ElementListWidget.Entry<Entry> {

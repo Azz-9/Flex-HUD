@@ -1,6 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
@@ -42,6 +43,13 @@ public class Compass extends AbstractTextElement {
 	public Compass(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.compass.config.enable");
+
+		ConfigRegistry.register(getID(), "showMarker", showMarker);
+		ConfigRegistry.register(getID(), "showDegrees", showDegrees);
+		ConfigRegistry.register(getID(), "showIntermediatePoint", showIntermediatePoint);
+		ConfigRegistry.register(getID(), "showXaerosMapWaypoints", showXaerosMapWaypoints);
+		ConfigRegistry.register(getID(), "showTamedEntitiesPoint", showTamedEntitiesPoint);
+		ConfigRegistry.register(getID(), "showOnlyPets", showOnlyPets);
 	}
 
 	@Override
@@ -82,7 +90,7 @@ public class Compass extends AbstractTextElement {
 		MatrixStack matrices = context.getMatrices();
 		matrices.push();
 		matrices.translate(getRoundedX(), getRoundedY(), 0);
-		matrices.scale(this.scale, this.scale, 1.0f);
+		matrices.scale(getScale(), getScale(), 1.0f);
 
 		drawBackground(context);
 

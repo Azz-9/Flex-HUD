@@ -1,10 +1,12 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.vanilla;
 
-import me.Azz_9.flex_hud.client.configurableModules.JsonConfigHelper;
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigFloat;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigIntGrid;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.AbstractCrosshairConfigScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.CrosshairEditorEntry;
@@ -31,14 +33,14 @@ import org.jetbrains.annotations.Nullable;
 
 public class Crosshair extends AbstractModule {
 
-	public transient DynamicTexture crosshairTexture;
+	public DynamicTexture crosshairTexture;
 
 	private static final Identifier CROSSHAIR_ATTACK_INDICATOR_FULL_TEXTURE = Identifier.ofVanilla("hud/crosshair_attack_indicator_full");
 	private static final Identifier CROSSHAIR_ATTACK_INDICATOR_BACKGROUND_TEXTURE = Identifier.ofVanilla("hud/crosshair_attack_indicator_background");
 	private static final Identifier CROSSHAIR_ATTACK_INDICATOR_PROGRESS_TEXTURE = Identifier.ofVanilla("hud/crosshair_attack_indicator_progress");
 
-	public transient int size = 15;
-	public float scale = 1.0f;
+	public int size = 15;
+	public ConfigFloat scale = new ConfigFloat(1.0f);
 
 	public final ConfigIntGrid pixels = new ConfigIntGrid(
 			new int[][]{
@@ -65,6 +67,10 @@ public class Crosshair extends AbstractModule {
 		this.enabled.setConfigTextTranslationKey("flex_hud.crosshair.config.enable");
 		this.enabled.setDefaultValue(false);
 		this.enabled.setValue(false);
+
+		ConfigRegistry.register(getID(), "scale", scale);
+		ConfigRegistry.register(getID(), "pixels", pixels);
+		ConfigRegistry.register(getID(), "disableBlending", disableBlending);
 	}
 
 	@Override
@@ -95,13 +101,13 @@ public class Crosshair extends AbstractModule {
 
 		int screenWidth = client.getWindow().getScaledWidth();
 		int screenHeight = client.getWindow().getScaledHeight();
-		double startX = screenWidth / 2.0 - (size / 2.0) * scale;
-		double startY = screenHeight / 2.0 - (size / 2.0) * scale;
+		double startX = screenWidth / 2.0 - (size / 2.0) * scale.getValue();
+		double startY = screenHeight / 2.0 - (size / 2.0) * scale.getValue();
 
 		MatrixStack matrices = context.getMatrices();
 		matrices.push();
 		matrices.translate((float) startX, (float) startY, 0);
-		matrices.scale(scale, scale, 1.0f);
+		matrices.scale(scale.getValue(), scale.getValue(), 1.0f);
 
 		context.drawTexture((disableBlending.getValue() ? RenderLayer::getGuiTextured : RenderLayer::getCrosshair), crosshairTexture.getId(), 0, 0, 0, 0, size, size, size, size);
 
@@ -149,7 +155,7 @@ public class Crosshair extends AbstractModule {
 	}
 
 	private boolean shouldNotRender() {
-		return !JsonConfigHelper.getInstance().isEnabled || !this.enabled.getValue();
+		return !ModulesHelper.getInstance().isEnabled.getValue() || !this.enabled.getValue();
 	}
 
 	@Override
