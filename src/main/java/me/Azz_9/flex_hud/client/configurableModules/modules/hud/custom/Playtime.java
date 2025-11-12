@@ -1,6 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
@@ -21,6 +22,8 @@ public class Playtime extends AbstractTextElement {
 		this.enabled.setConfigTextTranslationKey("flex_hud.playtime.config.enable");
 		this.enabled.setDefaultValue(false);
 		this.enabled.setValue(false);
+
+		ConfigRegistry.register(getID(), "showPrefix", showPrefix);
 	}
 
 	@Override
@@ -56,7 +59,7 @@ public class Playtime extends AbstractTextElement {
 		MatrixStack matrices = context.getMatrices();
 		matrices.push();
 		matrices.translate(getRoundedX(), getRoundedY(), 0);
-		matrices.scale(this.scale, this.scale, 1.0f);
+		matrices.scale(getScale(), getScale(), 1.0f);
 
 		drawBackground(context);
 

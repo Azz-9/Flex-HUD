@@ -1,5 +1,6 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
@@ -35,10 +36,10 @@ public class KeyStrokes extends AbstractTextElement {
 	public ConfigBoolean displayCps = new ConfigBoolean(true, "flex_hud.key_strokes.config.display_cps");
 	private ConfigBoolean useArrow = new ConfigBoolean(false, "flex_hud.key_strokes.config.use_arrow");
 
-	private transient int borderThickness;
-	private transient int gap;
-	private transient int keySize;
-	private transient Map<KeyBinding, KeyAnimation> keyAnimations;
+	private int borderThickness;
+	private int gap;
+	private int keySize;
+	private Map<KeyBinding, KeyAnimation> keyAnimations;
 
 	private static class KeyAnimation {
 		long lastChangeTime;
@@ -52,6 +53,15 @@ public class KeyStrokes extends AbstractTextElement {
 		this.enabled.setValue(false);
 		this.drawBackground.setDefaultValue(true);
 		this.drawBackground.setValue(true);
+
+		ConfigRegistry.register(getID(), "chromaColorPressed", chromaColorPressed);
+		ConfigRegistry.register(getID(), "colorPressed", colorPressed);
+		ConfigRegistry.register(getID(), "drawBackgroundPressed", drawBackgroundPressed);
+		ConfigRegistry.register(getID(), "backgroundColorPressed", backgroundColorPressed);
+		ConfigRegistry.register(getID(), "showBorder", showBorder);
+		ConfigRegistry.register(getID(), "borderColor", borderColor);
+		ConfigRegistry.register(getID(), "displayCps", displayCps);
+		ConfigRegistry.register(getID(), "useArrow", useArrow);
 	}
 
 	@Override
@@ -87,19 +97,23 @@ public class KeyStrokes extends AbstractTextElement {
 		MatrixStack matrices = context.getMatrices();
 		matrices.push();
 		matrices.translate(getRoundedX(), getRoundedY(), 0);
-		matrices.scale(this.scale, this.scale, 1.0f);
+		matrices.scale(getScale(), getScale(), 1.0f);
 
 		// forward key
-		renderMovementKey(context, keySize + gap * 2, gap, keySize, keySize, client.options.forwardKey, useArrow.getValue() ? Text.of("▲") : null);
+		Text forwardText = useArrow.getValue() ? Text.of("▲") : client.options.forwardKey.getBoundKeyLocalizedText();
+		renderMovementKey(context, keySize + gap * 2, gap, keySize, keySize, client.options.forwardKey, forwardText);
 
 		// back key
-		renderMovementKey(context, keySize + gap * 2, keySize + gap * 2, keySize, keySize, client.options.backKey, useArrow.getValue() ? Text.of("▼") : null);
+		Text backText = useArrow.getValue() ? Text.of("▼") : client.options.backKey.getBoundKeyLocalizedText();
+		renderMovementKey(context, keySize + gap * 2, keySize + gap * 2, keySize, keySize, client.options.backKey, backText);
 
 		// right key
-		renderMovementKey(context, keySize * 2 + gap * 3, keySize + gap * 2, keySize, keySize, client.options.rightKey, useArrow.getValue() ? Text.of("▶") : null);
+		Text rightText = useArrow.getValue() ? Text.of("▶") : client.options.rightKey.getBoundKeyLocalizedText();
+		renderMovementKey(context, keySize * 2 + gap * 3, keySize + gap * 2, keySize, keySize, client.options.rightKey, rightText);
 
 		// left key
-		renderMovementKey(context, gap, keySize + gap * 2, keySize, keySize, client.options.leftKey, useArrow.getValue() ? Text.of("◀") : null);
+		Text leftText = useArrow.getValue() ? Text.of("◀") : client.options.leftKey.getBoundKeyLocalizedText();
+		renderMovementKey(context, gap, keySize + gap * 2, keySize, keySize, client.options.leftKey, leftText);
 
 		// jump key
 		renderJumpKey(context, gap, keySize * 2 + gap * 3, keySize * 3 + gap * 2, keySize / 2, client.options.jumpKey);
@@ -161,9 +175,6 @@ public class KeyStrokes extends AbstractTextElement {
 		float fadeFactor = renderKey(context, x, y, keyWidth, keyHeight, keyBinding);
 
 		TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-		if (label == null) {
-			label = keyBinding.getBoundKeyLocalizedText();
-		}
 
 		MatrixStack matrices = context.getMatrices();
 		matrices.push();

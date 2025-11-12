@@ -1,6 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.DisplayMode;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable.Renderable;
@@ -39,7 +40,7 @@ public class Coordinates extends AbstractTextElement {
 	private ConfigBoolean biomeSpecificColor = new ConfigBoolean(true, "flex_hud.coordinates.config.custom_biome_color");
 	private ConfigBoolean showDirection = new ConfigBoolean(true, "flex_hud.coordinates.config.show_direction");
 	private ConfigBoolean directionAbreviation = new ConfigBoolean(true, "flex_hud.coordinates.config.direction_abbreviation");
-	private ConfigEnum<DisplayMode> displayMode = new ConfigEnum<>(DisplayMode.VERTICAL, "flex_hud.coordinates.config.orientation");
+	private ConfigEnum<DisplayMode> displayMode = new ConfigEnum<>(DisplayMode.class, DisplayMode.VERTICAL, "flex_hud.coordinates.config.orientation");
 
 	//biome colors for coordinates overlay
 	public static final Map<RegistryKey<Biome>, Integer> BIOME_COLORS = getBiomeColors();
@@ -47,6 +48,14 @@ public class Coordinates extends AbstractTextElement {
 	public Coordinates(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.coordinates.config.enable");
+
+		ConfigRegistry.register(getID(), "showY", showY);
+		ConfigRegistry.register(getID(), "numberOfDigits", numberOfDigits);
+		ConfigRegistry.register(getID(), "showBiome", showBiome);
+		ConfigRegistry.register(getID(), "biomeSpecificColor", biomeSpecificColor);
+		ConfigRegistry.register(getID(), "showDirection", showDirection);
+		ConfigRegistry.register(getID(), "directionAbreviation", directionAbreviation);
+		ConfigRegistry.register(getID(), "displayMode", displayMode);
 	}
 
 	@Override
@@ -180,7 +189,7 @@ public class Coordinates extends AbstractTextElement {
 		MatrixStack matrices = context.getMatrices();
 		matrices.push();
 		matrices.translate(getRoundedX(), getRoundedY(), 0);
-		matrices.scale(this.scale, this.scale, 1.0f);
+		matrices.scale(getScale(), getScale(), 1.0f);
 
 		drawBackground(context);
 

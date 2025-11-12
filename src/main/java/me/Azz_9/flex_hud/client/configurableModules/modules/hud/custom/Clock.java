@@ -1,5 +1,6 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
@@ -30,6 +31,9 @@ public class Clock extends AbstractTextElement {
 
 		// get the time format depending on the locale
 		isTwentyFourHourFormat = new ConfigBoolean(ClockUtils.is24HourFormat(Locale.getDefault()), "flex_hud.clock.config.24-hour_format");
+
+		ConfigRegistry.register(getID(), "textFormat", textFormat);
+		ConfigRegistry.register(getID(), "isTwentyFourHourFormat", isTwentyFourHourFormat);
 	}
 
 	@Override
@@ -62,7 +66,7 @@ public class Clock extends AbstractTextElement {
 		MatrixStack matrices = context.getMatrices();
 		matrices.push();
 		matrices.translate(getRoundedX(), getRoundedY(), 0);
-		matrices.scale(this.scale, this.scale, 1.0f);
+		matrices.scale(getScale(), getScale(), 1.0f);
 
 		drawBackground(context);
 

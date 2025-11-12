@@ -1,6 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.Translatable;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.DisplayMode;
@@ -39,12 +40,24 @@ public class ArmorStatus extends AbstractTextElement {
 	private final ConfigBoolean showArrowsWhenBowInHand = new ConfigBoolean(true, "flex_hud.armor_status.config.show_arrows");
 	private final ConfigBoolean separateArrowTypes = new ConfigBoolean(false, "flex_hud.armor_status.config.separate_arrow_types");
 	private final ConfigBoolean showDurabilityBar = new ConfigBoolean(false, "flex_hud.armor_status.config.show_durability_bar");
-	private final ConfigEnum<DurabilityType> durabilityType = new ConfigEnum<>(DurabilityType.PERCENTAGE, "flex_hud.armor_status.config.show_durability");
-	private final ConfigEnum<DisplayMode> displayMode = new ConfigEnum<>(DisplayMode.VERTICAL, "flex_hud.armor_status.config.orientation");
+	private final ConfigEnum<DurabilityType> durabilityType = new ConfigEnum<>(DurabilityType.class, DurabilityType.PERCENTAGE, "flex_hud.armor_status.config.show_durability");
+	private final ConfigEnum<DisplayMode> displayMode = new ConfigEnum<>(DisplayMode.class, DisplayMode.VERTICAL, "flex_hud.armor_status.config.orientation");
 
 	public ArmorStatus(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.armor_status.config.enable");
+
+		ConfigRegistry.register(getID(), "showHelmet", showHelmet);
+		ConfigRegistry.register(getID(), "showChestplate", showChestplate);
+		ConfigRegistry.register(getID(), "showLeggings", showLeggings);
+		ConfigRegistry.register(getID(), "showBoots", showBoots);
+		ConfigRegistry.register(getID(), "showHeldItem", showHeldItem);
+		ConfigRegistry.register(getID(), "showOffHandItem", showOffHandItem);
+		ConfigRegistry.register(getID(), "showArrowsWhenBowInHand", showArrowsWhenBowInHand);
+		ConfigRegistry.register(getID(), "separateArrowTypes", separateArrowTypes);
+		ConfigRegistry.register(getID(), "showDurabilityBar", showDurabilityBar);
+		ConfigRegistry.register(getID(), "durabilityType", durabilityType);
+		ConfigRegistry.register(getID(), "displayMode", displayMode);
 	}
 
 	@Override
@@ -63,6 +76,8 @@ public class ArmorStatus extends AbstractTextElement {
 		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && client.player == null) {
 			return;
 		}
+
+		SpeedTester.start(getID());
 
 		PlayerEntity player = client.player;
 
@@ -137,9 +152,9 @@ public class ArmorStatus extends AbstractTextElement {
 		}
 
 		if (displayMode.getValue() == DisplayMode.VERTICAL) {
-			if (anchorX == AnchorPosition.END) {
+			if (getAnchorX() == AnchorPosition.END) {
 				MultiRenderable.alignRight(multiRenderables, this.width);
-			} else if (anchorX == AnchorPosition.CENTER) {
+			} else if (getAnchorX() == AnchorPosition.CENTER) {
 				MultiRenderable.alignCenter(multiRenderables, this.width / 2);
 			}
 		}
@@ -190,7 +205,7 @@ public class ArmorStatus extends AbstractTextElement {
 
 		if (shadow.getValue()) drawingWidth++;
 
-		if (displayMode.getValue() == DisplayMode.VERTICAL && anchorX == AnchorPosition.END) {
+		if (displayMode.getValue() == DisplayMode.VERTICAL && getAnchorX() == AnchorPosition.END) {
 			multiRenderables.add(new MultiRenderable(x, x + drawingWidth,
 					new RenderableText(x, y + 4, Text.of(text), color, shadow.getValue()),
 					new RenderableItem(x + MinecraftClient.getInstance().textRenderer.getWidth(text) + 1, y, 16, stack, showDurabilityBar.getValue())
@@ -211,29 +226,15 @@ public class ArmorStatus extends AbstractTextElement {
 		if (separateArrowTypes.getValue()) {
 			arrows = new ItemStack[]{new ItemStack(Items.ARROW), new ItemStack(Items.SPECTRAL_ARROW), new ItemStack(Items.TIPPED_ARROW)};
 			for (ItemStack arrowStack : arrows) {
-				String text = String.valueOf(getStackCount(arrowStack, MinecraftClient.getInstance().player));
-
-				int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(text) + (shadow.getValue() ? 1 : 0);
-				int drawingWidth = 17 + textWidth;
-
-				if (displayMode.getValue() == DisplayMode.VERTICAL && anchorX == AnchorPosition.END) {
-					multiRenderables.add(new MultiRenderable(x, x + drawingWidth,
-							new RenderableText(x, y + 4, Text.of(text), getColor(), shadow.getValue()),
-							new RenderableItem(x + textWidth + 1, y, 16, arrowStack, showDurabilityBar.getValue())
-					));
-				} else {
-					multiRenderables.add(new MultiRenderable(x, x + drawingWidth,
-							new RenderableItem(x, y, 16, arrowStack, showDurabilityBar.getValue()),
-							new RenderableText(x + 17, y + 4, Text.of(text), getColor(), shadow.getValue())
-					));
-				}
+				// FIXME le count des tipped arrow ne marche pas
+				int drawingWidth = drawItemStack(arrowStack, x, y, multiRenderables);
 
 				if (displayMode.getValue() == DisplayMode.VERTICAL) {
 					y += 16 + verticalGap;
 					this.height = y;
-					updateWidth(text, x + 17 + (shadow.getValue() ? 1 : 0));
+					this.width = Math.max(this.width, drawingWidth);
 				} else {
-					x += 16 + horizontalGap + MinecraftClient.getInstance().textRenderer.getWidth(text);
+					x += drawingWidth + horizontalGap;
 					this.width = x + (shadow.getValue() ? 1 : 0);
 				}
 			}
@@ -251,7 +252,7 @@ public class ArmorStatus extends AbstractTextElement {
 			//updateWidth(text, x + 17 + (shadow.getValue() ? 1 : 0));
 			this.height += 16;
 
-			if (displayMode.getValue() == DisplayMode.VERTICAL && anchorX == AnchorPosition.END) {
+			if (displayMode.getValue() == DisplayMode.VERTICAL && getAnchorX() == AnchorPosition.END) {
 				multiRenderables.add(new MultiRenderable(x, x + drawingWidth,
 						new RenderableText(x, y + 4, Text.of(text), getColor(), shadow.getValue()),
 						new RenderableItem(x + textWidth + 1, y, 16, arrowStack, showDurabilityBar.getValue())

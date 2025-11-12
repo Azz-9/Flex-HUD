@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.client;
 
-import me.Azz_9.flex_hud.client.configurableModules.JsonConfigHelper;
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.Tickable;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractHudElement;
@@ -49,26 +49,26 @@ public class Flex_hudClient implements ClientModInitializer {
 
 		LOGGER.info("Xaeros Minimap {}found !", XaeroCompat.isXaerosMinimapLoaded() ? "" : "not ");
 
-		List<AbstractHudElement> hudElements = JsonConfigHelper.getHudElements();
+		List<AbstractHudElement> hudElements = ModulesHelper.getHudElements();
 
 		HudLayerRegistrationCallback.EVENT.register(layeredDrawer -> {
-			for (AbstractModule module : JsonConfigHelper.getModules()) {
+			for (AbstractModule module : ModulesHelper.getModules()) {
 				module.init();
 			}
 
 			for (AbstractHudElement element : hudElements) {
 				Identifier id = Identifier.of(MOD_ID, element.getID());
-				Identifier layer = element.getID().equals(JsonConfigHelper.getInstance().bossBar.getID()) ? IdentifiedLayer.BOSS_BAR : IdentifiedLayer.CHAT;
+				Identifier layer = element.getID().equals(ModulesHelper.getInstance().bossBar.getID()) ? IdentifiedLayer.BOSS_BAR : IdentifiedLayer.CHAT;
 				layeredDrawer.attachLayerBefore(layer, id, element::render);
 			}
 
-			Identifier id = Identifier.of(MOD_ID, JsonConfigHelper.getInstance().crosshair.getID());
-			layeredDrawer.attachLayerBefore(IdentifiedLayer.CROSSHAIR, id, JsonConfigHelper.getInstance().crosshair::render);
+			Identifier id = Identifier.of(MOD_ID, ModulesHelper.getInstance().crosshair.getID());
+			layeredDrawer.attachLayerBefore(IdentifiedLayer.CROSSHAIR, id, ModulesHelper.getInstance().crosshair::render);
 		});
 
 		ItemDurabilityLostCallback.EVENT.register((stack, damage) -> {
-			if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().durabilityPing.enabled.getValue()) {
-				DurabilityPing durabilityPing = JsonConfigHelper.getInstance().durabilityPing;
+			if (ModulesHelper.getInstance().isEnabled.getValue() && ModulesHelper.getInstance().durabilityPing.enabled.getValue()) {
+				DurabilityPing durabilityPing = ModulesHelper.getInstance().durabilityPing;
 				if (durabilityPing.isDurabilityUnderThreshold(stack)) {
 					if (durabilityPing.checkElytraOnly.getValue()) {
 						if (DurabilityPing.isElytra(stack)) {
@@ -86,22 +86,22 @@ public class Flex_hudClient implements ClientModInitializer {
 		});
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-			if (JsonConfigHelper.getInstance().isEnabled) {
+			if (ModulesHelper.getInstance().isEnabled.getValue()) {
 				SpeedTester.tick();
 
 				ChromaColorUtils.updateColor();
 
-				for (Tickable tickable : JsonConfigHelper.getTickables()) {
+				for (Tickable tickable : ModulesHelper.getTickables()) {
 					if (tickable.isEnabled()) {
 						tickable.tick();
 					}
 				}
 
-				if (JsonConfigHelper.getInstance().clock.enabled.getValue()) ClockUtils.updateTime();
-				if (JsonConfigHelper.getInstance().speedometer.enabled.getValue()) SpeedUtils.calculateSpeed();
+				if (ModulesHelper.getInstance().clock.enabled.getValue()) ClockUtils.updateTime();
+				if (ModulesHelper.getInstance().speedometer.enabled.getValue()) SpeedUtils.calculateSpeed();
 
-				if (JsonConfigHelper.getInstance().compass.showTamedEntitiesPoint.getValue()) TamedEntityUtils.update();
-				if (JsonConfigHelper.getInstance().compass.showXaerosMapWaypoints.getValue() && XaeroCompat.isXaerosMinimapLoaded()) {
+				if (ModulesHelper.getInstance().compass.showTamedEntitiesPoint.getValue()) TamedEntityUtils.update();
+				if (ModulesHelper.getInstance().compass.showXaerosMapWaypoints.getValue() && XaeroCompat.isXaerosMinimapLoaded()) {
 					if ((joinedWorld && !XaeroCompat.available) || DimensionTracker.shouldInit) {
 						XaeroCompat.init();
 					} else {
@@ -131,8 +131,8 @@ public class Flex_hudClient implements ClientModInitializer {
 		});
 
 		ClientLifecycleEvents.CLIENT_STOPPING.register(client -> {
-			if (JsonConfigHelper.getInstance().crosshair.crosshairTexture != null) {
-				JsonConfigHelper.getInstance().crosshair.crosshairTexture.close();
+			if (ModulesHelper.getInstance().crosshair.crosshairTexture != null) {
+				ModulesHelper.getInstance().crosshair.crosshairTexture.close();
 			}
 		});
 

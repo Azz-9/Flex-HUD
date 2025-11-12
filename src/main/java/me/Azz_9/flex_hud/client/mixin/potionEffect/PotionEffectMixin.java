@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.client.mixin.potionEffect;
 
-import me.Azz_9.flex_hud.client.configurableModules.JsonConfigHelper;
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.RenderTickCounter;
@@ -14,7 +14,7 @@ public abstract class PotionEffectMixin {
 
 	@Inject(method = "renderStatusEffectOverlay", at = @At("HEAD"), cancellable = true)
 	private void renderStatusEffectOverlay(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
-		if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().potionEffect.enabled.getValue()) {
+		if (ModulesHelper.getInstance().isEnabled.getValue() && ModulesHelper.getInstance().potionEffect.enabled.getValue()) {
 			ci.cancel();
 		}
 	}

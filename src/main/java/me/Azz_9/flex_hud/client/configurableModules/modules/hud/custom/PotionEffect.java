@@ -90,9 +90,9 @@ public class PotionEffect extends AbstractTextElement {
 			hudY += 25;
 		}
 
-		if (anchorX == AnchorPosition.END) {
+		if (getAnchorX() == AnchorPosition.END) {
 			MultiRenderable.alignRight(renderables, this.width);
-		} else if (anchorX == AnchorPosition.CENTER) {
+		} else if (getAnchorX() == AnchorPosition.CENTER) {
 			MultiRenderable.alignCenter(renderables, this.width / 2);
 		}
 

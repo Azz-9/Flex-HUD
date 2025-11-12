@@ -1,7 +1,8 @@
 package me.Azz_9.flex_hud.client.screens.modulesList;
 
+import me.Azz_9.flex_hud.client.configurableModules.ConfigLoader;
 import me.Azz_9.flex_hud.client.configurableModules.Configurable;
-import me.Azz_9.flex_hud.client.configurableModules.JsonConfigHelper;
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.screens.AbstractBackNavigableScreen;
 import me.Azz_9.flex_hud.client.screens.widgets.textFieldWidget.PlaceholderTextFieldWidget;
 import net.minecraft.client.gui.DrawContext;
@@ -22,7 +23,7 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 	private PlaceholderTextFieldWidget searchBar;
 	private ScrollableModulesList modulesListWidget;
 
-	private final List<Configurable> MODULES_LIST = JsonConfigHelper.getConfigurableModules();
+	private final List<Configurable> MODULES_LIST = ModulesHelper.getConfigurableModules();
 
 	public ModulesListScreen(Screen parent) {
 		super(Text.translatable("flex_hud.configuration_screen"), parent);
@@ -35,7 +36,7 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 		final int ICON_WIDTH_HEIGHT = 64;
 		final int PADDING = 10;
 		final int MAX_COLUMNS = Math.min((this.width - 30) / (BUTTON_WIDTH + PADDING), MODULES_LIST.size());
-		int columns = Math.clamp(JsonConfigHelper.getInstance().numberOfColumns, 1, MAX_COLUMNS);
+		int columns = Math.clamp(ModulesHelper.getInstance().numberOfColumns.getValue(), 1, MAX_COLUMNS);
 
 		// Initialisation de la barre de recherche
 		this.searchBar = new PlaceholderTextFieldWidget(this.textRenderer, this.width / 2 - 100, 20, 200, 20, Text.empty());
@@ -81,7 +82,7 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 
 	@Override
 	public void close() {
-		JsonConfigHelper.saveConfig();
+		ConfigLoader.saveConfig();
 		super.close();
 	}
 
@@ -107,9 +108,9 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 
 			Supplier<Tooltip> getTooltip = switch (moduleId) {
 				case "in_game_time", "day_counter" ->
-						() -> JsonConfigHelper.getInstance().timeChanger.enabled.getValue() ? Tooltip.of(Text.literal("⚠ ").append(Text.translatable("flex_hud.configuration_screen.module_compatibility_warning")).append(Text.translatable("flex_hud.time_changer")).formatted(Formatting.RED)) : null;
+						() -> ModulesHelper.getInstance().timeChanger.enabled.getValue() ? Tooltip.of(Text.literal("⚠ ").append(Text.translatable("flex_hud.configuration_screen.module_compatibility_warning")).append(Text.translatable("flex_hud.time_changer")).formatted(Formatting.RED)) : null;
 				case "weather_display" ->
-						() -> JsonConfigHelper.getInstance().weatherChanger.enabled.getValue() ? Tooltip.of(Text.literal("⚠ ").append(Text.translatable("flex_hud.configuration_screen.module_compatibility_warning")).append(Text.translatable("flex_hud.weather_changer")).formatted(Formatting.RED)) : null;
+						() -> ModulesHelper.getInstance().weatherChanger.enabled.getValue() ? Tooltip.of(Text.literal("⚠ ").append(Text.translatable("flex_hud.configuration_screen.module_compatibility_warning")).append(Text.translatable("flex_hud.weather_changer")).formatted(Formatting.RED)) : null;
 				default -> null;
 			};
 			modules.add(new Module(
