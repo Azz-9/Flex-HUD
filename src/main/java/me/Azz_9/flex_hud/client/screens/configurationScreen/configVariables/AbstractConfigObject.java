@@ -1,5 +1,9 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonPrimitive;
+
 public abstract class AbstractConfigObject<T> {
 	private T value;
 	private T defaultValue;
@@ -9,6 +13,10 @@ public abstract class AbstractConfigObject<T> {
 		this.defaultValue = defaultValue;
 		this.configTextTranslationKey = configTextTranslationKey;
 		this.value = defaultValue;
+	}
+
+	public AbstractConfigObject(T defaultValue) {
+		this(defaultValue, null);
 	}
 
 	public T getDefaultValue() {
@@ -37,5 +45,28 @@ public abstract class AbstractConfigObject<T> {
 
 	public void setToDefault() {
 		this.value = defaultValue;
+	}
+
+	public void applyFromJsonElement(JsonElement element) {
+		if (element == null || element.isJsonNull()) return;
+		this.value = parseValue(element);
+	}
+
+	protected abstract T parseValue(JsonElement element);
+
+	public JsonElement toJsonValue() {
+		if (value == null) {
+			return JsonNull.INSTANCE;
+		}
+		if (value instanceof Boolean b) {
+			return new JsonPrimitive(b);
+		}
+		if (value instanceof Number n) {
+			return new JsonPrimitive(n);
+		}
+		if (value instanceof String s) {
+			return new JsonPrimitive(s);
+		}
+		return new JsonPrimitive(value.toString());
 	}
 }

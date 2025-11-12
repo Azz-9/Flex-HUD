@@ -57,7 +57,7 @@ public class DayCounter extends AbstractTextElement {
 		Matrix3x2fStack matrices = context.getMatrices();
 		matrices.pushMatrix();
 		matrices.translate(getRoundedX(), getRoundedY());
-		matrices.scale(this.scale, this.scale);
+		matrices.scale(getScale());
 
 		drawBackground(context);
 

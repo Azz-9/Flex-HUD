@@ -1,6 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.Translatable;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
@@ -22,7 +23,7 @@ import org.joml.Matrix3x2fStack;
 
 public class Speedometer extends AbstractTextElement {
 	public ConfigInteger digits = new ConfigInteger(1, "flex_hud.speedometer.config.number_of_digits", 0, 16);
-	public ConfigEnum<SpeedometerUnits> units = new ConfigEnum<>(SpeedometerUnits.MPS, "flex_hud.speedometer.config.selected_unit");
+	public ConfigEnum<SpeedometerUnits> units = new ConfigEnum<>(SpeedometerUnits.class, SpeedometerUnits.MPS, "flex_hud.speedometer.config.selected_unit");
 	public ConfigBoolean useKnotInBoat = new ConfigBoolean(false, "flex_hud.speedometer.config.use_knot_when_in_boat");
 
 	public Speedometer(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
@@ -30,6 +31,10 @@ public class Speedometer extends AbstractTextElement {
 		this.enabled.setConfigTextTranslationKey("flex_hud.speedometer.config.enable");
 		this.enabled.setDefaultValue(false);
 		this.enabled.setValue(false);
+
+		ConfigRegistry.register(getID(), "digits", digits);
+		ConfigRegistry.register(getID(), "units", units);
+		ConfigRegistry.register(getID(), "useKnotInBoat", useKnotInBoat);
 	}
 
 	@Override
@@ -67,7 +72,7 @@ public class Speedometer extends AbstractTextElement {
 		Matrix3x2fStack matrices = context.getMatrices();
 		matrices.pushMatrix();
 		matrices.translate(getRoundedX(), getRoundedY());
-		matrices.scale(this.scale, this.scale);
+		matrices.scale(getScale());
 
 		drawBackground(context);
 

@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables;
 
+import com.google.gson.JsonElement;
+
 public class ConfigInteger extends AbstractConfigObject<Integer> {
 	private final int MIN;
 	private final int MAX;
@@ -12,6 +14,20 @@ public class ConfigInteger extends AbstractConfigObject<Integer> {
 
 	public ConfigInteger(Integer defaultValue, String configTextTranslationKey) {
 		this(defaultValue, configTextTranslationKey, 0, Integer.MAX_VALUE);
+	}
+
+	public ConfigInteger(Integer defaultValue, Integer min, Integer max) {
+		this(defaultValue, null, min, max);
+	}
+
+	public ConfigInteger(Integer defaultValue) {
+		this(defaultValue, null);
+	}
+
+	@Override
+	protected Integer parseValue(JsonElement element) {
+		if (element == null || element.isJsonNull()) return getDefaultValue();
+		return element.getAsInt();
 	}
 
 	public int getMin() {

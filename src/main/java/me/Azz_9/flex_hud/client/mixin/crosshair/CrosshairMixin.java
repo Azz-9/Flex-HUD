@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.client.mixin.crosshair;
 
-import me.Azz_9.flex_hud.client.configurableModules.JsonConfigHelper;
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.RenderTickCounter;
@@ -14,7 +14,7 @@ public abstract class CrosshairMixin {
 
 	@Inject(method = "renderCrosshair", at = @At("HEAD"), cancellable = true)
 	private void renderCrosshair(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
-		if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().crosshair.enabled.getValue()) {
+		if (ModulesHelper.getInstance().isEnabled.getValue() && ModulesHelper.getInstance().crosshair.enabled.getValue()) {
 			ci.cancel();
 		}
 	}

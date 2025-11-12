@@ -1,6 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
@@ -25,6 +26,8 @@ public class LightLevel extends AbstractTextElement {
 		this.enabled.setValue(false);
 		this.enabled.setDefaultValue(false);
 		this.enabled.setConfigTextTranslationKey("flex_hud.light_level.config.enable");
+
+		ConfigRegistry.register(getID(), "colorDependsOnLightLevel", colorDependsOnLightLevel);
 	}
 
 	@Override
