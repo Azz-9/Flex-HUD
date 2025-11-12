@@ -1,7 +1,5 @@
 package me.Azz_9.flex_hud.client.configurableModules;
 
-import com.google.gson.*;
-import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.Tickable;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractHudElement;
@@ -13,14 +11,14 @@ import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.TimeChanger;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.TntCountdown;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.WeatherChanger;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.durabilityPing.DurabilityPing;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-public class JsonConfigHelper {
-	public boolean isEnabled = true;
+public class ModulesHelper {
+	public ConfigBoolean isEnabled = new ConfigBoolean(true);
 	//hud
 	public ArmorStatus armorStatus = new ArmorStatus(2, -30, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.CENTER);
 	public Cps cps = new Cps(-80, 2, AbstractHudElement.AnchorPosition.END, AbstractHudElement.AnchorPosition.START);
@@ -53,17 +51,20 @@ public class JsonConfigHelper {
 	public TntCountdown tntCountdown = new TntCountdown();
 
 	//number of columns
-	public int numberOfColumns = 2;
+	public ConfigInteger numberOfColumns = new ConfigInteger(2);
 
-	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-	private static final File CONFIG_FILE = new File("config/flex_hud.json");
-	private static JsonConfigHelper INSTANCE;
+	static ModulesHelper INSTANCE;
 
-	private transient List<AbstractModule> modules;
-	private transient List<AbstractHudElement> hudElements;
-	private transient List<MovableModule> movableModules;
-	private transient List<Configurable> configurables;
-	private transient List<Tickable> tickables;
+	private List<AbstractModule> modules;
+	private List<AbstractHudElement> hudElements;
+	private List<MovableModule> movableModules;
+	private List<Configurable> configurables;
+	private List<Tickable> tickables;
+
+	public ModulesHelper() {
+		ConfigRegistry.register("global", "enabled", isEnabled);
+		ConfigRegistry.register("global", "numberOfColumns", numberOfColumns);
+	}
 
 	private void init() {
 		hudElements = new ArrayList<>();
@@ -108,92 +109,12 @@ public class JsonConfigHelper {
 	}
 
 	// Méthode pour obtenir l'instance de la configuration
-	public static JsonConfigHelper getInstance() {
+	public static ModulesHelper getInstance() {
 		if (INSTANCE == null) {
-			INSTANCE = loadConfig();
+			ConfigLoader.loadConfig();
 			INSTANCE.init();
 		}
 		return INSTANCE;
-	}
-
-	private static JsonConfigHelper loadConfig() {
-		// 1) Build defaults from the class constructor values
-		JsonConfigHelper defaults = new JsonConfigHelper();
-
-		// 2) If a file exists, deep-merge file values over defaults
-		if (CONFIG_FILE.exists()) {
-			try (Reader reader = new FileReader(CONFIG_FILE)) {
-				// Serialize defaults to a JsonObject tree
-				JsonObject defaultTree = GSON.toJsonTree(defaults).getAsJsonObject();
-
-				// Parse existing config as a JsonObject (might be partial)
-				JsonElement parsed = JsonParser.parseReader(reader);
-				if (parsed != null && parsed.isJsonObject()) {
-					// Merge user values into the defaults
-					deepMergeInto(defaultTree, parsed.getAsJsonObject());
-				}
-
-				// Deserialize merged tree back into the Java class
-				INSTANCE = GSON.fromJson(defaultTree, JsonConfigHelper.class);
-			} catch (Exception e) {
-				// On error, fall back to defaults
-				Flex_hudClient.LOGGER.error("Failed to load config {}, using defaults", e.getMessage());
-				INSTANCE = defaults;
-			}
-		} else {
-			INSTANCE = defaults;
-		}
-
-		// 3) Ensure directory exists and write back to disk so new keys appear in file
-		ensureParentDirExists(CONFIG_FILE);
-		saveConfig();
-
-		return INSTANCE;
-	}
-
-	// Méthode pour sauvegarder la configuration dans le fichier JSON
-	public static void saveConfig() {
-		try {
-			if (INSTANCE == null) {
-				// Safety: initialize defaults if called very early
-				INSTANCE = new JsonConfigHelper();
-			}
-			ensureParentDirExists(CONFIG_FILE);
-			try (Writer writer = new FileWriter(CONFIG_FILE)) {
-				GSON.toJson(INSTANCE, writer);
-			}
-		} catch (IOException e) {
-			Flex_hudClient.LOGGER.error("Failed to save config {}", e.getMessage());
-		}
-	}
-
-	/**
-	 * Deeply merge 'overrides' into 'target'. Objects are merged; arrays/primitives are replaced.
-	 */
-	private static void deepMergeInto(JsonObject target, JsonObject overrides) {
-		for (Map.Entry<String, JsonElement> e : overrides.entrySet()) {
-			String key = e.getKey();
-			JsonElement overrideVal = e.getValue();
-
-			// If both sides are objects, merge recursively
-			if (target.has(key) && target.get(key).isJsonObject() && overrideVal.isJsonObject()) {
-				deepMergeInto(target.getAsJsonObject(key), overrideVal.getAsJsonObject());
-			} else {
-				// Otherwise, override or add
-				target.add(key, overrideVal);
-			}
-		}
-	}
-
-	/**
-	 * Ensure the parent directory exists before writing the file.
-	 */
-	private static void ensureParentDirExists(File file) {
-		File parent = file.getParentFile();
-		if (parent != null && !parent.exists()) {
-			//noinspection ResultOfMethodCallIgnored
-			parent.mkdirs();
-		}
 	}
 
 	public static List<AbstractModule> getModules() {

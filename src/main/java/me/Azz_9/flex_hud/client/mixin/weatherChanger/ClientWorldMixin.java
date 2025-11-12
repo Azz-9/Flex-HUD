@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.client.mixin.weatherChanger;
 
-import me.Azz_9.flex_hud.client.configurableModules.JsonConfigHelper;
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.WeatherChanger;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.registry.DynamicRegistryManager;
@@ -20,8 +20,8 @@ public abstract class ClientWorldMixin extends World {
 
 	@Override
 	public float getRainGradient(float delta) {
-		if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().weatherChanger.enabled.getValue()) {
-			if (JsonConfigHelper.getInstance().weatherChanger.selectedWeather.getValue().equals(WeatherChanger.Weather.CLEAR)) {
+		if (ModulesHelper.getInstance().isEnabled.getValue() && ModulesHelper.getInstance().weatherChanger.enabled.getValue()) {
+			if (ModulesHelper.getInstance().weatherChanger.selectedWeather.getValue().equals(WeatherChanger.Weather.CLEAR)) {
 				return 0f;
 			} else return 1f;
 		}
@@ -30,8 +30,8 @@ public abstract class ClientWorldMixin extends World {
 
 	@Override
 	public float getThunderGradient(float delta) {
-		if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().weatherChanger.enabled.getValue()) {
-			if (JsonConfigHelper.getInstance().weatherChanger.selectedWeather.getValue().equals(WeatherChanger.Weather.THUNDER)) {
+		if (ModulesHelper.getInstance().isEnabled.getValue() && ModulesHelper.getInstance().weatherChanger.enabled.getValue()) {
+			if (ModulesHelper.getInstance().weatherChanger.selectedWeather.getValue().equals(WeatherChanger.Weather.THUNDER)) {
 				return 1f;
 			} else return 0f;
 		}

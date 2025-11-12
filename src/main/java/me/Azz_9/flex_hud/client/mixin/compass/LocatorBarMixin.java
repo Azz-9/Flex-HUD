@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.client.mixin.compass;
 
-import me.Azz_9.flex_hud.client.configurableModules.JsonConfigHelper;
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.bar.LocatorBar;
 import net.minecraft.client.render.RenderTickCounter;
@@ -14,14 +14,14 @@ public abstract class LocatorBarMixin {
 
 	@Inject(method = "renderBar", at = @At("HEAD"), cancellable = true)
 	private void renderBar(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
-		if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().compass.enabled.getValue() && JsonConfigHelper.getInstance().compass.overrideLocatorBar.getValue()) {
+		if (ModulesHelper.getInstance().isEnabled.getValue() && ModulesHelper.getInstance().compass.enabled.getValue() && ModulesHelper.getInstance().compass.overrideLocatorBar.getValue()) {
 			ci.cancel();
 		}
 	}
 
 	@Inject(method = "renderAddons", at = @At("HEAD"), cancellable = true)
 	private void renderAddons(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
-		if (JsonConfigHelper.getInstance().isEnabled && JsonConfigHelper.getInstance().compass.enabled.getValue() && JsonConfigHelper.getInstance().compass.overrideLocatorBar.getValue()) {
+		if (ModulesHelper.getInstance().isEnabled.getValue() && ModulesHelper.getInstance().compass.enabled.getValue() && ModulesHelper.getInstance().compass.overrideLocatorBar.getValue()) {
 			ci.cancel();
 		}
 	}
