@@ -1,33 +1,37 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
-import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.IntFieldEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
+import me.Azz_9.flex_hud.client.tickables.RaycastTickable;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.text.Text;
+import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 
-public class FullInventoryIndicator extends AbstractTextElement implements TickableModule {
+public class Distance extends AbstractTextElement implements TickableModule {
 
-	private boolean isInventoryFull;
+	private ConfigInteger digits = new ConfigInteger(0, "flex_hud.distance.config.number_of_digits", 0, 16);
 
-	public FullInventoryIndicator(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
+	private String distanceText;
+
+	public Distance(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setValue(false);
 		this.enabled.setDefaultValue(false);
-		this.enabled.setConfigTextTranslationKey("flex_hud.full_inventory_indicator.config.enable");
+		this.enabled.setConfigTextTranslationKey("flex_hud.distance.config.enable");
 
-		this.color.setValue(0xff0000);
-		this.color.setDefaultValue(0xff0000);
+		ConfigRegistry.register(getID(), "digits", digits);
 	}
 
 	@Override
@@ -37,35 +41,32 @@ public class FullInventoryIndicator extends AbstractTextElement implements Ticka
 
 	@Override
 	public Text getName() {
-		return Text.translatable("flex_hud.full_inventory_indicator");
+		return Text.translatable("flex_hud.distance");
 	}
 
 	@Override
 	public String getID() {
-		return "full_inventory_indicator";
+		return "distance";
 	}
 
 	@Override
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && MinecraftClient.getInstance().player == null) {
+		if (shouldNotRender() || MinecraftClient.getInstance().getCameraEntity() == null) {
 			return;
 		}
 
-		if (isInventoryFull || Flex_hudClient.isInMoveElementScreen) {
-			Text label = Text.translatable("flex_hud.full_inventory_indicator.label");
-			setWidth(label.getString());
+		setWidth(distanceText);
 
-			Matrix3x2fStack matrices = context.getMatrices();
-			matrices.pushMatrix();
-			matrices.translate(getRoundedX(), getRoundedY());
-			matrices.scale(getScale());
+		Matrix3x2fStack matrices = context.getMatrices();
+		matrices.pushMatrix();
+		matrices.translate(getRoundedX(), getRoundedY());
+		matrices.scale(getScale());
 
-			drawBackground(context);
+		drawBackground(context);
 
-			context.drawText(MinecraftClient.getInstance().textRenderer, Text.translatable("flex_hud.full_inventory_indicator.label"), 0, 0, getColor(), shadow.getValue());
+		context.drawText(MinecraftClient.getInstance().textRenderer, distanceText, 0, 0, getColor(), shadow.getValue());
 
-			matrices.popMatrix();
-		}
+		matrices.popMatrix();
 	}
 
 	@Override
@@ -74,9 +75,7 @@ public class FullInventoryIndicator extends AbstractTextElement implements Ticka
 			@Override
 			protected void init() {
 				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
-					buttonWidth = 220;
-				} else {
-					buttonWidth = 175;
+					buttonWidth = 160;
 				}
 
 				super.init();
@@ -115,6 +114,10 @@ public class FullInventoryIndicator extends AbstractTextElement implements Ticka
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(hideInF3)
+								.build(),
+						new IntFieldEntry.Builder()
+								.setIntFieldWidth(20)
+								.setVariable(digits)
 								.build()
 				);
 			}
@@ -123,19 +126,23 @@ public class FullInventoryIndicator extends AbstractTextElement implements Ticka
 
 	@Override
 	public void tick() {
-		if (MinecraftClient.getInstance().player == null) {
-			return;
+		MinecraftClient client = MinecraftClient.getInstance();
+		HitResult hitResult = RaycastTickable.getHitResult();
+
+		if (client.getCameraEntity() == null || client.player == null || hitResult == null) return;
+
+		if (hitResult.getType() == HitResult.Type.MISS) {
+			distanceText = "[∞]";
+		} else if (hitResult.getType() == HitResult.Type.BLOCK) {
+			Vec3d lerpedPos = client.getCameraEntity().getLerpedPos(0);
+			float eyeHeight = client.getCameraEntity().getEyeHeight(client.player.getPose());
+			Vec3d eyePos = new Vec3d(lerpedPos.getX(), lerpedPos.getY() + eyeHeight, lerpedPos.getZ());
+
+			double distance = hitResult.getPos().distanceTo(eyePos);
+
+			// format distance to string with selected amount of digits
+			String format = "[%." + digits.getValue() + "f]";
+			distanceText = String.format(format, distance);
 		}
-
-
-		for (int i = 0; i < 36; i++) {
-			ItemStack stack = MinecraftClient.getInstance().player.getInventory().getStack(i);
-			if (stack.getItem() == Items.AIR) {
-				isInventoryFull = false;
-				return;
-			}
-		}
-
-		isInventoryFull = true;
 	}
 }

@@ -2,6 +2,7 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
+import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.Translatable;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
@@ -12,19 +13,23 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.Toggle
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
-import me.Azz_9.flex_hud.client.utils.speedometer.SpeedUtils;
+import me.Azz_9.flex_hud.client.tickables.SpeedTickable;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.text.Text;
 import org.joml.Matrix3x2fStack;
 
-public class Speedometer extends AbstractTextElement {
+public class Speedometer extends AbstractTextElement implements TickableModule {
 	public ConfigInteger digits = new ConfigInteger(1, "flex_hud.speedometer.config.number_of_digits", 0, 16);
 	public ConfigEnum<SpeedometerUnits> units = new ConfigEnum<>(SpeedometerUnits.class, SpeedometerUnits.MPS, "flex_hud.speedometer.config.selected_unit");
 	public ConfigBoolean useKnotInBoat = new ConfigBoolean(false, "flex_hud.speedometer.config.use_knot_when_in_boat");
+
+	private String formattedSpeed;
 
 	public Speedometer(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
@@ -58,13 +63,6 @@ public class Speedometer extends AbstractTextElement {
 
 		if (shouldNotRender()) {
 			return;
-		}
-
-		String formattedSpeed;
-		if (Flex_hudClient.isInMoveElementScreen) {
-			formattedSpeed = SpeedUtils.getString(null, 0);
-		} else {
-			formattedSpeed = SpeedUtils.getFormattedSpeed();
 		}
 
 		setWidth(formattedSpeed);
@@ -156,6 +154,21 @@ public class Speedometer extends AbstractTextElement {
 			}
 		};
 	}
+
+	@Override
+	public void tick() {
+		PlayerEntity player = MinecraftClient.getInstance().player;
+
+		String format = "%." + this.digits.getValue() + "f";
+		String speed = String.format(format, Flex_hudClient.isInMoveElementScreen ? 0 : SpeedTickable.getSpeed());
+
+		if (this.units.getValue() == Speedometer.SpeedometerUnits.KNOT || (this.useKnotInBoat.getValue() && player != null && player.getVehicle() instanceof BoatEntity)) {
+			formattedSpeed = speed + " " + Text.translatable(Speedometer.SpeedometerUnits.KNOT.getTranslationKey()).getString();
+		} else {
+			formattedSpeed = speed + " " + Text.translatable(this.units.getValue().getTranslationKey()).getString();
+		}
+	}
+
 
 	public enum SpeedometerUnits implements Translatable {
 		MPS("flex_hud.enum.speedometer.units.mps"),

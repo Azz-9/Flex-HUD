@@ -14,7 +14,7 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.Cyclin
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
-import me.Azz_9.flex_hud.client.utils.SpeedTester;
+import me.Azz_9.flex_hud.client.utils.ItemUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -75,8 +75,6 @@ public class ArmorStatus extends AbstractTextElement {
 		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && client.player == null) {
 			return;
 		}
-
-		SpeedTester.start(getID());
 
 		PlayerEntity player = client.player;
 
@@ -139,7 +137,7 @@ public class ArmorStatus extends AbstractTextElement {
 						this.width = hudX;
 					}
 
-					if ((i == 4 || i == 5) && this.showArrowsWhenBowInHand.getValue() && (stack.getItem() == Items.BOW || stack.getItem() == Items.CROSSBOW)) {
+					if ((i == 4 || i == 5) && this.showArrowsWhenBowInHand.getValue() && (stack.isOf(Items.BOW) || stack.isOf(Items.CROSSBOW))) {
 						shouldDrawArrows = true;
 					}
 				}
@@ -170,8 +168,6 @@ public class ArmorStatus extends AbstractTextElement {
 		}
 
 		matrices.popMatrix();
-
-		SpeedTester.end(getID());
 	}
 
 	//return width
@@ -183,12 +179,12 @@ public class ArmorStatus extends AbstractTextElement {
 		if (new ItemStack(stack.getItem()).isDamageable()) {
 			switch (this.durabilityType.getValue()) {
 				case PERCENTAGE -> {
-					text = Math.round(getDurabilityPercentage(stack)) + "%";
+					text = Math.round(ItemUtils.getDurabilityPercentage(stack)) + "%";
 					color = ColorHelper.withAlpha(255, stack.getItemBarColor());
 					drawingWidth += MinecraftClient.getInstance().textRenderer.getWidth(text);
 				}
 				case VALUE -> {
-					text = String.valueOf(getDurabilityValue(stack));
+					text = String.valueOf(ItemUtils.getDurabilityValue(stack));
 					color = ColorHelper.withAlpha(255, stack.getItemBarColor());
 					drawingWidth += MinecraftClient.getInstance().textRenderer.getWidth(text);
 				}
@@ -199,7 +195,11 @@ public class ArmorStatus extends AbstractTextElement {
 			}
 
 		} else {
-			text = String.valueOf(getStackCount(stack, MinecraftClient.getInstance().player));
+			if (Flex_hudClient.isInMoveElementScreen || MinecraftClient.getInstance().player == null) {
+				text = String.valueOf(stack.getMaxCount());
+			} else {
+				text = String.valueOf(ItemUtils.getStackCount(stack, MinecraftClient.getInstance().player));
+			}
 			color = getColor();
 			drawingWidth += MinecraftClient.getInstance().textRenderer.getWidth(text);
 		}
@@ -242,9 +242,15 @@ public class ArmorStatus extends AbstractTextElement {
 		} else {
 			ItemStack arrowStack = new ItemStack(Items.ARROW);
 
-			int totalCount = getStackCount(arrowStack, MinecraftClient.getInstance().player);
-			totalCount += getStackCount(new ItemStack(Items.SPECTRAL_ARROW), MinecraftClient.getInstance().player);
-			totalCount += getStackCount(new ItemStack(Items.TIPPED_ARROW), MinecraftClient.getInstance().player);
+			int totalCount;
+			if (Flex_hudClient.isInMoveElementScreen || MinecraftClient.getInstance().player == null) {
+				totalCount = arrowStack.getMaxCount();
+			} else {
+				totalCount = ItemUtils.getStackCount(arrowStack, MinecraftClient.getInstance().player);
+				totalCount += ItemUtils.getStackCount(new ItemStack(Items.SPECTRAL_ARROW), MinecraftClient.getInstance().player);
+				totalCount += ItemUtils.getStackCount(new ItemStack(Items.TIPPED_ARROW), MinecraftClient.getInstance().player);
+			}
+
 			String text = String.valueOf(totalCount);
 
 			int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(text) + (shadow.getValue() ? 1 : 0);
@@ -267,28 +273,6 @@ public class ArmorStatus extends AbstractTextElement {
 		}
 	}
 
-	private double getDurabilityPercentage(ItemStack stack) {
-		return (double) getDurabilityValue(stack) / stack.getMaxDamage() * 100;
-	}
-
-	private int getDurabilityValue(ItemStack stack) {
-		return stack.getMaxDamage() - stack.getDamage();
-	}
-
-	private int getStackCount(ItemStack stack, PlayerEntity player) {
-		if (Flex_hudClient.isInMoveElementScreen || player == null) return stack.getMaxCount();
-
-		int itemCount = 0;
-
-		for (int i = 0; i < player.getInventory().size(); ++i) {
-			ItemStack itemStack = player.getInventory().getStack(i);
-			if (itemStack.getItem().equals(stack.getItem()) && itemStack.getComponents().equals(stack.getComponents())) {
-				itemCount += itemStack.getCount();
-			}
-		}
-
-		return itemCount;
-	}
 
 	@Override
 	public AbstractConfigurationScreen getConfigScreen(Screen parent) {
@@ -383,7 +367,7 @@ public class ArmorStatus extends AbstractTextElement {
 		};
 	}
 
-	private enum DurabilityType implements Translatable {
+	enum DurabilityType implements Translatable {
 		NO("flex_hud.enum.durability_type.no"),
 		PERCENTAGE("flex_hud.enum.durability_type.percentage"),
 		VALUE("flex_hud.enum.durability_type.value");

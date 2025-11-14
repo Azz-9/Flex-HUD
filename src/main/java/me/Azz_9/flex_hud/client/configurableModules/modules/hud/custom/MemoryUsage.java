@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
-import me.Azz_9.flex_hud.client.configurableModules.modules.Tickable;
+import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
@@ -15,7 +15,7 @@ import org.joml.Matrix3x2fStack;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 
-public class MemoryUsage extends AbstractTextElement implements Tickable {
+public class MemoryUsage extends AbstractTextElement implements TickableModule {
 
 	private int memoryUsage;
 

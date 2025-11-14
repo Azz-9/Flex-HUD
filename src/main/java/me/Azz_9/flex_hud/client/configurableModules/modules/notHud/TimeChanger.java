@@ -1,5 +1,6 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.notHud;
 
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.IntSliderEntry;
@@ -20,6 +21,9 @@ public class TimeChanger extends AbstractModule {
 		this.enabled.setConfigTextTranslationKey("flex_hud.time_changer.config.enable");
 		this.enabled.setDefaultValue(false);
 		this.enabled.setValue(false);
+
+		ConfigRegistry.register(getID(), "selectedTime", selectedTime);
+		ConfigRegistry.register(getID(), "useRealTime", useRealTime);
 	}
 
 	@Override
