@@ -44,7 +44,7 @@ public class SpeedTester {
 	public static void tick() {
 		MinecraftClient client = MinecraftClient.getInstance();
 
-		boolean keyPressed = InputUtil.isKeyPressed(client.getWindow(), InputUtil.GLFW_KEY_O);
+		boolean keyPressed = InputUtil.isKeyPressed(client.getWindow().getHandle(), InputUtil.GLFW_KEY_O);
 
 		if (keyPressed && !wasKeyPressed) {
 			for (String module : times.keySet()) {

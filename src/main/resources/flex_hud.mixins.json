@@ -6,7 +6,6 @@
 	"mixins": [
 		"cps.MouseMixin",
 		"durabilityPing.ItemStackMixin",
-		"reach.PlayerMixin",
 		"timeChanger.ClientWorldPropertiesMixin",
 		"weatherChanger.ClientWorldMixin"
 	],
@@ -19,7 +18,8 @@
 		"crosshair.CrosshairMixin",
 		"drawContext.DrawContextAccessor",
 		"keybind.KeyBindingMixin",
-		"potionEffect.PotionEffectMixin"
+		"potionEffect.PotionEffectMixin",
+		"reach.ClientPlayerInteractionManagerMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

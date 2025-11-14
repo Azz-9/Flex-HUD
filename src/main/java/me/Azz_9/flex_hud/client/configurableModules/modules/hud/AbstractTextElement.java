@@ -3,7 +3,7 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
-import me.Azz_9.flex_hud.client.utils.ChromaColorUtils;
+import me.Azz_9.flex_hud.client.tickables.ChromaColorTickable;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.NotNull;
@@ -40,9 +40,14 @@ public abstract class AbstractTextElement extends AbstractBackgroundElement {
 		this.width = MinecraftClient.getInstance().textRenderer.getWidth(text);
 	}
 
+	protected void setWidth(String text, int startX) {
+		int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(text);
+		this.width = startX + textWidth;
+	}
+
 	protected int getColor() {
 		if (chromaColor.getValue()) {
-			return ChromaColorUtils.getColor();
+			return ChromaColorTickable.getColor();
 		}
 		return ColorHelper.withAlpha(255, color.getValue());
 	}
