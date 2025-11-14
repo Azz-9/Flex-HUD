@@ -1,9 +1,11 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractHudElement;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
+import me.Azz_9.flex_hud.client.tickables.RaycastTickable;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.HangingSignBlockEntity;
@@ -19,6 +21,8 @@ import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.block.entity.AbstractSignBlockEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
@@ -28,7 +32,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
-public class SignReader extends AbstractHudElement {
+public class SignReader extends AbstractHudElement implements TickableModule {
+
+	private RenderData renderData;
 
 	public SignReader(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
@@ -53,16 +59,140 @@ public class SignReader extends AbstractHudElement {
 			return;
 		}
 
-		RenderData data = Flex_hudClient.isInMoveElementScreen ? getPlaceholderRenderData() : getSignRenderData(tickCounter);
+		if (Flex_hudClient.isInMoveElementScreen) {
+			renderSign(context, getPlaceholderRenderData());
+		} else if (this.renderData.texture != null) {
+			renderSign(context, this.renderData);
+		}
+	}
 
-		if (data.texture != null) {
-			renderSign(context, data);
+	private void renderSign(DrawContext context, RenderData data) {
+		float textureScale; // used to make the texture bigger by default
+		if (data.isHangingSign) {
+			textureScale = 4.5f;
+			this.width = Math.round(14 * textureScale);
+			this.height = Math.round(10 * textureScale);
+		} else {
+			textureScale = 4;
+			this.width = Math.round(24 * textureScale);
+			this.height = Math.round(12 * textureScale);
+		}
+
+		int textureWidth = Math.round(64 * textureScale);
+		int textureHeight = Math.round(32 * textureScale);
+
+		float offsetX = 2 * textureScale;
+		if (!data.playerFacingFront) {
+			offsetX += this.width + 2 * textureScale;
+		}
+		float offsetY = data.isHangingSign ? 14 * textureScale : 2 * textureScale;
+
+		MatrixStack matrices = context.getMatrices();
+		matrices.push();
+		matrices.translate(getRoundedX(), getRoundedY(), 0);
+		matrices.scale(getScale(), getScale(), 1.0f);
+
+		// only draw the side of the sign texture
+		context.drawTexture(RenderLayer::getGuiTextured, data.texture, 0, 0,
+				offsetX, offsetY,
+				this.width, this.height,
+				textureWidth, textureHeight,
+				0xffffffff);
+
+		renderSignText(context, data);
+
+		matrices.pop();
+	}
+
+	private void renderSignText(DrawContext context, RenderData data) {
+		TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
+
+		for (int i = 0; i < 4; i++) {
+			if (i >= data.content.length) continue;
+			Text line = data.content[i];
+			int x = (this.width - textRenderer.getWidth(line)) / 2;
+			int y = data.isHangingSign ? 5 + 9 * i : 4 + 10 * i;
+
+			// render glow
+			if (data.isGlowing) {
+				MutableText glowLine = deepCopyText(line);
+
+				glowLine.setStyle(Style.EMPTY.withItalic(glowLine.getStyle().isItalic()).withBold(glowLine.getStyle().isBold()));
+
+				for (Text sibling : glowLine.getSiblings()) {
+					boolean isItalic = sibling.getStyle().isItalic();
+					boolean isBold = sibling.getStyle().isBold();
+					((MutableText) sibling).setStyle(Style.EMPTY.withItalic(isItalic).withBold(isBold));
+				}
+
+				for (int dx = -1; dx <= 1; dx++) {
+					for (int dy = -1; dy <= 1; dy++) {
+						if (dx == 0 && dy == 0) continue;
+						context.drawText(textRenderer, glowLine, x + dx, y + dy, data.glowColor, false);
+					}
+				}
+			}
+
+			context.drawText(textRenderer, line, x, y, data.textColor, false);
+		}
+	}
+
+	private static MutableText deepCopyText(Text original) {
+		MutableText copy = original.copyContentOnly();
+		copy.setStyle(original.getStyle());
+		for (Text sibling : original.getSiblings()) {
+			copy.append(deepCopyText(sibling));
+		}
+		return copy;
+	}
+
+	@Override
+	protected boolean shouldNotRender() {
+		return super.shouldNotRender() ||
+				!Flex_hudClient.isInMoveElementScreen && (
+						MinecraftClient.getInstance().getCameraEntity() == null ||
+								MinecraftClient.getInstance().world == null ||
+								MinecraftClient.getInstance().player == null
+				);
+	}
+
+	@Override
+	public AbstractConfigurationScreen getConfigScreen(Screen parent) {
+		return new AbstractConfigurationScreen(getName(), parent) {
+			@Override
+			protected void init() {
+				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+					buttonWidth = 190;
+				}
+
+				super.init();
+
+				this.addAllEntries(
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(enabled)
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(hideInF3)
+								.build()
+				);
+			}
+		};
+	}
+
+	@Override
+	public void tick() {
+		renderData = getSignRenderData();
+
+		if (renderData.texture != null) {
+			renderData.texture = renderData.texture.withPrefixedPath("textures/").withSuffixedPath(".png");
 		}
 	}
 
 	private RenderData getPlaceholderRenderData() {
 		RenderData data = new RenderData();
-		data.texture = TexturedRenderLayers.getSignTextureId(WoodType.OAK).getTextureId();
+		data.texture = TexturedRenderLayers.getSignTextureId(WoodType.OAK).getTextureId().withPrefixedPath("textures/").withSuffixedPath(".png");
 		data.content = new Text[]{
 				Text.of(""),
 				Text.translatable("flex_hud.sign_reader.placeholder_content"),
@@ -74,7 +204,7 @@ public class SignReader extends AbstractHudElement {
 		return data;
 	}
 
-	private RenderData getSignRenderData(RenderTickCounter tickCounter) {
+	private RenderData getSignRenderData() {
 		RenderData data = new RenderData();
 
 		MinecraftClient client = MinecraftClient.getInstance();
@@ -85,8 +215,7 @@ public class SignReader extends AbstractHudElement {
 		PlayerEntity player = client.player;
 		World world = client.world;
 
-		int viewDistanceBlocks = client.options.getViewDistance().getValue() * 16;
-		HitResult hitResult = client.getCameraEntity().raycast(viewDistanceBlocks, tickCounter.getTickDelta(true), false);
+		HitResult hitResult = RaycastTickable.getHitResult();
 
 		if (!(hitResult instanceof BlockHitResult blockHitResult)) return data;
 
@@ -134,105 +263,6 @@ public class SignReader extends AbstractHudElement {
 				: TexturedRenderLayers.getSignTextureId(woodType)).getTextureId();
 
 		return data;
-	}
-
-	private void renderSign(DrawContext context, RenderData data) {
-		Identifier texture = data.texture.withPrefixedPath("textures/").withSuffixedPath(".png");
-
-
-		float textureScale; // used to make the texture bigger by default
-		if (data.isHangingSign) {
-			textureScale = 4.5f;
-			this.width = Math.round(14 * textureScale);
-			this.height = Math.round(10 * textureScale);
-		} else {
-			textureScale = 4;
-			this.width = Math.round(24 * textureScale);
-			this.height = Math.round(12 * textureScale);
-		}
-
-		int textureWidth = Math.round(64 * textureScale);
-		int textureHeight = Math.round(32 * textureScale);
-
-		float offsetX = 2 * textureScale;
-		if (!data.playerFacingFront) {
-			offsetX += this.width + 2 * textureScale;
-		}
-		float offsetY = data.isHangingSign ? 14 * textureScale : 2 * textureScale;
-
-		MatrixStack matrices = context.getMatrices();
-		matrices.push();
-		matrices.translate(getRoundedX(), getRoundedY(), 0);
-		matrices.scale(getScale(), getScale(), 1.0f);
-
-		// only draw the side of the sign texture
-		context.drawTexture(RenderLayer::getGuiTextured, texture, 0, 0,
-				offsetX, offsetY,
-				this.width, this.height,
-				textureWidth, textureHeight,
-				0xffffffff);
-
-		renderSignText(context, data);
-
-		matrices.pop();
-	}
-
-	private void renderSignText(DrawContext context, RenderData data) {
-		TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-
-		for (int i = 0; i < 4; i++) {
-			if (i >= data.content.length) continue;
-			Text line = data.content[i];
-			int x = (this.width - textRenderer.getWidth(line)) / 2;
-			int y = data.isHangingSign ? 5 + 9 * i : 4 + 10 * i;
-
-			if (data.isGlowing) {
-				// render glow
-				for (int dx = -1; dx <= 1; dx++) {
-					for (int dy = -1; dy <= 1; dy++) {
-						if (dx == 0 && dy == 0) continue;
-						context.drawText(textRenderer, line, x + dx, y + dy, data.glowColor, false);
-					}
-				}
-			}
-
-			context.drawText(textRenderer, line, x, y, data.textColor, false);
-		}
-	}
-
-	@Override
-	protected boolean shouldNotRender() {
-		return super.shouldNotRender() ||
-				!Flex_hudClient.isInMoveElementScreen && (
-						MinecraftClient.getInstance().getCameraEntity() == null ||
-								MinecraftClient.getInstance().world == null ||
-								MinecraftClient.getInstance().player == null
-				);
-	}
-
-	@Override
-	public AbstractConfigurationScreen getConfigScreen(Screen parent) {
-		return new AbstractConfigurationScreen(getName(), parent) {
-			@Override
-			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
-					buttonWidth = 190;
-				}
-
-				super.init();
-
-				this.addAllEntries(
-						new ToggleButtonEntry.Builder()
-								.setToggleButtonWidth(buttonWidth)
-								.setVariable(enabled)
-								.build(),
-						new ToggleButtonEntry.Builder()
-								.setToggleButtonWidth(buttonWidth)
-								.setVariable(hideInF3)
-								.build()
-				);
-			}
-		};
 	}
 
 	private static class RenderData {

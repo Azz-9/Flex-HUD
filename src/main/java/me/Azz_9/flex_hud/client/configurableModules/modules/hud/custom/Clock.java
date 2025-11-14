@@ -1,6 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
+import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
@@ -21,9 +22,11 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-public class Clock extends AbstractTextElement {
+public class Clock extends AbstractTextElement implements TickableModule {
 	public ConfigString textFormat = new ConfigString("hh:mm:ss", "flex_hud.clock.config.text_format");
 	public ConfigBoolean isTwentyFourHourFormat;
+
+	private static String formattedTime;
 
 	public Clock(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
@@ -59,9 +62,7 @@ public class Clock extends AbstractTextElement {
 			return;
 		}
 
-		String currentTime = ClockUtils.getFormattedTime();
-
-		setWidth(currentTime);
+		setWidth(formattedTime);
 
 		MatrixStack matrices = context.getMatrices();
 		matrices.push();
@@ -70,7 +71,7 @@ public class Clock extends AbstractTextElement {
 
 		drawBackground(context);
 
-		context.drawText(client.textRenderer, currentTime, 0, 0, getColor(), this.shadow.getValue());
+		context.drawText(client.textRenderer, formattedTime, 0, 0, getColor(), this.shadow.getValue());
 
 		matrices.pop();
 	}
@@ -152,5 +153,22 @@ public class Clock extends AbstractTextElement {
 				);
 			}
 		};
+	}
+
+	@Override
+	public void tick() {
+		String textFormat = this.textFormat.getValue().toLowerCase();
+		if (this.isTwentyFourHourFormat.getValue()) {
+			textFormat = textFormat.replace("hh", "HH").replace("h", "HH");
+		} else {
+			textFormat += " a";
+		}
+		try {
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(textFormat);
+			formattedTime = LocalTime.now().format(formatter);
+		} catch (Exception e) {
+			// if the text format is not valid, reset to default
+			this.textFormat.setToDefault();
+		}
 	}
 }

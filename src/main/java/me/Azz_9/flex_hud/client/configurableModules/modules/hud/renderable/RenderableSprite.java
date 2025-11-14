@@ -10,7 +10,7 @@ public class RenderableSprite extends Renderable {
 	private int width, height;
 
 	public RenderableSprite(int x, int y, Sprite sprite, int width, int height) {
-		super(x, y);
+		super(x, y, width);
 		this.sprite = sprite;
 		this.width = width;
 		this.height = height;
