@@ -225,6 +225,14 @@
 	"flex_hud.in_game_time.config.enable": "Show in game time",
 	"flex_hud.in_game_time.config.24-hour_format": "24-hour format",
 
+	"flex_hud.distance": "Distance",
+	"flex_hud.distance.config.enable": "Show distance",
+	"flex_hud.distance.config.number_of_digits": "Number of digits",
+
+	"flex_hud.held_item": "Held item info",
+	"flex_hud.held_item.config.enable": "Show held item info",
+	"flex_hud.held_item.config.show_durability": "Show durability",
+
 	"flex_hud.coordinates.hud.direction.south": "South",
 	"flex_hud.coordinates.hud.direction.south_west": "South-West",
 	"flex_hud.coordinates.hud.direction.west": "West",

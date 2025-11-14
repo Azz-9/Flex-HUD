@@ -2,17 +2,15 @@ package me.Azz_9.flex_hud.client;
 
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
-import me.Azz_9.flex_hud.client.configurableModules.modules.Tickable;
+import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractHudElement;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.durabilityPing.DurabilityPing;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.durabilityPing.ItemDurabilityLostCallback;
-import me.Azz_9.flex_hud.client.utils.ChromaColorUtils;
+import me.Azz_9.flex_hud.client.tickables.TickRegistry;
 import me.Azz_9.flex_hud.client.utils.FaviconUtils;
 import me.Azz_9.flex_hud.client.utils.SpeedTester;
-import me.Azz_9.flex_hud.client.utils.clock.ClockUtils;
 import me.Azz_9.flex_hud.client.utils.compass.DimensionTracker;
 import me.Azz_9.flex_hud.client.utils.compass.TamedEntityUtils;
-import me.Azz_9.flex_hud.client.utils.speedometer.SpeedUtils;
 import me.Azz_9.flex_hud.compat.XaeroCompat;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
@@ -93,16 +91,13 @@ public class Flex_hudClient implements ClientModInitializer {
 			if (ModulesHelper.getInstance().isEnabled.getValue()) {
 				SpeedTester.tick();
 
-				ChromaColorUtils.updateColor();
+				TickRegistry.tickAll(client);
 
-				for (Tickable tickable : ModulesHelper.getTickables()) {
-					if (tickable.isEnabled()) {
-						tickable.tick();
+				for (TickableModule tickableModule : ModulesHelper.getTickables()) {
+					if (tickableModule.isEnabled()) {
+						tickableModule.tick();
 					}
 				}
-
-				if (ModulesHelper.getInstance().clock.enabled.getValue()) ClockUtils.updateTime();
-				if (ModulesHelper.getInstance().speedometer.enabled.getValue()) SpeedUtils.calculateSpeed();
 
 				if (ModulesHelper.getInstance().compass.showTamedEntitiesPoint.getValue()) TamedEntityUtils.update();
 				if (ModulesHelper.getInstance().compass.showXaerosMapWaypoints.getValue() && XaeroCompat.isXaerosMinimapLoaded()) {
