@@ -1,21 +1,23 @@
-package me.Azz_9.flex_hud.client.utils.speedometer;
+package me.Azz_9.flex_hud.client.tickables;
 
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom.Speedometer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
-import org.jetbrains.annotations.NotNull;
 
-public class SpeedUtils {
+public class SpeedTickable implements Tickable {
 	private static Vec3d previousPosition = null;
 	private static double speed = 0.0;
-	private static String formattedSpeed = "";
 
-	public static void calculateSpeed() {
-		PlayerEntity player = MinecraftClient.getInstance().player;
+	static {
+		TickRegistry.register(new SpeedTickable());
+	}
+
+	@Override
+	public void tick(MinecraftClient client) {
+		PlayerEntity player = client.player;
 		if (player == null) {
 			return;
 		}
@@ -39,28 +41,9 @@ public class SpeedUtils {
 
 		}
 		previousPosition = currentPosition;
-
-		formattedSpeed = getString(player, speed);
-	}
-
-	public static @NotNull String getString(PlayerEntity player, double speed) {
-		Speedometer speedometer = ModulesHelper.getInstance().speedometer;
-		String format = "%." + speedometer.digits.getValue() + "f";
-		String formattedSpeed = String.format(format, speed);
-
-		if (speedometer.units.getValue() == Speedometer.SpeedometerUnits.KNOT || (speedometer.useKnotInBoat.getValue() && player != null && player.getVehicle() instanceof BoatEntity)) {
-			formattedSpeed += " " + Text.translatable(Speedometer.SpeedometerUnits.KNOT.getTranslationKey()).getString();
-		} else {
-			formattedSpeed += " " + Text.translatable(speedometer.units.getValue().getTranslationKey()).getString();
-		}
-		return formattedSpeed;
 	}
 
 	public static double getSpeed() {
 		return speed;
-	}
-
-	public static String getFormattedSpeed() {
-		return formattedSpeed;
 	}
 }

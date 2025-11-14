@@ -1,5 +1,6 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.notHud;
 
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.Translatable;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
@@ -16,6 +17,8 @@ public class WeatherChanger extends AbstractModule {
 		this.enabled.setConfigTextTranslationKey("flex_hud.weather_changer.config.enable");
 		this.enabled.setDefaultValue(false);
 		this.enabled.setValue(false);
+
+		ConfigRegistry.register(getID(), "selectedWeather", selectedWeather);
 	}
 
 	@Override

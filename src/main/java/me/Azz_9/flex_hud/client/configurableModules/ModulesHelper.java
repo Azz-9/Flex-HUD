@@ -1,7 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules;
 
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
-import me.Azz_9.flex_hud.client.configurableModules.modules.Tickable;
+import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractHudElement;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.MovableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom.*;
@@ -32,7 +32,7 @@ public class ModulesHelper {
 	public ServerAddress serverAddress = new ServerAddress(200, 2, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.START);
 	public MemoryUsage memoryUsage = new MemoryUsage(75, 2, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.START);
 	public Speedometer speedometer = new Speedometer(2, 70, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.START);
-	//public Reach reach = new Reach(2, 100, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.START);
+	public Reach reach = new Reach(2, 120, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.START);
 	public Playtime playtime = new Playtime(2, 100, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.START);
 	//public ResourcePack resourcePack = new ResourcePack(0, 100, AbstractHudElement.AnchorPosition.END, AbstractHudElement.AnchorPosition.START);
 	public PotionEffect potionEffect = new PotionEffect(0, 20, AbstractHudElement.AnchorPosition.END, AbstractHudElement.AnchorPosition.START);
@@ -44,6 +44,8 @@ public class ModulesHelper {
 	public FullInventoryIndicator fullInventoryIndicator = new FullInventoryIndicator(2, 96, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.CENTER);
 	public LightLevel lightLevel = new LightLevel(2, 112, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.START);
 	public InGameTime inGameTime = new InGameTime(-5, 2, AbstractHudElement.AnchorPosition.END, AbstractHudElement.AnchorPosition.START);
+	public Distance distance = new Distance(0, 50, AbstractHudElement.AnchorPosition.CENTER, AbstractHudElement.AnchorPosition.START);
+	public HeldItem heldItem = new HeldItem(0, -60, AbstractHudElement.AnchorPosition.CENTER, AbstractHudElement.AnchorPosition.END);
 	//others
 	public WeatherChanger weatherChanger = new WeatherChanger();
 	public TimeChanger timeChanger = new TimeChanger();
@@ -59,7 +61,7 @@ public class ModulesHelper {
 	private List<AbstractHudElement> hudElements;
 	private List<MovableModule> movableModules;
 	private List<Configurable> configurables;
-	private List<Tickable> tickables;
+	private List<TickableModule> tickableModules;
 
 	public ModulesHelper() {
 		ConfigRegistry.register("global", "enabled", isEnabled);
@@ -70,7 +72,7 @@ public class ModulesHelper {
 		hudElements = new ArrayList<>();
 		movableModules = new ArrayList<>();
 		configurables = new ArrayList<>();
-		tickables = new ArrayList<>();
+		tickableModules = new ArrayList<>();
 
 		modules = List.of(
 				getInstance().armorStatus,
@@ -85,6 +87,7 @@ public class ModulesHelper {
 				getInstance().serverAddress,
 				getInstance().memoryUsage,
 				getInstance().speedometer,
+				getInstance().reach,
 				getInstance().playtime,
 				getInstance().potionEffect,
 				getInstance().weatherDisplay,
@@ -94,6 +97,8 @@ public class ModulesHelper {
 				getInstance().fullInventoryIndicator,
 				getInstance().lightLevel,
 				getInstance().inGameTime,
+				getInstance().distance,
+				getInstance().heldItem,
 				getInstance().weatherChanger,
 				getInstance().timeChanger,
 				getInstance().crosshair,
@@ -104,7 +109,7 @@ public class ModulesHelper {
 			if (module instanceof AbstractHudElement hudElement) hudElements.add(hudElement);
 			if (module instanceof MovableModule movableModule) movableModules.add(movableModule);
 			if (module instanceof Configurable configurable) configurables.add(configurable);
-			if (module instanceof Tickable tickable) tickables.add(tickable);
+			if (module instanceof TickableModule tickableModule) tickableModules.add(tickableModule);
 		}
 	}
 
@@ -133,7 +138,7 @@ public class ModulesHelper {
 		return getInstance().configurables;
 	}
 
-	public static List<Tickable> getTickables() {
-		return getInstance().tickables;
+	public static List<TickableModule> getTickables() {
+		return getInstance().tickableModules;
 	}
 }

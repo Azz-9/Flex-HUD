@@ -7,7 +7,7 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorB
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
-import me.Azz_9.flex_hud.client.utils.ChromaColorUtils;
+import me.Azz_9.flex_hud.client.tickables.ChromaColorTickable;
 import me.Azz_9.flex_hud.client.utils.cps.CpsUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -231,7 +231,7 @@ public class KeyStrokes extends AbstractTextElement {
 
 	private int getColorPressed() {
 		if (chromaColorPressed.getValue()) {
-			return ChromaColorUtils.getColor();
+			return ChromaColorTickable.getColor();
 		}
 		return ColorHelper.withAlpha(255, colorPressed.getValue());
 	}
