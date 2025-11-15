@@ -16,6 +16,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.joml.Matrix3x2fStack;
+import org.joml.Matrix3x2fStack;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,10 +40,7 @@ public class CrosshairButtonWidget<T> extends ClickableWidget implements Trackab
 	public CrosshairButtonWidget(int width, int height, ConfigIntGrid variable, List<Observer> observers, T disableWhen, Consumer<CrosshairButtonWidget<T>> onClickAction) {
 		super(0, 0, width, height, Text.empty());
 		this.variable = variable;
-		this.INITIAL_STATE = new int[variable.getValue().length][];
-		for (int i = 0; i < variable.getValue().length; i++) {
-			this.INITIAL_STATE[i] = Arrays.copyOf(variable.getValue()[i], variable.getValue()[i].length);
-		}
+		this.INITIAL_STATE = variable.getValue();
 		this.observers = observers;
 		this.disableWhen = disableWhen;
 		this.onClickAction = onClickAction;
@@ -62,15 +60,15 @@ public class CrosshairButtonWidget<T> extends ClickableWidget implements Trackab
 		} else {
 			if (this.isHovered()) context.setCursor(Cursors.NOT_ALLOWED);
 		}
-		float startX = getRight() - getHeight() + 1 + (getHeight() - 2 - variable.getValue()[0].length) / 2.0f;
-		float startY = getY() + 1 + (getHeight() - 2 - variable.getValue().length) / 2.0f;
+		float startX = getRight() - getHeight() + 1 + (getHeight() - 2 - variable.getRowLength(0)) / 2.0f;
+		float startY = getY() + 1 + (getHeight() - 2 - variable.getLength()) / 2.0f;
 		Matrix3x2fStack matrices = context.getMatrices();
 		matrices.pushMatrix();
 		matrices.translate(startX, startY);
 
-		for (int y = 0; y < variable.getValue().length; y++) {
-			for (int x = 0; x < variable.getValue()[y].length; x++) {
-				context.fill(x, y, x + 1, y + 1, variable.getValue()[y][x]);
+		for (int y = 0; y < variable.getLength(); y++) {
+			for (int x = 0; x < variable.getRowLength(y); x++) {
+				context.fill(x, y, x + 1, y + 1, variable.getIntValue(x, y));
 			}
 		}
 
@@ -122,8 +120,8 @@ public class CrosshairButtonWidget<T> extends ClickableWidget implements Trackab
 	}
 
 	public void onReceivePixel(int x, int y, int color) {
-		if (this.variable.getValue()[y][x] != color) {
-			this.variable.getValue()[y][x] = color;
+		if (this.variable.getIntValue(x, y) != color) {
+			this.variable.setIntValue(x, y, color);
 
 			for (Observer observer : observers) {
 				observer.onChange(this);
@@ -146,9 +144,9 @@ public class CrosshairButtonWidget<T> extends ClickableWidget implements Trackab
 
 	@Override
 	public void setToDefaultState() {
-		for (int y = 0; y < variable.getDefaultValue().length; y++) {
-			for (int x = 0; x < variable.getDefaultValue()[y].length; x++) {
-				onReceivePixel(x, y, variable.getDefaultValue()[y][x]);
+		for (int y = 0; y < variable.getLength(); y++) {
+			for (int x = 0; x < variable.getRowLength(y); x++) {
+				onReceivePixel(x, y, variable.getIntDefaultValue(x, y));
 			}
 		}
 	}
