@@ -16,6 +16,65 @@ public class ConfigIntGrid extends AbstractConfigObject<int[][]> {
 	}
 
 	@Override
+	public int[][] getValue() {
+		// Créer une copie profonde du tableau
+		int[][] copy = new int[super.getValue().length][];
+		for (int i = 0; i < super.getValue().length; i++) {
+			copy[i] = Arrays.copyOf(super.getValue()[i], super.getValue()[i].length);
+		}
+		return copy;
+	}
+
+	@Override
+	public void setValue(int[][] newValue) {
+		for (int i = 0; i < newValue.length; i++) {
+			super.getValue()[i] = Arrays.copyOf(newValue[i], newValue[i].length);
+		}
+	}
+
+	@Override
+	public int[][] getDefaultValue() {
+		// Créer une copie profonde du tableau par défaut
+		int[][] copy = new int[super.getDefaultValue().length][];
+		for (int i = 0; i < super.getDefaultValue().length; i++) {
+			copy[i] = Arrays.copyOf(super.getDefaultValue()[i], super.getDefaultValue()[i].length);
+		}
+		return copy;
+	}
+
+	@Override
+	public void setDefaultValue(int[][] newValue) {
+		for (int i = 0; i < newValue.length; i++) {
+			super.getDefaultValue()[i] = Arrays.copyOf(newValue[i], newValue[i].length);
+		}
+	}
+
+	public int getLength() {
+		return super.getValue().length;
+	}
+
+	public int getRowLength(int index) {
+		return super.getValue()[index].length;
+	}
+
+	public int getIntValue(int x, int y) {
+		return super.getValue()[y][x];
+	}
+
+	public void setIntValue(int x, int y, int value) {
+		super.getValue()[y][x] = value;
+	}
+
+	public int getIntDefaultValue(int x, int y) {
+		return super.getDefaultValue()[y][x];
+	}
+
+	@Override
+	public void setToDefault() {
+		this.setDefaultValue(super.getDefaultValue());
+	}
+
+	@Override
 	protected int[][] parseValue(JsonElement element) {
 		if (element == null || element.isJsonNull() || !element.isJsonArray()) return getDefaultValue();
 
