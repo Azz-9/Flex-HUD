@@ -49,7 +49,7 @@ public class Crosshair extends AbstractModule {
 	public int size = 15;
 	public ConfigFloat scale = new ConfigFloat(1.0f);
 
-	private final ConfigIntGrid pixels = new ConfigIntGrid(
+	public final ConfigIntGrid pixels = new ConfigIntGrid(
 			new int[][]{
 					{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 					{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
