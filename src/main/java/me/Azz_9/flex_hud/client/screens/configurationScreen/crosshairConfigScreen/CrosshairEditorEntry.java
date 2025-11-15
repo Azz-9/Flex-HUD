@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen;
 
-import me.Azz_9.flex_hud.client.configurableModules.JsonConfigHelper;
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.screens.TrackableChange;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.ScrollableConfigList;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigIntGrid;
@@ -67,7 +67,7 @@ public class CrosshairEditorEntry extends ScrollableConfigList.AbstractConfigEnt
 
 	@Override
 	public void onChange(DataGetter<?> dataGetter) {
-		JsonConfigHelper.getInstance().crosshair.crosshairTexture.updatePixels((int[][]) dataGetter.getData());
+		ModulesHelper.getInstance().crosshair.crosshairTexture.updatePixels((int[][]) dataGetter.getData());
 
 		boolean active = !crosshairButtonWidget.getDisableWhen().equals(dataGetter.getData());
 		crosshairButtonWidget.active = active;

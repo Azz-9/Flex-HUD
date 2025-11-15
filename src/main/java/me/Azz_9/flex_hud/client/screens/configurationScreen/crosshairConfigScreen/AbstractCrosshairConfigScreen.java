@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen;
 
-import me.Azz_9.flex_hud.client.configurableModules.JsonConfigHelper;
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.crosshairEditor.CrosshairEditor;
 import me.Azz_9.flex_hud.client.screens.widgets.HelpWidget;
@@ -111,7 +111,7 @@ public abstract class AbstractCrosshairConfigScreen extends AbstractConfiguratio
 
 	@Override
 	protected void saveAndClose() {
-		JsonConfigHelper.getInstance().crosshair.crosshairTexture.updatePixels(JsonConfigHelper.getInstance().crosshair.pixels.getValue());
+		ModulesHelper.getInstance().crosshair.crosshairTexture.updatePixels(ModulesHelper.getInstance().crosshair.pixels.getValue());
 		super.saveAndClose();
 	}
 
