@@ -124,6 +124,7 @@
 	"flex_hud.compass.config.show_xaeros_map_waypoints": "Afficher les waypoints de Xaero's map",
 	"flex_hud.compass.config.show_xaeros_map_waypoints.not_installed_tooltip": "Xaero's Minimap n'est pas installé",
 	"flex_hud.compass.config.override_locator_bar": "Remplacer la barre de localisation",
+	"flex_hud.compass.config.show_mobs": "Afficher tous les mobs",
 	"flex_hud.compass.config.show_tamed_entities_point": "Afficher les entités apprivoisées",
 	"flex_hud.compass.config.show_only_pets": "Afficher que les animaux de compagnie",
 
