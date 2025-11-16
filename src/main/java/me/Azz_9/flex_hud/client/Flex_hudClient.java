@@ -10,7 +10,6 @@ import me.Azz_9.flex_hud.client.tickables.TickRegistry;
 import me.Azz_9.flex_hud.client.utils.FaviconUtils;
 import me.Azz_9.flex_hud.client.utils.SpeedTester;
 import me.Azz_9.flex_hud.client.utils.compass.DimensionTracker;
-import me.Azz_9.flex_hud.client.utils.compass.TamedEntityUtils;
 import me.Azz_9.flex_hud.compat.XaeroCompat;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
@@ -99,7 +98,6 @@ public class Flex_hudClient implements ClientModInitializer {
 					}
 				}
 
-				if (ModulesHelper.getInstance().compass.showTamedEntitiesPoint.getValue()) TamedEntityUtils.update();
 				if (ModulesHelper.getInstance().compass.showXaerosMapWaypoints.getValue() && XaeroCompat.isXaerosMinimapLoaded()) {
 					if ((joinedWorld && !XaeroCompat.available) || DimensionTracker.shouldInit) {
 						XaeroCompat.init();
