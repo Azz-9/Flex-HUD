@@ -8,7 +8,6 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorB
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.tickables.LivingEntitiesTickable;
-import me.Azz_9.flex_hud.client.utils.SpeedTester;
 import me.Azz_9.flex_hud.compat.XaeroCompat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -70,8 +69,6 @@ public class Compass extends AbstractTextElement {
 		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && client.player == null) {
 			return;
 		}
-
-		SpeedTester.start(getID());
 
 		PlayerEntity player = client.player;
 
@@ -153,8 +150,6 @@ public class Compass extends AbstractTextElement {
 		}
 
 		matrices.pop();
-
-		SpeedTester.end(getID());
 	}
 
 	private void drawCompassPoint(DrawContext drawContext, MatrixStack matrices, Text label, int angle, float yaw) {

@@ -107,7 +107,6 @@ public class LivingEntitiesTickable implements Tickable {
 
 				// if the texture is not found, skip this entity
 				if (id == null || client.getResourceManager().getResource(id).isEmpty()) {
-					System.out.println(id);
 					continue;
 				}
 
