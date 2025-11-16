@@ -42,6 +42,8 @@ public class SpeedTester {
 
 	// Called every tick — prints average render time when pressing O
 	public static void tick() {
+		if (times.isEmpty()) return;
+
 		MinecraftClient client = MinecraftClient.getInstance();
 
 		boolean keyPressed = InputUtil.isKeyPressed(client.getWindow(), InputUtil.GLFW_KEY_O);
