@@ -7,7 +7,7 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfiguratio
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
-import me.Azz_9.flex_hud.client.utils.compass.TamedEntityUtils;
+import me.Azz_9.flex_hud.client.tickables.LivingEntitiesTickable;
 import me.Azz_9.flex_hud.compat.XaeroCompat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -16,13 +16,9 @@ import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec3d;
@@ -30,13 +26,12 @@ import net.minecraft.util.math.Vec3d;
 import java.util.List;
 import java.util.Objects;
 
-import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
-
 public class Compass extends AbstractTextElement {
 	private ConfigBoolean showMarker = new ConfigBoolean(true, "flex_hud.compass.config.show_marker");
 	private ConfigBoolean showDegrees = new ConfigBoolean(false, "flex_hud.compass.config.show_degrees");
 	private ConfigBoolean showIntermediatePoint = new ConfigBoolean(true, "flex_hud.compass.config.show_intermediate_point");
 	public ConfigBoolean showXaerosMapWaypoints = new ConfigBoolean(true, "flex_hud.compass.config.show_xaeros_map_waypoints");
+	public ConfigBoolean showMobs = new ConfigBoolean(false, "flex_hud.compass.config.show_mobs");
 	public ConfigBoolean showTamedEntitiesPoint = new ConfigBoolean(false, "flex_hud.compass.config.show_tamed_entities_point");
 	public ConfigBoolean showOnlyPets = new ConfigBoolean(false, "flex_hud.compass.config.show_only_pets");
 
@@ -48,6 +43,7 @@ public class Compass extends AbstractTextElement {
 		ConfigRegistry.register(getID(), "showDegrees", showDegrees);
 		ConfigRegistry.register(getID(), "showIntermediatePoint", showIntermediatePoint);
 		ConfigRegistry.register(getID(), "showXaerosMapWaypoints", showXaerosMapWaypoints);
+		ConfigRegistry.register(getID(), "showMobs", showMobs);
 		ConfigRegistry.register(getID(), "showTamedEntitiesPoint", showTamedEntitiesPoint);
 		ConfigRegistry.register(getID(), "showOnlyPets", showOnlyPets);
 	}
@@ -120,9 +116,14 @@ public class Compass extends AbstractTextElement {
 				drawXaerosMapWaypoints(context, matrices, yaw, tickCounter);
 			}
 
-			// tamed entities
-			if (showTamedEntitiesPoint.getValue()) {
-				renderTamedEntityPoint(context, tickCounter, yaw, matrices);
+			if (showMobs.getValue()) {
+				renderAllMobs(context, tickCounter, yaw, matrices);
+			} else if (showTamedEntitiesPoint.getValue()) {
+				if (showOnlyPets.getValue()) {
+					renderPetEntities(context, tickCounter, yaw, matrices);
+				} else {
+					renderTamedEntityPoint(context, tickCounter, yaw, matrices);
+				}
 			}
 		}
 
@@ -287,66 +288,44 @@ public class Compass extends AbstractTextElement {
 		return ColorHelper.withAlpha(getAlpha(CenterXOfDrawing), getColor());
 	}
 
-	private void renderTamedEntityPoint(DrawContext context, RenderTickCounter tickCounter, float yaw, MatrixStack matrices) {
+	private void renderMobs(DrawContext context, RenderTickCounter tickCounter, float yaw, MatrixStack matrices, List<LivingEntitiesTickable.EntityTexture> entityTextures) {
 		MinecraftClient client = MinecraftClient.getInstance();
 		PlayerEntity player = client.player;
 		if (player == null) {
 			return;
 		}
 
-		for (LivingEntity entity : TamedEntityUtils.getTamedEntities()) {
+		for (LivingEntitiesTickable.EntityTexture entity : entityTextures) {
 
 			int textureSize = 9;
 
 			Position lerpedPosition = player.getLerpedPos(tickCounter.getTickDelta(true));
-			Vec3d entityLerpedPos = entity.getLerpedPos(tickCounter.getTickDelta(true));
+			Vec3d entityLerpedPos = entity.entity().getLerpedPos(tickCounter.getTickDelta(true));
 			float angle = calculateAngle(lerpedPosition.getX(), lerpedPosition.getZ(), entityLerpedPos.x, entityLerpedPos.z);
 			float angleDifference = (angle - yaw + 540) % 360 - 180;
 
 			if (Math.abs(angleDifference) <= 120) {
 				float positionX = ((this.width / 2.0f) + (angleDifference * (context.getScaledWindowWidth() / 720.0f)));
 
-				if (entity instanceof WolfEntity || entity instanceof CatEntity) {
-					int color = 0xffffffff;
-					Identifier texture = null;
-
-					if (entity instanceof WolfEntity wolfEntity) {
-						color = wolfEntity.getCollarColor().getEntityColor();
-						texture = Identifier.of(MOD_ID, "tamed_entities_icons/wolf.png");
-					} else if (entity instanceof CatEntity catEntity) {
-						color = catEntity.getCollarColor().getEntityColor();
-						texture = Identifier.of(MOD_ID, "tamed_entities_icons/cat.png");
-					}
-					matrices.push();
-					matrices.translate(positionX - textureSize / 2.0f, this.showDegrees.getValue() ? 10 : 2, 0);
-					matrices.scale(0.75f, 0.75f, 1.0f);
-					context.drawTexture(RenderLayer::getGuiTextured, texture, 0, 0, 0, 0, textureSize, textureSize, textureSize, textureSize, ColorHelper.withAlpha(getAlpha(positionX), color));
-					matrices.pop();
-				} else {
-					Identifier texture = null;
-					if (entity instanceof HorseEntity horseEntity && !showOnlyPets.getValue()) {
-						texture = Identifier.of(MOD_ID, "tamed_entities_icons/horse/" + horseEntity.getVariant().toString().toLowerCase() + ".png");
-					} else if (entity instanceof LlamaEntity llamaEntity && !showOnlyPets.getValue()) {
-						texture = Identifier.of(MOD_ID, "tamed_entities_icons/" + (entity instanceof TraderLlamaEntity ? "trader_llama/" : "llama/") + llamaEntity.getVariant().toString().toLowerCase() + ".png");
-					} else if (entity instanceof ParrotEntity parrotEntity) {
-						texture = Identifier.of(MOD_ID, "tamed_entities_icons/parrot/" + parrotEntity.getVariant().toString().toLowerCase() + ".png");
-					} else if (entity instanceof TameableEntity || !showOnlyPets.getValue()) {
-						texture = Identifier.of(MOD_ID, "tamed_entities_icons/" + Registries.ENTITY_TYPE.getId(entity.getType()).getPath() + ".png");
-					}
-
-					if (texture == null || MinecraftClient.getInstance().getResourceManager().getResource(texture).isEmpty()) {
-						return;
-					}
-
-					matrices.push();
-					matrices.translate(positionX - textureSize / 2.0f, this.showDegrees.getValue() ? 10 : 2, 0);
-					matrices.scale(0.75f, 0.75f, 1.0f);
-					context.drawTexture(RenderLayer::getGuiTextured, texture, 0, 0, 0, 0, textureSize, textureSize, textureSize, textureSize, ColorHelper.withAlpha(getAlpha(positionX), 0xffffff));
-					matrices.pop();
-				}
-
+				matrices.push();
+				matrices.translate(positionX - textureSize / 2.0f, this.showDegrees.getValue() ? 10 : 2, 0);
+				matrices.scale(0.75f, 0.75f, 1.0f);
+				context.drawTexture(RenderLayer::getGuiTextured, entity.texture(), 0, 0, 0, 0, textureSize, textureSize, textureSize, textureSize, ColorHelper.withAlpha(getAlpha(positionX), 0xffffff));
+				matrices.pop();
 			}
 		}
+	}
+
+	private void renderPetEntities(DrawContext context, RenderTickCounter tickCounter, float yaw, MatrixStack matrices) {
+		renderMobs(context, tickCounter, yaw, matrices, LivingEntitiesTickable.getPetsEntities());
+	}
+
+	private void renderTamedEntityPoint(DrawContext context, RenderTickCounter tickCounter, float yaw, MatrixStack matrices) {
+		renderMobs(context, tickCounter, yaw, matrices, LivingEntitiesTickable.getTamedEntities());
+	}
+
+	private void renderAllMobs(DrawContext context, RenderTickCounter tickCounter, float yaw, MatrixStack matrices) {
+		renderMobs(context, tickCounter, yaw, matrices, LivingEntitiesTickable.getLivingEntities());
 	}
 
 	@Override
@@ -419,6 +398,10 @@ public class Compass extends AbstractTextElement {
 									}
 									return null;
 								})
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(showMobs)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
