@@ -325,7 +325,7 @@ public class Compass extends AbstractTextElement {
 	}
 
 	private void renderAllMobs(DrawContext context, RenderTickCounter tickCounter, float yaw, MatrixStack matrices) {
-		renderMobs(context, tickCounter, yaw, matrices, LivingEntitiesTickable.getLivingEntities());
+		renderMobs(context, tickCounter, yaw, matrices, LivingEntitiesTickable.getMobEntities());
 	}
 
 	@Override
