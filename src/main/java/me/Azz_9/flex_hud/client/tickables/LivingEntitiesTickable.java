@@ -10,6 +10,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Tameable;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
@@ -22,7 +23,7 @@ import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 
 public class LivingEntitiesTickable implements Tickable {
 	private static final List<EntityTexture> tamedEntitiesTextures = new ArrayList<>();
-	private static final List<EntityTexture> livingEntitiesTextures = new ArrayList<>();
+	private static final List<EntityTexture> mobEntitiesTextures = new ArrayList<>();
 	private static final List<EntityTexture> petsEntitiesTextures = new ArrayList<>();
 
 	static {
@@ -41,19 +42,20 @@ public class LivingEntitiesTickable implements Tickable {
 		if (player == null || client.world == null) return;
 
 		tamedEntitiesTextures.clear();
-		livingEntitiesTextures.clear();
+		mobEntitiesTextures.clear();
 		petsEntitiesTextures.clear();
 
 		for (Entity entity : client.world.getEntities()) {
-			if (entity instanceof LivingEntity livingEntity && !(livingEntity instanceof PlayerEntity)) {
+			if (entity instanceof MobEntity mobEntity) {
+
 
 				Vec3d cameraPos = player.getCameraPosVec(0);
-				if (!livingEntity.shouldRender(cameraPos.getX(), cameraPos.getY(), cameraPos.getZ())) {
+				if (!mobEntity.shouldRender(cameraPos.getX(), cameraPos.getY(), cameraPos.getZ())) {
 					continue;
 				}
 
 				boolean passenger = false;
-				for (Entity value : entity.getPassengersDeep()) {
+				for (Entity value : mobEntity.getPassengersDeep()) {
 					if (value.getUuid().equals(player.getUuid())) {
 						passenger = true;
 						break;
@@ -64,7 +66,7 @@ public class LivingEntitiesTickable implements Tickable {
 				}
 
 				Identifier id = null;
-				switch (livingEntity) {
+				switch (mobEntity) {
 					case EnderDragonEntity enderDragonEntity ->
 							id = Identifier.of(MOD_ID, "living_entities/minecraft/enderdragon/dragon.png");
 					case SnowGolemEntity snowGolemEntity -> {
@@ -87,20 +89,22 @@ public class LivingEntitiesTickable implements Tickable {
 					}
 					default -> {
 
-						EntityRenderer<? super LivingEntity, ?> renderer = client.getEntityRenderDispatcher().getRenderer(entity);
+
+						EntityRenderer<? super LivingEntity, ?> renderer = client.getEntityRenderDispatcher().getRenderer(mobEntity);
 
 						if (renderer instanceof LivingEntityRenderer<?, ?, ?> livingRenderer) {
-							@SuppressWarnings("unchecked")
-							LivingEntityRenderer<LivingEntity, LivingEntityRenderState, ?> casted = (LivingEntityRenderer<LivingEntity, LivingEntityRenderState, ?>) livingRenderer;
 
-							// Create the state instance
-							LivingEntityRenderState state = livingRenderer.createRenderState();
+							try {
+								@SuppressWarnings("unchecked")
+								LivingEntityRenderer<LivingEntity, LivingEntityRenderState, ?> casted = (LivingEntityRenderer<LivingEntity, LivingEntityRenderState, ?>) livingRenderer;
 
-							// Update it using the entity
-							casted.updateRenderState(livingEntity, state, 0);
+								LivingEntityRenderState state = casted.getAndUpdateRenderState(mobEntity, 0);
 
-							Identifier minecraft_id = casted.getTexture(state);
-							id = Identifier.of(MOD_ID, "living_entities/" + minecraft_id.getNamespace() + minecraft_id.getPath().replace("textures/entity", ""));
+								Identifier minecraft_id = casted.getTexture(state);
+								id = Identifier.of(MOD_ID, "living_entities/" + minecraft_id.getNamespace() + minecraft_id.getPath().replace("textures/entity", ""));
+
+							} catch (Exception ignored) {
+							}
 						}
 					}
 				}
@@ -110,20 +114,20 @@ public class LivingEntitiesTickable implements Tickable {
 					continue;
 				}
 
-				livingEntitiesTextures.add(new EntityTexture(id, livingEntity));
+				mobEntitiesTextures.add(new EntityTexture(id, mobEntity));
 
-				if (entity instanceof AbstractHorseEntity horseEntity && horseEntity.isTame() ||
-						entity instanceof Tameable tameable
+				if (mobEntity instanceof AbstractHorseEntity horseEntity && horseEntity.isTame() ||
+						mobEntity instanceof Tameable tameable
 								&& tameable.getOwner() != null
 								&& tameable.getOwner().getUuid().equals(player.getUuid())) {
 
-					tamedEntitiesTextures.add(new EntityTexture(id, livingEntity));
+					tamedEntitiesTextures.add(new EntityTexture(id, mobEntity));
 
-					if (livingEntity instanceof WolfEntity
-							|| livingEntity instanceof CatEntity
-							|| livingEntity instanceof ParrotEntity) {
+					if (mobEntity instanceof WolfEntity
+							|| mobEntity instanceof CatEntity
+							|| mobEntity instanceof ParrotEntity) {
 
-						petsEntitiesTextures.add(new EntityTexture(id, livingEntity));
+						petsEntitiesTextures.add(new EntityTexture(id, mobEntity));
 					}
 				}
 			}
@@ -134,8 +138,8 @@ public class LivingEntitiesTickable implements Tickable {
 		return tamedEntitiesTextures;
 	}
 
-	public static List<EntityTexture> getLivingEntities() {
-		return livingEntitiesTextures;
+	public static List<EntityTexture> getMobEntities() {
+		return mobEntitiesTextures;
 	}
 
 	public static List<EntityTexture> getPetsEntities() {
