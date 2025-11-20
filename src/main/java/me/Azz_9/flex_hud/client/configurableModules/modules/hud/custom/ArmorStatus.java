@@ -21,6 +21,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
@@ -77,23 +78,10 @@ public class ArmorStatus extends AbstractTextElement {
 			return;
 		}
 
-		PlayerEntity player = client.player;
-
-		// reset height and width
-		this.height = (displayMode.getValue() == DisplayMode.HORIZONTAL) ? 16 : 0;
-		this.width = 0;
-
-		boolean[] booleans = new boolean[]{
-				showHelmet.getValue(),
-				showChestplate.getValue(),
-				showLeggings.getValue(),
-				showBoots.getValue(),
-				showOffHandItem.getValue(),
-				showHeldItem.getValue()
-
-		};
 		ItemStack[] items;
 		if (!Flex_hudClient.isInMoveElementScreen) {
+			PlayerEntity player = client.player;
+
 			items = new ItemStack[]{
 					player.getInventory().getStack(39),
 					player.getInventory().getStack(38),
@@ -112,6 +100,21 @@ public class ArmorStatus extends AbstractTextElement {
 					new ItemStack(Items.BOW)
 			};
 		}
+
+		// reset height and width
+		this.height = (displayMode.getValue() == DisplayMode.HORIZONTAL) ? 16 : 0;
+		this.width = 0;
+
+		boolean[] booleans = new boolean[]{
+				showHelmet.getValue(),
+				showChestplate.getValue(),
+				showLeggings.getValue(),
+				showBoots.getValue(),
+				showOffHandItem.getValue(),
+				showHeldItem.getValue()
+
+		};
+
 
 		int hudX = 0;
 		int hudY = 0;
@@ -177,6 +180,7 @@ public class ArmorStatus extends AbstractTextElement {
 
 		String text;
 		int color;
+		// creating a new item to make "unbreakable" items display durability
 		if (new ItemStack(stack.getItem()).isDamageable()) {
 			switch (this.durabilityType.getValue()) {
 				case PERCENTAGE -> {
@@ -223,13 +227,32 @@ public class ArmorStatus extends AbstractTextElement {
 	}
 
 	private void drawArrowsStacks(int x, int y, int horizontalGap, int verticalGap, List<MultiRenderable> multiRenderables) {
-		ItemStack[] arrows;
-
 		if (separateArrowTypes.getValue()) {
-			arrows = new ItemStack[]{new ItemStack(Items.ARROW), new ItemStack(Items.SPECTRAL_ARROW), new ItemStack(Items.TIPPED_ARROW)};
-			for (ItemStack arrowStack : arrows) {
-				// FIXME le count des tipped arrow ne marche pas
-				int drawingWidth = drawItemStack(arrowStack, x, y, multiRenderables);
+			Item[] arrows = new Item[]{Items.ARROW, Items.SPECTRAL_ARROW, Items.TIPPED_ARROW};
+			for (Item arrow : arrows) {
+				int drawingWidth = 16;
+				String text;
+
+				if (Flex_hudClient.isInMoveElementScreen || MinecraftClient.getInstance().player == null) {
+					text = String.valueOf(new ItemStack(arrow).getMaxCount());
+				} else {
+					text = String.valueOf(ItemUtils.getItemCount(arrow, MinecraftClient.getInstance().player));
+				}
+				drawingWidth += MinecraftClient.getInstance().textRenderer.getWidth(text);
+
+				if (shadow.getValue()) drawingWidth++;
+
+				if (displayMode.getValue() == DisplayMode.VERTICAL && getAnchorX() == AnchorPosition.END) {
+					multiRenderables.add(new MultiRenderable(x, x + drawingWidth,
+							new RenderableText(x, y + 4, Text.of(text), getColor(), shadow.getValue()),
+							new RenderableItem(x + MinecraftClient.getInstance().textRenderer.getWidth(text) + 1, y, 16, arrow, showDurabilityBar.getValue())
+					));
+				} else {
+					multiRenderables.add(new MultiRenderable(x, x + drawingWidth,
+							new RenderableItem(x, y, 16, arrow, showDurabilityBar.getValue()),
+							new RenderableText(x + 17, y + 4, Text.of(text), getColor(), shadow.getValue())
+					));
+				}
 
 				if (displayMode.getValue() == DisplayMode.VERTICAL) {
 					y += 16 + verticalGap;
@@ -247,9 +270,9 @@ public class ArmorStatus extends AbstractTextElement {
 			if (Flex_hudClient.isInMoveElementScreen || MinecraftClient.getInstance().player == null) {
 				totalCount = arrowStack.getMaxCount();
 			} else {
-				totalCount = ItemUtils.getStackCount(arrowStack, MinecraftClient.getInstance().player);
-				totalCount += ItemUtils.getStackCount(new ItemStack(Items.SPECTRAL_ARROW), MinecraftClient.getInstance().player);
-				totalCount += ItemUtils.getStackCount(new ItemStack(Items.TIPPED_ARROW), MinecraftClient.getInstance().player);
+				totalCount = ItemUtils.getItemCount(Items.ARROW, MinecraftClient.getInstance().player);
+				totalCount += ItemUtils.getItemCount(Items.SPECTRAL_ARROW, MinecraftClient.getInstance().player);
+				totalCount += ItemUtils.getItemCount(Items.TIPPED_ARROW, MinecraftClient.getInstance().player);
 			}
 
 			String text = String.valueOf(totalCount);
@@ -257,7 +280,6 @@ public class ArmorStatus extends AbstractTextElement {
 			int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(text) + (shadow.getValue() ? 1 : 0);
 			int drawingWidth = 17 + textWidth;
 			this.width = Math.max(this.width, drawingWidth);
-			//updateWidth(text, x + 17 + (shadow.getValue() ? 1 : 0));
 			this.height += 16;
 
 			if (displayMode.getValue() == DisplayMode.VERTICAL && getAnchorX() == AnchorPosition.END) {
