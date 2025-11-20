@@ -4,12 +4,14 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.texture.Sprite;
+import org.jetbrains.annotations.NotNull;
 
 public class RenderableSprite extends Renderable {
-	private Sprite sprite;
-	private int width, height;
+	@NotNull
+	private final Sprite sprite;
+	private final int width, height;
 
-	public RenderableSprite(int x, int y, Sprite sprite, int width, int height) {
+	public RenderableSprite(int x, int y, @NotNull Sprite sprite, int width, int height) {
 		super(x, y, width);
 		this.sprite = sprite;
 		this.width = width;
