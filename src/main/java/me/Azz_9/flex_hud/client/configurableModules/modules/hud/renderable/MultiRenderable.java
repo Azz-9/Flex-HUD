@@ -2,23 +2,19 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class MultiRenderable {
-	private final List<Renderable> renderables;
-	private int left;
-	private int right;
+	@NotNull
+	private final List<@NotNull Renderable> renderables;
+	private final int left;
+	private final int right;
 
-	public MultiRenderable(int left, int right, Renderable... renderable) {
+	public MultiRenderable(int left, int right, @NotNull Renderable... renderable) {
 		this.renderables = Arrays.stream(renderable).toList();
-		this.left = left;
-		this.right = right;
-	}
-
-	public MultiRenderable(int left, int right, List<Renderable> renderables) {
-		this.renderables = renderables;
 		this.left = left;
 		this.right = right;
 	}
