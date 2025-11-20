@@ -4,12 +4,14 @@ import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
 
 public class RenderableImage extends Renderable {
-	private Identifier image;
-	private int width, height;
+	@NotNull
+	private final Identifier image;
+	private final int width, height;
 
-	public RenderableImage(int x, int y, Identifier image, int width, int height) {
+	public RenderableImage(int x, int y, @NotNull Identifier image, int width, int height) {
 		super(x, y, width);
 		this.image = image;
 		this.width = width;
