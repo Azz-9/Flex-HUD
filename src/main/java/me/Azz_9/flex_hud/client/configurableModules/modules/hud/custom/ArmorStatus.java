@@ -203,13 +203,13 @@ public class ArmorStatus extends AbstractTextElement {
 			if (Flex_hudClient.isInMoveElementScreen || MinecraftClient.getInstance().player == null) {
 				text = String.valueOf(stack.getMaxCount());
 			} else {
-				text = String.valueOf(ItemUtils.getStackCount(stack, MinecraftClient.getInstance().player));
+				text = String.valueOf(ItemUtils.getStackCount(stack, MinecraftClient.getInstance().player.getInventory()));
 			}
 			color = getColor();
 			drawingWidth += MinecraftClient.getInstance().textRenderer.getWidth(text);
 		}
 
-		if (shadow.getValue()) drawingWidth++;
+		if (shadow.getValue() && !text.isEmpty()) drawingWidth++;
 
 		if (displayMode.getValue() == DisplayMode.VERTICAL && getAnchorX() == AnchorPosition.END) {
 			multiRenderables.add(new MultiRenderable(x, x + drawingWidth,
@@ -236,7 +236,7 @@ public class ArmorStatus extends AbstractTextElement {
 				if (Flex_hudClient.isInMoveElementScreen || MinecraftClient.getInstance().player == null) {
 					text = String.valueOf(new ItemStack(arrow).getMaxCount());
 				} else {
-					text = String.valueOf(ItemUtils.getItemCount(arrow, MinecraftClient.getInstance().player));
+					text = String.valueOf(ItemUtils.getItemCount(arrow, MinecraftClient.getInstance().player.getInventory()));
 				}
 				drawingWidth += MinecraftClient.getInstance().textRenderer.getWidth(text);
 
@@ -266,13 +266,14 @@ public class ArmorStatus extends AbstractTextElement {
 		} else {
 			ItemStack arrowStack = new ItemStack(Items.ARROW);
 
+			PlayerEntity player = MinecraftClient.getInstance().player;
 			int totalCount;
-			if (Flex_hudClient.isInMoveElementScreen || MinecraftClient.getInstance().player == null) {
+			if (Flex_hudClient.isInMoveElementScreen || player == null) {
 				totalCount = arrowStack.getMaxCount();
 			} else {
-				totalCount = ItemUtils.getItemCount(Items.ARROW, MinecraftClient.getInstance().player);
-				totalCount += ItemUtils.getItemCount(Items.SPECTRAL_ARROW, MinecraftClient.getInstance().player);
-				totalCount += ItemUtils.getItemCount(Items.TIPPED_ARROW, MinecraftClient.getInstance().player);
+				totalCount = ItemUtils.getItemCount(Items.ARROW, player.getInventory());
+				totalCount += ItemUtils.getItemCount(Items.SPECTRAL_ARROW, player.getInventory());
+				totalCount += ItemUtils.getItemCount(Items.TIPPED_ARROW, player.getInventory());
 			}
 
 			String text = String.valueOf(totalCount);
