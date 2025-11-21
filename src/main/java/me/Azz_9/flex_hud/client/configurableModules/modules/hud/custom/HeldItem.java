@@ -86,7 +86,7 @@ public class HeldItem extends AbstractTextElement {
 				}
 				textColor = ColorHelper.withAlpha(255, stack.getItemBarColor());
 			} else {
-				label = stack.getCount() + "/" + ItemUtils.getStackCount(stack, client.player);
+				label = stack.getCount() + "/" + ItemUtils.getStackCount(stack, client.player.getInventory());
 				textColor = getColor();
 			}
 		}
