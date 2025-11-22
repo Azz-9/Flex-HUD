@@ -17,7 +17,6 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.Identifier;
@@ -60,7 +59,7 @@ public class Flex_hudClient implements ClientModInitializer {
 
 			for (HudElement hudElement : hudElements) {
 				HudElementRegistry.attachElementBefore(
-						hudElement.getID().equals(ModulesHelper.getInstance().bossBar.getID()) ? VanillaHudElements.BOSS_BAR : VanillaHudElements.CHAT,
+						hudElement.getLayer(),
 						Identifier.of(MOD_ID, hudElement.getID()),
 						Flex_hudClient.isDebug() ? hudElement::renderWithSpeedTest : hudElement::render
 				);
