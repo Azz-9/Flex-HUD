@@ -4,6 +4,7 @@ import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractHudElement;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.HudElement;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.durabilityPing.DurabilityPing;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.durabilityPing.ItemDurabilityLostCallback;
 import me.Azz_9.flex_hud.client.tickables.TickRegistry;
@@ -29,6 +30,8 @@ import java.util.List;
 
 public class Flex_hudClient implements ClientModInitializer {
 
+	private static final boolean DEBUG = Boolean.parseBoolean(System.getenv().getOrDefault("FLEXHUD_DEBUG", "false"));
+
 	public static final String MOD_ID = "flex_hud";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 	public static KeyBinding openOptionScreenKeyBind;
@@ -44,23 +47,24 @@ public class Flex_hudClient implements ClientModInitializer {
 
 		LOGGER.info("Flex HUD has started up.");
 
+		if (DEBUG) {
+			LOGGER.info("Debug mode enabled.");
+		}
+
 		LOGGER.info("Xaeros Minimap {}found !", XaeroCompat.isXaerosMinimapLoaded() ? "" : "not ");
 
-		List<AbstractHudElement> hudElements = ModulesHelper.getHudElements();
+		List<HudElement> hudElements = ModulesHelper.getHudElements();
 
 		HudLayerRegistrationCallback.EVENT.register(layeredDrawer -> {
 			for (AbstractModule module : ModulesHelper.getModules()) {
 				module.init();
 			}
 
-			for (AbstractHudElement element : hudElements) {
-				Identifier id = Identifier.of(MOD_ID, element.getID());
-				Identifier layer = element.getID().equals(ModulesHelper.getInstance().bossBar.getID()) ? IdentifiedLayer.BOSS_BAR : IdentifiedLayer.CHAT;
-				layeredDrawer.attachLayerBefore(layer, id, element::render);
+			for (HudElement hudElement : hudElements) {
+				Identifier id = Identifier.of(MOD_ID, hudElement.getID());
+				Identifier layer = hudElement.getID().equals(ModulesHelper.getInstance().bossBar.getID()) ? IdentifiedLayer.BOSS_BAR : IdentifiedLayer.CHAT;
+				layeredDrawer.attachLayerBefore(layer, id, Flex_hudClient.isDebug() ? hudElement::renderWithSpeedTest : hudElement::render);
 			}
-
-			Identifier id = Identifier.of(MOD_ID, ModulesHelper.getInstance().crosshair.getID());
-			layeredDrawer.attachLayerBefore(IdentifiedLayer.CROSSHAIR, id, ModulesHelper.getInstance().crosshair::render);
 		});
 
 		ItemDurabilityLostCallback.EVENT.register((stack, damage) -> {
@@ -135,5 +139,9 @@ public class Flex_hudClient implements ClientModInitializer {
 
 	public static long getLaunchTime() {
 		return launchTime;
+	}
+
+	public static boolean isDebug() {
+		return DEBUG;
 	}
 }

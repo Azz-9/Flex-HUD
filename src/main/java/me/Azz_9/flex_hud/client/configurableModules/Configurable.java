@@ -4,7 +4,7 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfiguratio
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 
-public interface Configurable {
+public interface Configurable extends Activable {
 	Text getName();
 
 	String getID();

@@ -3,6 +3,7 @@ package me.Azz_9.flex_hud.client.utils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,7 +57,12 @@ public class SpeedTester {
 				// Compute average time in microseconds for readability
 				double average = moduleTimes.stream().mapToLong(Long::longValue).average().orElse(0.0) / 1000.0;
 
-				Text text = Text.literal(String.format("[SpeedTester] %s: avg %.2fµs, %.2fms (%d samples ~%.2fs)", module, average, average / 1000.0, moduleTimes.size(), (float) (moduleTimes.size()) / MinecraftClient.getInstance().getCurrentFps()));
+				Text text = Text.literal(String.format("%s: avg ", module))
+						.append(Text.literal(String.format("%.2fµs", average)).formatted(Formatting.AQUA))
+						.append(", ")
+						.append(Text.literal(String.format("%.2fms", average / 1000.0)).formatted(Formatting.RED))
+						.append(String.format(" (%d samples ~%.2fs)", moduleTimes.size(), (float) (moduleTimes.size()) / MinecraftClient.getInstance().getCurrentFps()));
+
 				if (client.player != null) {
 					client.player.sendMessage(text, false);
 				}
