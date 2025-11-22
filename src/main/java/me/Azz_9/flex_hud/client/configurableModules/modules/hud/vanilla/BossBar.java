@@ -8,6 +8,7 @@ import me.Azz_9.flex_hud.client.mixin.bossBar.BossBarAccessor;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
@@ -159,6 +160,11 @@ public class BossBar extends AbstractHudElement implements MovableModule {
 	@Override
 	public Text getName() {
 		return Text.translatable("flex_hud.bossbar");
+	}
+
+	@Override
+	public Identifier getLayer() {
+		return VanillaHudElements.BOSS_BAR;
 	}
 
 	@Override
