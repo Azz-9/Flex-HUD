@@ -71,7 +71,13 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 			return;
 		}
 
-		ModulesHelper.getHudElements().forEach(hudElement -> hudElement.render(context, RenderTickCounter.ZERO));
+		ModulesHelper.getHudElements().forEach(hudElement -> {
+			if (Flex_hudClient.isDebug()) {
+				hudElement.renderWithSpeedTest(context, RenderTickCounter.ZERO);
+			} else {
+				hudElement.render(context, RenderTickCounter.ZERO);
+			}
+		});
 
 		if (firstFrame) {
 			getMovableWidgets().forEach((movableWidget) -> {

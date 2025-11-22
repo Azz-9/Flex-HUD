@@ -112,7 +112,7 @@ public class ServerAddress extends AbstractTextElement {
 	}
 
 	@Override
-	protected boolean shouldNotRender() {
+	public boolean shouldNotRender() {
 		return super.shouldNotRender() || (this.hideWhenOffline.getValue() && MinecraftClient.getInstance().getCurrentServerEntry() == null && !Flex_hudClient.isInMoveElementScreen);
 	}
 
