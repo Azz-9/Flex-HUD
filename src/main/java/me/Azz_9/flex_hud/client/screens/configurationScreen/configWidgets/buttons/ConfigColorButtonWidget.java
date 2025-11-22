@@ -198,4 +198,9 @@ public class ConfigColorButtonWidget<T> extends ClickableWidget implements Track
 	public int getRight() {
 		return this.getX() + this.getWidth();
 	}
+
+	@Override
+	public int getY() {
+		return super.getY();
+	}
 }
