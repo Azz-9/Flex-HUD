@@ -23,6 +23,14 @@ in one place.
 - **Crosshair** – _customize your crosshair appearance_
 - **Boss Bar** – _reposition or toggle the boss bar_
 - **Weather Display** – _show the current weather status_
+- **Key Strokes** - _visualize your key presses in real time with optional CPS display_
+- **Sign Reader** – _instantly read the sign you're looking at directly in your HUD_
+- **Full Inventory Indicator** – _get a clear warning when your inventory is full_
+- **Light Level** – _display the light level of the block at your current position_
+- **In-Game Time** – _see the current Minecraft world time without opening any menus_
+- **Distance** – _view the exact distance to the block you're looking at_
+- **Held Item** – _show information about the item you're currently holding_
+- **Reach** – _display the hit distance to the mob at the moment you strike it_
 
 ### Additional features (non-HUD):
 
