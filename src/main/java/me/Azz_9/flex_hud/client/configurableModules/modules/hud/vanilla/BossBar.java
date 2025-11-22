@@ -147,7 +147,7 @@ public class BossBar extends AbstractHudElement implements MovableModule {
 	}
 
 	@Override
-	protected boolean shouldNotRender() {
+	public boolean shouldNotRender() {
 		return super.shouldNotRender() || !this.showBossBar.getValue();
 	}
 

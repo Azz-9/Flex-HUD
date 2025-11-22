@@ -3,6 +3,7 @@ package me.Azz_9.flex_hud.client.configurableModules;
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractHudElement;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.HudElement;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.MovableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom.*;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.vanilla.BossBar;
@@ -58,7 +59,7 @@ public class ModulesHelper {
 	static ModulesHelper INSTANCE;
 
 	private List<AbstractModule> modules;
-	private List<AbstractHudElement> hudElements;
+	private List<HudElement> hudElements;
 	private List<MovableModule> movableModules;
 	private List<Configurable> configurables;
 	private List<TickableModule> tickableModules;
@@ -106,7 +107,7 @@ public class ModulesHelper {
 		);
 
 		for (AbstractModule module : modules) {
-			if (module instanceof AbstractHudElement hudElement) hudElements.add(hudElement);
+			if (module instanceof HudElement hudElement) hudElements.add(hudElement);
 			if (module instanceof MovableModule movableModule) movableModules.add(movableModule);
 			if (module instanceof Configurable configurable) configurables.add(configurable);
 			if (module instanceof TickableModule tickableModule) tickableModules.add(tickableModule);
@@ -126,7 +127,7 @@ public class ModulesHelper {
 		return getInstance().modules;
 	}
 
-	public static List<AbstractHudElement> getHudElements() {
+	public static List<HudElement> getHudElements() {
 		return getInstance().hudElements;
 	}
 

@@ -3,7 +3,7 @@ package me.Azz_9.flex_hud.client;
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractHudElement;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.HudElement;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.durabilityPing.DurabilityPing;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.durabilityPing.ItemDurabilityLostCallback;
 import me.Azz_9.flex_hud.client.tickables.TickRegistry;
@@ -28,6 +28,8 @@ import java.util.List;
 
 public class Flex_hudClient implements ClientModInitializer {
 
+	private static final boolean DEBUG = Boolean.parseBoolean(System.getenv().getOrDefault("FLEXHUD_DEBUG", "false"));
+
 	public static final String MOD_ID = "flex_hud";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 	public static KeyBinding openOptionScreenKeyBind;
@@ -43,6 +45,10 @@ public class Flex_hudClient implements ClientModInitializer {
 
 		LOGGER.info("Flex HUD has started up.");
 
+		if (DEBUG) {
+			LOGGER.info("Debug mode enabled.");
+		}
+
 		LOGGER.info("Xaeros Minimap {}found !", XaeroCompat.isXaerosMinimapLoaded() ? "" : "not ");
 
 		ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
@@ -50,21 +56,15 @@ public class Flex_hudClient implements ClientModInitializer {
 				module.init();
 			}
 
-			List<AbstractHudElement> hudElements = ModulesHelper.getHudElements();
+			List<HudElement> hudElements = ModulesHelper.getHudElements();
 
-			for (AbstractHudElement hudElement : hudElements) {
+			for (HudElement hudElement : hudElements) {
 				HudElementRegistry.attachElementBefore(
 						hudElement.getID().equals(ModulesHelper.getInstance().bossBar.getID()) ? VanillaHudElements.BOSS_BAR : VanillaHudElements.CHAT,
 						Identifier.of(MOD_ID, hudElement.getID()),
-						hudElement::render
+						Flex_hudClient.isDebug() ? hudElement::renderWithSpeedTest : hudElement::render
 				);
 			}
-
-			HudElementRegistry.attachElementAfter(
-					VanillaHudElements.CROSSHAIR,
-					Identifier.of(MOD_ID, ModulesHelper.getInstance().crosshair.getID()),
-					ModulesHelper.getInstance().crosshair::render
-			);
 		});
 
 		ItemDurabilityLostCallback.EVENT.register((stack, damage) -> {
@@ -135,5 +135,9 @@ public class Flex_hudClient implements ClientModInitializer {
 
 	public static long getLaunchTime() {
 		return launchTime;
+	}
+
+	public static boolean isDebug() {
+		return DEBUG;
 	}
 }
