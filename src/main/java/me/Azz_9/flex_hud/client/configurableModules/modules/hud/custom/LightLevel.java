@@ -90,7 +90,7 @@ public class LightLevel extends AbstractTextElement {
 	}
 
 	@Override
-	protected boolean shouldNotRender() {
+	public boolean shouldNotRender() {
 		return super.shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && (
 				MinecraftClient.getInstance().world == null || MinecraftClient.getInstance().player == null
 		);

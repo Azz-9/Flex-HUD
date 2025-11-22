@@ -7,6 +7,7 @@ import com.mojang.blaze3d.platform.SourceFactor;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.HudElement;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
@@ -34,7 +35,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2fStack;
 
-public class Crosshair extends AbstractModule {
+public class Crosshair extends AbstractModule implements HudElement {
 
 	private static final RenderPipeline CROSSHAIR_PIPELINE = RenderPipelines.register(RenderPipeline.builder(RenderPipelines.GUI_SNIPPET)
 			.withLocation("pipeline/crosshair_no_tex")
@@ -90,6 +91,7 @@ public class Crosshair extends AbstractModule {
 		return Text.translatable("flex_hud.crosshair");
 	}
 
+	@Override
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
 		MinecraftClient client = MinecraftClient.getInstance();
 
@@ -165,7 +167,8 @@ public class Crosshair extends AbstractModule {
 		}
 	}
 
-	private boolean shouldNotRender() {
+	@Override
+	public boolean shouldNotRender() {
 		return !ModulesHelper.getInstance().isEnabled.getValue() || !this.enabled.getValue();
 	}
 

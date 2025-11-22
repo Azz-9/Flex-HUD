@@ -147,7 +147,7 @@ public class SignReader extends AbstractHudElement implements TickableModule {
 	}
 
 	@Override
-	protected boolean shouldNotRender() {
+	public boolean shouldNotRender() {
 		return super.shouldNotRender() ||
 				!Flex_hudClient.isInMoveElementScreen && (
 						MinecraftClient.getInstance().getCameraEntity() == null ||

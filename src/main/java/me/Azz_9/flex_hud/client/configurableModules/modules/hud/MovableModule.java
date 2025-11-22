@@ -144,7 +144,5 @@ public interface MovableModule extends Configurable {
 
 	void setScale(float scale);
 
-	boolean isEnabled();
-
 	void setEnabled(boolean enabled);
 }

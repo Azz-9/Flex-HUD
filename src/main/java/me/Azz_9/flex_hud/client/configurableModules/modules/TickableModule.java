@@ -1,8 +1,8 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules;
 
-public interface TickableModule {
+import me.Azz_9.flex_hud.client.configurableModules.Activable;
 
-	boolean isEnabled();
+public interface TickableModule extends Activable {
 
 	void tick();
 }
