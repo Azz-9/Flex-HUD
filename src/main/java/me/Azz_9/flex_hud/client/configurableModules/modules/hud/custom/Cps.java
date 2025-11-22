@@ -86,7 +86,7 @@ public class Cps extends AbstractTextElement {
 	}
 
 	@Override
-	protected boolean shouldNotRender() {
+	public boolean shouldNotRender() {
 		return super.shouldNotRender() || (!(this.showLeftClick.getValue() || this.showRightClick.getValue()) && !Flex_hudClient.isInMoveElementScreen);
 	}
 

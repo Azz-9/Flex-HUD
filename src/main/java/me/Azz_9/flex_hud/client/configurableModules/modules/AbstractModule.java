@@ -13,6 +13,7 @@ public abstract class AbstractModule implements Configurable {
 		ConfigRegistry.register(getID(), "enabled", enabled);
 	}
 
+	@Override
 	public boolean isEnabled() {
 		return enabled.getValue();
 	}

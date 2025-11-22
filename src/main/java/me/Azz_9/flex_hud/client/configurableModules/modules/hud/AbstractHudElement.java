@@ -1,5 +1,6 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud;
 
+import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
@@ -8,11 +9,9 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.Conf
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigFloat;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderTickCounter;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class AbstractHudElement extends AbstractModule implements MovableModule {
+public abstract class AbstractHudElement extends AbstractModule implements MovableModule, HudElement {
 
 	public ConfigDouble offsetX, offsetY;
 	@NotNull
@@ -39,10 +38,9 @@ public abstract class AbstractHudElement extends AbstractModule implements Movab
 		ConfigRegistry.register(getID(), "hideInF3", hideInF3);
 	}
 
-	public abstract void render(DrawContext context, RenderTickCounter tickCounter);
-
-	protected boolean shouldNotRender() {
-		return !ModulesHelper.getInstance().isEnabled.getValue() || !this.enabled.getValue() || (this.hideInF3.getValue() && MinecraftClient.getInstance().getDebugHud().shouldShowDebugHud());
+	@Override
+	public boolean shouldNotRender() {
+		return !ModulesHelper.getInstance().isEnabled.getValue() || !this.enabled.getValue() || (!Flex_hudClient.isInMoveElementScreen && this.hideInF3.getValue() && MinecraftClient.getInstance().getDebugHud().shouldShowDebugHud());
 	}
 
 	@Override
