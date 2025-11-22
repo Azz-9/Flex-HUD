@@ -3,7 +3,6 @@ package me.Azz_9.flex_hud.client;
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractHudElement;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.HudElement;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.durabilityPing.DurabilityPing;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.durabilityPing.ItemDurabilityLostCallback;
@@ -18,7 +17,6 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
-import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.Identifier;
@@ -62,7 +60,7 @@ public class Flex_hudClient implements ClientModInitializer {
 
 			for (HudElement hudElement : hudElements) {
 				Identifier id = Identifier.of(MOD_ID, hudElement.getID());
-				Identifier layer = hudElement.getID().equals(ModulesHelper.getInstance().bossBar.getID()) ? IdentifiedLayer.BOSS_BAR : IdentifiedLayer.CHAT;
+				Identifier layer = hudElement.getLayer();
 				layeredDrawer.attachLayerBefore(layer, id, Flex_hudClient.isDebug() ? hudElement::renderWithSpeedTest : hudElement::render);
 			}
 		});

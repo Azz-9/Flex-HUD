@@ -12,6 +12,7 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.Conf
 import me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.AbstractCrosshairConfigScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.CrosshairEditorEntry;
 import me.Azz_9.flex_hud.client.utils.crosshair.DynamicTexture;
+import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -88,6 +89,11 @@ public class Crosshair extends AbstractModule implements HudElement {
 	@Override
 	public Text getName() {
 		return Text.translatable("flex_hud.crosshair");
+	}
+
+	@Override
+	public Identifier getLayer() {
+		return IdentifiedLayer.CROSSHAIR;
 	}
 
 	@Override
