@@ -176,10 +176,6 @@
 	"flex_hud.weather_changer.config.enable": "Enable weather changer",
 	"flex_hud.weather_changer.config.selected_weather": "Selected weather",
 
-	"flex_hud.shrieker_warning_level": "Shrieker warning level",
-	"flex_hud.shrieker_warning_level.config.enable": "Show shrieker warning level",
-	"flex_hud.shrieker_warning_level.config.show_when_in_deep_dark": "Only show when in deep dark",
-
 	"flex_hud.crosshair": "Crosshair",
 	"flex_hud.crosshair.config.enable": "Enable custom crosshair",
 	"flex_hud.crosshair.config.custom_texture": "Custom texture",

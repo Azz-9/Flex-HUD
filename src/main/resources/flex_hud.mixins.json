@@ -17,7 +17,7 @@
 		"cps.KeyboardMixin",
 		"crosshair.CrosshairMixin",
 		"drawContext.DrawContextAccessor",
-		"durabilityPing.MixinClientPlayNetworkHandler",
+		"durabilityPing.ClientPlayNetworkHandlerMixin",
 		"keybind.KeyBindingMixin",
 		"potionEffect.PotionEffectMixin",
 		"reach.ClientPlayerInteractionManagerMixin"
