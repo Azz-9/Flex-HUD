@@ -217,6 +217,7 @@
 
 	"flex_hud.full_inventory_indicator": "Indicateur d'inventaire plein",
 	"flex_hud.full_inventory_indicator.config.enable": "Afficher l'indicateur d'inventaire plein",
+	"flex_hud.full_inventory_indicator.config.play_sound": "Jouer un son",
 
 	"flex_hud.light_level": "Niveau de lumière",
 	"flex_hud.light_level.config.enable": "Afficher le niveau de lumière",
