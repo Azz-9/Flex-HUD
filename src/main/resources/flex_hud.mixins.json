@@ -5,7 +5,6 @@
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
 		"cps.MouseMixin",
-		"durabilityPing.ItemStackMixin",
 		"timeChanger.ClientWorldPropertiesMixin",
 		"weatherChanger.ClientWorldMixin"
 	],
@@ -18,6 +17,7 @@
 		"cps.KeyboardMixin",
 		"crosshair.CrosshairMixin",
 		"drawContext.DrawContextAccessor",
+		"durabilityPing.MixinClientPlayNetworkHandler",
 		"keybind.KeyBindingMixin",
 		"potionEffect.PotionEffectMixin",
 		"reach.ClientPlayerInteractionManagerMixin"

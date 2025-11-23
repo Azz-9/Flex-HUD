@@ -4,8 +4,6 @@ import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.HudElement;
-import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.durabilityPing.DurabilityPing;
-import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.durabilityPing.ItemDurabilityLostCallback;
 import me.Azz_9.flex_hud.client.tickables.TickRegistry;
 import me.Azz_9.flex_hud.client.utils.FaviconUtils;
 import me.Azz_9.flex_hud.client.utils.SpeedTester;
@@ -63,25 +61,6 @@ public class Flex_hudClient implements ClientModInitializer {
 						Identifier.of(MOD_ID, hudElement.getID()),
 						Flex_hudClient.isDebug() ? hudElement::renderWithSpeedTest : hudElement::render
 				);
-			}
-		});
-
-		ItemDurabilityLostCallback.EVENT.register((stack, damage) -> {
-			if (ModulesHelper.getInstance().isEnabled.getValue() && ModulesHelper.getInstance().durabilityPing.enabled.getValue()) {
-				DurabilityPing durabilityPing = ModulesHelper.getInstance().durabilityPing;
-				if (durabilityPing.isDurabilityUnderThreshold(stack)) {
-					if (durabilityPing.checkElytraOnly.getValue()) {
-						if (DurabilityPing.isElytra(stack)) {
-							durabilityPing.pingPlayer(stack);
-						}
-					} else if (DurabilityPing.isArmorPiece(stack)) {
-						if (durabilityPing.checkArmorPieces.getValue()) {
-							durabilityPing.pingPlayer(stack);
-						}
-					} else {
-						durabilityPing.pingPlayer(stack);
-					}
-				}
 			}
 		});
 
