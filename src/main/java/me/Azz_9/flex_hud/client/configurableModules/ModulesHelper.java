@@ -46,7 +46,7 @@ public class ModulesHelper {
 	public LightLevel lightLevel = new LightLevel(2, 112, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.START);
 	public InGameTime inGameTime = new InGameTime(-5, 2, AbstractHudElement.AnchorPosition.END, AbstractHudElement.AnchorPosition.START);
 	public Distance distance = new Distance(0, 50, AbstractHudElement.AnchorPosition.CENTER, AbstractHudElement.AnchorPosition.START);
-	public HeldItem heldItem = new HeldItem(0, -60, AbstractHudElement.AnchorPosition.CENTER, AbstractHudElement.AnchorPosition.END);
+	public HeldItem heldItem = new HeldItem(0, -80, AbstractHudElement.AnchorPosition.CENTER, AbstractHudElement.AnchorPosition.END);
 	//others
 	public WeatherChanger weatherChanger = new WeatherChanger();
 	public TimeChanger timeChanger = new TimeChanger();
@@ -103,6 +103,7 @@ public class ModulesHelper {
 				getInstance().weatherChanger,
 				getInstance().timeChanger,
 				getInstance().crosshair,
+				getInstance().durabilityPing,
 				getInstance().tntCountdown
 		);
 
