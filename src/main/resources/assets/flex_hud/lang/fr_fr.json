@@ -175,10 +175,6 @@
 	"flex_hud.weather_changer.config.enable": "Activer le changeur de météo",
 	"flex_hud.weather_changer.config.selected_weather": "Météo sélectionné",
 
-	"flex_hud.shrieker_warning_level": "Niveau d'alerte des hurleurs",
-	"flex_hud.shrieker_warning_level.config.enable": "Afficher le niveau d'alerte des hurleurs",
-	"flex_hud.shrieker_warning_level.config.show_when_in_deep_dark": "Afficher uniquement dans un biome deep dark",
-
 	"flex_hud.crosshair": "Viseur",
 	"flex_hud.crosshair.config.enable": "Activer le viseur customisé",
 	"flex_hud.crosshair.config.custom_texture": "Texture customisée",
