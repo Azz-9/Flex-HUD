@@ -1,22 +1,28 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 
 public class FullInventoryIndicator extends AbstractTextElement implements TickableModule {
+
+	private ConfigBoolean playSound = new ConfigBoolean(true, "flex_hud.full_inventory_indicator.config.play_sound");
 
 	private boolean isInventoryFull;
 
@@ -28,6 +34,8 @@ public class FullInventoryIndicator extends AbstractTextElement implements Ticka
 
 		this.color.setValue(0xff0000);
 		this.color.setDefaultValue(0xff0000);
+
+		ConfigRegistry.register(getID(), "playSound", playSound);
 	}
 
 	@Override
@@ -115,6 +123,10 @@ public class FullInventoryIndicator extends AbstractTextElement implements Ticka
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(hideInF3)
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(playSound)
 								.build()
 				);
 			}
@@ -127,13 +139,16 @@ public class FullInventoryIndicator extends AbstractTextElement implements Ticka
 			return;
 		}
 
-
 		for (int i = 0; i < 36; i++) {
 			ItemStack stack = MinecraftClient.getInstance().player.getInventory().getStack(i);
-			if (stack.getItem() == Items.AIR) {
+			if (stack.isOf(Items.AIR)) {
 				isInventoryFull = false;
 				return;
 			}
+		}
+
+		if (!isInventoryFull && playSound.getValue()) {
+			MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.ITEM_ARMOR_EQUIP_LEATHER.value(), 1.0f, 2.0f));
 		}
 
 		isInventoryFull = true;
