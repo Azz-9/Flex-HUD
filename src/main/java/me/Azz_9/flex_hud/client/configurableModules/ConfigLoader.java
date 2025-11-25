@@ -43,6 +43,7 @@ public class ConfigLoader {
 	}
 
 	public static void saveConfig() {
+		FlexHudLogger.info("Saving config...");
 		JsonObject root = new JsonObject();
 
 		for (String moduleName : ConfigRegistry.getModuleNames()) {
@@ -60,6 +61,7 @@ public class ConfigLoader {
 
 		try (Writer writer = Files.newBufferedWriter(CONFIG_FILE.toPath())) {
 			GSON.toJson(root, writer);
+			FlexHudLogger.info("Config saved!");
 		} catch (Exception e) {
 			FlexHudLogger.error("Failed to save config: {}", e.getMessage());
 			e.printStackTrace();
