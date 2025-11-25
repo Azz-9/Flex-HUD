@@ -7,15 +7,12 @@ import me.Azz_9.flex_hud.client.screens.AbstractBackNavigableScreen;
 import me.Azz_9.flex_hud.client.screens.widgets.textFieldWidget.PlaceholderTextFieldWidget;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 public class ModulesListScreen extends AbstractBackNavigableScreen {
@@ -103,14 +100,7 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 		List<Module> modules = new ArrayList<>();
 		for (int i = 0; i < MODULES_LIST.size(); i++) {
 			String moduleId = MODULES_LIST.get(i).getID();
-
-			Supplier<Tooltip> getTooltip = switch (moduleId) {
-				case "in_game_time", "day_counter" ->
-						() -> ModulesHelper.getInstance().timeChanger.enabled.getValue() ? Tooltip.of(Text.literal("⚠ ").append(Text.translatable("flex_hud.configuration_screen.module_compatibility_warning")).append(Text.translatable("flex_hud.time_changer")).formatted(Formatting.RED)) : null;
-				case "weather_display" ->
-						() -> ModulesHelper.getInstance().weatherChanger.enabled.getValue() ? Tooltip.of(Text.literal("⚠ ").append(Text.translatable("flex_hud.configuration_screen.module_compatibility_warning")).append(Text.translatable("flex_hud.weather_changer")).formatted(Formatting.RED)) : null;
-				default -> null;
-			};
+			
 			modules.add(new Module(
 							MODULES_LIST.get(i).getName().getString(),
 							moduleId,
@@ -118,7 +108,7 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 							buttonWidth,
 							buttonHeight,
 							this,
-							getTooltip
+							MODULES_LIST.get(i)::getTooltip
 					)
 			);
 
