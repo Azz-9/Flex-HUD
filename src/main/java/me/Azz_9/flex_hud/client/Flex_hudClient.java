@@ -6,6 +6,7 @@ import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.HudElement;
 import me.Azz_9.flex_hud.client.tickables.TickRegistry;
 import me.Azz_9.flex_hud.client.utils.FaviconUtils;
+import me.Azz_9.flex_hud.client.utils.FlexHudLogger;
 import me.Azz_9.flex_hud.client.utils.SpeedTester;
 import me.Azz_9.flex_hud.client.utils.compass.DimensionTracker;
 import me.Azz_9.flex_hud.compat.CompatManager;
@@ -19,8 +20,6 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.Identifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -29,7 +28,6 @@ public class Flex_hudClient implements ClientModInitializer {
 	private static final boolean DEBUG = Boolean.parseBoolean(System.getenv().getOrDefault("FLEXHUD_DEBUG", "false"));
 
 	public static final String MOD_ID = "flex_hud";
-	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 	public static KeyBinding openOptionScreenKeyBind;
 
 	public static boolean isInMoveElementScreen;
@@ -43,13 +41,13 @@ public class Flex_hudClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		launchTime = System.currentTimeMillis();
 
-		LOGGER.info("Flex HUD has started up.");
+		FlexHudLogger.info("Flex HUD has started up.");
 
 		if (DEBUG) {
-			LOGGER.info("Debug mode enabled.");
+			FlexHudLogger.info("Debug mode enabled.");
 		}
 
-		LOGGER.info("Xaeros Minimap {}found !", CompatManager.isXaeroMinimapLoaded() ? "" : "not ");
+		FlexHudLogger.info("Xaeros Minimap {}found !", CompatManager.isXaeroMinimapLoaded() ? "" : "not ");
 		if (CompatManager.isXaeroMinimapLoaded()) {
 			xaeroCollector = new XaeroWaypointCollector();
 			ModulesHelper.getInstance().compass.setXaeroWaypoints(xaeroCollector.getWaypoints());
