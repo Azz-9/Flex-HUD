@@ -2,6 +2,7 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
@@ -17,7 +18,9 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2fStack;
 
 import java.time.LocalTime;
@@ -77,6 +80,15 @@ public class InGameTime extends AbstractTextElement implements TickableModule {
 		context.drawText(MinecraftClient.getInstance().textRenderer, formattedTime, 0, 0, getColor(), shadow.getValue());
 
 		matrices.popMatrix();
+	}
+
+	@Override
+	public @Nullable Tooltip getTooltip() {
+		if (ModulesHelper.getInstance().timeChanger.isEnabled()) {
+			return Tooltip.of(Text.literal("⚠ ").append(Text.translatable("flex_hud.configuration_screen.module_compatibility_warning")).append(Text.translatable("flex_hud.time_changer")).formatted(Formatting.RED));
+		} else {
+			return null;
+		}
 	}
 
 	@Override
