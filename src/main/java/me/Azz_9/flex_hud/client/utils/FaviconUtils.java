@@ -1,6 +1,5 @@
 package me.Azz_9.flex_hud.client.utils;
 
-import me.Azz_9.flex_hud.client.Flex_hudClient;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
@@ -36,7 +35,7 @@ public class FaviconUtils {
 			NativeImage image = NativeImage.read(stream);
 			return new NativeImageBackedTexture(image);
 		} catch (Exception e) {
-			Flex_hudClient.LOGGER.warn("Failed to load server favicon: {}", e.getMessage());
+			FlexHudLogger.warn("Failed to load server favicon: {}", e.getMessage());
 			return null;
 		}
 	}
