@@ -8,7 +8,8 @@ import me.Azz_9.flex_hud.client.tickables.TickRegistry;
 import me.Azz_9.flex_hud.client.utils.FaviconUtils;
 import me.Azz_9.flex_hud.client.utils.SpeedTester;
 import me.Azz_9.flex_hud.client.utils.compass.DimensionTracker;
-import me.Azz_9.flex_hud.compat.XaeroCompat;
+import me.Azz_9.flex_hud.compat.CompatManager;
+import me.Azz_9.flex_hud.compat.XaeroWaypointCollector;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -37,6 +38,8 @@ public class Flex_hudClient implements ClientModInitializer {
 	private static long launchTime;
 	private boolean joinedWorld;
 
+	private XaeroWaypointCollector xaeroCollector;
+
 	@Override
 	public void onInitializeClient() {
 		launchTime = System.currentTimeMillis();
@@ -47,7 +50,11 @@ public class Flex_hudClient implements ClientModInitializer {
 			LOGGER.info("Debug mode enabled.");
 		}
 
-		LOGGER.info("Xaeros Minimap {}found !", XaeroCompat.isXaerosMinimapLoaded() ? "" : "not ");
+		LOGGER.info("Xaeros Minimap {}found !", CompatManager.isXaeroMinimapLoaded() ? "" : "not ");
+		if (CompatManager.isXaeroMinimapLoaded()) {
+			xaeroCollector = new XaeroWaypointCollector();
+			ModulesHelper.getInstance().compass.setXaeroWaypoints(xaeroCollector.getWaypoints());
+		}
 
 		ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
 			for (AbstractModule module : ModulesHelper.getModules()) {
@@ -77,13 +84,13 @@ public class Flex_hudClient implements ClientModInitializer {
 					}
 				}
 
-				if (ModulesHelper.getInstance().compass.showXaerosMapWaypoints.getValue() && XaeroCompat.isXaerosMinimapLoaded()) {
-					if ((joinedWorld && !XaeroCompat.available) || DimensionTracker.shouldInit) {
-						XaeroCompat.init();
+				if (ModulesHelper.getInstance().compass.isEnabled() && ModulesHelper.getInstance().compass.showXaerosMapWaypoints.getValue() && CompatManager.isXaeroMinimapLoaded()) {
+					if ((joinedWorld && !xaeroCollector.available) || DimensionTracker.shouldInit) {
+						xaeroCollector.init();
 					} else {
 						DimensionTracker.check();
 					}
-					XaeroCompat.updateWaypoints();
+					xaeroCollector.updateWaypoints();
 				}
 			}
 		});
@@ -93,16 +100,16 @@ public class Flex_hudClient implements ClientModInitializer {
 				FaviconUtils.registerServerIcon(client.getCurrentServerEntry().getFavicon());
 			}
 
-			if (XaeroCompat.isXaerosMinimapLoaded()) {
-				XaeroCompat.init();
+			if (CompatManager.isXaeroMinimapLoaded()) {
+				xaeroCollector.init();
 				joinedWorld = true;
 			}
 		});
 
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
-			if (XaeroCompat.isXaerosMinimapLoaded()) {
+			if (CompatManager.isXaeroMinimapLoaded()) {
 				joinedWorld = false;
-				XaeroCompat.available = false;
+				xaeroCollector.available = false;
 			}
 		});
 
