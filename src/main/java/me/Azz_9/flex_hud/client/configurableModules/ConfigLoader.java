@@ -11,7 +11,6 @@ import java.nio.file.Files;
 import java.util.Map;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
-import static me.Azz_9.flex_hud.client.configurableModules.ModulesHelper.INSTANCE;
 
 public class ConfigLoader {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -23,8 +22,6 @@ public class ConfigLoader {
 			saveConfig(); // create defaults if missing
 			return;
 		}
-
-		INSTANCE = new ModulesHelper();
 
 		try (Reader reader = Files.newBufferedReader(CONFIG_FILE.toPath())) {
 			JsonObject root = JsonParser.parseReader(reader).getAsJsonObject();
