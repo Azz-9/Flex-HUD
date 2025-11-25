@@ -103,7 +103,7 @@ public class ModulesHelper {
 				getInstance().weatherChanger,
 				getInstance().timeChanger,
 				getInstance().crosshair,
-				//getInstance().durabilityPing,
+				getInstance().durabilityPing,
 				getInstance().tntCountdown
 		);
 
@@ -118,6 +118,7 @@ public class ModulesHelper {
 	// Méthode pour obtenir l'instance de la configuration
 	public static ModulesHelper getInstance() {
 		if (INSTANCE == null) {
+			INSTANCE = new ModulesHelper();
 			ConfigLoader.loadConfig();
 			INSTANCE.init();
 		}
