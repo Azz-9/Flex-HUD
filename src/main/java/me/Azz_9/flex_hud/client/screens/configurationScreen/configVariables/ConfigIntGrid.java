@@ -2,6 +2,7 @@ package me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 
 import java.util.Arrays;
 
@@ -110,5 +111,22 @@ public class ConfigIntGrid extends AbstractConfigObject<int[][]> {
 		}
 
 		return result;
+	}
+
+	@Override
+	public JsonElement toJsonValue() {
+		int[][] value = getValue();
+		if (value == null) return JsonNull.INSTANCE;
+
+		JsonArray outerArray = new JsonArray();
+		for (int[] row : value) {
+			JsonArray innerArray = new JsonArray();
+			for (int cell : row) {
+				innerArray.add(cell);
+			}
+			outerArray.add(innerArray);
+		}
+
+		return outerArray;
 	}
 }
