@@ -1,6 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractBackgroundElement;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
@@ -9,11 +10,14 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 
@@ -64,6 +68,15 @@ public class WeatherDisplay extends AbstractBackgroundElement {
 			context.drawTexture(RenderLayer::getGuiTextured, Identifier.of(MOD_ID, path), 0, 0, 0, 0, 16, 16, 16, 16);
 
 			matrices.pop();
+		}
+	}
+
+	@Override
+	public @Nullable Tooltip getTooltip() {
+		if (ModulesHelper.getInstance().weatherChanger.enabled.getValue()) {
+			return Tooltip.of(Text.literal("⚠ ").append(Text.translatable("flex_hud.configuration_screen.module_compatibility_warning")).append(Text.translatable("flex_hud.weather_changer")).formatted(Formatting.RED));
+		} else {
+			return null;
 		}
 	}
 
