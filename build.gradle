@@ -4,6 +4,7 @@ plugins {
 }
 
 def includeModMenu = project.hasProperty("launch_with_modmenu") && project.launch_with_modmenu.toBoolean()
+def includeXaero = project.hasProperty("launch_with_xaero_minimap") && project.launch_with_xaero_minimap.toBoolean()
 
 version = project.mod_version
 group = project.maven_group
@@ -36,6 +37,12 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	if (includeModMenu) {
 		modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
+	}
+
+	if (includeXaero) {
+		modImplementation files("libs/Xaeros_Minimap_${project.xaero_minimap_version}_Fabric_${project.minecraft_version}.jar")
+	} else {
+		compileOnly files("libs/Xaeros_Minimap_${project.xaero_minimap_version}_Fabric_${project.minecraft_version}.jar")
 	}
 }
 

@@ -8,7 +8,7 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorB
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.tickables.LivingEntitiesTickable;
-import me.Azz_9.flex_hud.compat.XaeroCompat;
+import me.Azz_9.flex_hud.compat.CompatManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -19,6 +19,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec3d;
@@ -27,8 +28,8 @@ import net.minecraft.world.waypoint.Waypoint;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class Compass extends AbstractTextElement {
 	private final ConfigBoolean showMarker = new ConfigBoolean(true, "flex_hud.compass.config.show_marker");
@@ -38,6 +39,8 @@ public class Compass extends AbstractTextElement {
 	public final ConfigBoolean showMobs = new ConfigBoolean(false, "flex_hud.compass.config.show_mobs");
 	public final ConfigBoolean showTamedEntitiesPoint = new ConfigBoolean(false, "flex_hud.compass.config.show_tamed_entities_point");
 	public final ConfigBoolean showOnlyPets = new ConfigBoolean(false, "flex_hud.compass.config.show_only_pets");
+
+	private List<XaeroWaypoint> xaeroWaypoints = new ArrayList<>();
 
 	public Compass(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
@@ -116,7 +119,7 @@ public class Compass extends AbstractTextElement {
 
 		if (!Flex_hudClient.isInMoveElementScreen) {
 			// Affichage des waypoints Xaero's minimap
-			if (this.showXaerosMapWaypoints.getValue() && XaeroCompat.isXaerosMinimapLoaded()) {
+			if (this.showXaerosMapWaypoints.getValue() && CompatManager.isXaeroMinimapLoaded()) {
 				drawXaerosMapWaypoints(context, matrices, yaw, tickCounter);
 			}
 
@@ -222,43 +225,30 @@ public class Compass extends AbstractTextElement {
 		MinecraftClient client = MinecraftClient.getInstance();
 		PlayerEntity player = client.player;
 		int screenWidth = client.getWindow().getScaledWidth();
-		List<Object> waypoints = XaeroCompat.getWaypoints();
 
-		if (waypoints.isEmpty()) {
-			return;
-		}
+		for (XaeroWaypoint waypoint : this.xaeroWaypoints) {
+			double x = waypoint.getX() + 0.5;
+			double z = waypoint.getZ() + 0.5;
 
-		XaeroCompat.WaypointReflect.init(waypoints.getFirst());
+			if (waypoint.isDisabled() || player == null) {
+				continue;
+			}
 
-		for (Object waypoint : waypoints) {
-			try {
-				boolean disabled = XaeroCompat.WaypointReflect.isDisabled(waypoint);
-				double x = XaeroCompat.WaypointReflect.getX(waypoint) + 0.5;
-				double z = XaeroCompat.WaypointReflect.getZ(waypoint) + 0.5;
-				String initials = XaeroCompat.WaypointReflect.getInitials(waypoint);
-				int colorIndex = XaeroCompat.WaypointReflect.getColor(waypoint);
+			Position lerpedPosition = player.getLerpedPos(tickCounter.getTickProgress(true));
+			float angle = calculateAngle(lerpedPosition.getX(), lerpedPosition.getZ(), x, z);
 
-				if (!disabled && player != null) {
-					Position lerpedPosition = player.getLerpedPos(tickCounter.getTickProgress(true));
-					float angle = calculateAngle(lerpedPosition.getX(), lerpedPosition.getZ(), x, z);
+			float angleDifference = (angle - yaw + 540) % 360 - 180;
+			if (Math.abs(angleDifference) <= 120) {
+				float positionX = ((this.width / 2.0f) + (angleDifference * (screenWidth / 720.0f)));
 
-					float angleDifference = (angle - yaw + 540) % 360 - 180;
+				int color = waypoint.getColor();
+				int backgroundColor = ((getAlpha(positionX) / 2) << 24) | (color & 0x00ffffff);
 
-					if (Math.abs(angleDifference) <= 120) {
-						// Calculer la position X de chaque point cardinal en fonction de l'angle
-						float positionX = ((this.width / 2.0f) + (angleDifference * (screenWidth / 720.0f)));
-
-						Integer color = Formatting.values()[colorIndex].getColorValue();
-						int backgroundColor = ((getAlpha(positionX) / 2) << 24) | Objects.requireNonNullElse(color, 0x00FFFFFF);
-
-						matrices.push();
-						matrices.translate(positionX - (client.textRenderer.getWidth(initials) / 2.0f), this.showDegrees.getValue() ? 10 : 2, 0);
-						matrices.scale(0.75f, 0.75f, 1.0f);
-						renderTextWithBackground(drawContext, initials, 0, 0, backgroundColor, 0xffffff | (getAlpha(positionX) << 24));
-						matrices.pop();
-					}
-				}
-			} catch (Exception ignored) {
+				matrices.push();
+				matrices.translate(positionX - (client.textRenderer.getWidth(waypoint.getInitials()) / 2.0f), this.showDegrees.getValue() ? 10 : 2, 0);
+				matrices.scale(0.75f, 0.75f, 1.0f);
+				renderTextWithBackground(drawContext, waypoint.getInitials(), 0, 0, backgroundColor, 0xffffff | (getAlpha(positionX) << 24));
+				matrices.pop();
 			}
 		}
 	}
@@ -395,9 +385,9 @@ public class Compass extends AbstractTextElement {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(showXaerosMapWaypoints)
-								.setToggleable(XaeroCompat::isXaerosMinimapLoaded)
+								.setToggleable(CompatManager::isXaeroMinimapLoaded)
 								.setGetTooltip((t) -> {
-									if (!XaeroCompat.isXaerosMinimapLoaded()) {
+									if (!CompatManager.isXaeroMinimapLoaded()) {
 										return Tooltip.of(Text.translatable("flex_hud.compass.config.show_xaeros_map_waypoints.not_installed_tooltip"));
 									}
 									return null;
@@ -421,5 +411,51 @@ public class Compass extends AbstractTextElement {
 				);
 			}
 		};
+	}
+
+	public List<XaeroWaypoint> setXaeroWaypoints(List<XaeroWaypoint> xaeroWaypoints) {
+		return this.xaeroWaypoints = xaeroWaypoints;
+	}
+
+	public abstract static class ModdedWaypoint {
+		private final double x, z;
+
+		public ModdedWaypoint(double x, double z) {
+			this.x = x;
+			this.z = z;
+		}
+
+		public double getX() {
+			return x;
+		}
+
+		public double getZ() {
+			return z;
+		}
+	}
+
+	public static class XaeroWaypoint extends ModdedWaypoint {
+		private final int COLOR;
+		private final boolean DISABLED;
+		private final String INITIALS;
+
+		public XaeroWaypoint(double x, double z, int color, boolean disabled, String initials) {
+			super(x, z);
+			this.COLOR = color;
+			this.DISABLED = disabled;
+			this.INITIALS = initials;
+		}
+
+		public int getColor() {
+			return COLOR;
+		}
+
+		public boolean isDisabled() {
+			return DISABLED;
+		}
+
+		public String getInitials() {
+			return INITIALS;
+		}
 	}
 }
