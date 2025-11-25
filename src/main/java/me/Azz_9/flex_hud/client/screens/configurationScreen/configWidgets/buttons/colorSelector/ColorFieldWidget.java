@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector;
 
-import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.utils.FlexHudLogger;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -51,7 +51,7 @@ public class ColorFieldWidget extends TextFieldWidget {
 				return Integer.parseInt(getText().substring(1), 16);
 			}
 		} catch (NumberFormatException e) {
-			Flex_hudClient.LOGGER.error("Invalid color code: {}", getText());
+			FlexHudLogger.error("Invalid color code: {}", getText());
 		}
 		return 0;
 	}
