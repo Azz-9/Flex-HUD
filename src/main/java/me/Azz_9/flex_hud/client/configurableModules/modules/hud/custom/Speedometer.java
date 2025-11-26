@@ -22,6 +22,7 @@ import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 
 public class Speedometer extends AbstractTextElement implements TickableModule {
@@ -29,9 +30,9 @@ public class Speedometer extends AbstractTextElement implements TickableModule {
 	public ConfigEnum<SpeedometerUnits> units = new ConfigEnum<>(SpeedometerUnits.class, SpeedometerUnits.MPS, "flex_hud.speedometer.config.selected_unit");
 	public ConfigBoolean useKnotInBoat = new ConfigBoolean(false, "flex_hud.speedometer.config.use_knot_when_in_boat");
 
-	private String formattedSpeed;
+	private String formattedSpeed = "";
 
-	public Speedometer(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
+	public Speedometer(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.speedometer.config.enable");
 		this.enabled.setDefaultValue(false);

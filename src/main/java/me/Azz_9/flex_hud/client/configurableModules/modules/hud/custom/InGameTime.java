@@ -26,10 +26,10 @@ import java.util.Locale;
 
 public class InGameTime extends AbstractTextElement implements TickableModule {
 
-	public ConfigString textFormat = new ConfigString("hh:mm", "flex_hud.clock.config.text_format");
-	private ConfigBoolean isTwentyFourHourFormat;
+	public final ConfigString textFormat = new ConfigString("hh:mm", "flex_hud.clock.config.text_format");
+	private final ConfigBoolean isTwentyFourHourFormat;
 
-	private String formattedTime;
+	private String formattedTime = "";
 
 	public InGameTime(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
