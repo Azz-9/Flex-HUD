@@ -14,13 +14,15 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix3x2fStack;
 
 public class Cps extends AbstractTextElement {
-	public ConfigBoolean showLeftClick = new ConfigBoolean(true, "flex_hud.cps.config.show_left_click");
-	public ConfigBoolean showRightClick = new ConfigBoolean(true, "flex_hud.cps.config.show_right_click");
-	public ConfigBoolean showSuffix = new ConfigBoolean(true, "flex_hud.cps.config.show_suffix");
+	public final ConfigBoolean showLeftClick = new ConfigBoolean(true, "flex_hud.cps.config.show_left_click");
+	public final ConfigBoolean showRightClick = new ConfigBoolean(true, "flex_hud.cps.config.show_right_click");
+	public final ConfigBoolean showSuffix = new ConfigBoolean(true, "flex_hud.cps.config.show_suffix");
 
-	public Cps(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
+	public Cps(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.cps.config.enable");
 

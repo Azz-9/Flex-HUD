@@ -21,9 +21,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class Distance extends AbstractTextElement implements TickableModule {
 
-	private ConfigInteger digits = new ConfigInteger(0, "flex_hud.distance.config.number_of_digits", 0, 16);
+	private final ConfigInteger digits = new ConfigInteger(0, "flex_hud.distance.config.number_of_digits", 0, 16);
 
-	private String distanceText;
+	@NotNull
+	private String distanceText = "";
 
 	public Distance(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);

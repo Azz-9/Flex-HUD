@@ -14,8 +14,8 @@ import net.minecraft.text.Text;
 import java.time.LocalTime;
 
 public class TimeChanger extends AbstractModule {
-	public ConfigInteger selectedTime = new ConfigInteger(6000, "flex_hud.time_changer.config.selected_time", 0, 24000);
-	public ConfigBoolean useRealTime = new ConfigBoolean(false, "flex_hud.time_changer.config.use_real_time");
+	public final ConfigInteger selectedTime = new ConfigInteger(6000, "flex_hud.time_changer.config.selected_time", 0, 24000);
+	public final ConfigBoolean useRealTime = new ConfigBoolean(false, "flex_hud.time_changer.config.use_real_time");
 
 	public TimeChanger() {
 		this.enabled.setConfigTextTranslationKey("flex_hud.time_changer.config.enable");

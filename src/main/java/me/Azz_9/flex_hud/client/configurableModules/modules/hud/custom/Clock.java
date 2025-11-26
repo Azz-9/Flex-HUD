@@ -17,18 +17,20 @@ import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 public class Clock extends AbstractTextElement implements TickableModule {
-	public ConfigString textFormat = new ConfigString("hh:mm:ss", "flex_hud.clock.config.text_format");
-	public ConfigBoolean isTwentyFourHourFormat;
+	public final ConfigString textFormat = new ConfigString("hh:mm:ss", "flex_hud.clock.config.text_format");
+	public final ConfigBoolean isTwentyFourHourFormat;
 
-	private static String formattedTime;
+	@NotNull
+	private static String formattedTime = "";
 
-	public Clock(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
+	public Clock(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.clock.config.enable");
 

@@ -47,6 +47,7 @@ public class BossBar extends AbstractHudElement implements MovableModule {
 			Identifier.ofVanilla("boss_bar/notched_12_progress"), Identifier.ofVanilla("boss_bar/notched_20_progress")
 	};
 
+	@NotNull
 	private Map<UUID, ClientBossBar> bossBars = new LinkedHashMap<>();
 	private final int BOSS_BAR_GAP = 10;
 

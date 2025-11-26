@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class HeldItem extends AbstractTextElement {
 
-	private ConfigEnum<ArmorStatus.DurabilityType> durabilityType = new ConfigEnum<>(ArmorStatus.DurabilityType.class, ArmorStatus.DurabilityType.PERCENTAGE, "flex_hud.held_item.config.show_durability");
+	private final ConfigEnum<ArmorStatus.DurabilityType> durabilityType = new ConfigEnum<>(ArmorStatus.DurabilityType.class, ArmorStatus.DurabilityType.PERCENTAGE, "flex_hud.held_item.config.show_durability");
 
 	private final int ITEM_SIZE = 16;
 
