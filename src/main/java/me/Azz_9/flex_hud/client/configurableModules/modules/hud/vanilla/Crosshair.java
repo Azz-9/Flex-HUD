@@ -49,7 +49,7 @@ public class Crosshair extends AbstractModule implements HudElement {
 	private static final Identifier CROSSHAIR_ATTACK_INDICATOR_PROGRESS_TEXTURE = Identifier.ofVanilla("hud/crosshair_attack_indicator_progress");
 
 	public int size = 15;
-	public ConfigFloat scale = new ConfigFloat(1.0f);
+	public final ConfigFloat scale = new ConfigFloat(1.0f);
 
 	public final ConfigIntGrid pixels = new ConfigIntGrid(
 			new int[][]{
@@ -70,7 +70,7 @@ public class Crosshair extends AbstractModule implements HudElement {
 					{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 			}, "flex_hud.crosshair.config.custom_texture");
 
-	public ConfigBoolean disableBlending = new ConfigBoolean(false, "flex_hud.crosshair.config.disable_blending");
+	public final ConfigBoolean disableBlending = new ConfigBoolean(false, "flex_hud.crosshair.config.disable_blending");
 
 	public Crosshair() {
 		this.enabled.setConfigTextTranslationKey("flex_hud.crosshair.config.enable");

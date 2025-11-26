@@ -12,12 +12,13 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 
 public class Playtime extends AbstractTextElement {
-	public ConfigBoolean showPrefix = new ConfigBoolean(true, "flex_hud.playtime.config.show_prefix");
+	public final ConfigBoolean showPrefix = new ConfigBoolean(true, "flex_hud.playtime.config.show_prefix");
 
-	public Playtime(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
+	public Playtime(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.playtime.config.enable");
 		this.enabled.setDefaultValue(false);

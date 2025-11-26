@@ -1,4 +1,4 @@
-package me.Azz_9.flex_hud.client.configurableModules.modules.notHud.durabilityPing;
+package me.Azz_9.flex_hud.client.configurableModules.modules.notHud;
 
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
@@ -19,16 +19,19 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class DurabilityPing extends AbstractModule {
+	@NotNull
 	private static final Map<String, Long> lastPingTime = new HashMap<>();
-	public ConfigInteger threshold = new ConfigInteger(10, "flex_hud.durability_ping.config.threshold", 0, 100); // percentage
-	public ConfigEnum<PingType> pingType = new ConfigEnum<>(PingType.class, PingType.BOTH, "flex_hud.durability_ping.config.ping_type");
-	public ConfigBoolean checkArmorPieces = new ConfigBoolean(true, "flex_hud.durability_ping.config.check_armor_pieces");
-	public ConfigBoolean checkElytraOnly = new ConfigBoolean(false, "flex_hud.durability_ping.config.check_elytra_only");
+
+	public final ConfigInteger threshold = new ConfigInteger(10, "flex_hud.durability_ping.config.threshold", 0, 100); // percentage
+	public final ConfigEnum<PingType> pingType = new ConfigEnum<>(PingType.class, PingType.BOTH, "flex_hud.durability_ping.config.ping_type");
+	public final ConfigBoolean checkArmorPieces = new ConfigBoolean(true, "flex_hud.durability_ping.config.check_armor_pieces");
+	public final ConfigBoolean checkElytraOnly = new ConfigBoolean(false, "flex_hud.durability_ping.config.check_elytra_only");
 
 	public DurabilityPing() {
 		this.enabled.setConfigTextTranslationKey("flex_hud.durability_ping.config.enable");

@@ -1,7 +1,7 @@
 package me.Azz_9.flex_hud.client.mixin.durabilityPing;
 
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
-import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.durabilityPing.DurabilityPing;
+import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.DurabilityPing;
 import me.Azz_9.flex_hud.client.utils.ItemUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;

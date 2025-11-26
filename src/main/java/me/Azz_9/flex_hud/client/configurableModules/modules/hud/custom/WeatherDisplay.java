@@ -80,7 +80,7 @@ public class WeatherDisplay extends AbstractBackgroundElement {
 		}
 	}
 
-	private static @NotNull String getWeatherIconPath(MinecraftClient client) {
+	private static @NotNull String getWeatherIconPath(@NotNull MinecraftClient client) {
 		String path;
 		if (Flex_hudClient.isInMoveElementScreen || client.world == null) {
 			path = "weather_icons/day_clear.png";
