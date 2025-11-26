@@ -8,10 +8,10 @@ import me.Azz_9.flex_hud.client.configurableModules.modules.hud.MovableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom.*;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.vanilla.BossBar;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.vanilla.Crosshair;
+import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.DurabilityPing;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.TimeChanger;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.TntCountdown;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.WeatherChanger;
-import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.durabilityPing.DurabilityPing;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 

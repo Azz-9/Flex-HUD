@@ -23,6 +23,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.text.Text;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 
 import java.math.BigDecimal;
@@ -34,18 +35,18 @@ import java.util.Map;
 import static java.util.Map.entry;
 
 public class Coordinates extends AbstractTextElement {
-	private ConfigBoolean showY = new ConfigBoolean(true, "flex_hud.coordinates.config.show_y");
-	private ConfigInteger numberOfDigits = new ConfigInteger(0, "flex_hud.coordinates.config.number_of_digits", 0, 14);
-	private ConfigBoolean showBiome = new ConfigBoolean(true, "flex_hud.coordinates.config.show_biome");
-	private ConfigBoolean biomeSpecificColor = new ConfigBoolean(true, "flex_hud.coordinates.config.custom_biome_color");
-	private ConfigBoolean showDirection = new ConfigBoolean(true, "flex_hud.coordinates.config.show_direction");
-	private ConfigBoolean directionAbreviation = new ConfigBoolean(true, "flex_hud.coordinates.config.direction_abbreviation");
-	private ConfigEnum<DisplayMode> displayMode = new ConfigEnum<>(DisplayMode.class, DisplayMode.VERTICAL, "flex_hud.coordinates.config.orientation");
+	private final ConfigBoolean showY = new ConfigBoolean(true, "flex_hud.coordinates.config.show_y");
+	private final ConfigInteger numberOfDigits = new ConfigInteger(0, "flex_hud.coordinates.config.number_of_digits", 0, 14);
+	private final ConfigBoolean showBiome = new ConfigBoolean(true, "flex_hud.coordinates.config.show_biome");
+	private final ConfigBoolean biomeSpecificColor = new ConfigBoolean(true, "flex_hud.coordinates.config.custom_biome_color");
+	private final ConfigBoolean showDirection = new ConfigBoolean(true, "flex_hud.coordinates.config.show_direction");
+	private final ConfigBoolean directionAbreviation = new ConfigBoolean(true, "flex_hud.coordinates.config.direction_abbreviation");
+	private final ConfigEnum<DisplayMode> displayMode = new ConfigEnum<>(DisplayMode.class, DisplayMode.VERTICAL, "flex_hud.coordinates.config.orientation");
 
 	//biome colors for coordinates overlay
 	public static final Map<RegistryKey<Biome>, Integer> BIOME_COLORS = getBiomeColors();
 
-	public Coordinates(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
+	public Coordinates(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.coordinates.config.enable");
 
