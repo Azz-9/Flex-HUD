@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.client.utils.crosshair;
 
-import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.utils.FlexHudLogger;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.util.Identifier;
@@ -27,7 +27,7 @@ public class DynamicTexture {
 
 	public void updatePixels(int[][] pixels) {
 		if (texture.getImage() == null) {
-			Flex_hudClient.LOGGER.warn("Dynamic texture error : texture.getImage() is null");
+			FlexHudLogger.warn("Dynamic texture error : texture.getImage() is null");
 			return;
 		}
 
