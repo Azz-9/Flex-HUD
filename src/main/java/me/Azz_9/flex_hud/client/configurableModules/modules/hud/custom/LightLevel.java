@@ -18,8 +18,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class LightLevel extends AbstractTextElement {
 
-	private ConfigBoolean colorDependsOnLightLevel = new ConfigBoolean(true, "flex_hud.light_level.color_depends_on_light_level");
-
+	private final ConfigBoolean colorDependsOnLightLevel = new ConfigBoolean(true, "flex_hud.light_level.color_depends_on_light_level");
 
 	public LightLevel(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);

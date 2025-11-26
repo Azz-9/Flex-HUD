@@ -22,9 +22,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class FullInventoryIndicator extends AbstractTextElement implements TickableModule {
 
-	private ConfigBoolean playSound = new ConfigBoolean(true, "flex_hud.full_inventory_indicator.config.play_sound");
+	private final ConfigBoolean playSound = new ConfigBoolean(true, "flex_hud.full_inventory_indicator.config.play_sound");
 
-	private boolean isInventoryFull;
+	private boolean isInventoryFull = false;
 
 	public FullInventoryIndicator(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
