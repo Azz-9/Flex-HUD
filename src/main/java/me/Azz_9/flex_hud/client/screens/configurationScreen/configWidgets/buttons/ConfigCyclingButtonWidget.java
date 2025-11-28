@@ -21,18 +21,16 @@ import java.util.function.Function;
 public class ConfigCyclingButtonWidget<T, E extends Enum<E> & Translatable> extends ButtonWidget implements TrackableChange, DataGetter<E>, ResetAware {
 	private final E INITIAL_STATE;
 	private final List<Observer> observers;
-	private final T disableWhen;
 	private final E[] values;
 	private final ConfigEnum<E> variable;
 	@Nullable
 	private final Function<E, Tooltip> getTooltip;
 
-	public ConfigCyclingButtonWidget(int width, int height, ConfigEnum<E> variable, List<Observer> observers, T disableWhen, @Nullable Function<E, Tooltip> getTooltip) {
+	public ConfigCyclingButtonWidget(int width, int height, ConfigEnum<E> variable, List<Observer> observers, @Nullable Function<E, Tooltip> getTooltip) {
 		super(0, 0, width, height, Text.translatable(variable.getValue().getTranslationKey()), (btn) -> {
 		}, DEFAULT_NARRATION_SUPPLIER);
 		this.INITIAL_STATE = variable.getValue();
 		this.observers = observers;
-		this.disableWhen = disableWhen;
 		this.variable = variable;
 		this.values = variable.getValue().getDeclaringClass().getEnumConstants();
 		this.getTooltip = getTooltip;
@@ -88,10 +86,6 @@ public class ConfigCyclingButtonWidget<T, E extends Enum<E> & Translatable> exte
 	@Override
 	public E getData() {
 		return variable.getValue();
-	}
-
-	public T getDisableWhen() {
-		return disableWhen;
 	}
 
 	public void setValue(E value) {

@@ -38,6 +38,15 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 		return children().get(super.getEntryCount() - 1);
 	}
 
+	public AbstractConfigEntry getEntry(int index) {
+		return children().get(index);
+	}
+
+	@Override
+	public int getEntryCount() {
+		return super.getEntryCount();
+	}
+
 	public void addConfigEntry(AbstractConfigEntry entry) {
 		this.addEntry(entry);
 		entry.addObserver(observer);
@@ -125,6 +134,9 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 			}
 
 			public abstract AbstractConfigEntry build();
+		}
+
+		public record Dependency<T>(AbstractConfigEntry entry, T disableWhen) {
 		}
 	}
 }

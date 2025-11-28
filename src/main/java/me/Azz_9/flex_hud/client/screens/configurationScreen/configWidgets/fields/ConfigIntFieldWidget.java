@@ -22,7 +22,6 @@ public class ConfigIntFieldWidget<T> extends TextFieldWidget implements Trackabl
 
 	private final int INITIAL_STATE;
 	private final ConfigInteger variable;
-	private final T disableWhen;
 	private final int MIN_VALUE;
 	private final int MAX_VALUE;
 	private final List<Observer> observers;
@@ -32,11 +31,10 @@ public class ConfigIntFieldWidget<T> extends TextFieldWidget implements Trackabl
 
 	private boolean suppressIntFieldCallback = false;
 
-	public ConfigIntFieldWidget(TextRenderer textRenderer, int width, int height, ConfigInteger variable, List<Observer> observers, T disableWhen, @Nullable Function<Integer, Tooltip> getTooltip) {
+	public ConfigIntFieldWidget(TextRenderer textRenderer, int width, int height, ConfigInteger variable, List<Observer> observers, @Nullable Function<Integer, Tooltip> getTooltip) {
 		super(textRenderer, width, height, Text.translatable("flex_hud.integer_field"));
 		this.INITIAL_STATE = variable.getValue();
 		this.variable = variable;
-		this.disableWhen = disableWhen;
 		this.observers = observers;
 		this.getTooltip = getTooltip;
 
@@ -140,10 +138,6 @@ public class ConfigIntFieldWidget<T> extends TextFieldWidget implements Trackabl
 
 	private int getValue() {
 		return Integer.parseUnsignedInt(getText());
-	}
-
-	public T getDisableWhen() {
-		return disableWhen;
 	}
 
 	@Override
