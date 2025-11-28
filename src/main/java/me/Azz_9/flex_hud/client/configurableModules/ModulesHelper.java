@@ -103,7 +103,7 @@ public class ModulesHelper {
 				getInstance().weatherChanger,
 				getInstance().timeChanger,
 				getInstance().crosshair,
-				//getInstance().durabilityPing,
+				getInstance().durabilityPing,
 				getInstance().tntCountdown
 		);
 

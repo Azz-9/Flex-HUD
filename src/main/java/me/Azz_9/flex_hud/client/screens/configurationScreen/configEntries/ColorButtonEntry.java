@@ -15,22 +15,25 @@ import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
-	private ConfigColorButtonWidget<?> colorButtonWidget;
+	private ConfigColorButtonWidget colorButtonWidget;
 
-	private <T> ColorButtonEntry(
+	private final List<Dependency<?>> dependencies = new ArrayList<>();
+
+	private ColorButtonEntry(
 			int colorButtonWidth,
 			int colorButtonHeight,
 			ConfigInteger variable,
 			int resetButtonSize,
-			T disableWhen,
 			@Nullable Function<Integer, Tooltip> getTooltip
 	) {
 		super(resetButtonSize, Text.translatable(variable.getConfigTextTranslationKey()));
-		colorButtonWidget = new ConfigColorButtonWidget<>(colorButtonWidth, colorButtonHeight, variable, observers, disableWhen,
+		colorButtonWidget = new ConfigColorButtonWidget(colorButtonWidth, colorButtonHeight, variable, observers,
 				(btn) -> {
 					AbstractConfigurationScreen screen = (AbstractConfigurationScreen) MinecraftClient.getInstance().currentScreen;
 					if (screen != null) {
@@ -78,15 +81,33 @@ public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 
 	@Override
 	public void onChange(DataGetter<?> dataGetter) {
-		boolean active = !colorButtonWidget.getDisableWhen().equals(dataGetter.getData());
-		colorButtonWidget.active = active;
-		setActive(active);
-		resetButtonWidget.active = active && !colorButtonWidget.isCurrentValueDefault();
+		boolean shouldDisable = false;
+
+		for (Dependency<?> dependency : dependencies) {
+			Object value = dependency.entry().getDataGetter().getData();
+			if (Objects.equals(value, dependency.disableWhen())) {
+				shouldDisable = true;
+				break;
+			}
+		}
+
+		setActive(!shouldDisable);
 		// fermer le color selector si le color button est désacitvé
 		AbstractConfigurationScreen screen = (AbstractConfigurationScreen) MinecraftClient.getInstance().currentScreen;
-		if (screen != null && !active) {
+		if (screen != null && shouldDisable) {
 			screen.closeColorSelector();
 		}
+	}
+
+	@Override
+	public void setActive(boolean active) {
+		colorButtonWidget.active = active;
+		super.setActive(active);
+		resetButtonWidget.active = active && !colorButtonWidget.isCurrentValueDefault();
+	}
+
+	public <T> void addDependency(ScrollableConfigList.AbstractConfigEntry entry, T disableWhen) {
+		dependencies.add(new Dependency<>(entry, disableWhen));
 	}
 
 	//Builder
@@ -94,28 +115,26 @@ public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 		private int colorButtonWidth;
 		private int colorButtonHeight = 20;
 		private ConfigInteger variable;
-		private ScrollableConfigList.AbstractConfigEntry dependency = null;
-		private Object disableWhen;
+		private final List<Dependency<?>> dependencies = new ArrayList<>();
 
-		public ColorButtonEntry.Builder setColorButtonWidth(int width) {
+		public Builder setColorButtonWidth(int width) {
 			this.colorButtonWidth = width;
 			return this;
 		}
 
-		public ColorButtonEntry.Builder setColorButtonSize(int width, int height) {
+		public Builder setColorButtonSize(int width, int height) {
 			this.colorButtonWidth = width;
 			this.colorButtonHeight = height;
 			return this;
 		}
 
-		public ColorButtonEntry.Builder setVariable(ConfigInteger variable) {
+		public Builder setVariable(ConfigInteger variable) {
 			this.variable = variable;
 			return this;
 		}
 
-		public <T> ColorButtonEntry.Builder setDependency(ScrollableConfigList.AbstractConfigEntry entry, T disableWhen) {
-			dependency = entry;
-			this.disableWhen = disableWhen;
+		public <T> Builder addDependency(ScrollableConfigList.AbstractConfigEntry entry, T disableWhen) {
+			dependencies.add(new Dependency<>(entry, disableWhen));
 			return this;
 		}
 
@@ -128,12 +147,12 @@ public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 					colorButtonWidth, colorButtonHeight,
 					variable,
 					resetButtonSize,
-					disableWhen,
 					getTooltip
 			);
-			if (dependency != null) {
-				dependency.addObserver(entry);
-				entry.onChange(dependency.getDataGetter());
+			for (Dependency<?> dependency : dependencies) {
+				entry.addDependency(dependency.entry(), dependency.disableWhen());
+				dependency.entry().addObserver(entry);
+				entry.onChange(dependency.entry().getDataGetter());
 			}
 			return entry;
 		}
