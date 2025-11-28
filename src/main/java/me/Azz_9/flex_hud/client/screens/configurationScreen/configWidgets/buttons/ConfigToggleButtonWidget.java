@@ -25,11 +25,10 @@ import java.util.function.Function;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 
-public class ConfigToggleButtonWidget<T> extends ButtonWidget implements TrackableChange, DataGetter<Boolean>, ResetAware {
+public class ConfigToggleButtonWidget extends ButtonWidget implements TrackableChange, DataGetter<Boolean>, ResetAware {
 	private final ConfigBoolean variable;
 	private final boolean INITIAL_STATE;
 	private final List<Observer> observers;
-	private final T disableWhen;
 	@Nullable
 	private final Function<Boolean, Tooltip> getTooltip;
 	private final ButtonTextures textures;
@@ -44,7 +43,7 @@ public class ConfigToggleButtonWidget<T> extends ButtonWidget implements Trackab
 	private static final int TRANSITION_DURATION = 300;
 
 
-	public ConfigToggleButtonWidget(int width, int height, ConfigBoolean variable, List<Observer> observers, T disableWhen, @Nullable Function<Boolean, Tooltip> getTooltip) {
+	public ConfigToggleButtonWidget(int width, int height, ConfigBoolean variable, List<Observer> observers, @Nullable Function<Boolean, Tooltip> getTooltip) {
 		super(0, 0, width, height, net.minecraft.text.Text.translatable(variable.getConfigTextTranslationKey()), btn -> {
 		}, DEFAULT_NARRATION_SUPPLIER);
 		this.variable = variable;
@@ -56,7 +55,6 @@ public class ConfigToggleButtonWidget<T> extends ButtonWidget implements Trackab
 				Identifier.of(MOD_ID, "widgets/buttons/toggle/focused_disabled.png")
 		);
 		this.observers = observers;
-		this.disableWhen = disableWhen;
 		this.getTooltip = getTooltip;
 		this.toggled = variable.getValue();
 
@@ -172,10 +170,6 @@ public class ConfigToggleButtonWidget<T> extends ButtonWidget implements Trackab
 	@Override
 	public void cancel() {
 		variable.setValue(INITIAL_STATE);
-	}
-
-	public T getDisableWhen() {
-		return disableWhen;
 	}
 
 	@Override

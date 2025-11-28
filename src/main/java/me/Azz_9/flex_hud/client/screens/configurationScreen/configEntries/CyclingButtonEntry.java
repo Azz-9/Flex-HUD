@@ -13,22 +13,25 @@ import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 public class CyclingButtonEntry<E extends Enum<E> & Translatable> extends ScrollableConfigList.AbstractConfigEntry {
 	private final ConfigCyclingButtonWidget<?, E> cyclingButtonWidget;
 
-	private <T> CyclingButtonEntry(
+	private final List<Dependency<?>> dependencies = new ArrayList<>();
+
+	private CyclingButtonEntry(
 			int cyclingButtonWidth,
 			int cyclingButtonHeight,
 			ConfigEnum<E> variable,
 			int resetButtonSize,
-			T disableWhen,
 			@Nullable Function<E, Tooltip> getTooltip
 	) {
 		super(resetButtonSize, Text.translatable(variable.getConfigTextTranslationKey()));
-		cyclingButtonWidget = new ConfigCyclingButtonWidget<>(cyclingButtonWidth, cyclingButtonHeight, variable, observers, disableWhen, getTooltip);
+		cyclingButtonWidget = new ConfigCyclingButtonWidget<>(cyclingButtonWidth, cyclingButtonHeight, variable, observers, getTooltip);
 		setResetButtonPressAction((btn) -> cyclingButtonWidget.setToDefaultState());
 
 		cyclingButtonWidget.addObserver(this.resetButtonWidget);
@@ -76,10 +79,28 @@ public class CyclingButtonEntry<E extends Enum<E> & Translatable> extends Scroll
 
 	@Override
 	public void onChange(DataGetter<?> dataGetter) {
-		boolean active = !cyclingButtonWidget.getDisableWhen().equals(dataGetter.getData());
+		boolean shouldDisable = false;
+
+		for (Dependency<?> dependency : dependencies) {
+			Object value = dependency.entry().getDataGetter().getData();
+			if (Objects.equals(value, dependency.disableWhen())) {
+				shouldDisable = true;
+				break;
+			}
+		}
+
+		setActive(!shouldDisable);
+	}
+
+	@Override
+	public void setActive(boolean active) {
 		cyclingButtonWidget.active = active;
-		setActive(active);
+		super.setActive(active);
 		resetButtonWidget.active = active && !cyclingButtonWidget.isCurrentValueDefault();
+	}
+
+	public <T> void addDependency(ScrollableConfigList.AbstractConfigEntry entry, T disableWhen) {
+		dependencies.add(new Dependency<>(entry, disableWhen));
 	}
 
 	// Builder
@@ -87,28 +108,26 @@ public class CyclingButtonEntry<E extends Enum<E> & Translatable> extends Scroll
 		private int cyclingButtonWidth;
 		private int cyclingButtonHeight = 20;
 		private ConfigEnum<E> variable;
-		private ScrollableConfigList.AbstractConfigEntry dependency = null;
-		private Object disableWhen;
+		private final List<Dependency<?>> dependencies = new ArrayList<>();
 
-		public CyclingButtonEntry.Builder<E> setCyclingButtonWidth(int width) {
+		public Builder<E> setCyclingButtonWidth(int width) {
 			this.cyclingButtonWidth = width;
 			return this;
 		}
 
-		public CyclingButtonEntry.Builder<E> setCyclingButtonSize(int width, int height) {
+		public Builder<E> setCyclingButtonSize(int width, int height) {
 			this.cyclingButtonWidth = width;
 			this.cyclingButtonHeight = height;
 			return this;
 		}
 
-		public CyclingButtonEntry.Builder<E> setVariable(ConfigEnum<E> variable) {
+		public Builder<E> setVariable(ConfigEnum<E> variable) {
 			this.variable = variable;
 			return this;
 		}
 
-		public <T> CyclingButtonEntry.Builder<E> setDependency(ScrollableConfigList.AbstractConfigEntry entry, T disableWhen) {
-			dependency = entry;
-			this.disableWhen = disableWhen;
+		public <T> Builder<E> addDependency(ScrollableConfigList.AbstractConfigEntry entry, T disableWhen) {
+			dependencies.add(new Dependency<>(entry, disableWhen));
 			return this;
 		}
 
@@ -121,12 +140,12 @@ public class CyclingButtonEntry<E extends Enum<E> & Translatable> extends Scroll
 					cyclingButtonWidth, cyclingButtonHeight,
 					variable,
 					resetButtonSize,
-					disableWhen,
 					getTooltip
 			);
-			if (dependency != null) {
-				dependency.addObserver(entry);
-				entry.onChange(dependency.getDataGetter());
+			for (Dependency<?> dependency : dependencies) {
+				entry.addDependency(dependency.entry(), dependency.disableWhen());
+				dependency.entry().addObserver(entry);
+				entry.onChange(dependency.entry().getDataGetter());
 			}
 			return entry;
 		}

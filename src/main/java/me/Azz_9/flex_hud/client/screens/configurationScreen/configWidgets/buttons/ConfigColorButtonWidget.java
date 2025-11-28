@@ -27,12 +27,11 @@ import java.util.function.Function;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 
-public class ConfigColorButtonWidget<T> extends ClickableWidget implements TrackableChange, DataGetter<Integer>, ResetAware, ColorBindable {
+public class ConfigColorButtonWidget extends ClickableWidget implements TrackableChange, DataGetter<Integer>, ResetAware, ColorBindable {
 	private ConfigInteger variable;
 	private final int INITIAL_COLOR;
 	private final List<Observer> observers;
-	private final T disableWhen;
-	private final Consumer<ConfigColorButtonWidget<T>> onClickAction;
+	private final Consumer<ConfigColorButtonWidget> onClickAction;
 	@Nullable
 	private final Function<Integer, Tooltip> getTooltip;
 
@@ -42,12 +41,11 @@ public class ConfigColorButtonWidget<T> extends ClickableWidget implements Track
 	private boolean transitioningOut = false;
 	private static final int TRANSITION_DURATION = 300;
 
-	public ConfigColorButtonWidget(int x, int y, int width, int height, ConfigInteger variable, List<Observer> observers, T disableWhen, Consumer<ConfigColorButtonWidget<T>> onClickAction, @Nullable Function<Integer, Tooltip> getTooltip) {
+	public ConfigColorButtonWidget(int x, int y, int width, int height, ConfigInteger variable, List<Observer> observers, Consumer<ConfigColorButtonWidget> onClickAction, @Nullable Function<Integer, Tooltip> getTooltip) {
 		super(x, y, width, height, Text.empty());
 		this.variable = variable;
 		this.INITIAL_COLOR = variable.getValue();
 		this.observers = observers;
-		this.disableWhen = disableWhen;
 		this.onClickAction = onClickAction;
 		this.getTooltip = getTooltip;
 
@@ -56,8 +54,8 @@ public class ConfigColorButtonWidget<T> extends ClickableWidget implements Track
 		}
 	}
 
-	public ConfigColorButtonWidget(int width, int height, ConfigInteger variable, List<Observer> observers, T disableWhen, Consumer<ConfigColorButtonWidget<T>> onClickAction, @Nullable Function<Integer, Tooltip> getTooltip) {
-		this(0, 0, width, height, variable, observers, disableWhen, onClickAction, getTooltip);
+	public ConfigColorButtonWidget(int width, int height, ConfigInteger variable, List<Observer> observers, Consumer<ConfigColorButtonWidget> onClickAction, @Nullable Function<Integer, Tooltip> getTooltip) {
+		this(0, 0, width, height, variable, observers, onClickAction, getTooltip);
 	}
 
 	@Override
@@ -177,10 +175,6 @@ public class ConfigColorButtonWidget<T> extends ClickableWidget implements Track
 	@Override
 	public int getColor() {
 		return variable.getValue();
-	}
-
-	public T getDisableWhen() {
-		return disableWhen;
 	}
 
 	@Override

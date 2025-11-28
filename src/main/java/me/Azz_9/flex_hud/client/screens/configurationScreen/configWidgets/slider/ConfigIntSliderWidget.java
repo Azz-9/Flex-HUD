@@ -20,17 +20,15 @@ public class ConfigIntSliderWidget<T> extends SliderWidget implements TrackableC
 	private final int INITIAL_STATE;
 	private final ConfigInteger variable;
 	private final List<Observer> observers;
-	private final T disableWhen;
 	@Nullable
 	private final Function<Integer, Tooltip> getTooltip;
 
-	public ConfigIntSliderWidget(int width, int height, ConfigInteger variable, Integer step, List<Observer> observers, T disableWhen, @Nullable Function<Integer, Tooltip> getTooltip) {
+	public ConfigIntSliderWidget(int width, int height, ConfigInteger variable, Integer step, List<Observer> observers, @Nullable Function<Integer, Tooltip> getTooltip) {
 		super(0, 0, width, height, Text.of(String.valueOf(variable.getValue())), (double) (variable.getValue() - variable.getMin()) / (variable.getMax() - variable.getMin()));
 		this.STEP = step;
 		this.INITIAL_STATE = variable.getValue();
 		this.variable = variable;
 		this.observers = observers;
-		this.disableWhen = disableWhen;
 		this.getTooltip = getTooltip;
 
 		if (this.getTooltip != null) this.setTooltip(this.getTooltip.apply(variable.getValue()));
@@ -106,10 +104,6 @@ public class ConfigIntSliderWidget<T> extends SliderWidget implements TrackableC
 		}
 
 		if (getTooltip != null) this.setTooltip(this.getTooltip.apply(variable.getValue()));
-	}
-
-	public T getDisableWhen() {
-		return disableWhen;
 	}
 
 	@Override
