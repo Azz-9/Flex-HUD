@@ -348,7 +348,7 @@ public class Compass extends AbstractTextElement {
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
 								.setVariable(color)
-								.setDependency(this.getConfigList().getLastEntry(), true)
+								.addDependency(this.getConfigList().getLastEntry(), true)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
@@ -359,7 +359,7 @@ public class Compass extends AbstractTextElement {
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
 								.setVariable(backgroundColor)
-								.setDependency(this.getConfigList().getLastEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
@@ -391,25 +391,29 @@ public class Compass extends AbstractTextElement {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(showMobs)
-								.build(),
+								.build()
+				);
+				this.addAllEntries(
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(showTamedEntitiesPoint)
+								.addDependency(this.getConfigList().getLastEntry(), true)
 								.build()
 				);
 				this.addAllEntries(
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(showOnlyPets)
-								.setDependency(this.getConfigList().getLastEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), false)
+								.addDependency(this.getConfigList().getEntry(this.getConfigList().getEntryCount() - 2), true)
 								.build()
 				);
 			}
 		};
 	}
 
-	public List<XaeroWaypoint> setXaeroWaypoints(List<XaeroWaypoint> xaeroWaypoints) {
-		return this.xaeroWaypoints = xaeroWaypoints;
+	public void setXaeroWaypoints(List<XaeroWaypoint> xaeroWaypoints) {
+		this.xaeroWaypoints = xaeroWaypoints;
 	}
 
 	public abstract static class ModdedWaypoint {

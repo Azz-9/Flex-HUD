@@ -14,8 +14,8 @@ import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2fStack;
 
 public class DayCounter extends AbstractTextElement {
@@ -110,7 +110,7 @@ public class DayCounter extends AbstractTextElement {
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
 								.setVariable(color)
-								.setDependency(this.getConfigList().getLastEntry(), true)
+								.addDependency(this.getConfigList().getLastEntry(), true)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
@@ -121,7 +121,7 @@ public class DayCounter extends AbstractTextElement {
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
 								.setVariable(backgroundColor)
-								.setDependency(this.getConfigList().getLastEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
