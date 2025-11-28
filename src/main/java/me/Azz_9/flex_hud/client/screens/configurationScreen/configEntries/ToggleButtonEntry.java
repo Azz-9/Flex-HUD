@@ -11,25 +11,28 @@ import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.text.Text;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
 public class ToggleButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
-	private final ConfigToggleButtonWidget<?> toggleButtonWidget;
+	private final ConfigToggleButtonWidget toggleButtonWidget;
 	private final BooleanSupplier toggleable;
 
-	private <T> ToggleButtonEntry(
+	private final List<Dependency<?>> dependencies = new ArrayList<>();
+
+	private ToggleButtonEntry(
 			int toggleButtonWidth,
 			int toggleButtonHeight,
 			ConfigBoolean variable,
 			int resetButtonSize,
-			T disableWhen,
 			Function<Boolean, Tooltip> getTooltip,
 			BooleanSupplier toggleable
 	) {
 		super(resetButtonSize, Text.translatable(variable.getConfigTextTranslationKey()));
-		toggleButtonWidget = new ConfigToggleButtonWidget<>(toggleButtonWidth, toggleButtonHeight, variable, observers, disableWhen, getTooltip);
+		toggleButtonWidget = new ConfigToggleButtonWidget(toggleButtonWidth, toggleButtonHeight, variable, observers, getTooltip);
 		setResetButtonPressAction((btn) -> toggleButtonWidget.setToDefaultState());
 
 		toggleButtonWidget.addObserver(this.resetButtonWidget);
@@ -72,8 +75,22 @@ public class ToggleButtonEntry extends ScrollableConfigList.AbstractConfigEntry 
 
 	@Override
 	public void onChange(DataGetter<?> dataGetter) {
-		boolean active = toggleable.getAsBoolean() && !toggleButtonWidget.getDisableWhen().equals(dataGetter.getData());
-		this.setActive(active);
+		if (!toggleable.getAsBoolean()) {
+			setActive(false);
+			return;
+		}
+
+		boolean shouldDisable = false;
+
+		for (Dependency<?> dependency : dependencies) {
+			Object value = dependency.entry().getDataGetter().getData();
+			if (Objects.equals(value, dependency.disableWhen())) {
+				shouldDisable = true;
+				break;
+			}
+		}
+
+		setActive(!shouldDisable);
 	}
 
 	@Override
@@ -83,13 +100,16 @@ public class ToggleButtonEntry extends ScrollableConfigList.AbstractConfigEntry 
 		resetButtonWidget.active = active && !toggleButtonWidget.isCurrentValueDefault();
 	}
 
+	public <T> void addDependency(ScrollableConfigList.AbstractConfigEntry entry, T disableWhen) {
+		dependencies.add(new Dependency<>(entry, disableWhen));
+	}
+
 	// Builder
 	public static class Builder extends AbstractBuilder<Boolean> {
 		private int toggleButtonWidth;
 		private int toggleButtonHeight = 20;
 		private ConfigBoolean variable;
-		private ScrollableConfigList.AbstractConfigEntry dependency = null;
-		private Object disableWhen;
+		private final List<Dependency<?>> dependencies = new ArrayList<>();
 		private BooleanSupplier toggleable = () -> true;
 
 		public Builder setToggleButtonWidth(int width) {
@@ -113,9 +133,8 @@ public class ToggleButtonEntry extends ScrollableConfigList.AbstractConfigEntry 
 			return this;
 		}
 
-		public <T> Builder setDependency(ScrollableConfigList.AbstractConfigEntry entry, T disableWhen) {
-			dependency = entry;
-			this.disableWhen = disableWhen;
+		public <T> Builder addDependency(ScrollableConfigList.AbstractConfigEntry entry, T disableWhen) {
+			dependencies.add(new Dependency<>(entry, disableWhen));
 			return this;
 		}
 
@@ -128,13 +147,13 @@ public class ToggleButtonEntry extends ScrollableConfigList.AbstractConfigEntry 
 					toggleButtonWidth, toggleButtonHeight,
 					variable,
 					resetButtonSize,
-					disableWhen,
 					getTooltip,
 					toggleable
 			);
-			if (dependency != null) {
-				dependency.addObserver(entry);
-				entry.onChange(dependency.getDataGetter());
+			for (Dependency<?> dependency : dependencies) {
+				entry.addDependency(dependency.entry(), dependency.disableWhen());
+				dependency.entry().addObserver(entry);
+				entry.onChange(dependency.entry().getDataGetter());
 			}
 			return entry;
 		}

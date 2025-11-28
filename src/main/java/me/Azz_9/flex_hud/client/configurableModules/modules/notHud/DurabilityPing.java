@@ -121,7 +121,7 @@ public class DurabilityPing extends AbstractModule {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(checkArmorPieces)
-								.setDependency(this.getConfigList().getLastEntry(), true)
+								.addDependency(this.getConfigList().getLastEntry(), true)
 								.build()
 				);
 			}

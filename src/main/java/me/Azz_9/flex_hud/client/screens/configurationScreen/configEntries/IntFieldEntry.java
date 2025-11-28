@@ -15,7 +15,9 @@ import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
@@ -27,12 +29,13 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 
 	private final int increaseAndDecreaseButtonsSize = 10;
 
-	private <T> IntFieldEntry(
+	private final List<Dependency<?>> dependencies = new ArrayList<>();
+
+	private IntFieldEntry(
 			int intFieldWidth,
 			int intFieldHeight,
 			ConfigInteger variable,
 			int resetButtonSize,
-			T disableWhen,
 			Function<Integer, Tooltip> getTooltip
 	) {
 		super(resetButtonSize, Text.translatable(variable.getConfigTextTranslationKey()));
@@ -41,7 +44,6 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 				intFieldWidth, intFieldHeight,
 				variable,
 				observers,
-				disableWhen,
 				getTooltip
 		);
 		setResetButtonPressAction((btn) -> intFieldWidget.setToDefaultState());
@@ -102,13 +104,31 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 
 	@Override
 	public void onChange(DataGetter<?> dataGetter) {
-		boolean active = !intFieldWidget.getDisableWhen().equals(dataGetter.getData());
+		boolean shouldDisable = false;
+
+		for (Dependency<?> dependency : dependencies) {
+			Object value = dependency.entry().getDataGetter().getData();
+			if (Objects.equals(value, dependency.disableWhen())) {
+				shouldDisable = true;
+				break;
+			}
+		}
+
+		setActive(!shouldDisable);
+	}
+
+	@Override
+	public void setActive(boolean active) {
 		intFieldWidget.active = active;
 		intFieldWidget.setEditable(active);
 		increaseButton.active = active;
 		decreaseButton.active = active;
-		setActive(active);
+		super.setActive(active);
 		resetButtonWidget.active = active && !intFieldWidget.isCurrentValueDefault();
+	}
+
+	public <T> void addDependency(ScrollableConfigList.AbstractConfigEntry entry, T disableWhen) {
+		dependencies.add(new Dependency<>(entry, disableWhen));
 	}
 
 	// Builder
@@ -116,8 +136,7 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 		private int intFieldWidth;
 		private int intFieldHeight = 20;
 		private ConfigInteger variable;
-		private ScrollableConfigList.AbstractConfigEntry dependency = null;
-		private Object disableWhen;
+		private final List<Dependency<?>> dependencies = new ArrayList<>();
 
 		public Builder setIntFieldWidth(int width) {
 			this.intFieldWidth = width;
@@ -135,9 +154,8 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 			return this;
 		}
 
-		public <T> Builder setDependency(ScrollableConfigList.AbstractConfigEntry entry, T disableWhen) {
-			dependency = entry;
-			this.disableWhen = disableWhen;
+		public <T> Builder addDependency(ScrollableConfigList.AbstractConfigEntry entry, T disableWhen) {
+			dependencies.add(new Dependency<>(entry, disableWhen));
 			return this;
 		}
 
@@ -150,12 +168,12 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 					intFieldWidth, intFieldHeight,
 					variable,
 					resetButtonSize,
-					disableWhen,
 					getTooltip
 			);
-			if (dependency != null) {
-				dependency.addObserver(entry);
-				entry.onChange(dependency.getDataGetter());
+			for (Dependency<?> dependency : dependencies) {
+				entry.addDependency(dependency.entry(), dependency.disableWhen());
+				dependency.entry().addObserver(entry);
+				entry.onChange(dependency.entry().getDataGetter());
 			}
 			return entry;
 		}
