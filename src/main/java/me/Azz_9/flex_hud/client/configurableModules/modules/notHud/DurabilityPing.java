@@ -102,25 +102,31 @@ public class DurabilityPing extends AbstractModule {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(enabled)
-								.build(),
+								.build()
+				);
+				this.addAllEntries(
 						new IntSliderEntry.Builder()
 								.setIntSliderWidth(80)
 								.setVariable(threshold)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.setStep(10)
 								.build(),
 						new CyclingButtonEntry.Builder<PingType>()
 								.setCyclingButtonWidth(80)
 								.setVariable(pingType)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(checkElytraOnly)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 				this.addAllEntries(
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(checkArmorPieces)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.addDependency(this.getConfigList().getLastEntry(), true)
 								.build()
 				);

@@ -41,7 +41,9 @@ public class ConfigIntSliderWidget<T> extends SliderWidget implements TrackableC
 				context.drawBorder(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
 			}
 		}
+
 		super.renderWidget(context, mouseX, mouseY, deltaTicks);
+
 		if (!this.active) {
 			context.fill(getX(), getY(), getRight(), getBottom(), 0xcf4e4e4e);
 		}
