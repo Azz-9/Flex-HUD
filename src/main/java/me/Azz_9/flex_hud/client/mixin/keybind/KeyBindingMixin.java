@@ -10,10 +10,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(KeyBinding.class)
+// lower priority to make it apply before the mixin from toomanyshortcuts
+@Mixin(value = KeyBinding.class, priority = 900)
 public abstract class KeyBindingMixin {
 
-	@Inject(method = "onKeyPressed", at = @At(value = "TAIL"))
+	@Inject(method = "onKeyPressed", at = @At(value = "HEAD"))
 	private static void onKeyPressed(InputUtil.Key key, CallbackInfo ci) {
 		// open option screen
 		if (Flex_hudClient.openOptionScreenKeyBind.isPressed()) {
