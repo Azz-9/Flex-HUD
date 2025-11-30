@@ -14,7 +14,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.joml.Matrix3x2fStack;
-import org.joml.Matrix3x2fStack;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,7 +25,6 @@ public class CrosshairButtonWidget<T> extends ClickableWidget implements Trackab
 	private ConfigIntGrid variable;
 	private final int[][] INITIAL_STATE;
 	private final List<Observer> observers;
-	private final T disableWhen;
 	private final Consumer<CrosshairButtonWidget<T>> onClickAction;
 
 	private long transitionStartTime = -1;
@@ -35,12 +33,11 @@ public class CrosshairButtonWidget<T> extends ClickableWidget implements Trackab
 	private boolean transitioningOut = false;
 	private static final int TRANSITION_DURATION = 300;
 
-	public CrosshairButtonWidget(int width, int height, ConfigIntGrid variable, List<Observer> observers, T disableWhen, Consumer<CrosshairButtonWidget<T>> onClickAction) {
+	public CrosshairButtonWidget(int width, int height, ConfigIntGrid variable, List<Observer> observers, Consumer<CrosshairButtonWidget<T>> onClickAction) {
 		super(0, 0, width, height, Text.empty());
 		this.variable = variable;
 		this.INITIAL_STATE = variable.getValue();
 		this.observers = observers;
-		this.disableWhen = disableWhen;
 		this.onClickAction = onClickAction;
 	}
 
@@ -159,10 +156,6 @@ public class CrosshairButtonWidget<T> extends ClickableWidget implements Trackab
 	@Override
 	public int[][] getData() {
 		return variable.getValue();
-	}
-
-	public T getDisableWhen() {
-		return disableWhen;
 	}
 
 	@Override
