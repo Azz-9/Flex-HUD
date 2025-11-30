@@ -68,14 +68,18 @@ public class TimeChanger extends AbstractModule {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(enabled)
-								.build(),
+								.build()
+				);
+				this.addAllEntries(
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(useRealTime)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new IntSliderEntry.Builder()
 								.setIntSliderWidth(80)
 								.setVariable(selectedTime)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.setStep(1000)
 								.build()
 				);
