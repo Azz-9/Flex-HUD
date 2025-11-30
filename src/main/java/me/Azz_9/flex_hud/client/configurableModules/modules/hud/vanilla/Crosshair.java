@@ -184,14 +184,18 @@ public class Crosshair extends AbstractModule implements HudElement {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(enabled)
-								.build(),
+								.build()
+				);
+				this.addAllEntries(
 						new CrosshairEditorEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
 								.setVariable(pixels)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(disableBlending)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 			}
