@@ -44,10 +44,13 @@ public class WeatherChanger extends AbstractModule {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(enabled)
-								.build(),
+								.build()
+				);
+				this.addAllEntries(
 						new CyclingButtonEntry.Builder<Weather>()
 								.setCyclingButtonWidth(80)
 								.setVariable(selectedWeather)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 			}

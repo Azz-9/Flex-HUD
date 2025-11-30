@@ -5,6 +5,7 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
+import me.Azz_9.flex_hud.client.utils.Cursors;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.Tooltip;
@@ -37,12 +38,18 @@ public class ConfigIntSliderWidget<T> extends SliderWidget implements TrackableC
 	@Override
 	public void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
 		if (this.active) {
+			if (this.isHovered()) context.setCursor(Cursors.POINTING_HAND);
+
 			if (this.isSelected()) {
 				context.drawStrokedRectangle(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
 			}
 		}
+
 		super.renderWidget(context, mouseX, mouseY, deltaTicks);
+
 		if (!this.active) {
+			if (this.isHovered()) context.setCursor(Cursors.NOT_ALLOWED);
+
 			context.fill(getX(), getY(), getRight(), getBottom(), 0xcf4e4e4e);
 		}
 	}

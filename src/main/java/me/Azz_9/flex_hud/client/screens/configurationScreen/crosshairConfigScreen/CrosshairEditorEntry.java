@@ -11,24 +11,26 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.text.Text;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class CrosshairEditorEntry extends ScrollableConfigList.AbstractConfigEntry {
 	private CrosshairButtonWidget<?> crosshairButtonWidget;
 
-	public <T> CrosshairEditorEntry(
+	private final List<Dependency<?>> dependencies = new ArrayList<>();
+
+	public CrosshairEditorEntry(
 			int crosshairButtonWidth,
 			int crosshairButtonHeight,
 			ConfigIntGrid variable,
-			int resetButtonSize,
-			T disableWhen
+			int resetButtonSize
 	) {
 		super(resetButtonSize, Text.translatable(variable.getConfigTextTranslationKey()));
 		crosshairButtonWidget = new CrosshairButtonWidget<>(
 				crosshairButtonWidth, crosshairButtonHeight,
 				variable,
 				observers,
-				disableWhen,
 				(btn) -> {
 					if (MinecraftClient.getInstance().currentScreen instanceof AbstractCrosshairConfigScreen crosshairConfigScreen) {
 						CrosshairEditor crosshairEditor = crosshairConfigScreen.getCrosshairEditor();
@@ -77,15 +79,33 @@ public class CrosshairEditorEntry extends ScrollableConfigList.AbstractConfigEnt
 
 	@Override
 	public void onChange(DataGetter<?> dataGetter) {
-		boolean active = !crosshairButtonWidget.getDisableWhen().equals(dataGetter.getData());
-		crosshairButtonWidget.active = active;
-		setActive(active);
-		resetButtonWidget.active = active && !crosshairButtonWidget.isCurrentValueDefault();
+		boolean shouldDisable = false;
+
+		for (Dependency<?> dependency : dependencies) {
+			Object value = dependency.entry().getDataGetter().getData();
+			if (Objects.equals(value, dependency.disableWhen())) {
+				shouldDisable = true;
+				break;
+			}
+		}
+
+		setActive(!shouldDisable);
 		// fermer l'éditeur si le button est désacitvé
 		AbstractCrosshairConfigScreen screen = (AbstractCrosshairConfigScreen) MinecraftClient.getInstance().currentScreen;
-		if (screen != null && !active) {
+		if (screen != null && shouldDisable) {
 			screen.closeEditor();
 		}
+	}
+
+	@Override
+	public void setActive(boolean active) {
+		crosshairButtonWidget.active = active;
+		super.setActive(active);
+		resetButtonWidget.active = active && !crosshairButtonWidget.isCurrentValueDefault();
+	}
+
+	public <T> void addDependency(ScrollableConfigList.AbstractConfigEntry entry, T disableWhen) {
+		dependencies.add(new Dependency<>(entry, disableWhen));
 	}
 
 	@Override
@@ -103,8 +123,7 @@ public class CrosshairEditorEntry extends ScrollableConfigList.AbstractConfigEnt
 		private int crosshairButtonWidth;
 		private int crosshairButtonHeight = 20;
 		private ConfigIntGrid variable;
-		private ScrollableConfigList.AbstractConfigEntry dependency = null;
-		private Object disableWhen;
+		private final List<Dependency<?>> dependencies = new ArrayList<>();
 
 		public Builder setColorButtonWidth(int width) {
 			this.crosshairButtonWidth = width;
@@ -122,23 +141,25 @@ public class CrosshairEditorEntry extends ScrollableConfigList.AbstractConfigEnt
 			return this;
 		}
 
-		public <T> Builder setDependency(ScrollableConfigList.AbstractConfigEntry entry, T disableWhen) {
-			dependency = entry;
-			this.disableWhen = disableWhen;
+		public <T> Builder addDependency(ScrollableConfigList.AbstractConfigEntry entry, T disableWhen) {
+			dependencies.add(new Dependency<>(entry, disableWhen));
 			return this;
 		}
 
 		@Override
 		public CrosshairEditorEntry build() {
+			if (variable == null)
+				throw new IllegalArgumentException("CrosshairEditorEntry requires a variable to be set using setVariable()!");
+
 			CrosshairEditorEntry entry = new CrosshairEditorEntry(
 					crosshairButtonWidth, crosshairButtonHeight,
 					variable,
-					resetButtonSize,
-					disableWhen
+					resetButtonSize
 			);
-			if (dependency != null) {
-				dependency.addObserver(entry);
-				entry.onChange(dependency.getDataGetter());
+			for (Dependency<?> dependency : dependencies) {
+				entry.addDependency(dependency.entry(), dependency.disableWhen());
+				dependency.entry().addObserver(entry);
+				entry.onChange(dependency.entry().getDataGetter());
 			}
 			return entry;
 		}
