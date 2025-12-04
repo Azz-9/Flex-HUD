@@ -14,6 +14,7 @@ import net.minecraft.client.input.KeyInput;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.Arrays;
 import java.util.function.Consumer;
 
 public class CrosshairEditor implements Element, Drawable, Widget {
@@ -149,10 +150,23 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 	public void clearTexture() {
 		int[][] texture = new int[this.pixels.length][this.pixels[0].length];
 		int[][] oldTexture = getTexture();
-		undoManager.addAction(new TextureAction(this, oldTexture, texture));
 
-		crosshairButtonWidget.setCrosshairTexture(texture);
-		this.updateTexture(texture);
+		if (!Arrays.deepEquals(oldTexture, texture)) {
+			undoManager.addAction(new TextureAction(this, oldTexture, texture));
+
+			crosshairButtonWidget.setCrosshairTexture(texture);
+			this.updateTexture(texture);
+		}
+	}
+
+	public void onPresetUpdate(int[][] newTexture) {
+
+		int[][] oldTexture = getTexture();
+
+		if (!Arrays.deepEquals(oldTexture, newTexture)) {
+			setTexture(newTexture);
+			undoManager.addAction(new TextureAction(this, oldTexture, newTexture));
+		}
 	}
 
 	@Override
@@ -211,7 +225,9 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 			if (clicked) {
 				clicked = false;
 
-				undoManager.addAction(new TextureAction(this, onClickTexture, getTexture()));
+				if (!Arrays.deepEquals(onClickTexture, getTexture())) {
+					undoManager.addAction(new TextureAction(this, onClickTexture, getTexture()));
+				}
 			}
 			return true;
 		} else if (colorSelector.isFocused() && colorSelector.mouseReleased(click)) {
