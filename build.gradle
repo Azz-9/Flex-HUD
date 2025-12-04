@@ -42,7 +42,8 @@ dependencies {
 	if (includeXaero) {
 		modImplementation files("libs/Xaeros_Minimap_${project.xaero_minimap_version}_Fabric_${project.minecraft_version}.jar")
 	} else {
-		compileOnly files("libs/Xaeros_Minimap_${project.xaero_minimap_version}_Fabric_${project.minecraft_version}.jar")
+		//compileOnly files("libs/Xaeros_Minimap_${project.xaero_minimap_version}_Fabric_${project.minecraft_version}.jar")
+		compileOnly files("libs/Xaeros_Minimap_${project.xaero_minimap_version}_Fabric_1.21.9.jar")
 	}
 }
 
