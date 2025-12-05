@@ -23,7 +23,7 @@ import java.util.function.Function;
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 
 public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
-	private final ConfigIntFieldWidget<?> intFieldWidget;
+	private final ConfigIntFieldWidget intFieldWidget;
 	private final TexturedButtonWidget increaseButton;
 	private final TexturedButtonWidget decreaseButton;
 
@@ -39,7 +39,7 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 			Function<Integer, Tooltip> getTooltip
 	) {
 		super(resetButtonSize, Text.translatable(variable.getConfigTextTranslationKey()));
-		intFieldWidget = new ConfigIntFieldWidget<>(
+		intFieldWidget = new ConfigIntFieldWidget(
 				MinecraftClient.getInstance().textRenderer,
 				intFieldWidth, intFieldHeight,
 				variable,
