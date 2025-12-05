@@ -38,6 +38,10 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 		return children().get(super.getEntryCount() - 1);
 	}
 
+	public AbstractConfigEntry getFirstEntry() {
+		return children().getFirst();
+	}
+
 	public AbstractConfigEntry getEntry(int index) {
 		return children().get(index);
 	}
