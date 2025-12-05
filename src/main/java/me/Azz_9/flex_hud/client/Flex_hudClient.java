@@ -35,6 +35,7 @@ public class Flex_hudClient implements ClientModInitializer {
 
 	private static long launchTime;
 	private boolean joinedWorld;
+	private boolean layersRegistered = false;
 
 	private XaeroWaypointCollector xaeroCollector;
 
@@ -54,14 +55,15 @@ public class Flex_hudClient implements ClientModInitializer {
 			ModulesHelper.getInstance().compass.setXaeroWaypoints(xaeroCollector.getWaypoints());
 		}
 
-		List<HudElement> hudElements = ModulesHelper.getHudElements();
-
 		HudLayerRegistrationCallback.EVENT.register(layeredDrawer -> {
+			if (layersRegistered) return;
+			layersRegistered = true;
+
 			for (AbstractModule module : ModulesHelper.getModules()) {
 				module.init();
 			}
 
-			for (HudElement hudElement : hudElements) {
+			for (HudElement hudElement : ModulesHelper.getHudElements()) {
 				Identifier id = Identifier.of(MOD_ID, hudElement.getID());
 				Identifier layer = hudElement.getLayer();
 				layeredDrawer.attachLayerBefore(layer, id, Flex_hudClient.isDebug() ? hudElement::renderWithSpeedTest : hudElement::render);

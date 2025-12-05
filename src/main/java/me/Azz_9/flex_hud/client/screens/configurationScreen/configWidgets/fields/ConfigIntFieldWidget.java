@@ -11,12 +11,13 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Function;
 
-public class ConfigIntFieldWidget<T> extends TextFieldWidget implements TrackableChange, DataGetter<Integer>, ResetAware {
+public class ConfigIntFieldWidget extends TextFieldWidget implements TrackableChange, DataGetter<Integer>, ResetAware {
 
 	private final int INITIAL_STATE;
 	private final ConfigInteger variable;
@@ -45,11 +46,25 @@ public class ConfigIntFieldWidget<T> extends TextFieldWidget implements Trackabl
 		this.MIN_VALUE = variable.getMin();
 		this.MAX_VALUE = variable.getMax();
 
-		String regex = String.format("[0-9]{%d,%d}", String.valueOf(MIN_VALUE).length(), String.valueOf(MAX_VALUE).length());
-		setTextPredicate(text -> text.isEmpty() || text.matches(regex));
+		/*int minDigits = Integer.toString(MIN_VALUE).length();
+		int maxDigits = Integer.toString(MAX_VALUE).length();
+		String regex;
+		if (minDigits == maxDigits) {
+			regex = "\\d{" + maxDigits + "}";
+		} else {
+			regex = "\\d{" + minDigits + "," + maxDigits + "}";
+		}*/
+		//String regex = String.format("[0-9]{%d,%d}", String.valueOf(MIN_VALUE).length(), String.valueOf(MAX_VALUE).length());
+		setTextPredicate(text -> text.isEmpty() || text.matches("\\d*"));
 
 		setChangedListener(value -> {
-			if (suppressIntFieldCallback) return;
+			if (isValid()) {
+				setEditableColor(0xffffffff);
+			} else {
+				setEditableColor((Formatting.RED.getColorValue() != null ? Formatting.RED.getColorValue() : 0xfc5454) | 0xff000000);
+			}
+
+			/*if (suppressIntFieldCallback) return;
 
 			if (value.isEmpty()) {
 				value = String.valueOf(MIN_VALUE);
@@ -80,7 +95,7 @@ public class ConfigIntFieldWidget<T> extends TextFieldWidget implements Trackabl
 			if (getTooltip != null) this.setTooltip(this.getTooltip.apply(variable.getValue()));
 
 			if (increaseButton != null) increaseButton.active = getValue() < MAX_VALUE;
-			if (decreaseButton != null) decreaseButton.active = getValue() > MIN_VALUE;
+			if (decreaseButton != null) decreaseButton.active = getValue() > MIN_VALUE;*/
 		});
 
 		setText(String.valueOf(variable.getValue()));
@@ -165,5 +180,16 @@ public class ConfigIntFieldWidget<T> extends TextFieldWidget implements Trackabl
 
 	public void addObserver(Observer observer) {
 		observers.add(observer);
+	}
+
+	@Override
+	public boolean isValid() {
+		try {
+			int number = Integer.parseInt(getText());
+
+			return number >= MIN_VALUE && number <= MAX_VALUE;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 }
