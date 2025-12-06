@@ -98,6 +98,11 @@ public abstract class AbstractCrosshairConfigScreen extends AbstractConfiguratio
 		return super.keyPressed(keyCode, scanCode, modifiers);
 	}
 
+	@Override
+	public boolean charTyped(char chr, int modifiers) {
+		return crosshairEditor.charTyped(chr, modifiers);
+	}
+
 	public void openEditor(CrosshairButtonWidget<?> crosshairButtonWidget) {
 		if (crosshairEditor == null) {
 			crosshairEditor = new CrosshairEditor(crosshairButtonWidget);
