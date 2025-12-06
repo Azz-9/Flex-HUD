@@ -12,6 +12,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.input.CharInput;
 import net.minecraft.client.input.KeyInput;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen implements Observer, ColorSelectorGetter {
@@ -171,7 +172,7 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 	}
 
 
-	public void openColorSelector(ColorBindable colorBindable) {
+	public void openColorSelector(@NotNull ColorBindable colorBindable) {
 		this.colorSelector = new ColorSelector(colorBindable);
 		this.colorSelector.setFocused(true);
 	}
