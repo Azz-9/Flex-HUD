@@ -36,11 +36,11 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 	private boolean isDraggingCursor = false;
 
 	// clear button
-	private ButtonWidget clearButton;
+	private final ButtonWidget clearButton;
 
 	// presets list
 	private final TextWidget presetText;
-	private CrosshairPresetsList crosshairPresetsList;
+	private final CrosshairPresetsList crosshairPresetsList;
 
 	private boolean clicked = false;
 	private int[][] onClickTexture;
@@ -172,11 +172,13 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 		if (colorSelector.isFocused() && colorSelector.mouseClicked(mouseX, mouseY, button)) {
 			isDraggingCursor = true;
 			return true;
+
 		} else if (this.isMouseOver(mouseX, mouseY)) {
-			if (colorButton.mouseClicked(mouseX, mouseY, button) ||
-					clearButton.mouseClicked(mouseX, mouseY, button) ||
-					crosshairPresetsList.mouseClicked(mouseX, mouseY, button)
-			) {
+			if (colorButton.mouseClicked(mouseX, mouseY, button)) {
+				return true;
+			}
+			if (clearButton.mouseClicked(mouseX, mouseY, button) || crosshairPresetsList.mouseClicked(mouseX, mouseY, button)) {
+				colorSelector.setFocused(false);
 				return true;
 			}
 
@@ -187,17 +189,26 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 						for (int i = 0; i < crosshairButtonWidget.getData().length; i++) {
 							texture[i] = crosshairButtonWidget.getData()[i].clone();
 						}
+
 						onClickTexture = texture;
 						pixels[y][x].mouseClicked(mouseX, mouseY, button);
 						clicked = true;
+
+						colorSelector.setFocused(false);
 						return true;
 					}
 				}
 			}
-			colorSelector.setFocused(false);
 
+			colorSelector.setFocused(false);
 			return true;
 		}
+
+		if (colorSelector.isFocused()) {
+			colorSelector.setFocused(false);
+			return true;
+		}
+
 		return false;
 	}
 
@@ -250,7 +261,12 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 			return true;
 		}
 
-		return Element.super.keyPressed(keyCode, scanCode, modifiers);
+		return colorSelector.keyPressed(keyCode, scanCode, modifiers);
+	}
+
+	@Override
+	public boolean charTyped(char chr, int modifiers) {
+		return colorSelector.charTyped(chr, modifiers);
 	}
 
 	public void updateTexture(int[][] texture) {
