@@ -12,6 +12,7 @@ import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -39,63 +40,39 @@ public class ConfigIntFieldWidget extends TextFieldWidget implements TrackableCh
 
 		if (variable.getMin() < 0)
 			throw new IllegalArgumentException("Min value cannot be negative!");
-		if (variable.getMax() < 0) throw new IllegalArgumentException("Max value cannot be negative!");
+		if (variable.getMax() < 0)
+			throw new IllegalArgumentException("Max value cannot be negative!");
 		if (variable.getMin() > variable.getMax())
 			throw new IllegalArgumentException("Min value cannot be greater than max value!");
 
 		this.MIN_VALUE = variable.getMin();
 		this.MAX_VALUE = variable.getMax();
 
-		/*int minDigits = Integer.toString(MIN_VALUE).length();
-		int maxDigits = Integer.toString(MAX_VALUE).length();
-		String regex;
-		if (minDigits == maxDigits) {
-			regex = "\\d{" + maxDigits + "}";
-		} else {
-			regex = "\\d{" + minDigits + "," + maxDigits + "}";
-		}*/
-		//String regex = String.format("[0-9]{%d,%d}", String.valueOf(MIN_VALUE).length(), String.valueOf(MAX_VALUE).length());
-		setTextPredicate(text -> text.isEmpty() || text.matches("\\d*"));
+		setTextPredicate(text -> text.isEmpty() || text.matches("\\d*") && text.length() <= Integer.toString(MAX_VALUE).length());
 
 		setChangedListener(value -> {
-			if (isValid()) {
+			if (suppressIntFieldCallback) return;
+
+			boolean valid = isValid();
+
+			if (valid) {
 				setEditableColor(0xffffffff);
-			} else {
-				setEditableColor((Formatting.RED.getColorValue() != null ? Formatting.RED.getColorValue() : 0xfc5454) | 0xff000000);
-			}
-
-			/*if (suppressIntFieldCallback) return;
-
-			if (value.isEmpty()) {
-				value = String.valueOf(MIN_VALUE);
-			} else {
-				int intValue;
-				try {
-					intValue = Integer.parseUnsignedInt(value);
-				} catch (NumberFormatException e) {
-					intValue = Integer.MAX_VALUE;
-					value = String.valueOf(intValue);
+				Integer inputValue = getInputValue();
+				if (inputValue != null) { // ça devrait jamais être null ici mais vzy on sait jamais
+					variable.setValue(getInputValue());
 				}
-
-				if (value.startsWith("0") && value.length() > 1) {
-					value = value.substring(1);
-				} else if (intValue > MAX_VALUE) {
-					value = String.valueOf(MAX_VALUE);
-				} else if (intValue < MIN_VALUE) {
-					value = String.valueOf(MIN_VALUE);
-				}
+			} else {
+				setEditableColor(ColorHelper.withAlpha(255, Formatting.RED.getColorValue() != null ? Formatting.RED.getColorValue() : 0xfc5454));
 			}
-			setText(value);
 
 			for (Observer observer : observers) {
 				observer.onChange(this);
 			}
-			variable.setValue(getValue());
 
 			if (getTooltip != null) this.setTooltip(this.getTooltip.apply(variable.getValue()));
 
 			if (increaseButton != null) increaseButton.active = getValue() < MAX_VALUE;
-			if (decreaseButton != null) decreaseButton.active = getValue() > MIN_VALUE;*/
+			if (decreaseButton != null) decreaseButton.active = getValue() > MIN_VALUE;
 		});
 
 		setText(String.valueOf(variable.getValue()));
@@ -121,14 +98,16 @@ public class ConfigIntFieldWidget extends TextFieldWidget implements TrackableCh
 	}
 
 	public void increase() {
-		if (getValue() < MAX_VALUE) {
-			super.setText(String.valueOf(getValue() + 1));
+		int current = getValue();
+		if (current < MAX_VALUE) {
+			super.setText(String.valueOf(current + 1));
 		}
 	}
 
 	public void decrease() {
-		if (getValue() > MIN_VALUE) {
-			super.setText(String.valueOf(getValue() - 1));
+		int current = getValue();
+		if (current > MIN_VALUE) {
+			super.setText(String.valueOf(current - 1));
 		}
 	}
 
@@ -149,8 +128,12 @@ public class ConfigIntFieldWidget extends TextFieldWidget implements TrackableCh
 		suppressIntFieldCallback = false;
 	}
 
-	private int getValue() {
-		return Integer.parseUnsignedInt(getText());
+	private @Nullable Integer getInputValue() {
+		try {
+			return Integer.parseInt(getText());
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	@Override
@@ -170,7 +153,11 @@ public class ConfigIntFieldWidget extends TextFieldWidget implements TrackableCh
 
 	@Override
 	public Integer getData() {
-		return getValue();
+		return variable.getValue();
+	}
+
+	private int getValue() {
+		return getData();
 	}
 
 	@Override
@@ -185,9 +172,9 @@ public class ConfigIntFieldWidget extends TextFieldWidget implements TrackableCh
 	@Override
 	public boolean isValid() {
 		try {
-			int number = Integer.parseInt(getText());
+			Integer number = getInputValue();
 
-			return number >= MIN_VALUE && number <= MAX_VALUE;
+			return number != null && number >= MIN_VALUE && number <= MAX_VALUE;
 		} catch (Exception e) {
 			return false;
 		}
