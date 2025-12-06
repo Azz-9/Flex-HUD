@@ -6,6 +6,7 @@ import me.Azz_9.flex_hud.client.screens.widgets.HelpWidget;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.input.CharInput;
 import net.minecraft.client.input.KeyInput;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
@@ -98,6 +99,11 @@ public abstract class AbstractCrosshairConfigScreen extends AbstractConfiguratio
 			} else return crosshairEditor.keyPressed(input);
 		}
 		return super.keyPressed(input);
+	}
+
+	@Override
+	public boolean charTyped(CharInput input) {
+		return crosshairEditor.charTyped(input);
 	}
 
 	public void openEditor(CrosshairButtonWidget<?> crosshairButtonWidget) {
