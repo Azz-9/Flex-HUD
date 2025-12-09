@@ -11,6 +11,7 @@
 	"client": [
 		"bossBar.BossBarAccessor",
 		"bossBar.BossBarHudMixin",
+		"compass.GameRendererAccessor",
 		"cps.KeyboardMixin",
 		"crosshair.CrosshairMixin",
 		"drawContext.DrawContextAccessor",
