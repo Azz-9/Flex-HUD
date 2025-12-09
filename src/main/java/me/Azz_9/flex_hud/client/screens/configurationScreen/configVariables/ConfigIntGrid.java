@@ -2,22 +2,23 @@ package me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
 public class ConfigIntGrid extends AbstractConfigObject<int[][]> {
 
-	public ConfigIntGrid(int[][] defaultValue, String configTextTranslationKey) {
+	public ConfigIntGrid(final int @NotNull [] @NotNull [] defaultValue, @Nullable final String configTextTranslationKey) {
 		super(defaultValue, configTextTranslationKey);
 	}
 
-	public ConfigIntGrid(int[][] defaultValue) {
+	public ConfigIntGrid(final int @NotNull [] @NotNull [] defaultValue) {
 		super(defaultValue);
 	}
 
 	@Override
-	public int[][] getValue() {
+	public int @NotNull [] @NotNull [] getValue() {
 		// Créer une copie profonde du tableau
 		int[][] copy = new int[super.getValue().length][];
 		for (int i = 0; i < super.getValue().length; i++) {
@@ -27,14 +28,14 @@ public class ConfigIntGrid extends AbstractConfigObject<int[][]> {
 	}
 
 	@Override
-	public void setValue(int[][] newValue) {
+	public void setValue(final int @NotNull [] @NotNull [] newValue) {
 		for (int i = 0; i < newValue.length; i++) {
 			super.getValue()[i] = Arrays.copyOf(newValue[i], newValue[i].length);
 		}
 	}
 
 	@Override
-	public int[][] getDefaultValue() {
+	public int @NotNull [] @NotNull [] getDefaultValue() {
 		// Créer une copie profonde du tableau par défaut
 		int[][] copy = new int[super.getDefaultValue().length][];
 		for (int i = 0; i < super.getDefaultValue().length; i++) {
@@ -44,7 +45,7 @@ public class ConfigIntGrid extends AbstractConfigObject<int[][]> {
 	}
 
 	@Override
-	public void setDefaultValue(int[][] newValue) {
+	public void setDefaultValue(final int @NotNull [] @NotNull [] newValue) {
 		for (int i = 0; i < newValue.length; i++) {
 			super.getDefaultValue()[i] = Arrays.copyOf(newValue[i], newValue[i].length);
 		}
@@ -76,7 +77,7 @@ public class ConfigIntGrid extends AbstractConfigObject<int[][]> {
 	}
 
 	@Override
-	protected int[][] parseValue(JsonElement element) {
+	protected int[][] parseValue(final JsonElement element) {
 		if (element == null || element.isJsonNull() || !element.isJsonArray()) return getDefaultValue();
 
 		JsonArray outerArray = element.getAsJsonArray();
@@ -116,7 +117,6 @@ public class ConfigIntGrid extends AbstractConfigObject<int[][]> {
 	@Override
 	public JsonElement toJsonValue() {
 		int[][] value = getValue();
-		if (value == null) return JsonNull.INSTANCE;
 
 		JsonArray outerArray = new JsonArray();
 		for (int[] row : value) {
