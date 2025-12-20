@@ -6,6 +6,8 @@ import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 public interface Configurable extends Activable {
 	Text getName();
 
@@ -16,4 +18,11 @@ public interface Configurable extends Activable {
 	}
 
 	AbstractConfigurationScreen getConfigScreen(Screen parent);
+
+	default List<String> getKeywords() {
+		return List.of(
+				getName().getString().toLowerCase(),
+				getID().toLowerCase()
+		);
+	}
 }

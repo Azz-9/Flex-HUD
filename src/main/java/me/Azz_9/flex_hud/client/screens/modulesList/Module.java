@@ -1,5 +1,6 @@
 package me.Azz_9.flex_hud.client.screens.modulesList;
 
+import com.google.common.collect.ImmutableList;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.tooltip.Tooltip;
@@ -17,8 +18,9 @@ public class Module {
 	public Identifier icon;
 	public AbstractConfigurationScreen configScreen;
 	public ButtonWidget button;
+	public ImmutableList<String> keywords;
 
-	public Module(String name, String id, AbstractConfigurationScreen configScreen, int buttonWidth, int buttonHeight, ModulesListScreen parent, Supplier<Tooltip> getTooltip) {
+	public Module(String name, String id, AbstractConfigurationScreen configScreen, int buttonWidth, int buttonHeight, ModulesListScreen parent, Supplier<Tooltip> getTooltip, ImmutableList<String> keywords) {
 		if (name == null) {
 			this.setAllNull();
 		} else {
@@ -36,6 +38,7 @@ public class Module {
 			if (getTooltip != null) {
 				this.button.setTooltip(getTooltip.get());
 			}
+			this.keywords = keywords;
 		}
 	}
 
@@ -45,6 +48,7 @@ public class Module {
 		this.icon = null;
 		this.configScreen = null;
 		this.button = null;
+		this.keywords = null;
 	}
 
 	public boolean exists() {
