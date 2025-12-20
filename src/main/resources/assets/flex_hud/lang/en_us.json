@@ -42,6 +42,10 @@
 
 	"flex_hud.enum.display_mode.horizontal": "Horizontal",
 	"flex_hud.enum.display_mode.vertical": "Vertical",
+	"flex_hud.enum.alignment.left": "Left",
+	"flex_hud.enum.alignment.center": "Center",
+	"flex_hud.enum.alignment.right": "Right",
+	"flex_hud.enum.alignment.auto": "Auto",
 	"flex_hud.enum.weather.clear": "Clear",
 	"flex_hud.enum.weather.rain": "Rain",
 	"flex_hud.enum.weather.thunder": "Thunder",
@@ -89,6 +93,7 @@
 	"flex_hud.armor_status.config.show_durability_bar": "Show durability bar",
 	"flex_hud.armor_status.config.show_durability": "Show durability",
 	"flex_hud.armor_status.config.orientation": "Orientation",
+	"flex_hud.armor_status.config.alignment": "Alignment",
 
 	"flex_hud.clock": "Clock",
 	"flex_hud.clock.config.enable": "Show clock",
@@ -193,6 +198,7 @@
 
 	"flex_hud.potion_effect": "Potion effect",
 	"flex_hud.potion_effect.config.enable": "Show potion effect",
+	"flex_hud.potion_effect.config.alignment": "Alignment",
 
 	"flex_hud.tnt_countdown": "TNT countdown",
 	"flex_hud.tnt_countdown.config.enable": "Enable TNT countdown",

@@ -4,6 +4,7 @@ import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.Translatable;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.Alignment;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.DisplayMode;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable.MultiRenderable;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable.RenderableItem;
@@ -43,6 +44,7 @@ public class ArmorStatus extends AbstractTextElement {
 	private final ConfigBoolean showDurabilityBar = new ConfigBoolean(false, "flex_hud.armor_status.config.show_durability_bar");
 	private final ConfigEnum<DurabilityType> durabilityType = new ConfigEnum<>(DurabilityType.class, DurabilityType.PERCENTAGE, "flex_hud.armor_status.config.show_durability");
 	private final ConfigEnum<DisplayMode> displayMode = new ConfigEnum<>(DisplayMode.class, DisplayMode.VERTICAL, "flex_hud.armor_status.config.orientation");
+	private final ConfigEnum<Alignment> alignment = new ConfigEnum<>(Alignment.class, Alignment.AUTO, "flex_hud.armor_status.config.alignment");
 
 	public ArmorStatus(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
@@ -59,6 +61,7 @@ public class ArmorStatus extends AbstractTextElement {
 		ConfigRegistry.register(getID(), "showDurabilityBar", showDurabilityBar);
 		ConfigRegistry.register(getID(), "durabilityType", durabilityType);
 		ConfigRegistry.register(getID(), "displayMode", displayMode);
+		ConfigRegistry.register(getID(), "alignment", alignment);
 	}
 
 	@Override
@@ -153,9 +156,9 @@ public class ArmorStatus extends AbstractTextElement {
 		}
 
 		if (displayMode.getValue() == DisplayMode.VERTICAL) {
-			if (getAnchorX() == AnchorPosition.END) {
+			if (alignment.getValue() == Alignment.RIGHT || alignment.getValue() == Alignment.AUTO && getAnchorX() == AnchorPosition.END) {
 				MultiRenderable.alignRight(multiRenderables, this.width);
-			} else if (getAnchorX() == AnchorPosition.CENTER) {
+			} else if (alignment.getValue() == Alignment.CENTER || alignment.getValue() == Alignment.AUTO && getAnchorX() == AnchorPosition.CENTER) {
 				MultiRenderable.alignCenter(multiRenderables, this.width / 2);
 			}
 		}
@@ -211,7 +214,7 @@ public class ArmorStatus extends AbstractTextElement {
 
 		if (shadow.getValue() && !text.isEmpty()) drawingWidth++;
 
-		if (displayMode.getValue() == DisplayMode.VERTICAL && getAnchorX() == AnchorPosition.END) {
+		if (displayMode.getValue() == DisplayMode.VERTICAL && (getAnchorX() == AnchorPosition.END || alignment.getValue() == Alignment.RIGHT)) {
 			multiRenderables.add(new MultiRenderable(x, x + drawingWidth,
 					new RenderableText(x, y + 4, Text.of(text), color, shadow.getValue()),
 					new RenderableItem(x + MinecraftClient.getInstance().textRenderer.getWidth(text) + 1, y, 16, stack, showDurabilityBar.getValue())
@@ -242,7 +245,7 @@ public class ArmorStatus extends AbstractTextElement {
 
 				if (shadow.getValue()) drawingWidth++;
 
-				if (displayMode.getValue() == DisplayMode.VERTICAL && getAnchorX() == AnchorPosition.END) {
+				if (displayMode.getValue() == DisplayMode.VERTICAL && (getAnchorX() == AnchorPosition.END || alignment.getValue() == Alignment.RIGHT)) {
 					multiRenderables.add(new MultiRenderable(x, x + drawingWidth,
 							new RenderableText(x, y + 4, Text.of(text), getColor(), shadow.getValue()),
 							new RenderableItem(x + MinecraftClient.getInstance().textRenderer.getWidth(text) + 1, y, 16, arrow, showDurabilityBar.getValue())
@@ -283,7 +286,7 @@ public class ArmorStatus extends AbstractTextElement {
 			this.width = Math.max(this.width, drawingWidth);
 			this.height += 16;
 
-			if (displayMode.getValue() == DisplayMode.VERTICAL && getAnchorX() == AnchorPosition.END) {
+			if (displayMode.getValue() == DisplayMode.VERTICAL && (getAnchorX() == AnchorPosition.END || alignment.getValue() == Alignment.RIGHT)) {
 				multiRenderables.add(new MultiRenderable(x, x + drawingWidth,
 						new RenderableText(x, y + 4, Text.of(text), getColor(), shadow.getValue()),
 						new RenderableItem(x + textWidth + 1, y, 16, arrowStack, showDurabilityBar.getValue())
@@ -404,6 +407,14 @@ public class ArmorStatus extends AbstractTextElement {
 								.setCyclingButtonWidth(80)
 								.setVariable(displayMode)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build()
+				);
+				this.addAllEntries(
+						new CyclingButtonEntry.Builder<Alignment>()
+								.setCyclingButtonWidth(80)
+								.setVariable(alignment)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), DisplayMode.HORIZONTAL)
 								.build()
 				);
 			}
