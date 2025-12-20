@@ -2,12 +2,15 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
+import me.Azz_9.flex_hud.client.configurableModules.modules.Translatable;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.flex_hud.client.mixin.compass.GameRendererAccessor;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
 import me.Azz_9.flex_hud.client.tickables.LivingEntitiesTickable;
 import me.Azz_9.flex_hud.compat.CompatManager;
 import net.minecraft.client.MinecraftClient;
@@ -43,6 +46,7 @@ public class Compass extends AbstractTextElement {
 	public final ConfigBoolean showMobs = new ConfigBoolean(false, "flex_hud.compass.config.show_mobs");
 	public final ConfigBoolean showTamedEntitiesPoint = new ConfigBoolean(false, "flex_hud.compass.config.show_tamed_entities_point");
 	public final ConfigBoolean showOnlyPets = new ConfigBoolean(false, "flex_hud.compass.config.show_only_pets");
+	private final ConfigEnum<IconsSize> iconsSize = new ConfigEnum<>(IconsSize.class, IconsSize.SMALL, "flex_hud.compass.config.icons_size");
 
 	private final Identifier ARROW_UP = Identifier.of(MOD_ID, "misc/locator_bar_arrow_up.png");
 	private final Identifier ARROW_DOWN = Identifier.of(MOD_ID, "misc/locator_bar_arrow_down.png");
@@ -63,21 +67,22 @@ public class Compass extends AbstractTextElement {
 
 		this.height = 30;
 		if (showDegrees.getValue()) height += 8;
-		if (showMobs.getValue() || showTamedEntitiesPoint.getValue()) height += 8;
+		switch (iconsSize.getValue()) {
+			case MEDIUM -> this.height += 8;
+			case LARGE -> this.height += 12;
+		}
 
 		showDegrees.setOnChange((value) -> {
 			if (value) height += 8;
 			else height -= 8;
 		});
 
-		showMobs.setOnChange((value) -> {
-			if (value && !showTamedEntitiesPoint.getValue()) height += 8;
-			else if (!showTamedEntitiesPoint.getValue()) height -= 8;
-		});
-
-		showTamedEntitiesPoint.setOnChange((value) -> {
-			if (value && !showMobs.getValue()) height += 8;
-			else if (!showMobs.getValue()) height -= 8;
+		iconsSize.setOnChange((value) -> {
+			switch (value) {
+				case SMALL -> height -= 12;
+				case MEDIUM -> height += 8;
+				case LARGE -> height += 4;
+			}
 		});
 	}
 
@@ -123,8 +128,9 @@ public class Compass extends AbstractTextElement {
 		if (showDegrees.getValue()) {
 			hudY += 8;
 		}
-		if (showMobs.getValue() || showTamedEntitiesPoint.getValue()) {
-			hudY += 8;
+		switch (iconsSize.getValue()) {
+			case MEDIUM -> hudY += 8;
+			case LARGE -> hudY += 12;
 		}
 
 		// Affichage des points cardinaux
@@ -211,8 +217,8 @@ public class Compass extends AbstractTextElement {
 	}
 
 	private void drawIntermediatePoint(DrawContext drawContext, MatrixStack matrices, int angle, float yaw, int y) {
-		MinecraftClient CLIENT = MinecraftClient.getInstance();
-		int screenWidth = CLIENT.getWindow().getScaledWidth();
+		MinecraftClient client = MinecraftClient.getInstance();
+		int screenWidth = client.getWindow().getScaledWidth();
 
 		float angleDifference = (angle - yaw + 540) % 360 - 180;
 
@@ -221,16 +227,16 @@ public class Compass extends AbstractTextElement {
 			float positionX = ((this.width / 2.0f) + (angleDifference * (screenWidth / 720.0f)));
 
 			matrices.push();
-			matrices.translate(positionX - (CLIENT.textRenderer.getWidth("|") / 2.0f), y, 0);
+			matrices.translate(positionX - (client.textRenderer.getWidth("|") / 2.0f), y, 0);
 			matrices.scale(1.0f, 0.75f, 1.0f); // slightly smaller
-			drawContext.drawText(CLIENT.textRenderer, "|", 0, 0, getColorWithFadeEffect(positionX), this.shadow.getValue());
+			drawContext.drawText(client.textRenderer, "|", 0, 0, getColorWithFadeEffect(positionX), this.shadow.getValue());
 			matrices.pop();
 
 
 			matrices.push();
-			matrices.translate(positionX - (CLIENT.textRenderer.getWidth(String.valueOf(angle)) / 4.0f), y + 8, 0);
+			matrices.translate(positionX - (client.textRenderer.getWidth(String.valueOf(angle)) / 4.0f), y + 8, 0);
 			matrices.scale(0.5f, 0.5f, 1.0f); // 2 times smaller
-			drawContext.drawText(CLIENT.textRenderer, String.valueOf(angle), 0, 0, getColorWithFadeEffect(positionX), this.shadow.getValue());
+			drawContext.drawText(client.textRenderer, String.valueOf(angle), 0, 0, getColorWithFadeEffect(positionX), this.shadow.getValue());
 			matrices.pop();
 
 		}
@@ -257,8 +263,9 @@ public class Compass extends AbstractTextElement {
 		int screenWidth = client.getWindow().getScaledWidth();
 
 		float y = this.showDegrees.getValue() ? 10 : 2;
-		if (showMobs.getValue() || showTamedEntitiesPoint.getValue()) {
-			y += 4.75f;
+		switch (iconsSize.getValue()) {
+			case MEDIUM -> y += 4.75f;
+			case LARGE -> y += 6f;
 		}
 
 		for (XaeroWaypoint waypoint : this.xaeroWaypoints) {
@@ -279,9 +286,15 @@ public class Compass extends AbstractTextElement {
 				int color = waypoint.getColor();
 				int backgroundColor = ((getAlpha(positionX) / 2) << 24) | (color & 0x00ffffff);
 
+				float scale = switch (iconsSize.getValue()) {
+					case SMALL -> 0.75f;
+					case MEDIUM -> 1f;
+					case LARGE -> 1.25f;
+				};
+
 				matrices.push();
 				matrices.translate(positionX - (client.textRenderer.getWidth(waypoint.getInitials()) / 2.0f), y, 0);
-				matrices.scale(0.75f, 0.75f, 1.0f);
+				matrices.scale(scale, scale, 1.0f);
 				renderTextWithBackground(drawContext, waypoint.getInitials(), 0, 0, backgroundColor, 0xffffff | (getAlpha(positionX) << 24));
 				matrices.pop();
 			}
@@ -324,6 +337,18 @@ public class Compass extends AbstractTextElement {
 			return;
 		}
 
+		int y = this.showDegrees.getValue() ? 10 : 2;
+		switch (iconsSize.getValue()) {
+			case MEDIUM -> y += 3;
+			case LARGE -> y += 5;
+		}
+
+		float scale = switch (iconsSize.getValue()) {
+			case SMALL -> 0.75f;
+			case MEDIUM -> 1f;
+			case LARGE -> 1.25f;
+		};
+
 		for (LivingEntitiesTickable.EntityTexture entity : entityTextures) {
 
 			int textureSize = 9;
@@ -337,7 +362,8 @@ public class Compass extends AbstractTextElement {
 				float positionX = ((this.width / 2.0f) + (angleDifference * (context.getScaledWindowWidth() / 720.0f)));
 
 				matrices.push();
-				matrices.translate(positionX - textureSize / 2.0f, this.showDegrees.getValue() ? 13 : 5, 0);
+				matrices.translate(positionX - textureSize / 2.0f, y, 0);
+				matrices.scale(scale, scale, 1.0f);
 
 				context.drawTexture(RenderLayer::getGuiTextured, entity.texture(), 0, 0, 0, 0, textureSize, textureSize, textureSize, textureSize, ColorHelper.withAlpha(getAlpha(positionX), 0xffffff));
 
@@ -515,6 +541,11 @@ public class Compass extends AbstractTextElement {
 								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.addDependency(this.getConfigList().getLastEntry(), false)
 								.addDependency(this.getConfigList().getEntry(this.getConfigList().getEntryCount() - 2), true)
+								.build(),
+						new CyclingButtonEntry.Builder<IconsSize>()
+								.setCyclingButtonWidth(80)
+								.setVariable(iconsSize)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 			}
@@ -586,9 +617,20 @@ public class Compass extends AbstractTextElement {
 		return new Vec3d(vector3f);
 	}
 
-	private enum IconsSize {
-		SMALL,
-		MEDIUM,
-		LARGE
+	private enum IconsSize implements Translatable {
+		SMALL("flex_hud.enum.compass.icons_size.small"),
+		MEDIUM("flex_hud.enum.compass.icons_size.medium"),
+		LARGE("flex_hud.enum.compass.icons_size.large");
+
+		private final String translationKey;
+
+		IconsSize(String translationKey) {
+			this.translationKey = translationKey;
+		}
+
+		@Override
+		public String getTranslationKey() {
+			return translationKey;
+		}
 	}
 }
