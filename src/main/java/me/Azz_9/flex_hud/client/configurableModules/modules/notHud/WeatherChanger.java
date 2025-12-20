@@ -68,6 +68,7 @@ public class WeatherChanger extends AbstractModule {
 			this.translationKey = translationKey;
 		}
 
+		@Override
 		public String getTranslationKey() {
 			return translationKey;
 		}
