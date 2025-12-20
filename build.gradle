@@ -37,6 +37,8 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	if (includeModMenu) {
 		modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
+	} else {
+		compileOnly("com.terraformersmc:modmenu:${project.modmenu_version}")
 	}
 
 	if (includeXaero) {
@@ -104,15 +106,5 @@ publishing {
 		// Notice: This block does NOT have the same function as the block in the top level.
 		// The repositories here will be used for publishing your artifact, not for
 		// retrieving dependencies.
-	}
-}
-
-sourceSets {
-	main {
-		if (!includeModMenu) {
-			java {
-				exclude 'me/Azz_9/flex_hud/compat/ModMenuCompat.java'
-			}
-		}
 	}
 }
