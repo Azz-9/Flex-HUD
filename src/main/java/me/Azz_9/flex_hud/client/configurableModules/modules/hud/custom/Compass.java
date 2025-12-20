@@ -63,6 +63,7 @@ public class Compass extends AbstractTextElement {
 		ConfigRegistry.register(getID(), "showMobs", showMobs);
 		ConfigRegistry.register(getID(), "showTamedEntitiesPoint", showTamedEntitiesPoint);
 		ConfigRegistry.register(getID(), "showOnlyPets", showOnlyPets);
+		ConfigRegistry.register(getID(), "iconsSize", iconsSize);
 
 		this.height = 30;
 		if (showDegrees.getValue()) height += 8;

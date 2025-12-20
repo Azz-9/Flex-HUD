@@ -2,13 +2,17 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import com.google.common.collect.Ordering;
 import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.Alignment;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable.MultiRenderable;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable.RenderableImage;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable.RenderableText;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
@@ -25,10 +29,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PotionEffect extends AbstractTextElement {
+	private final ConfigEnum<Alignment> alignment = new ConfigEnum<>(Alignment.class, Alignment.AUTO, "flex_hud.potion_effect.config.alignment");
 
 	public PotionEffect(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.potion_effect.config.enable");
+
+		ConfigRegistry.register(getID(), "alignment", alignment);
 	}
 
 	@Override
@@ -91,9 +98,9 @@ public class PotionEffect extends AbstractTextElement {
 			hudY += 25;
 		}
 
-		if (getAnchorX() == AnchorPosition.END) {
+		if (alignment.getValue() == Alignment.RIGHT || alignment.getValue() == Alignment.AUTO && getAnchorX() == AnchorPosition.END) {
 			MultiRenderable.alignRight(renderables, this.width);
-		} else if (getAnchorX() == AnchorPosition.CENTER) {
+		} else if (alignment.getValue() == Alignment.CENTER || alignment.getValue() == Alignment.AUTO && getAnchorX() == AnchorPosition.CENTER) {
 			MultiRenderable.alignCenter(renderables, this.width / 2);
 		}
 
@@ -200,6 +207,11 @@ public class PotionEffect extends AbstractTextElement {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(hideInF3)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build(),
+						new CyclingButtonEntry.Builder<Alignment>()
+								.setCyclingButtonWidth(80)
+								.setVariable(alignment)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
