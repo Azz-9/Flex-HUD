@@ -55,6 +55,9 @@
 	"flex_hud.enum.speedometer.units.kph": "km/h",
 	"flex_hud.enum.speedometer.units.mph": "mph",
 	"flex_hud.enum.speedometer.units.mps": "m/s",
+	"flex_hud.enum.compass.icons_size.small": "Small",
+	"flex_hud.enum.compass.icons_size.medium": "Medium",
+	"flex_hud.enum.compass.icons_size.large": "Large",
 
 	"flex_hud.global.config.quit_and_discard": "Quit & discard changes",
 	"flex_hud.global.config.callback.message_title": "Changes not saved",
@@ -125,6 +128,7 @@
 	"flex_hud.compass.config.show_mobs": "Show all mobs",
 	"flex_hud.compass.config.show_tamed_entities_point": "Show tamed entities points",
 	"flex_hud.compass.config.show_only_pets": "Show only pets",
+	"flex_hud.compass.config.icons_size": "Icons size",
 
 	"flex_hud.durability_ping": "Durability Ping",
 	"flex_hud.durability_ping.config.enable": "Enable durability ping",
