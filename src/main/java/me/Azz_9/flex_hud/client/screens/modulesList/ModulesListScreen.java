@@ -1,5 +1,6 @@
 package me.Azz_9.flex_hud.client.screens.modulesList;
 
+import com.google.common.collect.ImmutableList;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigLoader;
 import me.Azz_9.flex_hud.client.configurableModules.Configurable;
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
@@ -20,7 +21,7 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 	private PlaceholderTextFieldWidget searchBar;
 	private ScrollableModulesList modulesListWidget;
 
-	private final List<Configurable> MODULES_LIST = ModulesHelper.getConfigurableModules();
+	private final ImmutableList<Configurable> MODULES_LIST = ImmutableList.copyOf(ModulesHelper.getConfigurableModules());
 
 	public ModulesListScreen(Screen parent) {
 		super(Text.translatable("flex_hud.configuration_screen"), parent);
@@ -100,16 +101,17 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 	private void addMods(int buttonWidth, int buttonHeight, int columns) {
 		List<Module> modules = new ArrayList<>();
 		for (int i = 0; i < MODULES_LIST.size(); i++) {
-			String moduleId = MODULES_LIST.get(i).getID();
-			
+			Configurable module = MODULES_LIST.get(i);
+
 			modules.add(new Module(
-							MODULES_LIST.get(i).getName().getString(),
-							moduleId,
-							MODULES_LIST.get(i).getConfigScreen(this),
+							module.getName().getString(),
+							module.getID(),
+							module.getConfigScreen(this),
 							buttonWidth,
 							buttonHeight,
 							this,
-							MODULES_LIST.get(i)::getTooltip
+							module::getTooltip,
+							ImmutableList.copyOf(module.getKeywords())
 					)
 			);
 
