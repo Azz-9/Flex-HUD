@@ -46,7 +46,7 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 	}
 
 	public void filterModules(String query) {
-		query = query.toLowerCase().strip();
+		String finalQuery = query.toLowerCase().strip();
 		this.clearEntries();
 
 		List<Entry> newEntries = new ArrayList<>();
@@ -64,7 +64,7 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 		for (Entry entry : this.entries) {
 			// Vérification pour les colonnes
 			for (Module module : entry.rowModules) {
-				if (module != null && (module.name.toLowerCase().contains(query) || module.id.replace("_", " ").contains(query.toLowerCase()))) {
+				if (module != null && module.keywords.stream().anyMatch(keyword -> keyword.contains(finalQuery))) {
 					addModuleToEntry.accept(module);
 				}
 			}
