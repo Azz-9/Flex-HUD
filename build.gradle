@@ -44,6 +44,8 @@ dependencies {
 	} else {
 		compileOnly files("libs/Xaeros_Minimap_${project.xaero_minimap_version}_Fabric_${project.minecraft_version}.jar")
 	}
+
+	compileOnly files("libs/journeymap-fabric-${project.minecraft_version}-${project.journeymap_version}.jar")
 }
 
 processResources {
