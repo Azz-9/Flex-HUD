@@ -6,4 +6,8 @@ public class CompatManager {
 	public static boolean isXaeroMinimapLoaded() {
 		return FabricLoader.getInstance().isModLoaded("xaerominimap");
 	}
+
+	public static boolean isJourneyMapLoaded() {
+		return FabricLoader.getInstance().isModLoaded("journeymap");
+	}
 }
