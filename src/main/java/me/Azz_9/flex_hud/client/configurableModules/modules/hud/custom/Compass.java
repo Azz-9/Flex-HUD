@@ -52,6 +52,7 @@ public class Compass extends AbstractTextElement {
 	private final Identifier ARROW_DOWN = Identifier.of(MOD_ID, "misc/locator_bar_arrow_down.png");
 
 	private List<XaeroWaypoint> xaeroWaypoints = new ArrayList<>();
+	private List<JourneyMapWaypoint> journeyMapWaypoints = new ArrayList<>();
 
 	public Compass(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
@@ -169,6 +170,10 @@ public class Compass extends AbstractTextElement {
 			if (this.showXaerosMapWaypoints.getValue() && CompatManager.isXaeroMinimapLoaded()) {
 				drawXaerosMapWaypoints(context, matrices, yaw, tickCounter);
 			}
+
+			if (CompatManager.isJourneyMapLoaded()) {
+				drawJourneyMapWaypoints(context, matrices, yaw, tickCounter);
+			}
 		}
 
 		context.disableScissor();
@@ -258,24 +263,31 @@ public class Compass extends AbstractTextElement {
 		return (float) -angleDegrees;
 	}
 
-	private void drawXaerosMapWaypoints(DrawContext drawContext, MatrixStack matrices, float yaw, RenderTickCounter tickCounter) {
+	private void drawXaerosMapWaypoints(DrawContext context, MatrixStack matrices, float yaw, RenderTickCounter tickCounter) {
 		MinecraftClient client = MinecraftClient.getInstance();
 		PlayerEntity player = client.player;
+		if (player == null) return;
+
 		int screenWidth = client.getWindow().getScaledWidth();
 
 		float y = this.showDegrees.getValue() ? 10 : 2;
+		float scale = 0.75f;
 		switch (iconsSize.getValue()) {
-			case MEDIUM -> y += 4.75f;
-			case LARGE -> y += 6f;
+			case MEDIUM -> {
+				scale = 1f;
+				y += 4.75f;
+			}
+			case LARGE -> {
+				scale = 1.25f;
+				y += 6f;
+			}
 		}
 
 		for (XaeroWaypoint waypoint : this.xaeroWaypoints) {
+			if (waypoint.isDisabled()) continue;
+
 			double x = waypoint.getX() + 0.5;
 			double z = waypoint.getZ() + 0.5;
-
-			if (waypoint.isDisabled() || player == null) {
-				continue;
-			}
 
 			Position lerpedPosition = player.getLerpedPos(tickCounter.getTickProgress(true));
 			float angle = calculateAngle(lerpedPosition.getX(), lerpedPosition.getZ(), x, z);
@@ -287,22 +299,16 @@ public class Compass extends AbstractTextElement {
 				int color = waypoint.getColor();
 				int backgroundColor = ((getAlpha(positionX) / 2) << 24) | (color & 0x00ffffff);
 
-				float scale = switch (iconsSize.getValue()) {
-					case SMALL -> 0.75f;
-					case MEDIUM -> 1f;
-					case LARGE -> 1.25f;
-				};
-
 				matrices.push();
 				matrices.translate(positionX - (client.textRenderer.getWidth(waypoint.getInitials()) / 2.0f), y, 0);
 				matrices.scale(scale, scale, 1.0f);
-				renderTextWithBackground(drawContext, waypoint.getInitials(), 0, 0, backgroundColor, 0xffffff | (getAlpha(positionX) << 24));
+				renderTextWithBackground(context, waypoint.getInitials(), 0, 0, backgroundColor, 0xffffff | (getAlpha(positionX) << 24));
 				matrices.pop();
 			}
 		}
 	}
 
-	private void renderTextWithBackground(DrawContext drawContext, String text, int x, int y, int backgroundColor, int textColor) {
+	private void renderTextWithBackground(DrawContext context, String text, int x, int y, int backgroundColor, int textColor) {
 		MinecraftClient client = MinecraftClient.getInstance();
 
 		// Calculer la largeur et la hauteur du texte
@@ -310,10 +316,61 @@ public class Compass extends AbstractTextElement {
 		int textHeight = client.textRenderer.fontHeight;
 
 		// Dessiner le rectangle de fond
-		drawContext.fill(x - 2, y - 1, x + textWidth + 1, y + textHeight - 1, backgroundColor);
+		context.fill(x - 2, y - 1, x + textWidth + 1, y + textHeight - 1, backgroundColor);
 
 		// Dessiner le texte par-dessus le rectangle
-		drawContext.drawText(client.textRenderer, text, x, y, textColor, this.shadow.getValue());
+		context.drawText(client.textRenderer, text, x, y, textColor, this.shadow.getValue());
+	}
+
+	private void drawJourneyMapWaypoints(DrawContext context, MatrixStack matrices, float yaw, RenderTickCounter tickCounter) {
+		MinecraftClient client = MinecraftClient.getInstance();
+		PlayerEntity player = client.player;
+		if (player == null) return;
+
+		int screenWidth = client.getWindow().getScaledWidth();
+
+		float y = this.showDegrees.getValue() ? 10 : 2;
+		float scale = 0.45f;
+		switch (iconsSize.getValue()) {
+			case MEDIUM -> {
+				scale = 0.6f;
+				y += 3f;
+			}
+			case LARGE -> {
+				scale = 0.75f;
+				y += 5f;
+			}
+		}
+
+		for (JourneyMapWaypoint waypoint : this.journeyMapWaypoints) {
+			if (waypoint.isDisabled() || !waypoint.isInPlayerDimension()) continue;
+
+			double x = waypoint.getX() + 0.5;
+			double z = waypoint.getZ() + 0.5;
+
+			Position lerpedPosition = player.getLerpedPos(tickCounter.getTickProgress(true));
+			float angle = calculateAngle(lerpedPosition.getX(), lerpedPosition.getZ(), x, z);
+
+			float angleDifference = (angle - yaw + 540) % 360 - 180;
+			if (Math.abs(angleDifference) <= 120) {
+				float positionX = ((this.width / 2.0f) + (angleDifference * (screenWidth / 720.0f)));
+
+				Identifier icon = waypoint.getIcon();
+				int iconWidth = waypoint.getIconWidth();
+				int iconHeight = waypoint.getIconHeight();
+				if (icon == null || client.getResourceManager().getResource(icon).isEmpty()) {
+					icon = Identifier.of(MOD_ID, "misc/journeymap-default-icon.png");
+					iconWidth = 13;
+					iconHeight = 13;
+				}
+
+				matrices.push();
+				matrices.translate(positionX - ((iconWidth * scale) / 2.0f), y, 0);
+				matrices.scale(scale, scale, 1.0f);
+				context.drawTexture(RenderLayer::getGuiTextured, icon, 0, 0, 0, 0, iconWidth, iconHeight, iconWidth, iconHeight, ColorHelper.withAlpha(getAlpha(positionX), waypoint.getColor()));
+				matrices.pop();
+			}
+		}
 	}
 
 	private int getAlpha(float CenterXOfDrawing) {
@@ -363,7 +420,7 @@ public class Compass extends AbstractTextElement {
 				float positionX = ((this.width / 2.0f) + (angleDifference * (context.getScaledWindowWidth() / 720.0f)));
 
 				matrices.push();
-				matrices.translate(positionX - textureSize / 2.0f, y, 0);
+				matrices.translate(positionX - (textureSize * scale) / 2.0f, y, 0);
 				matrices.scale(scale, scale, 1.0f);
 
 				context.drawTexture(RenderLayer::getGuiTextured, entity.texture(), 0, 0, 0, 0, textureSize, textureSize, textureSize, textureSize, ColorHelper.withAlpha(getAlpha(positionX), 0xffffff));
@@ -557,6 +614,10 @@ public class Compass extends AbstractTextElement {
 		this.xaeroWaypoints = xaeroWaypoints;
 	}
 
+	public void setJourneyMapWaypoints(List<JourneyMapWaypoint> journeyMapWaypoints) {
+		this.journeyMapWaypoints = journeyMapWaypoints;
+	}
+
 	public abstract static class ModdedWaypoint {
 		private final double x, z;
 
@@ -596,6 +657,49 @@ public class Compass extends AbstractTextElement {
 
 		public String getInitials() {
 			return INITIALS;
+		}
+	}
+
+	public static class JourneyMapWaypoint extends ModdedWaypoint {
+		private final int COLOR;
+		private final boolean DISABLED;
+		private final Identifier ICON;
+		private final int ICON_WIDTH;
+		private final int ICON_HEIGHT;
+		private final boolean IS_IN_PLAYER_DIMENSION;
+
+		public JourneyMapWaypoint(double x, double z, int color, boolean disabled, Identifier icon, int iconWidth, int iconHeight, boolean isInPlayerDimension) {
+			super(x, z);
+			this.COLOR = color;
+			this.DISABLED = disabled;
+			this.ICON = icon;
+			this.ICON_WIDTH = iconWidth;
+			this.ICON_HEIGHT = iconHeight;
+			this.IS_IN_PLAYER_DIMENSION = isInPlayerDimension;
+		}
+
+		public int getColor() {
+			return COLOR;
+		}
+
+		public boolean isDisabled() {
+			return DISABLED;
+		}
+
+		public Identifier getIcon() {
+			return ICON;
+		}
+
+		public int getIconWidth() {
+			return ICON_WIDTH;
+		}
+
+		public int getIconHeight() {
+			return ICON_HEIGHT;
+		}
+
+		public boolean isInPlayerDimension() {
+			return IS_IN_PLAYER_DIMENSION;
 		}
 	}
 
