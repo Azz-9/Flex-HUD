@@ -10,6 +10,7 @@ import me.Azz_9.flex_hud.client.utils.FlexHudLogger;
 import me.Azz_9.flex_hud.client.utils.SpeedTester;
 import me.Azz_9.flex_hud.client.utils.compass.DimensionTracker;
 import me.Azz_9.flex_hud.compat.CompatManager;
+import me.Azz_9.flex_hud.compat.JourneyMapWaypointCollector;
 import me.Azz_9.flex_hud.compat.XaeroWaypointCollector;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
@@ -20,8 +21,6 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.Identifier;
-
-import java.util.List;
 
 public class Flex_hudClient implements ClientModInitializer {
 
@@ -37,6 +36,7 @@ public class Flex_hudClient implements ClientModInitializer {
 	private boolean layersRegistered = false;
 
 	private XaeroWaypointCollector xaeroCollector;
+	private JourneyMapWaypointCollector journeyMapCollector;
 
 	@Override
 	public void onInitializeClient() {
@@ -49,9 +49,16 @@ public class Flex_hudClient implements ClientModInitializer {
 		}
 
 		FlexHudLogger.info("Xaeros Minimap {}found !", CompatManager.isXaeroMinimapLoaded() ? "" : "not ");
+		FlexHudLogger.info("JourneyMap {}found !", CompatManager.isJourneyMapLoaded() ? "" : "not ");
+
 		if (CompatManager.isXaeroMinimapLoaded()) {
 			xaeroCollector = new XaeroWaypointCollector();
 			ModulesHelper.getInstance().compass.setXaeroWaypoints(xaeroCollector.getWaypoints());
+		}
+
+		if (CompatManager.isJourneyMapLoaded()) {
+			journeyMapCollector = new JourneyMapWaypointCollector();
+			ModulesHelper.getInstance().compass.setJourneyMapWaypoints(journeyMapCollector.getWaypoints());
 		}
 
 		ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
@@ -83,13 +90,19 @@ public class Flex_hudClient implements ClientModInitializer {
 					}
 				}
 
-				if (ModulesHelper.getInstance().compass.isEnabled() && ModulesHelper.getInstance().compass.showXaerosMapWaypoints.getValue() && CompatManager.isXaeroMinimapLoaded()) {
-					if ((joinedWorld && !xaeroCollector.available) || DimensionTracker.shouldInit) {
-						xaeroCollector.init();
-					} else {
-						DimensionTracker.check();
+				if (ModulesHelper.getInstance().compass.isEnabled()) {
+					if (ModulesHelper.getInstance().compass.showXaerosMapWaypoints.getValue() && CompatManager.isXaeroMinimapLoaded()) {
+						if ((joinedWorld && !xaeroCollector.available) || DimensionTracker.shouldInit) {
+							xaeroCollector.init();
+						} else {
+							DimensionTracker.check();
+						}
+						xaeroCollector.updateWaypoints();
 					}
-					xaeroCollector.updateWaypoints();
+
+					if (CompatManager.isJourneyMapLoaded() && joinedWorld) {
+						journeyMapCollector.updateWaypoints();
+					}
 				}
 			}
 		});
@@ -101,15 +114,17 @@ public class Flex_hudClient implements ClientModInitializer {
 
 			if (CompatManager.isXaeroMinimapLoaded()) {
 				xaeroCollector.init();
-				joinedWorld = true;
 			}
+
+			joinedWorld = true;
 		});
 
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
 			if (CompatManager.isXaeroMinimapLoaded()) {
-				joinedWorld = false;
 				xaeroCollector.available = false;
 			}
+
+			joinedWorld = false;
 		});
 
 		final KeyBinding.Category FLEX_HUD = KeyBinding.Category.create(Identifier.of(MOD_ID, "flex-hud"));
