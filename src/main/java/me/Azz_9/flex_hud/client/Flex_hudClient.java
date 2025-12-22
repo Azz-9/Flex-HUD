@@ -99,7 +99,7 @@ public class Flex_hudClient implements ClientModInitializer {
 						xaeroCollector.updateWaypoints();
 					}
 
-					if (CompatManager.isJourneyMapLoaded() && joinedWorld) {
+					if (ModulesHelper.getInstance().compass.showJourneyMapWaypoints.getValue() && CompatManager.isJourneyMapLoaded() && joinedWorld) {
 						journeyMapCollector.updateWaypoints();
 					}
 				}
