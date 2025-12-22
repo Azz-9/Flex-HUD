@@ -131,6 +131,8 @@
 	"flex_hud.compass.config.show_intermediate_point": "Show intermediate points",
 	"flex_hud.compass.config.show_xaeros_map_waypoints": "Show Xaero's map waypoints",
 	"flex_hud.compass.config.show_xaeros_map_waypoints.not_installed_tooltip": "Xaero's Minimap is not installed",
+	"flex_hud.compass.config.show_journey_map_waypoints": "Show Journey Map waypoints",
+	"flex_hud.compass.config.show_journey_map_waypoints.not_installed_tooltip": "JourneyMap is not installed",
 	"flex_hud.compass.config.show_mobs": "Show all mobs",
 	"flex_hud.compass.config.override_locator_bar": "Override locator bar",
 	"flex_hud.compass.config.show_tamed_entities_point": "Show tamed entities points",
