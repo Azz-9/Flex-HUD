@@ -41,6 +41,7 @@ public class Compass extends AbstractTextElement {
 	private final ConfigBoolean showDegrees = new ConfigBoolean(false, "flex_hud.compass.config.show_degrees");
 	private final ConfigBoolean showIntermediatePoint = new ConfigBoolean(true, "flex_hud.compass.config.show_intermediate_point");
 	public final ConfigBoolean showXaerosMapWaypoints = new ConfigBoolean(true, "flex_hud.compass.config.show_xaeros_map_waypoints");
+	public final ConfigBoolean showJourneyMapWaypoints = new ConfigBoolean(true, "flex_hud.compass.config.show_journey_map_waypoints");
 	public final ConfigBoolean overrideLocatorBar = new ConfigBoolean(false, "flex_hud.compass.config.override_locator_bar");
 	public final ConfigBoolean showMobs = new ConfigBoolean(false, "flex_hud.compass.config.show_mobs");
 	public final ConfigBoolean showTamedEntitiesPoint = new ConfigBoolean(false, "flex_hud.compass.config.show_tamed_entities_point");
@@ -61,6 +62,7 @@ public class Compass extends AbstractTextElement {
 		ConfigRegistry.register(getID(), "showDegrees", showDegrees);
 		ConfigRegistry.register(getID(), "showIntermediatePoint", showIntermediatePoint);
 		ConfigRegistry.register(getID(), "showXaerosMapWaypoints", showXaerosMapWaypoints);
+		ConfigRegistry.register(getID(), "showJourneyMapWaypoints", showJourneyMapWaypoints);
 		ConfigRegistry.register(getID(), "overrideLocatorBar", overrideLocatorBar);
 		ConfigRegistry.register(getID(), "showMobs", showMobs);
 		ConfigRegistry.register(getID(), "showTamedEntitiesPoint", showTamedEntitiesPoint);
@@ -176,7 +178,7 @@ public class Compass extends AbstractTextElement {
 				drawXaerosMapWaypoints(context, matrices, yaw, tickCounter);
 			}
 
-			if (CompatManager.isJourneyMapLoaded()) {
+			if (this.showJourneyMapWaypoints.getValue() && CompatManager.isJourneyMapLoaded()) {
 				drawJourneyMapWaypoints(context, matrices, yaw, tickCounter);
 			}
 		}
@@ -574,7 +576,7 @@ public class Compass extends AbstractTextElement {
 				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
 					buttonWidth = 230;
 				} else {
-					buttonWidth = 170;
+					buttonWidth = 175;
 				}
 
 				super.init();
@@ -645,6 +647,18 @@ public class Compass extends AbstractTextElement {
 								.setGetTooltip((t) -> {
 									if (!CompatManager.isXaeroMinimapLoaded()) {
 										return Tooltip.of(Text.translatable("flex_hud.compass.config.show_xaeros_map_waypoints.not_installed_tooltip"));
+									}
+									return null;
+								})
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(showJourneyMapWaypoints)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.setToggleable(CompatManager::isJourneyMapLoaded)
+								.setGetTooltip((t) -> {
+									if (!CompatManager.isJourneyMapLoaded()) {
+										return Tooltip.of(Text.translatable("flex_hud.compass.config.show_journey_map_waypoints.not_installed_tooltip"));
 									}
 									return null;
 								})
