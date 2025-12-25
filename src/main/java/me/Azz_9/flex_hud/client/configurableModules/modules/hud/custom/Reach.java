@@ -33,6 +33,11 @@ public class Reach extends AbstractTextElement implements TickableModule {
 	}
 
 	@Override
+	public void init() {
+		this.height = MinecraftClient.getInstance().textRenderer.fontHeight;
+	}
+
+	@Override
 	public String getID() {
 		return "reach";
 	}
