@@ -1,5 +1,6 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
@@ -52,7 +53,7 @@ public class Distance extends AbstractTextElement implements TickableModule {
 
 	@Override
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		if (shouldNotRender() || MinecraftClient.getInstance().getCameraEntity() == null) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && MinecraftClient.getInstance().getCameraEntity() == null) {
 			return;
 		}
 
@@ -136,6 +137,12 @@ public class Distance extends AbstractTextElement implements TickableModule {
 
 	@Override
 	public void tick() {
+		if (Flex_hudClient.isInMoveElementScreen) {
+			String format = "[%." + digits.getValue() + "f]";
+			distanceText = String.format(format, 20f);
+			return;
+		}
+
 		MinecraftClient client = MinecraftClient.getInstance();
 		HitResult hitResult = RaycastTickable.getHitResult();
 
