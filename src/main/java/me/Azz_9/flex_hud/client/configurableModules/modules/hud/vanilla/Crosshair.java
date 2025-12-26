@@ -23,6 +23,8 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.option.AttackIndicator;
 import net.minecraft.client.option.Perspective;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.AttackRangeComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.text.Text;
@@ -135,9 +137,11 @@ public class Crosshair extends AbstractModule implements HudElement {
 		if (client.options.getAttackIndicator().getValue() == AttackIndicator.CROSSHAIR) {
 			float attackCooldownProgress = client.player.getAttackCooldownProgress(0.0F);
 			boolean renderFullAttackIndicator = false;
-			if (client.targetedEntity instanceof LivingEntity && attackCooldownProgress >= 1.0F) {
+			if (client.targetedEntity instanceof LivingEntity && attackCooldownProgress >= 1.0F && client.crosshairTarget != null) {
 				renderFullAttackIndicator = client.player.getAttackCooldownProgressPerTick() > 5.0F;
 				renderFullAttackIndicator &= client.targetedEntity.isAlive();
+				AttackRangeComponent attackRangeComponent = client.player.getActiveOrMainHandStack().get(DataComponentTypes.ATTACK_RANGE);
+				renderFullAttackIndicator &= attackRangeComponent == null || attackRangeComponent.isWithinRange(client.player, client.crosshairTarget.getPos());
 			}
 
 			int y = context.getScaledWindowHeight() / 2 - 7 + 16;
@@ -145,9 +149,9 @@ public class Crosshair extends AbstractModule implements HudElement {
 			if (renderFullAttackIndicator) {
 				context.drawGuiTexture((disableBlending.getValue() ? RenderPipelines.GUI_TEXTURED : RenderPipelines.CROSSHAIR), CROSSHAIR_ATTACK_INDICATOR_FULL_TEXTURE, x, y, 16, 16);
 			} else if (attackCooldownProgress < 1.0F) {
-				int l = (int) (attackCooldownProgress * 17.0F);
+				int width = (int) (attackCooldownProgress * 17.0F);
 				context.drawGuiTexture((disableBlending.getValue() ? RenderPipelines.GUI_TEXTURED : RenderPipelines.CROSSHAIR), CROSSHAIR_ATTACK_INDICATOR_BACKGROUND_TEXTURE, x, y, 16, 4);
-				context.drawGuiTexture((disableBlending.getValue() ? RenderPipelines.GUI_TEXTURED : RenderPipelines.CROSSHAIR), CROSSHAIR_ATTACK_INDICATOR_PROGRESS_TEXTURE, 16, 4, 0, 0, x, y, l, 4);
+				context.drawGuiTexture((disableBlending.getValue() ? RenderPipelines.GUI_TEXTURED : RenderPipelines.CROSSHAIR), CROSSHAIR_ATTACK_INDICATOR_PROGRESS_TEXTURE, 16, 4, 0, 0, x, y, width, 4);
 			}
 		}
 	}
