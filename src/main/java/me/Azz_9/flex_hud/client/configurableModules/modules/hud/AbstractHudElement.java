@@ -40,7 +40,7 @@ public abstract class AbstractHudElement extends AbstractModule implements Movab
 
 	@Override
 	public boolean shouldNotRender() {
-		return !ModulesHelper.getInstance().isEnabled.getValue() || !this.enabled.getValue() || (!Flex_hudClient.isInMoveElementScreen && this.hideInF3.getValue() && MinecraftClient.getInstance().getDebugHud().shouldShowDebugHud());
+		return !ModulesHelper.getInstance().isEnabled.getValue() || !this.enabled.getValue() || (!Flex_hudClient.isInMoveElementScreen && this.hideInF3.getValue() && MinecraftClient.getInstance().debugHudEntryList.isF3Enabled());
 	}
 
 	@Override
