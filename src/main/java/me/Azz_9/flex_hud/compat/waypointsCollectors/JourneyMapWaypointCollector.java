@@ -8,6 +8,7 @@ import me.Azz_9.flex_hud.client.tickables.Tickable;
 import me.Azz_9.flex_hud.client.utils.FlexHudLogger;
 import me.Azz_9.flex_hud.compat.CompatManager;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.util.Identifier;
 
 import java.lang.reflect.Method;
