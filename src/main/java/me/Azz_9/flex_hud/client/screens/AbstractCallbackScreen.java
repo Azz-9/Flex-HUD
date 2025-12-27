@@ -40,7 +40,7 @@ public abstract class AbstractCallbackScreen extends AbstractBackNavigableScreen
 						callbackButtonsWidth,
 						callbackButtonsHeight
 				).build();
-		callbackDiscardButton.active = false;
+		callbackDiscardButton.active = callbackScreen;
 
 		callbackCancelButton = ButtonWidget.builder(Text.translatable("flex_hud.global.config.cancel"), (btn) -> setCallbackScreen(false))
 				.dimensions(
@@ -49,7 +49,7 @@ public abstract class AbstractCallbackScreen extends AbstractBackNavigableScreen
 						callbackButtonsWidth,
 						callbackButtonsHeight
 				).build();
-		callbackCancelButton.active = false;
+		callbackCancelButton.active = callbackScreen;
 
 
 		int buttonsWidth = 160;
@@ -62,6 +62,7 @@ public abstract class AbstractCallbackScreen extends AbstractBackNavigableScreen
 						buttonsWidth,
 						buttonsHeight
 				).build();
+		if (callbackScreen) cancelButton.active = false;
 
 		saveButton = ButtonWidget.builder(Text.translatable("flex_hud.global.config.save_and_quit"), (btn) -> saveAndClose())
 				.dimensions(
@@ -70,7 +71,8 @@ public abstract class AbstractCallbackScreen extends AbstractBackNavigableScreen
 						buttonsWidth,
 						buttonsHeight
 				).build();
-		updateSaveButton();
+		if (callbackScreen) saveButton.active = false;
+		else updateSaveButton();
 
 
 		this.addDrawableChild(callbackDiscardButton);
