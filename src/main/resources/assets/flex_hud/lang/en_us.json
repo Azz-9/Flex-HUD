@@ -62,6 +62,10 @@
 	"flex_hud.enum.compass.icons_size.small": "Small",
 	"flex_hud.enum.compass.icons_size.medium": "Medium",
 	"flex_hud.enum.compass.icons_size.large": "Large",
+	"flex_hud.enum.potion_effect.icon_placement.top": "Top",
+	"flex_hud.enum.potion_effect.icon_placement.right": "Right",
+	"flex_hud.enum.potion_effect.icon_placement.bottom": "Bottom",
+	"flex_hud.enum.potion_effect.icon_placement.left": "Left",
 
 	"flex_hud.global.config.quit_and_discard": "Quit & discard changes",
 	"flex_hud.global.config.callback.message_title": "Changes not saved",
@@ -199,6 +203,7 @@
 	"flex_hud.potion_effect": "Potion effect",
 	"flex_hud.potion_effect.config.enable": "Show potion effect",
 	"flex_hud.potion_effect.config.alignment": "Alignment",
+	"flex_hud.potion_effect.config.icon_placement": "Icon placement",
 
 	"flex_hud.tnt_countdown": "TNT countdown",
 	"flex_hud.tnt_countdown.config.enable": "Enable TNT countdown",
