@@ -8,7 +8,7 @@
 	"flex_hud.configuration_screen.done": "Done",
 	"flex_hud.configuration_screen.module_compatibility_warning": "This module doesn't work properly with ",
 
-	"flex_hud.move_elements_screen": "Move elements",
+	"flex_hud.move_modules_screen": "Move modules",
 
 	"flex_hud.options_screen": "Options",
 	"flex_hud.options_screen.modules": "Modules",

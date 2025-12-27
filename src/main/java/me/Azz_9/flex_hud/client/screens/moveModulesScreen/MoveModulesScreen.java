@@ -30,7 +30,7 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 	private boolean firstFrame = true;
 
 	public MoveModulesScreen(Screen parent) {
-		super(Text.translatable("flex_hud.move_elements_screen"), parent, Text.translatable("flex_hud.global.config.callback.message_title"), Text.translatable("flex_hud.global.config.callback.message_content"));
+		super(Text.translatable("flex_hud.move_modules_screen"), parent, Text.translatable("flex_hud.global.config.callback.message_title"), Text.translatable("flex_hud.global.config.callback.message_content"));
 	}
 
 	@Override
