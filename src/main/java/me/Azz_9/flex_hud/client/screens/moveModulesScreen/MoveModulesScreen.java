@@ -110,12 +110,14 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 
 	@Override
 	protected void disableAllChildren() {
+		super.disableAllChildren();
 		helpWidget.active = false;
 		movableWidgets.forEach(widget -> widget.active = false);
 	}
 
 	@Override
 	protected void enableAllChildren() {
+		super.enableAllChildren();
 		helpWidget.active = true;
 		movableWidgets.forEach(widget -> widget.active = true);
 	}
