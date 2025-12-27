@@ -70,6 +70,7 @@ public class Compass extends AbstractTextElement {
 		ConfigRegistry.register(getID(), "iconsSize", iconsSize);
 
 		this.height = 30;
+		this.width = 210;
 		if (showDegrees.getValue()) height += 8;
 		switch (iconsSize.getValue()) {
 			case MEDIUM -> this.height += 8;
@@ -107,9 +108,6 @@ public class Compass extends AbstractTextElement {
 		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && player == null) {
 			return;
 		}
-
-		int screenWidth = context.getScaledWindowWidth();
-		this.width = screenWidth / 4;
 
 		float yaw;
 		if (Flex_hudClient.isInMoveElementScreen) {
@@ -210,14 +208,13 @@ public class Compass extends AbstractTextElement {
 
 	private void drawCompassPoint(DrawContext drawContext, Matrix3x2fStack matrices, Text label, int angle, float yaw, int y) {
 		MinecraftClient client = MinecraftClient.getInstance();
-		int screenWidth = client.getWindow().getScaledWidth();
 
 		float angleDifference = (angle - yaw + 540) % 360 - 180;
 
 		if (Math.abs(angleDifference) <= 120) {
 			float scaleFactor = 1.25f;
 			// Calculer la position X de chaque point cardinal en fonction de l'angle
-			float positionX = ((this.width / 2.0f) + (angleDifference * (screenWidth / 720.0f)));
+			float positionX = ((this.width / 2.0f) + (angleDifference * (this.width / 180.0f)));
 			float pointWidth = client.textRenderer.getWidth(label) * scaleFactor;
 
 			// Afficher le label des directions avec couleur et taille de texte ajustée
@@ -231,13 +228,12 @@ public class Compass extends AbstractTextElement {
 
 	private void drawIntermediatePoint(DrawContext drawContext, Matrix3x2fStack matrices, int angle, float yaw, int y) {
 		MinecraftClient client = MinecraftClient.getInstance();
-		int screenWidth = client.getWindow().getScaledWidth();
 
 		float angleDifference = (angle - yaw + 540) % 360 - 180;
 
 		if (Math.abs(angleDifference) <= 120) {
 			// Calculer la position X de chaque point cardinal en fonction de l'angle
-			float positionX = ((this.width / 2.0f) + (angleDifference * (screenWidth / 720.0f)));
+			float positionX = ((this.width / 2.0f) + (angleDifference * (this.width / 180.0f)));
 
 			matrices.pushMatrix();
 			matrices.translate(positionX - (client.textRenderer.getWidth("|") / 2.0f), y);
@@ -275,8 +271,6 @@ public class Compass extends AbstractTextElement {
 		PlayerEntity player = client.player;
 		if (player == null) return;
 
-		int screenWidth = client.getWindow().getScaledWidth();
-
 		float y = this.showDegrees.getValue() ? 10 : 2;
 		float scale = 0.75f;
 		switch (iconsSize.getValue()) {
@@ -301,7 +295,7 @@ public class Compass extends AbstractTextElement {
 
 			float angleDifference = (angle - yaw + 540) % 360 - 180;
 			if (Math.abs(angleDifference) <= 120) {
-				float positionX = ((this.width / 2.0f) + (angleDifference * (screenWidth / 720.0f)));
+				float positionX = ((this.width / 2.0f) + (angleDifference * (this.width / 180.0f)));
 
 				int color = waypoint.getColor();
 				int backgroundColor = ((getAlpha(positionX) / 2) << 24) | (color & 0x00ffffff);
@@ -334,8 +328,6 @@ public class Compass extends AbstractTextElement {
 		PlayerEntity player = client.player;
 		if (player == null) return;
 
-		int screenWidth = client.getWindow().getScaledWidth();
-
 		float y = this.showDegrees.getValue() ? 10 : 2;
 		float scale = 0.45f;
 		switch (iconsSize.getValue()) {
@@ -360,7 +352,7 @@ public class Compass extends AbstractTextElement {
 
 			float angleDifference = (angle - yaw + 540) % 360 - 180;
 			if (Math.abs(angleDifference) <= 120) {
-				float positionX = ((this.width / 2.0f) + (angleDifference * (screenWidth / 720.0f)));
+				float positionX = ((this.width / 2.0f) + (angleDifference * (this.width / 180.0f)));
 
 				Identifier icon = waypoint.getIcon();
 				int iconWidth = waypoint.getIconWidth();
@@ -429,7 +421,7 @@ public class Compass extends AbstractTextElement {
 
 				if (Math.abs(angleDifference) <= 120) {
 					// Calculer la position X de chaque point cardinal en fonction de l'angle
-					double positionX = ((this.width / 2.0f) + (angleDifference * (context.getScaledWindowWidth() / 720.0f)));
+					double positionX = ((this.width / 2.0f) + (angleDifference * (this.width / 180.0f)));
 
 					Waypoint.Config config = waypoint.getConfig();
 					WaypointStyleAsset waypointStyleAsset = client.getWaypointStyleAssetManager().get(config.style);
@@ -501,7 +493,7 @@ public class Compass extends AbstractTextElement {
 			float angleDifference = (angle - yaw + 540) % 360 - 180;
 
 			if (Math.abs(angleDifference) <= 120) {
-				float positionX = ((this.width / 2.0f) + (angleDifference * (context.getScaledWindowWidth() / 720.0f)));
+				float positionX = ((this.width / 2.0f) + (angleDifference * (this.width / 180.0f)));
 
 				matrices.pushMatrix();
 				matrices.translate(positionX - (textureSize * scale) / 2.0f, y);
