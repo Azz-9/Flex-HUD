@@ -52,7 +52,9 @@ public class ConfigCyclingButtonWidget<T, E extends Enum<E> & Translatable> exte
 	public void onClick(double mouseX, double mouseY) {
 		super.onClick(mouseX, mouseY);
 
-		int index = (variable.getValue().ordinal() + 1) % values.length;
+		// shift click to go backward
+		int offset = MinecraftClient.getInstance().isShiftPressed() ? -1 : 1;
+		int index = (variable.getValue().ordinal() + offset + values.length) % values.length;
 
 		setValue(values[index]);
 	}
