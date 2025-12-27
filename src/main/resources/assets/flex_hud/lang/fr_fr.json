@@ -198,6 +198,7 @@
 	"flex_hud.potion_effect": "Effet de potion",
 	"flex_hud.potion_effect.config.enable": "Afficher les effets de potion",
 	"flex_hud.potion_effect.config.alignment": "Alignement",
+	"flex_hud.potion_effect.config.icon_placement": "Placement des icones",
 
 	"flex_hud.tnt_countdown": "Compte à rebours TNT",
 	"flex_hud.tnt_countdown.config.enable": "Activer le compte à rebours TNT",
