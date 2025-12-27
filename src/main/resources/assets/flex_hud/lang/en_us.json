@@ -103,8 +103,6 @@
 	"flex_hud.coordinates": "Coordinates",
 	"flex_hud.coordinates.config.enable": "Show coordinates",
 	"flex_hud.coordinates.config.show_y": "Show Y coordinate",
-	"flex_hud.coordinates.config.show_biome": "Show biome",
-	"flex_hud.coordinates.config.custom_biome_color": "Custom biome colors",
 	"flex_hud.coordinates.config.show_direction": "Show direction",
 	"flex_hud.coordinates.config.direction_abbreviation": "Direction abbreviation",
 	"flex_hud.coordinates.config.number_of_digits": "Number of digits",
@@ -240,6 +238,10 @@
 	"flex_hud.held_item": "Held item info",
 	"flex_hud.held_item.config.enable": "Show held item info",
 	"flex_hud.held_item.config.show_durability": "Show durability",
+
+	"flex_hud.biome_display": "Biome display",
+	"flex_hud.biome_display.config.enable": "Show biome",
+	"flex_hud.biome_display.config.biome_specific_color": "Biome-specific color",
 
 	"flex_hud.coordinates.hud.direction.south": "South",
 	"flex_hud.coordinates.hud.direction.south_west": "South-West",
