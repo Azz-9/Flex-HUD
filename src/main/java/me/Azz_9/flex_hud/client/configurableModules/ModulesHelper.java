@@ -26,6 +26,7 @@ public class ModulesHelper {
 	public Clock clock = new Clock(-204, 2, AbstractHudElement.AnchorPosition.END, AbstractHudElement.AnchorPosition.START);
 	public Fps fps = new Fps(2, 2, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.START);
 	public Coordinates coordinates = new Coordinates(2, 15, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.START);
+	public BiomeDisplay biomeDisplay = new BiomeDisplay(2, 45, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.START);
 	public NetherCoordinates netherCoordinates = new NetherCoordinates(2, 60, AbstractHudElement.AnchorPosition.START, AbstractHudElement.AnchorPosition.START);
 	public Compass compass = new Compass(0, 0, AbstractHudElement.AnchorPosition.CENTER, AbstractHudElement.AnchorPosition.START);
 	public DayCounter dayCounter = new DayCounter(148, 2, AbstractHudElement.AnchorPosition.CENTER, AbstractHudElement.AnchorPosition.START);
@@ -81,6 +82,7 @@ public class ModulesHelper {
 				getInstance().clock,
 				getInstance().fps,
 				getInstance().coordinates,
+				getInstance().biomeDisplay,
 				getInstance().netherCoordinates,
 				getInstance().compass,
 				getInstance().dayCounter,
