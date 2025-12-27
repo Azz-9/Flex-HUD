@@ -101,7 +101,7 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 
 	@Override
 	public void renderBackground(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-		if (isCallbackScreen()) {
+		if (isCallbackScreen() && MinecraftClient.getInstance().world != null) {
 			super.renderBackground(context, mouseX, mouseY, deltaTicks);
 		}
 	}
