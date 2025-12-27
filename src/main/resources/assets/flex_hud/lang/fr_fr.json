@@ -8,7 +8,7 @@
 	"flex_hud.configuration_screen.done": "Terminé",
 	"flex_hud.configuration_screen.module_compatibility_warning": "Ce module ne fonctionne pas correctement avec  ",
 
-	"flex_hud.move_elements_screen": "Déplacer les éléments",
+	"flex_hud.move_modules_screen": "Déplacer les modules",
 
 	"flex_hud.options_screen": "Options",
 	"flex_hud.options_screen.modules": "Modules",
@@ -63,6 +63,10 @@
 	"flex_hud.enum.compass.icons_size.small": "Petite",
 	"flex_hud.enum.compass.icons_size.medium": "Moyenne",
 	"flex_hud.enum.compass.icons_size.large": "Grande",
+	"flex_hud.enum.potion_effect.icon_placement.top": "Au dessus",
+	"flex_hud.enum.potion_effect.icon_placement.right": "À droite",
+	"flex_hud.enum.potion_effect.icon_placement.bottom": "En dessous",
+	"flex_hud.enum.potion_effect.icon_placement.left": "À Gauche",
 
 	"flex_hud.global.config.quit_and_discard": "Quitter & annuler les modifications",
 	"flex_hud.global.config.callback.message_title": "Modifications non sauvgardées",

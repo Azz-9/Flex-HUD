@@ -340,11 +340,14 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 	}
 
 	private void snapElement(double x, double y) {
-		x = Math.clamp(x, 0, MinecraftClient.getInstance().getWindow().getScaledWidth() - this.getWidth());
-		y = Math.clamp(y, 0, MinecraftClient.getInstance().getWindow().getScaledHeight() - this.getHeight());
+		int screenW = MinecraftClient.getInstance().getWindow().getScaledWidth();
+		int screenH = MinecraftClient.getInstance().getWindow().getScaledHeight();
 
-		double centerY = MinecraftClient.getInstance().getWindow().getScaledHeight() / 2.0;
-		double centerX = MinecraftClient.getInstance().getWindow().getScaledWidth() / 2.0;
+		x = Math.clamp(x, 0, screenW - this.getWidth());
+		y = Math.clamp(y, 0, screenH - this.getHeight());
+
+		double centerX = screenW / 2.0;
+		double centerY = screenH / 2.0;
 
 		shouldDrawHorizontalSnapLine = false;
 		shouldDrawVerticalSnapLine = false;
@@ -379,6 +382,27 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 				guideY = (int) Math.round(centerY);
 				shouldDrawHorizontalSnapLine = true;
 				minYDistance = dyCenter;
+			}
+
+			// ---------- Screen edge snapping (NO guideline) ----------
+			double[] screenXEdges = new double[]{0, screenW - thisW};
+
+			for (double posX : screenXEdges) {
+				double dx = Math.abs(x - posX);
+				if (dx < minXDistance && dx < SNAP_DISTANCE) {
+					minXDistance = dx;
+					snappedX = posX;
+				}
+			}
+			
+			double[] screenYEdges = new double[]{0, screenH - thisH};
+
+			for (double posY : screenYEdges) {
+				double dy = Math.abs(y - posY);
+				if (dy < minYDistance && dy < SNAP_DISTANCE) {
+					minYDistance = dy;
+					snappedY = posY;
+				}
 			}
 
 			if (!MinecraftClient.getInstance().isCtrlPressed()) {
@@ -432,7 +456,7 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 				}
 			}
 		}
-		
+
 		if (guideX != null) snapLineX = guideX;
 		if (guideY != null) snapLineY = guideY;
 
