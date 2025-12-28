@@ -38,7 +38,7 @@ public class BiomeDisplay extends AbstractTextElement {
 
 	@Override
 	public void init() {
-		this.height = MinecraftClient.getInstance().textRenderer.fontHeight;
+		setHeight(MinecraftClient.getInstance().textRenderer.fontHeight);
 	}
 
 	@Override
