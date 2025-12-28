@@ -32,8 +32,8 @@ public class WeatherDisplay extends AbstractBackgroundElement {
 
 	@Override
 	public void init() {
-		this.height = 16;
-		this.width = 16;
+		setHeight(16);
+		setWidth(16);
 	}
 
 	@Override

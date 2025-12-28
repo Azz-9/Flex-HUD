@@ -69,8 +69,8 @@ public class Coordinates extends AbstractTextElement {
 		List<Renderable> renderables = new ArrayList<>();
 
 		// reset height and width
-		this.height = 0;
-		this.width = 0;
+		setHeight(0);
+		setWidth(0);
 
 		double playerX;
 		double playerY;
@@ -106,7 +106,7 @@ public class Coordinates extends AbstractTextElement {
 			renderables.add(new RenderableText(hudX, hudY, Text.of(zCoords), getColor(), this.shadow.getValue()));
 			updateWidth(zCoords);
 
-			this.height = hudY + 10;
+			setHeight(hudY + 10);
 
 			if (this.showDirection.getValue()) {
 				int widestCoords = Math.max(client.textRenderer.getWidth(xCoords), client.textRenderer.getWidth(yCoords));
@@ -162,7 +162,7 @@ public class Coordinates extends AbstractTextElement {
 
 			renderables.add(new RenderableText(0, 0, Text.of(text.toString()), getColor(), this.shadow.getValue()));
 			updateWidth(text.toString());
-			this.height = client.textRenderer.fontHeight;
+			setHeight(client.textRenderer.fontHeight);
 		}
 
 		Matrix3x2fStack matrices = context.getMatrices();

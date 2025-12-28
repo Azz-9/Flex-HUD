@@ -61,8 +61,8 @@ public class BossBar extends AbstractHudElement implements MovableModule {
 	}
 
 	public void init() {
-		this.width = 182;
-		this.height = (BOSS_BAR_GAP + MinecraftClient.getInstance().textRenderer.fontHeight);
+		setWidth(182);
+		setHeight(BOSS_BAR_GAP + MinecraftClient.getInstance().textRenderer.fontHeight);
 	}
 
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
@@ -78,7 +78,7 @@ public class BossBar extends AbstractHudElement implements MovableModule {
 			matrices.translate(getRoundedX(), getRoundedY());
 			matrices.scale(getScale());
 
-			int bossBarWidth = width;
+			int bossBarWidth = getWidth();
 			int bossBarHeight = 5;
 
 			context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, BACKGROUND_TEXTURES[0], bossBarWidth, bossBarHeight, 0, 0, 0, 9, bossBarWidth, bossBarHeight);
@@ -103,7 +103,7 @@ public class BossBar extends AbstractHudElement implements MovableModule {
 		matrices.translate(getRoundedX(), getRoundedY());
 		matrices.scale(getScale());
 
-		int bossBarWidth = width;
+		int bossBarWidth = getWidth();
 		int bossBarHeight = 5;
 
 		int maxBossBars = (context.getScaledWindowHeight() / 3) / (BOSS_BAR_GAP + client.textRenderer.fontHeight);

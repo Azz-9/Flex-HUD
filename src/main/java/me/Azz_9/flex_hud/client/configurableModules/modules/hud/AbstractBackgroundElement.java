@@ -20,8 +20,8 @@ public abstract class AbstractBackgroundElement extends AbstractHudElement {
 	}
 
 	protected void drawBackground(DrawContext context) {
-		if (drawBackground.getValue() && width != 0 && height != 0) {
-			context.fill(-BACKGROUND_PADDING, -BACKGROUND_PADDING, width + BACKGROUND_PADDING, height + BACKGROUND_PADDING, getBackgroundColor());
+		if (drawBackground.getValue() && getWidth() != 0 && getHeight() != 0) {
+			context.fill(-BACKGROUND_PADDING, -BACKGROUND_PADDING, getWidth() + BACKGROUND_PADDING, getHeight() + BACKGROUND_PADDING, getBackgroundColor());
 		}
 	}
 
