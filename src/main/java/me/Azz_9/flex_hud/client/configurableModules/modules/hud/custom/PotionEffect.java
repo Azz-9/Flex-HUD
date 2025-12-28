@@ -59,9 +59,6 @@ public class PotionEffect extends AbstractTextElement {
 			return;
 		}
 
-		this.width = 0;
-		this.height = 0;
-
 		//List<Renderable> renderables = new ArrayList<>();
 		List<MultiRenderable> renderables = new ArrayList<>();
 
@@ -73,6 +70,9 @@ public class PotionEffect extends AbstractTextElement {
 		} else {
 			playerEffects = Ordering.natural().sortedCopy(client.player.getStatusEffects());
 		}
+
+		setWidth(0);
+		setHeight(0);
 
 		int iconSize = 18;
 		int textGap = 1;
@@ -101,8 +101,8 @@ public class PotionEffect extends AbstractTextElement {
 
 			switch (iconPlacement.getValue()) {
 				case TOP -> {
-					this.height = hudY + iconSize + textIconGap + client.textRenderer.fontHeight * 2 + textGap;
-					this.width = Math.max(this.width, Math.max(textWidth, iconSize));
+					setHeight(hudY + iconSize + textIconGap + client.textRenderer.fontHeight * 2 + textGap);
+					setWidth(Math.max(getWidth(), Math.max(textWidth, iconSize)));
 
 					renderables.add(new MultiRenderable(0, textWidth,
 							new RenderableText(0, hudY + iconSize + textIconGap, Text.of(effectString), getColor(), shadow.getValue()),
@@ -117,8 +117,8 @@ public class PotionEffect extends AbstractTextElement {
 				case RIGHT -> {
 					int currentWidth = textWidth + textIconGap + iconSize;
 
-					this.width = Math.max(this.width, currentWidth);
-					this.height = Math.max(this.height, hudY + horizontalHeight);
+					setWidth(Math.max(getWidth(), currentWidth));
+					setHeight(Math.max(getHeight(), hudY + horizontalHeight));
 
 					renderables.add(new MultiRenderable(0, currentWidth,
 							new RenderableText(0, hudY, Text.of(effectString), getColor(), shadow.getValue()),
@@ -129,8 +129,8 @@ public class PotionEffect extends AbstractTextElement {
 					hudY += horizontalHeight + effectGap;
 				}
 				case BOTTOM -> {
-					this.height = hudY + iconSize + textIconGap + client.textRenderer.fontHeight * 2 + textGap;
-					this.width = Math.max(this.width, Math.max(textWidth, iconSize));
+					setHeight(hudY + iconSize + textIconGap + client.textRenderer.fontHeight * 2 + textGap);
+					setWidth(Math.max(getWidth(), Math.max(textWidth, iconSize)));
 
 					renderables.add(new MultiRenderable(0, textWidth,
 							new RenderableText(0, hudY, Text.of(effectString), getColor(), shadow.getValue()),
@@ -146,8 +146,8 @@ public class PotionEffect extends AbstractTextElement {
 				case LEFT -> {
 					int currentWidth = textWidth + textIconGap + iconSize;
 
-					this.width = Math.max(this.width, currentWidth);
-					this.height = Math.max(this.height, hudY + horizontalHeight);
+					setWidth(Math.max(getWidth(), currentWidth));
+					setHeight(Math.max(getHeight(), hudY + horizontalHeight));
 
 					renderables.add(new MultiRenderable(0, currentWidth,
 							new RenderableSprite(0, hudY, sprite, iconSize, iconSize),
@@ -161,9 +161,9 @@ public class PotionEffect extends AbstractTextElement {
 		}
 
 		if (alignment.getValue() == Alignment.RIGHT || alignment.getValue() == Alignment.AUTO && getAnchorX() == AnchorPosition.END) {
-			MultiRenderable.alignRight(renderables, this.width);
+			MultiRenderable.alignRight(renderables, getWidth());
 		} else if (alignment.getValue() == Alignment.CENTER || alignment.getValue() == Alignment.AUTO && getAnchorX() == AnchorPosition.CENTER) {
-			MultiRenderable.alignCenter(renderables, this.width / 2);
+			MultiRenderable.alignCenter(renderables, getWidth() / 2);
 		}
 
 		MatrixStack matrices = context.getMatrices();

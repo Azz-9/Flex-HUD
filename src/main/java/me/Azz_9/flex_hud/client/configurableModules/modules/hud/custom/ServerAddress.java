@@ -72,8 +72,8 @@ public class ServerAddress extends AbstractTextElement {
 
 		if (!text.isEmpty()) {
 
-			this.width = 0;
-			this.height = 0;
+			setWidth(0);
+			setHeight(0);
 
 			int textX = 0;
 			int textY = 0;
@@ -91,9 +91,9 @@ public class ServerAddress extends AbstractTextElement {
 
 				textX = faviconSize + 2;
 				textY = (faviconSize - client.textRenderer.fontHeight) / 2;
-				this.height = faviconSize;
+				setHeight(faviconSize);
 				setWidth(text);
-				this.width += textX;
+				setWidth(getWidth() + textX);
 			}
 
 			MatrixStack matrices = context.getMatrices();

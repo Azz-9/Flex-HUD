@@ -24,25 +24,25 @@ public abstract class AbstractTextElement extends AbstractBackgroundElement {
 
 	protected void updateWidth(String text) {
 		int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(text);
-		if (textWidth > this.width) {
-			this.width = textWidth;
+		if (textWidth > getWidth()) {
+			setWidth(textWidth);
 		}
 	}
 
 	protected void updateWidth(String text, int startX) {
 		int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(text);
-		if (startX + textWidth > this.width) {
-			this.width = startX + textWidth;
+		if (startX + textWidth > getWidth()) {
+			setWidth(startX + textWidth);
 		}
 	}
 
 	protected void setWidth(String text) {
-		this.width = MinecraftClient.getInstance().textRenderer.getWidth(text);
+		setWidth(MinecraftClient.getInstance().textRenderer.getWidth(text));
 	}
 
 	protected void setWidth(String text, int startX) {
 		int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(text);
-		this.width = startX + textWidth;
+		setWidth(startX + textWidth);
 	}
 
 	protected int getColor() {

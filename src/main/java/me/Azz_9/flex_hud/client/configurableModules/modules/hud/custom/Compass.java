@@ -69,24 +69,24 @@ public class Compass extends AbstractTextElement {
 		ConfigRegistry.register(getID(), "showOnlyPets", showOnlyPets);
 		ConfigRegistry.register(getID(), "iconsSize", iconsSize);
 
-		this.height = 30;
-		this.width = 210;
-		if (showDegrees.getValue()) height += 8;
+		setHeight(30);
+		setWidth(210);
+		if (showDegrees.getValue()) setHeight(getHeight() + 8);
 		switch (iconsSize.getValue()) {
-			case MEDIUM -> this.height += 8;
-			case LARGE -> this.height += 12;
+			case MEDIUM -> setHeight(getHeight() + 8);
+			case LARGE -> setHeight(getHeight() + 12);
 		}
 
 		showDegrees.setOnChange((value) -> {
-			if (value) height += 8;
-			else height -= 8;
+			if (value) setHeight(getHeight() + 8);
+			else setHeight(getHeight() - 8);
 		});
 
 		iconsSize.setOnChange((value) -> {
 			switch (value) {
-				case SMALL -> height -= 12;
-				case MEDIUM -> height += 8;
-				case LARGE -> height += 4;
+				case SMALL -> setHeight(getHeight() - 12);
+				case MEDIUM -> setHeight(getHeight() + 8);
+				case LARGE -> setHeight(getHeight() + 4);
 			}
 		});
 	}
@@ -124,7 +124,7 @@ public class Compass extends AbstractTextElement {
 
 		drawBackground(context);
 
-		context.enableScissor(0, 0, this.width, this.height);
+		context.enableScissor(0, 0, getWidth(), getHeight());
 
 		int hudY = 10;
 		if (showDegrees.getValue()) {
@@ -181,7 +181,7 @@ public class Compass extends AbstractTextElement {
 		if (this.showDegrees.getValue()) {
 			String degrees = String.valueOf(Math.round(yaw));
 			matrices.push();
-			matrices.translate((this.width / 2.0f) - (client.textRenderer.getWidth(degrees) / 2.0f) * 0.75f, 1, 0);
+			matrices.translate((getWidth() / 2.0f) - (client.textRenderer.getWidth(degrees) / 2.0f) * 0.75f, 1, 0);
 			matrices.scale(0.75f, 0.75f, 1.0f);
 			context.drawText(client.textRenderer, degrees, 0, 0, getColor(), this.shadow.getValue());
 			matrices.pop();
@@ -192,7 +192,7 @@ public class Compass extends AbstractTextElement {
 			String markerText = "▼";
 
 			matrices.push();
-			matrices.translate((this.width / 2.0f) - (client.textRenderer.getWidth(markerText) / 2.0f), this.showDegrees.getValue() ? 8 : 0, 0);
+			matrices.translate((getWidth() / 2.0f) - (client.textRenderer.getWidth(markerText) / 2.0f), this.showDegrees.getValue() ? 8 : 0, 0);
 			matrices.scale(1.0f, 0.5f, 1.0f);
 			context.drawText(client.textRenderer, markerText, 0, 0, getColor(), this.shadow.getValue());
 			matrices.pop();
@@ -209,7 +209,7 @@ public class Compass extends AbstractTextElement {
 		if (Math.abs(angleDifference) <= 120) {
 			float scaleFactor = 1.25f;
 			// Calculer la position X de chaque point cardinal en fonction de l'angle
-			float positionX = ((this.width / 2.0f) + (angleDifference * (this.width / 180.0f)));
+			float positionX = ((getWidth() / 2.0f) + (angleDifference * (getWidth() / 180.0f)));
 			float pointWidth = client.textRenderer.getWidth(label) * scaleFactor;
 
 			// Afficher le label des directions avec couleur et taille de texte ajustée
@@ -228,7 +228,7 @@ public class Compass extends AbstractTextElement {
 
 		if (Math.abs(angleDifference) <= 120) {
 			// Calculer la position X de chaque point cardinal en fonction de l'angle
-			float positionX = ((this.width / 2.0f) + (angleDifference * (this.width / 180.0f)));
+			float positionX = ((getWidth() / 2.0f) + (angleDifference * (getWidth() / 180.0f)));
 
 			matrices.push();
 			matrices.translate(positionX - (client.textRenderer.getWidth("|") / 2.0f), y, 0);
@@ -290,7 +290,7 @@ public class Compass extends AbstractTextElement {
 
 			float angleDifference = (angle - yaw + 540) % 360 - 180;
 			if (Math.abs(angleDifference) <= 120) {
-				float positionX = ((this.width / 2.0f) + (angleDifference * (this.width / 180.0f)));
+				float positionX = ((getWidth() / 2.0f) + (angleDifference * (getWidth() / 180.0f)));
 
 				int color = waypoint.getColor();
 				int backgroundColor = ((getAlpha(positionX) / 2) << 24) | (color & 0x00ffffff);
@@ -347,7 +347,7 @@ public class Compass extends AbstractTextElement {
 
 			float angleDifference = (angle - yaw + 540) % 360 - 180;
 			if (Math.abs(angleDifference) <= 120) {
-				float positionX = ((this.width / 2.0f) + (angleDifference * (this.width / 180.0f)));
+				float positionX = ((getWidth() / 2.0f) + (angleDifference * (getWidth() / 180.0f)));
 
 				Identifier icon = waypoint.getIcon();
 				int iconWidth = waypoint.getIconWidth();
@@ -368,11 +368,11 @@ public class Compass extends AbstractTextElement {
 	}
 
 	private int getAlpha(float CenterXOfDrawing) {
-		double distanceFromCenter = Math.abs(CenterXOfDrawing - width / 2.0);
+		double distanceFromCenter = Math.abs(CenterXOfDrawing - getWidth() / 2.0);
 
 		int alpha = 0xff;
-		if (distanceFromCenter > width / 4.0) {
-			alpha = Math.max(0xff - (int) ((distanceFromCenter - width / 4.0) / (width / 4.0) * 0xff), 0);
+		if (distanceFromCenter > getWidth() / 4.0) {
+			alpha = Math.max(0xff - (int) ((distanceFromCenter - getWidth() / 4.0) / (getWidth() / 4.0) * 0xff), 0);
 		}
 
 		return Math.max(alpha, 4); // in this version alpha less than 4 make the text display like the alpha was 255
@@ -411,7 +411,7 @@ public class Compass extends AbstractTextElement {
 			float angleDifference = (angle - yaw + 540) % 360 - 180;
 
 			if (Math.abs(angleDifference) <= 120) {
-				float positionX = ((this.width / 2.0f) + (angleDifference * (this.width / 180.0f)));
+				float positionX = ((getWidth() / 2.0f) + (angleDifference * (getWidth() / 180.0f)));
 
 				matrices.push();
 				matrices.translate(positionX - (textureSize * scale) / 2.0f, y, 0);

@@ -66,8 +66,8 @@ public class KeyStrokes extends AbstractTextElement {
 
 	@Override
 	public void init() {
-		this.width = keySize * 3 + gap * 4;
-		this.height = (int) (keySize * 3.5 + gap * 5);
+		setWidth(keySize * 3 + gap * 4);
+		setHeight((int) (keySize * 3.5 + gap * 5));
 	}
 
 	@Override
