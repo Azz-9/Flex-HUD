@@ -105,8 +105,8 @@ public class ArmorStatus extends AbstractTextElement {
 		}
 
 		// reset height and width
-		this.height = (displayMode.getValue() == DisplayMode.HORIZONTAL) ? 16 : 0;
-		this.width = 0;
+		setHeight((displayMode.getValue() == DisplayMode.HORIZONTAL) ? 16 : 0);
+		setWidth(0);
 
 		boolean[] booleans = new boolean[]{
 				showHelmet.getValue(),
@@ -137,11 +137,11 @@ public class ArmorStatus extends AbstractTextElement {
 
 					if (this.displayMode.getValue() == DisplayMode.VERTICAL) {
 						hudY += 16 + verticalGap;
-						this.height = hudY - verticalGap;
-						this.width = Math.max(this.width, drawingWidth);
+						setHeight(hudY - verticalGap);
+						setWidth(Math.max(getWidth(), drawingWidth));
 					} else {
 						hudX += drawingWidth + horizontalGap;
-						this.width = hudX;
+						setWidth(hudX);
 					}
 
 					if ((i == 4 || i == 5) && this.showArrowsWhenBowInHand.getValue() && (stack.isOf(Items.BOW) || stack.isOf(Items.CROSSBOW))) {
@@ -157,9 +157,9 @@ public class ArmorStatus extends AbstractTextElement {
 
 		if (displayMode.getValue() == DisplayMode.VERTICAL) {
 			if (alignment.getValue() == Alignment.RIGHT || alignment.getValue() == Alignment.AUTO && getAnchorX() == AnchorPosition.END) {
-				MultiRenderable.alignRight(multiRenderables, this.width);
+				MultiRenderable.alignRight(multiRenderables, getWidth());
 			} else if (alignment.getValue() == Alignment.CENTER || alignment.getValue() == Alignment.AUTO && getAnchorX() == AnchorPosition.CENTER) {
-				MultiRenderable.alignCenter(multiRenderables, this.width / 2);
+				MultiRenderable.alignCenter(multiRenderables, getWidth() / 2);
 			}
 		}
 
@@ -259,11 +259,11 @@ public class ArmorStatus extends AbstractTextElement {
 
 				if (displayMode.getValue() == DisplayMode.VERTICAL) {
 					y += 16 + verticalGap;
-					this.height = y;
-					this.width = Math.max(this.width, drawingWidth);
+					setHeight(y);
+					setWidth(Math.max(getWidth(), drawingWidth));
 				} else {
 					x += drawingWidth + horizontalGap;
-					this.width = x + (shadow.getValue() ? 1 : 0);
+					setWidth(x + (shadow.getValue() ? 1 : 0));
 				}
 			}
 		} else {
@@ -283,8 +283,8 @@ public class ArmorStatus extends AbstractTextElement {
 
 			int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(text) + (shadow.getValue() ? 1 : 0);
 			int drawingWidth = 17 + textWidth;
-			this.width = Math.max(this.width, drawingWidth);
-			this.height += 16;
+			setWidth(Math.max(getWidth(), drawingWidth));
+			setHeight(getHeight() + 16);
 
 			if (displayMode.getValue() == DisplayMode.VERTICAL && (getAnchorX() == AnchorPosition.END || alignment.getValue() == Alignment.RIGHT)) {
 				multiRenderables.add(new MultiRenderable(x, x + drawingWidth,

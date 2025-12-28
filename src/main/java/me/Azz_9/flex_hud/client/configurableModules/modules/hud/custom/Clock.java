@@ -43,7 +43,7 @@ public class Clock extends AbstractTextElement implements TickableModule {
 
 	@Override
 	public void init() {
-		height = MinecraftClient.getInstance().textRenderer.fontHeight;
+		setHeight(MinecraftClient.getInstance().textRenderer.fontHeight);
 	}
 
 	@Override
