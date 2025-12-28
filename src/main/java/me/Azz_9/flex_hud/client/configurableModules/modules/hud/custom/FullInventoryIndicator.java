@@ -40,7 +40,7 @@ public class FullInventoryIndicator extends AbstractTextElement implements Ticka
 
 	@Override
 	public void init() {
-		this.height = MinecraftClient.getInstance().textRenderer.fontHeight;
+		setHeight(MinecraftClient.getInstance().textRenderer.fontHeight);
 	}
 
 	@Override

@@ -20,7 +20,7 @@ public abstract class AbstractHudElement extends AbstractModule implements Movab
 
 	public ConfigBoolean hideInF3 = new ConfigBoolean(true, "flex_hud.global.config.hide_in_f3");
 
-	protected transient int height, width;
+	private int height, width;
 
 	public AbstractHudElement(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super();
@@ -48,9 +48,17 @@ public abstract class AbstractHudElement extends AbstractModule implements Movab
 		return this.height;
 	}
 
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
 	@Override
 	public int getWidth() {
 		return this.width;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
 	}
 
 	@Override

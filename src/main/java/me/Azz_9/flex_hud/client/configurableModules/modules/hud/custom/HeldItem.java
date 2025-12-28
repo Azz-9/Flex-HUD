@@ -38,7 +38,7 @@ public class HeldItem extends AbstractTextElement {
 
 	@Override
 	public void init() {
-		this.height = ITEM_SIZE;
+		setHeight(ITEM_SIZE);
 	}
 
 	@Override
@@ -95,7 +95,7 @@ public class HeldItem extends AbstractTextElement {
 		if (!label.isEmpty()) {
 			setWidth(label, ITEM_SIZE + gap);
 		} else {
-			this.width = ITEM_SIZE;
+			setWidth(ITEM_SIZE);
 		}
 
 		Matrix3x2fStack matrices = context.getMatrices();
@@ -105,7 +105,7 @@ public class HeldItem extends AbstractTextElement {
 
 		drawBackground(context);
 
-		if (anchorX.getValue() == AnchorPosition.END) {
+		if (getAnchorX() == AnchorPosition.END) {
 			TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 			context.drawText(textRenderer, label, 0, 4, getColor(), this.shadow.getValue());
 			context.drawItem(stack, textRenderer.getWidth(label) + gap, 0);
