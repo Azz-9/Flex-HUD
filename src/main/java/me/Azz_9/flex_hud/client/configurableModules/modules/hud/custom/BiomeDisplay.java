@@ -11,13 +11,13 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.text.Text;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
 import java.util.Map;
 
@@ -87,17 +87,17 @@ public class BiomeDisplay extends AbstractTextElement {
 				BIOME_COLORS.getOrDefault(biomeKey, 0xffffffff) :
 				getColor());
 
-		Matrix3x2fStack matrices = context.getMatrices();
-		matrices.pushMatrix();
-		matrices.translate(getRoundedX(), getRoundedY());
-		matrices.scale(getScale());
+		MatrixStack matrices = context.getMatrices();
+		matrices.push();
+		matrices.translate(getRoundedX(), getRoundedY(), 0);
+		matrices.scale(getScale(), getScale(), 1.0f);
 
 		drawBackground(context);
 
 		context.drawText(client.textRenderer, prefix, 0, 0, getColor(), shadow.getValue());
 		context.drawText(client.textRenderer, biomeName, prefixWidth, 0, biomeTextColor, shadow.getValue());
 
-		matrices.popMatrix();
+		matrices.pop();
 	}
 
 	@Override
