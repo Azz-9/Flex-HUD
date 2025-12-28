@@ -74,12 +74,12 @@ public class SignReader extends AbstractHudElement implements TickableModule {
 		float textureScale; // used to make the texture bigger by default
 		if (data.isHangingSign) {
 			textureScale = 4.5f;
-			this.width = Math.round(14 * textureScale);
-			this.height = Math.round(10 * textureScale);
+			setWidth(Math.round(14 * textureScale));
+			setHeight(Math.round(10 * textureScale));
 		} else {
 			textureScale = 4;
-			this.width = Math.round(24 * textureScale);
-			this.height = Math.round(12 * textureScale);
+			setWidth(Math.round(24 * textureScale));
+			setHeight(Math.round(12 * textureScale));
 		}
 
 		int textureWidth = Math.round(64 * textureScale);
@@ -87,7 +87,7 @@ public class SignReader extends AbstractHudElement implements TickableModule {
 
 		float offsetX = 2 * textureScale;
 		if (!data.playerFacingFront) {
-			offsetX += this.width + 2 * textureScale;
+			offsetX += getWidth() + 2 * textureScale;
 		}
 		float offsetY = data.isHangingSign ? 14 * textureScale : 2 * textureScale;
 
@@ -99,7 +99,7 @@ public class SignReader extends AbstractHudElement implements TickableModule {
 		// only draw the side of the sign texture
 		context.drawTexture(RenderPipelines.GUI_TEXTURED, data.texture, 0, 0,
 				offsetX, offsetY,
-				this.width, this.height,
+				getWidth(), getHeight(),
 				textureWidth, textureHeight,
 				0xffffffff);
 
@@ -116,7 +116,7 @@ public class SignReader extends AbstractHudElement implements TickableModule {
 		for (int i = 0; i < 4; i++) {
 			if (i >= data.content.length) continue;
 			Text line = data.content[i];
-			int x = (this.width - textRenderer.getWidth(line)) / 2;
+			int x = (getWidth() - textRenderer.getWidth(line)) / 2;
 			int y = data.isHangingSign ? 5 + 9 * i : 4 + 10 * i;
 
 			// render glow
