@@ -8,6 +8,7 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGe
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
@@ -53,7 +54,7 @@ public class ConfigCyclingButtonWidget<T, E extends Enum<E> & Translatable> exte
 		super.onClick(mouseX, mouseY);
 
 		// shift click to go backward
-		int offset = MinecraftClient.getInstance().isShiftPressed() ? -1 : 1;
+		int offset = Screen.hasShiftDown() ? -1 : 1;
 		int index = (variable.getValue().ordinal() + offset + values.length) % values.length;
 
 		setValue(values[index]);
