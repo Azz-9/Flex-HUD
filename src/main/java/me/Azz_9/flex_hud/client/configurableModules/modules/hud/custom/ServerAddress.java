@@ -15,15 +15,16 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 
 public class ServerAddress extends AbstractTextElement {
-	private ConfigBoolean hideWhenOffline = new ConfigBoolean(true, "flex_hud.server_address.config.hide_when_offline");
-	private ConfigBoolean showServerIcon = new ConfigBoolean(true, "flex_hud.server_address.config.show_server_icon");
+	private final ConfigBoolean hideWhenOffline = new ConfigBoolean(true, "flex_hud.server_address.config.hide_when_offline");
+	private final ConfigBoolean showServerIcon = new ConfigBoolean(true, "flex_hud.server_address.config.show_server_icon");
 
-	public ServerAddress(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
+	public ServerAddress(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.server_address.config.enable");
 		this.enabled.setDefaultValue(false);
@@ -71,8 +72,8 @@ public class ServerAddress extends AbstractTextElement {
 
 		if (!text.isEmpty()) {
 
-			this.width = 0;
-			this.height = 0;
+			setWidth(0);
+			setHeight(0);
 
 			int textX = 0;
 			int textY = 0;
@@ -90,9 +91,9 @@ public class ServerAddress extends AbstractTextElement {
 
 				textX = faviconSize + 2;
 				textY = (faviconSize - client.textRenderer.fontHeight) / 2;
-				this.height = faviconSize;
+				setHeight(faviconSize);
 				setWidth(text);
-				this.width += textX;
+				setWidth(getWidth() + textX);
 			}
 
 			Matrix3x2fStack matrices = context.getMatrices();
@@ -131,44 +132,54 @@ public class ServerAddress extends AbstractTextElement {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(enabled)
-								.build(),
+								.build()
+				);
+				this.addAllEntries(
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(shadow)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(chromaColor)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 				this.addAllEntries(
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
 								.setVariable(color)
-								.setDependency(this.getConfigList().getLastEntry(), true)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), true)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(drawBackground)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 				this.addAllEntries(
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
 								.setVariable(backgroundColor)
-								.setDependency(this.getConfigList().getLastEntry(), false)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(hideInF3)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(hideWhenOffline)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(showServerIcon)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 			}

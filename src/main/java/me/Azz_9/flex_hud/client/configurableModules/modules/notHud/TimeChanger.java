@@ -14,8 +14,8 @@ import net.minecraft.text.Text;
 import java.time.LocalTime;
 
 public class TimeChanger extends AbstractModule {
-	public ConfigInteger selectedTime = new ConfigInteger(6000, "flex_hud.time_changer.config.selected_time", 0, 24000);
-	public ConfigBoolean useRealTime = new ConfigBoolean(false, "flex_hud.time_changer.config.use_real_time");
+	public final ConfigInteger selectedTime = new ConfigInteger(6000, "flex_hud.time_changer.config.selected_time", 0, 24000);
+	public final ConfigBoolean useRealTime = new ConfigBoolean(false, "flex_hud.time_changer.config.use_real_time");
 
 	public TimeChanger() {
 		this.enabled.setConfigTextTranslationKey("flex_hud.time_changer.config.enable");
@@ -68,14 +68,18 @@ public class TimeChanger extends AbstractModule {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(enabled)
-								.build(),
+								.build()
+				);
+				this.addAllEntries(
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(useRealTime)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new IntSliderEntry.Builder()
 								.setIntSliderWidth(80)
 								.setVariable(selectedTime)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.setStep(1000)
 								.build()
 				);

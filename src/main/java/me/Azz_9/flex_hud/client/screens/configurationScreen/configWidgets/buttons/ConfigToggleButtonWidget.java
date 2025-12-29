@@ -13,7 +13,7 @@ import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.ToggleButtonWidget;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.input.KeyInput;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
@@ -24,16 +24,18 @@ import java.util.List;
 import java.util.function.Function;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
-import static me.Azz_9.flex_hud.client.utils.DrawingUtils.drawBorder;
 
-public class ConfigToggleButtonWidget<T> extends ToggleButtonWidget implements TrackableChange, DataGetter<Boolean>, ResetAware {
+public class ConfigToggleButtonWidget extends ButtonWidget implements TrackableChange, DataGetter<Boolean>, ResetAware {
 	private final ConfigBoolean variable;
 	private final boolean INITIAL_STATE;
 	private final List<Observer> observers;
-	private final T disableWhen;
 	@Nullable
 	private final Function<Boolean, Tooltip> getTooltip;
+	private final ButtonTextures textures;
 
+	private boolean toggled;
+
+	// hover effect
 	private long transitionStartTime = -1;
 	private boolean hovering = false;
 	private boolean transitioningIn = false;
@@ -41,8 +43,9 @@ public class ConfigToggleButtonWidget<T> extends ToggleButtonWidget implements T
 	private static final int TRANSITION_DURATION = 300;
 
 
-	public ConfigToggleButtonWidget(int width, int height, ConfigBoolean variable, List<Observer> observers, T disableWhen, @Nullable Function<Boolean, Tooltip> getTooltip) {
-		super(0, 0, width, height, variable.getValue());
+	public ConfigToggleButtonWidget(int width, int height, ConfigBoolean variable, List<Observer> observers, @Nullable Function<Boolean, Tooltip> getTooltip) {
+		super(0, 0, width, height, net.minecraft.text.Text.translatable(variable.getConfigTextTranslationKey()), btn -> {
+		}, DEFAULT_NARRATION_SUPPLIER);
 		this.variable = variable;
 		this.INITIAL_STATE = variable.getValue();
 		this.textures = new ButtonTextures(
@@ -52,21 +55,21 @@ public class ConfigToggleButtonWidget<T> extends ToggleButtonWidget implements T
 				Identifier.of(MOD_ID, "widgets/buttons/toggle/focused_disabled.png")
 		);
 		this.observers = observers;
-		this.disableWhen = disableWhen;
 		this.getTooltip = getTooltip;
+		this.toggled = variable.getValue();
 
 		if (this.getTooltip != null) this.setTooltip(this.getTooltip.apply(variable.getValue()));
 	}
 
 	@Override
-	public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void drawIcon(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (this.active) {
 			if (this.isHovered()) context.setCursor(Cursors.POINTING_HAND);
 
 			drawSelectedTexture(context);
 
 			if (this.isSelected()) {
-				drawBorder(context, getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+				context.drawStrokedRectangle(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
 			}
 		}
 
@@ -169,10 +172,6 @@ public class ConfigToggleButtonWidget<T> extends ToggleButtonWidget implements T
 		variable.setValue(INITIAL_STATE);
 	}
 
-	public T getDisableWhen() {
-		return disableWhen;
-	}
-
 	@Override
 	public Boolean getData() {
 		return variable.getValue();
@@ -190,5 +189,9 @@ public class ConfigToggleButtonWidget<T> extends ToggleButtonWidget implements T
 
 	public void addObserver(Observer observer) {
 		observers.add(observer);
+	}
+
+	public void setToggled(boolean toggled) {
+		this.toggled = toggled;
 	}
 }

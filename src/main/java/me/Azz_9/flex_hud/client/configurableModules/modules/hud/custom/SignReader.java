@@ -30,11 +30,13 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2fStack;
 
 public class SignReader extends AbstractHudElement implements TickableModule {
 
-	private RenderData renderData;
+	@NotNull
+	private RenderData renderData = new RenderData();
 
 	public SignReader(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
@@ -66,16 +68,18 @@ public class SignReader extends AbstractHudElement implements TickableModule {
 		}
 	}
 
-	private void renderSign(DrawContext context, RenderData data) {
+	private void renderSign(@NotNull DrawContext context, @NotNull RenderData data) {
+		if (data.texture == null) return;
+
 		float textureScale; // used to make the texture bigger by default
 		if (data.isHangingSign) {
 			textureScale = 4.5f;
-			this.width = Math.round(14 * textureScale);
-			this.height = Math.round(10 * textureScale);
+			setWidth(Math.round(14 * textureScale));
+			setHeight(Math.round(10 * textureScale));
 		} else {
 			textureScale = 4;
-			this.width = Math.round(24 * textureScale);
-			this.height = Math.round(12 * textureScale);
+			setWidth(Math.round(24 * textureScale));
+			setHeight(Math.round(12 * textureScale));
 		}
 
 		int textureWidth = Math.round(64 * textureScale);
@@ -83,7 +87,7 @@ public class SignReader extends AbstractHudElement implements TickableModule {
 
 		float offsetX = 2 * textureScale;
 		if (!data.playerFacingFront) {
-			offsetX += this.width + 2 * textureScale;
+			offsetX += getWidth() + 2 * textureScale;
 		}
 		float offsetY = data.isHangingSign ? 14 * textureScale : 2 * textureScale;
 
@@ -95,7 +99,7 @@ public class SignReader extends AbstractHudElement implements TickableModule {
 		// only draw the side of the sign texture
 		context.drawTexture(RenderPipelines.GUI_TEXTURED, data.texture, 0, 0,
 				offsetX, offsetY,
-				this.width, this.height,
+				getWidth(), getHeight(),
 				textureWidth, textureHeight,
 				0xffffffff);
 
@@ -104,13 +108,15 @@ public class SignReader extends AbstractHudElement implements TickableModule {
 		matrices.popMatrix();
 	}
 
-	private void renderSignText(DrawContext context, RenderData data) {
+	private void renderSignText(@NotNull DrawContext context, @NotNull RenderData data) {
+		if (data.texture == null) return;
+
 		TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 
 		for (int i = 0; i < 4; i++) {
 			if (i >= data.content.length) continue;
 			Text line = data.content[i];
-			int x = (this.width - textRenderer.getWidth(line)) / 2;
+			int x = (getWidth() - textRenderer.getWidth(line)) / 2;
 			int y = data.isHangingSign ? 5 + 9 * i : 4 + 10 * i;
 
 			// render glow
@@ -137,7 +143,7 @@ public class SignReader extends AbstractHudElement implements TickableModule {
 		}
 	}
 
-	private static MutableText deepCopyText(Text original) {
+	private static @NotNull MutableText deepCopyText(@NotNull Text original) {
 		MutableText copy = original.copyContentOnly();
 		copy.setStyle(original.getStyle());
 		for (Text sibling : original.getSiblings()) {
@@ -171,10 +177,13 @@ public class SignReader extends AbstractHudElement implements TickableModule {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(enabled)
-								.build(),
+								.build()
+				);
+				this.addAllEntries(
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(hideInF3)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 			}
@@ -190,7 +199,7 @@ public class SignReader extends AbstractHudElement implements TickableModule {
 		}
 	}
 
-	private RenderData getPlaceholderRenderData() {
+	private @NotNull RenderData getPlaceholderRenderData() {
 		RenderData data = new RenderData();
 		data.texture = TexturedRenderLayers.getSignTextureId(WoodType.OAK).getTextureId().withPrefixedPath("textures/").withSuffixedPath(".png");
 		data.content = new Text[]{
@@ -204,7 +213,7 @@ public class SignReader extends AbstractHudElement implements TickableModule {
 		return data;
 	}
 
-	private RenderData getSignRenderData() {
+	private @NotNull RenderData getSignRenderData() {
 		RenderData data = new RenderData();
 
 		MinecraftClient client = MinecraftClient.getInstance();
@@ -266,8 +275,10 @@ public class SignReader extends AbstractHudElement implements TickableModule {
 	}
 
 	private static class RenderData {
-		Identifier texture;
+		@Nullable
+		Identifier texture = null;
 		boolean playerFacingFront;
+		@NotNull
 		Text[] content = new Text[0];
 		int textColor = DyeColor.BLACK.getSignColor();
 		boolean isGlowing;

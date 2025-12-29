@@ -1,5 +1,6 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
@@ -21,9 +22,10 @@ import org.joml.Matrix3x2fStack;
 
 public class Distance extends AbstractTextElement implements TickableModule {
 
-	private ConfigInteger digits = new ConfigInteger(0, "flex_hud.distance.config.number_of_digits", 0, 16);
+	private final ConfigInteger digits = new ConfigInteger(0, "flex_hud.distance.config.number_of_digits", 0, 16);
 
-	private String distanceText;
+	@NotNull
+	private String distanceText = "";
 
 	public Distance(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
@@ -36,7 +38,7 @@ public class Distance extends AbstractTextElement implements TickableModule {
 
 	@Override
 	public void init() {
-		this.height = MinecraftClient.getInstance().textRenderer.fontHeight;
+		setHeight(MinecraftClient.getInstance().textRenderer.fontHeight);
 	}
 
 	@Override
@@ -51,7 +53,7 @@ public class Distance extends AbstractTextElement implements TickableModule {
 
 	@Override
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		if (shouldNotRender() || MinecraftClient.getInstance().getCameraEntity() == null) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && MinecraftClient.getInstance().getCameraEntity() == null) {
 			return;
 		}
 
@@ -84,40 +86,49 @@ public class Distance extends AbstractTextElement implements TickableModule {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(enabled)
-								.build(),
+								.build()
+				);
+				this.addAllEntries(
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(shadow)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(chromaColor)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 				this.addAllEntries(
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
 								.setVariable(color)
-								.setDependency(this.getConfigList().getLastEntry(), true)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), true)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(drawBackground)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 				this.addAllEntries(
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
 								.setVariable(backgroundColor)
-								.setDependency(this.getConfigList().getLastEntry(), false)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(hideInF3)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new IntFieldEntry.Builder()
 								.setIntFieldWidth(20)
 								.setVariable(digits)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 			}
@@ -126,6 +137,12 @@ public class Distance extends AbstractTextElement implements TickableModule {
 
 	@Override
 	public void tick() {
+		if (Flex_hudClient.isInMoveElementScreen) {
+			String format = "[%." + digits.getValue() + "f]";
+			distanceText = String.format(format, 20f);
+			return;
+		}
+
 		MinecraftClient client = MinecraftClient.getInstance();
 		HitResult hitResult = RaycastTickable.getHitResult();
 

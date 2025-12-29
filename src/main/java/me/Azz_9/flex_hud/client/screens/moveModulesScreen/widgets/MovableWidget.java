@@ -22,8 +22,6 @@ import org.lwjgl.glfw.GLFW;
 import java.util.HashSet;
 import java.util.Set;
 
-import static me.Azz_9.flex_hud.client.utils.DrawingUtils.drawBorder;
-
 public class MovableWidget extends ClickableWidget implements TrackableChange {
 	private final MoveModulesScreen PARENT;
 	private final MovableModule HUD_ELEMENT;
@@ -109,7 +107,7 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 			color = 0x7fa8a8ac;
 		}
 		// not using context.drawStrokedRectangle() because it makes the border drawn above the scale handle
-		drawBorder(context, getX(), getY(), getWidth(), getHeight(), color);
+		context.drawStrokedRectangle(getX(), getY(), getWidth(), getHeight(), color);
 
 		if (shouldDrawHorizontalSnapLine) {
 			context.drawHorizontalLine(0, context.getScaledWindowWidth(), snapLineY, 0x7fff0000);
@@ -342,11 +340,14 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 	}
 
 	private void snapElement(double x, double y) {
-		x = Math.clamp(x, 0, MinecraftClient.getInstance().getWindow().getScaledWidth() - this.getWidth());
-		y = Math.clamp(y, 0, MinecraftClient.getInstance().getWindow().getScaledHeight() - this.getHeight());
+		int screenW = MinecraftClient.getInstance().getWindow().getScaledWidth();
+		int screenH = MinecraftClient.getInstance().getWindow().getScaledHeight();
 
-		double centerY = MinecraftClient.getInstance().getWindow().getScaledHeight() / 2.0;
-		double centerX = MinecraftClient.getInstance().getWindow().getScaledWidth() / 2.0;
+		x = Math.clamp(x, 0, screenW - this.getWidth());
+		y = Math.clamp(y, 0, screenH - this.getHeight());
+
+		double centerX = screenW / 2.0;
+		double centerY = screenH / 2.0;
 
 		shouldDrawHorizontalSnapLine = false;
 		shouldDrawVerticalSnapLine = false;
@@ -381,6 +382,27 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 				guideY = (int) Math.round(centerY);
 				shouldDrawHorizontalSnapLine = true;
 				minYDistance = dyCenter;
+			}
+
+			// ---------- Screen edge snapping (NO guideline) ----------
+			double[] screenXEdges = new double[]{0, screenW - thisW};
+
+			for (double posX : screenXEdges) {
+				double dx = Math.abs(x - posX);
+				if (dx < minXDistance && dx < SNAP_DISTANCE) {
+					minXDistance = dx;
+					snappedX = posX;
+				}
+			}
+			
+			double[] screenYEdges = new double[]{0, screenH - thisH};
+
+			for (double posY : screenYEdges) {
+				double dy = Math.abs(y - posY);
+				if (dy < minYDistance && dy < SNAP_DISTANCE) {
+					minYDistance = dy;
+					snappedY = posY;
+				}
 			}
 
 			if (!MinecraftClient.getInstance().isCtrlPressed()) {

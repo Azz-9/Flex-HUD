@@ -1,72 +1,70 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonPrimitive;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Consumer;
 
 public abstract class AbstractConfigObject<T> {
+	@NotNull
 	private T value;
+	@NotNull
 	private T defaultValue;
+	@Nullable
 	private String configTextTranslationKey;
+	@Nullable
+	private Consumer<T> onChange = null;
 
-	public AbstractConfigObject(T defaultValue, String configTextTranslationKey) {
+	public AbstractConfigObject(@NotNull final T defaultValue, @Nullable final String configTextTranslationKey) {
 		this.defaultValue = defaultValue;
 		this.configTextTranslationKey = configTextTranslationKey;
 		this.value = defaultValue;
 	}
 
-	public AbstractConfigObject(T defaultValue) {
+	public AbstractConfigObject(@NotNull final T defaultValue) {
 		this(defaultValue, null);
 	}
 
-	public T getDefaultValue() {
+	public @NotNull T getDefaultValue() {
 		return defaultValue;
 	}
 
-	public T getValue() {
+	public @NotNull T getValue() {
 		return value;
 	}
 
-	public void setValue(T value) {
+	public void setValue(@NotNull final T value) {
+		if (onChange != null && !this.value.equals(value)) onChange.accept(value);
 		this.value = value;
 	}
 
-	public void setDefaultValue(T defaultValue) {
+	public void setDefaultValue(@NotNull final T defaultValue) {
 		this.defaultValue = defaultValue;
 	}
 
-	public String getConfigTextTranslationKey() {
+	public @Nullable String getConfigTextTranslationKey() {
 		return configTextTranslationKey;
 	}
 
-	public void setConfigTextTranslationKey(String configTextTranslationKey) {
+	public void setConfigTextTranslationKey(@Nullable String configTextTranslationKey) {
 		this.configTextTranslationKey = configTextTranslationKey;
 	}
 
 	public void setToDefault() {
-		this.value = defaultValue;
+		setValue(defaultValue);
+	}
+
+	public void setOnChange(@Nullable Consumer<T> onChange) {
+		this.onChange = onChange;
 	}
 
 	public void applyFromJsonElement(JsonElement element) {
 		if (element == null || element.isJsonNull()) return;
-		this.value = parseValue(element);
+		setValue(parseValue(element));
 	}
 
 	protected abstract T parseValue(JsonElement element);
 
-	public JsonElement toJsonValue() {
-		if (value == null) {
-			return JsonNull.INSTANCE;
-		}
-		if (value instanceof Boolean b) {
-			return new JsonPrimitive(b);
-		}
-		if (value instanceof Number n) {
-			return new JsonPrimitive(n);
-		}
-		if (value instanceof String s) {
-			return new JsonPrimitive(s);
-		}
-		return new JsonPrimitive(value.toString());
-	}
+	public abstract JsonElement toJsonValue();
 }

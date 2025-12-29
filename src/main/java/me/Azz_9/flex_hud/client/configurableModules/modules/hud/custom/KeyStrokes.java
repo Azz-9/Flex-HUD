@@ -27,19 +27,19 @@ import static me.Azz_9.flex_hud.client.utils.DrawingUtils.drawBorder;
 
 public class KeyStrokes extends AbstractTextElement {
 
-	private ConfigBoolean chromaColorPressed = new ConfigBoolean(false, "flex_hud.key_strokes.config.chroma_color_pressed");
-	private ConfigInteger colorPressed = new ConfigInteger(0x323232, "flex_hud.key_strokes.config.color_pressed");
-	private ConfigBoolean drawBackgroundPressed = new ConfigBoolean(true, "flex_hud.key_strokes.config.show_background_pressed");
-	private ConfigInteger backgroundColorPressed = new ConfigInteger(0xffffff, "flex_hud.key_strokes.config.background_color_pressed");
-	private ConfigBoolean showBorder = new ConfigBoolean(false, "flex_hud.key_strokes.config.show_border");
-	private ConfigInteger borderColor = new ConfigInteger(0xffffff, "flex_hud.key_strokes.config.border_color");
-	public ConfigBoolean displayCps = new ConfigBoolean(true, "flex_hud.key_strokes.config.display_cps");
-	private ConfigBoolean useArrow = new ConfigBoolean(false, "flex_hud.key_strokes.config.use_arrow");
+	private final ConfigBoolean chromaColorPressed = new ConfigBoolean(false, "flex_hud.key_strokes.config.chroma_color_pressed");
+	private final ConfigInteger colorPressed = new ConfigInteger(0x323232, "flex_hud.key_strokes.config.color_pressed");
+	private final ConfigBoolean drawBackgroundPressed = new ConfigBoolean(true, "flex_hud.key_strokes.config.show_background_pressed");
+	private final ConfigInteger backgroundColorPressed = new ConfigInteger(0xffffff, "flex_hud.key_strokes.config.background_color_pressed");
+	private final ConfigBoolean showBorder = new ConfigBoolean(false, "flex_hud.key_strokes.config.show_border");
+	private final ConfigInteger borderColor = new ConfigInteger(0xffffff, "flex_hud.key_strokes.config.border_color");
+	public final ConfigBoolean displayCps = new ConfigBoolean(true, "flex_hud.key_strokes.config.display_cps");
+	private final ConfigBoolean useArrow = new ConfigBoolean(false, "flex_hud.key_strokes.config.use_arrow");
 
-	private int borderThickness;
-	private int gap;
-	private int keySize;
-	private Map<KeyBinding, KeyAnimation> keyAnimations;
+	private final int borderThickness = 1;
+	private final int gap = borderThickness;
+	private final int keySize = 22;
+	private final Map<KeyBinding, KeyAnimation> keyAnimations = new HashMap<>();
 
 	private static class KeyAnimation {
 		long lastChangeTime;
@@ -66,14 +66,8 @@ public class KeyStrokes extends AbstractTextElement {
 
 	@Override
 	public void init() {
-		this.borderThickness = 1;
-		this.gap = borderThickness;
-		this.keySize = 22;
-
-		this.width = keySize * 3 + gap * 4;
-		this.height = (int) (keySize * 3.5 + gap * 5);
-
-		keyAnimations = new HashMap<>();
+		setWidth(keySize * 3 + gap * 4);
+		setHeight((int) (keySize * 3.5 + gap * 5));
 	}
 
 	@Override
@@ -257,76 +251,92 @@ public class KeyStrokes extends AbstractTextElement {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(enabled)
-								.build(),
+								.build()
+				);
+				this.addAllEntries(
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(shadow)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(chromaColor)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 				this.addAllEntries(
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
 								.setVariable(color)
-								.setDependency(this.getConfigList().getLastEntry(), true)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), true)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(chromaColorPressed)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 				this.addAllEntries(
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
 								.setVariable(colorPressed)
-								.setDependency(this.getConfigList().getLastEntry(), true)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), true)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(drawBackground)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 				this.addAllEntries(
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
 								.setVariable(backgroundColor)
-								.setDependency(this.getConfigList().getLastEntry(), false)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(drawBackgroundPressed)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 				this.addAllEntries(
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
 								.setVariable(backgroundColorPressed)
-								.setDependency(this.getConfigList().getLastEntry(), false)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(showBorder)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 				this.addAllEntries(
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
 								.setVariable(borderColor)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(hideInF3)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(displayCps)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(useArrow)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 			}

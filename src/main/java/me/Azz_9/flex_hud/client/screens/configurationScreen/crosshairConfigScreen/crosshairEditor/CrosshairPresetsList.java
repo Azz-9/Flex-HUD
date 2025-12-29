@@ -317,13 +317,14 @@ public class CrosshairPresetsList extends AbstractSmoothScrollableList<Crosshair
 		@Override
 		public boolean mouseClicked(Click click, boolean doubled) {
 			if (parent != null) {
-				int[][] oldTexture = parent.crosshairEditor.getTexture();
+				
 				int[][] texture = new int[this.texture.length][this.texture[0].length];
 				for (int textureY = 0; textureY < texture.length; textureY++) {
 					texture[textureY] = this.texture[textureY].clone();
 				}
-				parent.crosshairEditor.setTexture(texture);
-				parent.crosshairEditor.undoManager.addAction(new TextureAction(parent.crosshairEditor, oldTexture, texture));
+
+				parent.crosshairEditor.onPresetUpdate(texture);
+
 				ClickableWidget.playClickSound(MinecraftClient.getInstance().getSoundManager());
 				return true;
 			}

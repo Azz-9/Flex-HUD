@@ -2,6 +2,7 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
@@ -17,7 +18,9 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2fStack;
 
 import java.time.LocalTime;
@@ -26,10 +29,10 @@ import java.util.Locale;
 
 public class InGameTime extends AbstractTextElement implements TickableModule {
 
-	public ConfigString textFormat = new ConfigString("hh:mm", "flex_hud.clock.config.text_format");
-	private ConfigBoolean isTwentyFourHourFormat;
+	public final ConfigString textFormat = new ConfigString("hh:mm", "flex_hud.clock.config.text_format");
+	private final ConfigBoolean isTwentyFourHourFormat;
 
-	private String formattedTime;
+	private String formattedTime = "";
 
 	public InGameTime(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
@@ -46,7 +49,7 @@ public class InGameTime extends AbstractTextElement implements TickableModule {
 
 	@Override
 	public void init() {
-		this.height = MinecraftClient.getInstance().textRenderer.fontHeight;
+		setHeight(MinecraftClient.getInstance().textRenderer.fontHeight);
 	}
 
 	@Override
@@ -80,6 +83,15 @@ public class InGameTime extends AbstractTextElement implements TickableModule {
 	}
 
 	@Override
+	public @Nullable Tooltip getTooltip() {
+		if (ModulesHelper.getInstance().timeChanger.isEnabled()) {
+			return Tooltip.of(Text.literal("⚠ ").append(Text.translatable("flex_hud.configuration_screen.module_compatibility_warning")).append(Text.translatable("flex_hud.time_changer")).formatted(Formatting.RED));
+		} else {
+			return null;
+		}
+	}
+
+	@Override
 	public AbstractConfigurationScreen getConfigScreen(Screen parent) {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
@@ -90,44 +102,54 @@ public class InGameTime extends AbstractTextElement implements TickableModule {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(enabled)
-								.build(),
+								.build()
+				);
+				this.addAllEntries(
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(shadow)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(chromaColor)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 				this.addAllEntries(
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
 								.setVariable(color)
-								.setDependency(this.getConfigList().getLastEntry(), true)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), true)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(drawBackground)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 				this.addAllEntries(
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
 								.setVariable(backgroundColor)
-								.setDependency(this.getConfigList().getLastEntry(), false)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(hideInF3)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(isTwentyFourHourFormat)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new StringFieldEntry.Builder()
 								.setStringFieldWidth(80)
 								.setVariable(textFormat)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.setIsValid(textFormat -> {
 									if (textFormat.isBlank()) return false;
 									try {

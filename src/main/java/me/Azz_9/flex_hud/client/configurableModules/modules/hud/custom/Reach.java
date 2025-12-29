@@ -14,20 +14,27 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 
 public class Reach extends AbstractTextElement implements TickableModule {
-	public ConfigInteger digits = new ConfigInteger(2, "flex_hud.reach.config.number_of_digits", 0, 16);
+	public final ConfigInteger digits = new ConfigInteger(2, "flex_hud.reach.config.number_of_digits", 0, 16);
 
-	private Text text;
+	@NotNull
+	private Text text = Text.empty();
 
-	public Reach(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
+	public Reach(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.reach.config.enable");
 		this.enabled.setDefaultValue(false);
 		this.enabled.setValue(false);
 
 		ConfigRegistry.register(getID(), "digits", digits);
+	}
+
+	@Override
+	public void init() {
+		setHeight(MinecraftClient.getInstance().textRenderer.fontHeight);
 	}
 
 	@Override
@@ -78,40 +85,49 @@ public class Reach extends AbstractTextElement implements TickableModule {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(enabled)
-								.build(),
+								.build()
+				);
+				this.addAllEntries(
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(shadow)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(chromaColor)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 				this.addAllEntries(
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
 								.setVariable(color)
-								.setDependency(this.getConfigList().getLastEntry(), true)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), true)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(drawBackground)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 				this.addAllEntries(
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
 								.setVariable(backgroundColor)
-								.setDependency(this.getConfigList().getLastEntry(), false)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(hideInF3)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new IntFieldEntry.Builder()
 								.setIntFieldWidth(20)
 								.setVariable(digits)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 			}

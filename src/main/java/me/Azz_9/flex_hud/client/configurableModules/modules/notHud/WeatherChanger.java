@@ -11,7 +11,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 
 public class WeatherChanger extends AbstractModule {
-	public ConfigEnum<Weather> selectedWeather = new ConfigEnum<>(Weather.class, Weather.CLEAR, "flex_hud.weather_changer.config.selected_weather");
+	public final ConfigEnum<Weather> selectedWeather = new ConfigEnum<>(Weather.class, Weather.CLEAR, "flex_hud.weather_changer.config.selected_weather");
 
 	public WeatherChanger() {
 		this.enabled.setConfigTextTranslationKey("flex_hud.weather_changer.config.enable");
@@ -44,10 +44,13 @@ public class WeatherChanger extends AbstractModule {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(enabled)
-								.build(),
+								.build()
+				);
+				this.addAllEntries(
 						new CyclingButtonEntry.Builder<Weather>()
 								.setCyclingButtonWidth(80)
 								.setVariable(selectedWeather)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 			}
@@ -65,6 +68,7 @@ public class WeatherChanger extends AbstractModule {
 			this.translationKey = translationKey;
 		}
 
+		@Override
 		public String getTranslationKey() {
 			return translationKey;
 		}

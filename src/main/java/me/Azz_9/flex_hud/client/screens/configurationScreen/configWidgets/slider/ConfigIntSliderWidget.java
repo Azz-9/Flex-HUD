@@ -5,6 +5,7 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
+import me.Azz_9.flex_hud.client.utils.Cursors;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.Tooltip;
@@ -15,24 +16,20 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.function.Function;
 
-import static me.Azz_9.flex_hud.client.utils.DrawingUtils.drawBorder;
-
 public class ConfigIntSliderWidget<T> extends SliderWidget implements TrackableChange, DataGetter<Integer>, ResetAware {
 	private final Integer STEP;
 	private final int INITIAL_STATE;
 	private final ConfigInteger variable;
 	private final List<Observer> observers;
-	private final T disableWhen;
 	@Nullable
 	private final Function<Integer, Tooltip> getTooltip;
 
-	public ConfigIntSliderWidget(int width, int height, ConfigInteger variable, Integer step, List<Observer> observers, T disableWhen, @Nullable Function<Integer, Tooltip> getTooltip) {
+	public ConfigIntSliderWidget(int width, int height, ConfigInteger variable, Integer step, List<Observer> observers, @Nullable Function<Integer, Tooltip> getTooltip) {
 		super(0, 0, width, height, Text.of(String.valueOf(variable.getValue())), (double) (variable.getValue() - variable.getMin()) / (variable.getMax() - variable.getMin()));
 		this.STEP = step;
 		this.INITIAL_STATE = variable.getValue();
 		this.variable = variable;
 		this.observers = observers;
-		this.disableWhen = disableWhen;
 		this.getTooltip = getTooltip;
 
 		if (this.getTooltip != null) this.setTooltip(this.getTooltip.apply(variable.getValue()));
@@ -41,12 +38,18 @@ public class ConfigIntSliderWidget<T> extends SliderWidget implements TrackableC
 	@Override
 	public void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
 		if (this.active) {
+			if (this.isHovered()) context.setCursor(Cursors.POINTING_HAND);
+
 			if (this.isSelected()) {
-				drawBorder(context, getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+				context.drawStrokedRectangle(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
 			}
 		}
+
 		super.renderWidget(context, mouseX, mouseY, deltaTicks);
+
 		if (!this.active) {
+			if (this.isHovered()) context.setCursor(Cursors.NOT_ALLOWED);
+
 			context.fill(getX(), getY(), getRight(), getBottom(), 0xcf4e4e4e);
 		}
 	}
@@ -108,10 +111,6 @@ public class ConfigIntSliderWidget<T> extends SliderWidget implements TrackableC
 		}
 
 		if (getTooltip != null) this.setTooltip(this.getTooltip.apply(variable.getValue()));
-	}
-
-	public T getDisableWhen() {
-		return disableWhen;
 	}
 
 	@Override

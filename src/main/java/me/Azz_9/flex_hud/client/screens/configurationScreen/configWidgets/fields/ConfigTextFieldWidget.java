@@ -16,22 +16,20 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class ConfigTextFieldWidget<T> extends TextFieldWidget implements TrackableChange, DataGetter<String>, ResetAware {
+public class ConfigTextFieldWidget extends TextFieldWidget implements TrackableChange, DataGetter<String>, ResetAware {
 	private final String INITIAL_VALUE;
 	private final ConfigString variable;
 	private final Predicate<String> IS_VALID;
 	private final List<Observer> observers;
-	private final T disableWhen;
 	@Nullable
 	private final Function<String, Tooltip> getTooltip;
 
-	public ConfigTextFieldWidget(TextRenderer textRenderer, int width, int height, ConfigString variable, List<Observer> observers, T disableWhen, Predicate<String> isValid, @Nullable Function<String, Tooltip> getTooltip) {
+	public ConfigTextFieldWidget(TextRenderer textRenderer, int width, int height, ConfigString variable, List<Observer> observers, Predicate<String> isValid, @Nullable Function<String, Tooltip> getTooltip) {
 		super(textRenderer, width, height, Text.translatable("flex_hud.text_field"));
 		this.INITIAL_VALUE = variable.getValue();
 		this.variable = variable;
 		this.IS_VALID = isValid;
 		this.observers = observers;
-		this.disableWhen = disableWhen;
 		this.getTooltip = getTooltip;
 
 		setText(variable.getValue());
@@ -86,10 +84,6 @@ public class ConfigTextFieldWidget<T> extends TextFieldWidget implements Trackab
 			return true;
 		}
 		return IS_VALID.test(getText());
-	}
-
-	public T getDisableWhen() {
-		return disableWhen;
 	}
 
 	public void addObserver(Observer observer) {

@@ -11,7 +11,6 @@ import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
-import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.text.Text;
 
 import java.util.ArrayList;
@@ -38,6 +37,19 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 		return children().get(super.getEntryCount() - 1);
 	}
 
+	public AbstractConfigEntry getFirstEntry() {
+		return children().getFirst();
+	}
+
+	public AbstractConfigEntry getEntry(int index) {
+		return children().get(index);
+	}
+
+	@Override
+	public int getEntryCount() {
+		return super.getEntryCount();
+	}
+
 	public void addConfigEntry(AbstractConfigEntry entry) {
 		this.addEntry(entry);
 		entry.addObserver(observer);
@@ -45,7 +57,10 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 
 	public abstract static class AbstractConfigEntry extends ElementListWidget.Entry<AbstractConfigEntry> implements Observer {
 		protected ConfigResetButtonWidget resetButtonWidget;
-		protected TextWidget textWidget;
+		//protected TextWidget textWidget;
+		private Text text;
+		private int textX, textY;
+		private int textColor;
 		protected List<Observer> observers = new ArrayList<>();
 
 		private final int resetButtonSize;
@@ -54,7 +69,10 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 
 		public AbstractConfigEntry(int resetButtonSize, Text text) {
 			this.resetButtonSize = resetButtonSize;
-			this.textWidget = new TextWidget(text, MinecraftClient.getInstance().textRenderer);
+			this.text = text;
+			this.textX = 0;
+			this.textY = 0;
+			this.textColor = 0xffffffff;
 		}
 
 		protected void setResetButtonPressAction(ButtonWidget.PressAction pressAction) {
@@ -65,25 +83,25 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 		public void setX(int x) {
 			super.setX(x);
 			this.resetButtonWidget.setX(x + getWidth() - resetButtonWidget.getWidth());
-			this.textWidget.setX(x + TEXT_MARGIN_LEFT);
+			textX = x + TEXT_MARGIN_LEFT;
 		}
 
 		@Override
 		public void setY(int y) {
 			super.setY(y);
 			this.resetButtonWidget.setY(y);
-			this.textWidget.setY((int) (y + (this.resetButtonSize - MinecraftClient.getInstance().textRenderer.fontHeight) / 2.0));
+			textY = (int) (y + (this.resetButtonSize - MinecraftClient.getInstance().textRenderer.fontHeight) / 2.0);
 		}
 
 		@Override
 		public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
 			this.resetButtonWidget.render(context, mouseX, mouseY, deltaTicks);
-			this.textWidget.render(context, mouseX, mouseY, deltaTicks);
+			context.drawText(MinecraftClient.getInstance().textRenderer, text, textX, textY, textColor, true);
 		}
 
 		@Override
 		public List<? extends Element> children() {
-			return List.of(resetButtonWidget, textWidget);
+			return List.of(resetButtonWidget);
 		}
 
 		@Override
@@ -93,7 +111,7 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 
 		public void setActive(boolean active) {
 			resetButtonWidget.active = active;
-			textWidget.setTextColor((active ? 0xffffff : 0xafafaf));
+			textColor = active ? 0xffffffff : 0xffafafaf;
 		}
 
 		public void addObserver(Observer observer) {
@@ -125,6 +143,9 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 			}
 
 			public abstract AbstractConfigEntry build();
+		}
+
+		public record Dependency<T>(AbstractConfigEntry entry, T disableWhen) {
 		}
 	}
 }

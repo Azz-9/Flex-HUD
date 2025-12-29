@@ -8,7 +8,7 @@
 	"flex_hud.configuration_screen.done": "Terminé",
 	"flex_hud.configuration_screen.module_compatibility_warning": "Ce module ne fonctionne pas correctement avec  ",
 
-	"flex_hud.move_elements_screen": "Déplacer les éléments",
+	"flex_hud.move_modules_screen": "Déplacer les modules",
 
 	"flex_hud.options_screen": "Options",
 	"flex_hud.options_screen.modules": "Modules",
@@ -43,6 +43,10 @@
 
 	"flex_hud.enum.display_mode.horizontal": "Horizontal",
 	"flex_hud.enum.display_mode.vertical": "Vertical",
+	"flex_hud.enum.alignment.left": "Gauche",
+	"flex_hud.enum.alignment.center": "Centre",
+	"flex_hud.enum.alignment.right": "Droite",
+	"flex_hud.enum.alignment.auto": "Auto",
 	"flex_hud.enum.weather.clear": "Clair",
 	"flex_hud.enum.weather.rain": "Pluie",
 	"flex_hud.enum.weather.thunder": "Orage",
@@ -56,6 +60,13 @@
 	"flex_hud.enum.speedometer.units.kph": "km/h",
 	"flex_hud.enum.speedometer.units.mph": "mi/h",
 	"flex_hud.enum.speedometer.units.mps": "m/s",
+	"flex_hud.enum.compass.icons_size.small": "Petite",
+	"flex_hud.enum.compass.icons_size.medium": "Moyenne",
+	"flex_hud.enum.compass.icons_size.large": "Grande",
+	"flex_hud.enum.potion_effect.icon_placement.top": "Au dessus",
+	"flex_hud.enum.potion_effect.icon_placement.right": "À droite",
+	"flex_hud.enum.potion_effect.icon_placement.bottom": "En dessous",
+	"flex_hud.enum.potion_effect.icon_placement.left": "À Gauche",
 
 	"flex_hud.global.config.quit_and_discard": "Quitter & annuler les modifications",
 	"flex_hud.global.config.callback.message_title": "Modifications non sauvgardées",
@@ -87,6 +98,7 @@
 	"flex_hud.armor_status.config.show_durability_bar": "Afficher la barre de durabilité",
 	"flex_hud.armor_status.config.show_durability": "Afficher la durabilité",
 	"flex_hud.armor_status.config.orientation": "Orientation",
+	"flex_hud.armor_status.config.alignment": "Alignement",
 
 	"flex_hud.clock": "Horloge",
 	"flex_hud.clock.config.enable": "Afficher l'horloge",
@@ -96,8 +108,6 @@
 	"flex_hud.coordinates": "Coordonnées",
 	"flex_hud.coordinates.config.enable": "Afficher les coordonnées",
 	"flex_hud.coordinates.config.show_y": "Afficher la coordonnée Y",
-	"flex_hud.coordinates.config.show_biome": "Afficher le biome",
-	"flex_hud.coordinates.config.custom_biome_color": "Couleurs des biomes personnalisées",
 	"flex_hud.coordinates.config.show_direction": "Afficher la direction",
 	"flex_hud.coordinates.config.direction_abbreviation": "Abréviation de la direction",
 	"flex_hud.coordinates.config.number_of_digits": "Nombre de décimales",
@@ -123,10 +133,13 @@
 	"flex_hud.compass.config.show_intermediate_point": "Afficher les points intermédiaires",
 	"flex_hud.compass.config.show_xaeros_map_waypoints": "Afficher les waypoints de Xaero's map",
 	"flex_hud.compass.config.show_xaeros_map_waypoints.not_installed_tooltip": "Xaero's Minimap n'est pas installé",
+	"flex_hud.compass.config.show_journey_map_waypoints": "Afficher les waypoints de JourneyMap",
+	"flex_hud.compass.config.show_journey_map_waypoints.not_installed_tooltip": "JourneyMap n'est pas installé",
 	"flex_hud.compass.config.override_locator_bar": "Remplacer la barre de localisation",
 	"flex_hud.compass.config.show_mobs": "Afficher toutes les créatures",
 	"flex_hud.compass.config.show_tamed_entities_point": "Afficher les entités apprivoisées",
 	"flex_hud.compass.config.show_only_pets": "Afficher que les animaux de compagnie",
+	"flex_hud.compass.config.icons_size": "Taille des icones",
 
 	"flex_hud.durability_ping": "Ping de durabilité",
 	"flex_hud.durability_ping.config.enable": "Activer le ping de durabilité",
@@ -190,6 +203,8 @@
 
 	"flex_hud.potion_effect": "Effet de potion",
 	"flex_hud.potion_effect.config.enable": "Afficher les effets de potion",
+	"flex_hud.potion_effect.config.alignment": "Alignement",
+	"flex_hud.potion_effect.config.icon_placement": "Placement des icones",
 
 	"flex_hud.tnt_countdown": "Compte à rebours TNT",
 	"flex_hud.tnt_countdown.config.enable": "Activer le compte à rebours TNT",
@@ -230,6 +245,10 @@
 	"flex_hud.held_item": "Infos sur l'objet tenu",
 	"flex_hud.held_item.config.enable": "Afficher les infos sur l'objet tenu",
 	"flex_hud.held_item.config.show_durability": "Afficher la durabilité",
+
+	"flex_hud.biome_display": "Affichage biome",
+	"flex_hud.biome_display.config.enable": "Afficher les biome",
+	"flex_hud.biome_display.config.biome_specific_color": "Couleur spécifique au biome",
 
 	"flex_hud.coordinates.hud.direction.south": "Sud",
 	"flex_hud.coordinates.hud.direction.south_west": "Sud-Ouest",

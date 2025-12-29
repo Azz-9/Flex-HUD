@@ -12,7 +12,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.input.KeyInput;
-import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -21,18 +20,16 @@ import java.util.function.Function;
 public class ConfigCyclingButtonWidget<T, E extends Enum<E> & Translatable> extends ButtonWidget implements TrackableChange, DataGetter<E>, ResetAware {
 	private final E INITIAL_STATE;
 	private final List<Observer> observers;
-	private final T disableWhen;
 	private final E[] values;
 	private final ConfigEnum<E> variable;
 	@Nullable
 	private final Function<E, Tooltip> getTooltip;
 
-	public ConfigCyclingButtonWidget(int width, int height, ConfigEnum<E> variable, List<Observer> observers, T disableWhen, @Nullable Function<E, Tooltip> getTooltip) {
-		super(0, 0, width, height, Text.translatable(variable.getValue().getTranslationKey()), (btn) -> {
+	public ConfigCyclingButtonWidget(int width, int height, ConfigEnum<E> variable, List<Observer> observers, @Nullable Function<E, Tooltip> getTooltip) {
+		super(0, 0, width, height, net.minecraft.text.Text.translatable(variable.getValue().getTranslationKey()), (btn) -> {
 		}, DEFAULT_NARRATION_SUPPLIER);
 		this.INITIAL_STATE = variable.getValue();
 		this.observers = observers;
-		this.disableWhen = disableWhen;
 		this.variable = variable;
 		this.values = variable.getValue().getDeclaringClass().getEnumConstants();
 		this.getTooltip = getTooltip;
@@ -43,8 +40,9 @@ public class ConfigCyclingButtonWidget<T, E extends Enum<E> & Translatable> exte
 	}
 
 	@Override
-	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-		super.renderWidget(context, mouseX, mouseY, deltaTicks);
+	protected void drawIcon(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+		super.drawButton(context);
+		super.drawLabel(context.getTextConsumer());
 
 		if (!this.active) {
 			context.fill(getX(), getY(), getRight(), getBottom(), 0xcf4e4e4e);
@@ -55,7 +53,9 @@ public class ConfigCyclingButtonWidget<T, E extends Enum<E> & Translatable> exte
 	public void onClick(Click click, boolean bl) {
 		super.onClick(click, bl);
 
-		int index = (variable.getValue().ordinal() + 1) % values.length;
+		// shift click to go backward
+		int offset = MinecraftClient.getInstance().isShiftPressed() ? -1 : 1;
+		int index = (variable.getValue().ordinal() + offset + values.length) % values.length;
 
 		setValue(values[index]);
 	}
@@ -90,13 +90,9 @@ public class ConfigCyclingButtonWidget<T, E extends Enum<E> & Translatable> exte
 		return variable.getValue();
 	}
 
-	public T getDisableWhen() {
-		return disableWhen;
-	}
-
 	public void setValue(E value) {
 		variable.setValue(value);
-		setMessage(Text.translatable(value.getTranslationKey()));
+		setMessage(net.minecraft.text.Text.translatable(value.getTranslationKey()));
 		if (getTooltip != null) setTooltip(getTooltip.apply(value));
 
 		for (Observer observer : observers) {

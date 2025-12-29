@@ -4,6 +4,7 @@ import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.Translatable;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.Alignment;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.DisplayMode;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable.MultiRenderable;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable.RenderableItem;
@@ -25,6 +26,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.ColorHelper;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 
 import java.util.LinkedList;
@@ -42,8 +44,9 @@ public class ArmorStatus extends AbstractTextElement {
 	private final ConfigBoolean showDurabilityBar = new ConfigBoolean(false, "flex_hud.armor_status.config.show_durability_bar");
 	private final ConfigEnum<DurabilityType> durabilityType = new ConfigEnum<>(DurabilityType.class, DurabilityType.PERCENTAGE, "flex_hud.armor_status.config.show_durability");
 	private final ConfigEnum<DisplayMode> displayMode = new ConfigEnum<>(DisplayMode.class, DisplayMode.VERTICAL, "flex_hud.armor_status.config.orientation");
+	private final ConfigEnum<Alignment> alignment = new ConfigEnum<>(Alignment.class, Alignment.AUTO, "flex_hud.armor_status.config.alignment");
 
-	public ArmorStatus(double defaultOffsetX, double defaultOffsetY, AnchorPosition defaultAnchorX, AnchorPosition defaultAnchorY) {
+	public ArmorStatus(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.armor_status.config.enable");
 
@@ -58,6 +61,7 @@ public class ArmorStatus extends AbstractTextElement {
 		ConfigRegistry.register(getID(), "showDurabilityBar", showDurabilityBar);
 		ConfigRegistry.register(getID(), "durabilityType", durabilityType);
 		ConfigRegistry.register(getID(), "displayMode", displayMode);
+		ConfigRegistry.register(getID(), "alignment", alignment);
 	}
 
 	@Override
@@ -101,8 +105,8 @@ public class ArmorStatus extends AbstractTextElement {
 		}
 
 		// reset height and width
-		this.height = (displayMode.getValue() == DisplayMode.HORIZONTAL) ? 16 : 0;
-		this.width = 0;
+		setHeight((displayMode.getValue() == DisplayMode.HORIZONTAL) ? 16 : 0);
+		setWidth(0);
 
 		boolean[] booleans = new boolean[]{
 				showHelmet.getValue(),
@@ -133,11 +137,11 @@ public class ArmorStatus extends AbstractTextElement {
 
 					if (this.displayMode.getValue() == DisplayMode.VERTICAL) {
 						hudY += 16 + verticalGap;
-						this.height = hudY - verticalGap;
-						this.width = Math.max(this.width, drawingWidth);
+						setHeight(hudY - verticalGap);
+						setWidth(Math.max(getWidth(), drawingWidth));
 					} else {
 						hudX += drawingWidth + horizontalGap;
-						this.width = hudX;
+						setWidth(hudX);
 					}
 
 					if ((i == 4 || i == 5) && this.showArrowsWhenBowInHand.getValue() && (stack.isOf(Items.BOW) || stack.isOf(Items.CROSSBOW))) {
@@ -152,10 +156,10 @@ public class ArmorStatus extends AbstractTextElement {
 		}
 
 		if (displayMode.getValue() == DisplayMode.VERTICAL) {
-			if (getAnchorX() == AnchorPosition.END) {
-				MultiRenderable.alignRight(multiRenderables, this.width);
-			} else if (getAnchorX() == AnchorPosition.CENTER) {
-				MultiRenderable.alignCenter(multiRenderables, this.width / 2);
+			if (alignment.getValue() == Alignment.RIGHT || alignment.getValue() == Alignment.AUTO && getAnchorX() == AnchorPosition.END) {
+				MultiRenderable.alignRight(multiRenderables, getWidth());
+			} else if (alignment.getValue() == Alignment.CENTER || alignment.getValue() == Alignment.AUTO && getAnchorX() == AnchorPosition.CENTER) {
+				MultiRenderable.alignCenter(multiRenderables, getWidth() / 2);
 			}
 		}
 
@@ -210,7 +214,7 @@ public class ArmorStatus extends AbstractTextElement {
 
 		if (shadow.getValue() && !text.isEmpty()) drawingWidth++;
 
-		if (displayMode.getValue() == DisplayMode.VERTICAL && getAnchorX() == AnchorPosition.END) {
+		if (displayMode.getValue() == DisplayMode.VERTICAL && (getAnchorX() == AnchorPosition.END || alignment.getValue() == Alignment.RIGHT)) {
 			multiRenderables.add(new MultiRenderable(x, x + drawingWidth,
 					new RenderableText(x, y + 4, Text.of(text), color, shadow.getValue()),
 					new RenderableItem(x + MinecraftClient.getInstance().textRenderer.getWidth(text) + 1, y, 16, stack, showDurabilityBar.getValue())
@@ -241,7 +245,7 @@ public class ArmorStatus extends AbstractTextElement {
 
 				if (shadow.getValue()) drawingWidth++;
 
-				if (displayMode.getValue() == DisplayMode.VERTICAL && getAnchorX() == AnchorPosition.END) {
+				if (displayMode.getValue() == DisplayMode.VERTICAL && (getAnchorX() == AnchorPosition.END || alignment.getValue() == Alignment.RIGHT)) {
 					multiRenderables.add(new MultiRenderable(x, x + drawingWidth,
 							new RenderableText(x, y + 4, Text.of(text), getColor(), shadow.getValue()),
 							new RenderableItem(x + MinecraftClient.getInstance().textRenderer.getWidth(text) + 1, y, 16, arrow, showDurabilityBar.getValue())
@@ -255,11 +259,11 @@ public class ArmorStatus extends AbstractTextElement {
 
 				if (displayMode.getValue() == DisplayMode.VERTICAL) {
 					y += 16 + verticalGap;
-					this.height = y;
-					this.width = Math.max(this.width, drawingWidth);
+					setHeight(y);
+					setWidth(Math.max(getWidth(), drawingWidth));
 				} else {
 					x += drawingWidth + horizontalGap;
-					this.width = x + (shadow.getValue() ? 1 : 0);
+					setWidth(x + (shadow.getValue() ? 1 : 0));
 				}
 			}
 		} else {
@@ -279,10 +283,10 @@ public class ArmorStatus extends AbstractTextElement {
 
 			int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(text) + (shadow.getValue() ? 1 : 0);
 			int drawingWidth = 17 + textWidth;
-			this.width = Math.max(this.width, drawingWidth);
-			this.height += 16;
+			setWidth(Math.max(getWidth(), drawingWidth));
+			setHeight(getHeight() + 16);
 
-			if (displayMode.getValue() == DisplayMode.VERTICAL && getAnchorX() == AnchorPosition.END) {
+			if (displayMode.getValue() == DisplayMode.VERTICAL && (getAnchorX() == AnchorPosition.END || alignment.getValue() == Alignment.RIGHT)) {
 				multiRenderables.add(new MultiRenderable(x, x + drawingWidth,
 						new RenderableText(x, y + 4, Text.of(text), getColor(), shadow.getValue()),
 						new RenderableItem(x + textWidth + 1, y, 16, arrowStack, showDurabilityBar.getValue())
@@ -310,80 +314,107 @@ public class ArmorStatus extends AbstractTextElement {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(enabled)
-								.build(),
+								.build()
+				);
+				this.addAllEntries(
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(shadow)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(chromaColor)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 				this.addAllEntries(
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
 								.setVariable(color)
-								.setDependency(this.getConfigList().getLastEntry(), true)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), true)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(drawBackground)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 				this.addAllEntries(
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
 								.setVariable(backgroundColor)
-								.setDependency(this.getConfigList().getLastEntry(), false)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(hideInF3)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(showHelmet)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(showChestplate)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(showLeggings)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(showBoots)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(showHeldItem)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(showOffHandItem)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(showArrowsWhenBowInHand)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(separateArrowTypes)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(showDurabilityBar)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new CyclingButtonEntry.Builder<DurabilityType>()
 								.setCyclingButtonWidth(80)
 								.setVariable(durabilityType)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new CyclingButtonEntry.Builder<DisplayMode>()
 								.setCyclingButtonWidth(80)
 								.setVariable(displayMode)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build()
+				);
+				this.addAllEntries(
+						new CyclingButtonEntry.Builder<Alignment>()
+								.setCyclingButtonWidth(80)
+								.setVariable(alignment)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), DisplayMode.HORIZONTAL)
 								.build()
 				);
 			}

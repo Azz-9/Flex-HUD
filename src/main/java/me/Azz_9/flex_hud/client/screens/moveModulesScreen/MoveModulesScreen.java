@@ -2,6 +2,7 @@ package me.Azz_9.flex_hud.client.screens.moveModulesScreen;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
+import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.MovableModule;
 import me.Azz_9.flex_hud.client.screens.AbstractCallbackScreen;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.actions.UndoManager;
@@ -29,7 +30,7 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 	private boolean firstFrame = true;
 
 	public MoveModulesScreen(Screen parent) {
-		super(Text.translatable("flex_hud.move_elements_screen"), parent, Text.translatable("flex_hud.global.config.callback.message_title"), Text.translatable("flex_hud.global.config.callback.message_content"));
+		super(Text.translatable("flex_hud.move_modules_screen"), parent, Text.translatable("flex_hud.global.config.callback.message_title"), Text.translatable("flex_hud.global.config.callback.message_content"));
 	}
 
 	@Override
@@ -53,6 +54,10 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 
 		for (MovableModule movableModule : ModulesHelper.getMovableModules()) {
 			if (movableModule.isEnabled()) {
+				// certains modules utilisent des placeholder, pour ces modules il faut forcer le tick pour que
+				// les données utilisées soient les placeholders et que la taille du MovableWidget soit la bonne
+				if (movableModule instanceof TickableModule tickable) tickable.tick();
+
 				MovableWidget movableWidget = new MovableWidget(movableModule, this);
 				movableWidgets.add(movableWidget);
 				this.addDrawableChild(movableWidget);
@@ -98,19 +103,21 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 
 	@Override
 	public void renderBackground(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-		if (isCallbackScreen()) {
+		if (isCallbackScreen() && MinecraftClient.getInstance().world != null) {
 			super.renderBackground(context, mouseX, mouseY, deltaTicks);
 		}
 	}
 
 	@Override
 	protected void disableAllChildren() {
+		super.disableAllChildren();
 		helpWidget.active = false;
 		movableWidgets.forEach(widget -> widget.active = false);
 	}
 
 	@Override
 	protected void enableAllChildren() {
+		super.enableAllChildren();
 		helpWidget.active = true;
 		movableWidgets.forEach(widget -> widget.active = true);
 	}

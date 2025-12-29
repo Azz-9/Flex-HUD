@@ -1,8 +1,8 @@
 package me.Azz_9.flex_hud.client.configurableModules;
 
 import com.google.gson.*;
-import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.AbstractConfigObject;
+import me.Azz_9.flex_hud.client.utils.FlexHudLogger;
 
 import java.io.File;
 import java.io.Reader;
@@ -11,7 +11,6 @@ import java.nio.file.Files;
 import java.util.Map;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
-import static me.Azz_9.flex_hud.client.configurableModules.ModulesHelper.INSTANCE;
 
 public class ConfigLoader {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -19,33 +18,32 @@ public class ConfigLoader {
 
 	public static void loadConfig() {
 		if (!CONFIG_FILE.exists()) {
-			Flex_hudClient.LOGGER.info("Config file does not exist, loading default config");
+			FlexHudLogger.info("Config file does not exist, loading default config");
 			saveConfig(); // create defaults if missing
 			return;
 		}
-
-		INSTANCE = new ModulesHelper();
 
 		try (Reader reader = Files.newBufferedReader(CONFIG_FILE.toPath())) {
 			JsonObject root = JsonParser.parseReader(reader).getAsJsonObject();
 
 			// detect old format
 			if (containsOldFormat(root)) {
-				Flex_hudClient.LOGGER.info("Detected old config format, migrating...");
+				FlexHudLogger.info("Detected old config format, migrating...");
 				root = convertOldFormat(root);
 				saveConverted(root);
-				Flex_hudClient.LOGGER.info("Old format converted!");
+				FlexHudLogger.info("Old format converted!");
 			}
 
 			applyConfig(root);
 
 		} catch (Exception e) {
-			Flex_hudClient.LOGGER.error("Failed to load config: {}, using default", e.getMessage());
+			FlexHudLogger.error("Failed to load config: {}, using default", e.getMessage());
 			e.printStackTrace();
 		}
 	}
 
 	public static void saveConfig() {
+		FlexHudLogger.info("Saving config...");
 		JsonObject root = new JsonObject();
 
 		for (String moduleName : ConfigRegistry.getModuleNames()) {
@@ -63,8 +61,9 @@ public class ConfigLoader {
 
 		try (Writer writer = Files.newBufferedWriter(CONFIG_FILE.toPath())) {
 			GSON.toJson(root, writer);
+			FlexHudLogger.info("Config saved!");
 		} catch (Exception e) {
-			Flex_hudClient.LOGGER.error("Failed to save config: {}", e.getMessage());
+			FlexHudLogger.error("Failed to save config: {}", e.getMessage());
 			e.printStackTrace();
 		}
 	}
@@ -148,9 +147,9 @@ public class ConfigLoader {
 	private static void saveConverted(JsonObject root) {
 		try (Writer writer = Files.newBufferedWriter(CONFIG_FILE.toPath())) {
 			GSON.toJson(root, writer);
-			Flex_hudClient.LOGGER.info("Migrated config successfully saved!");
+			FlexHudLogger.info("Migrated config successfully saved!");
 		} catch (Exception e) {
-			Flex_hudClient.LOGGER.error("Failed to save migrated config: {}", e.getMessage());
+			FlexHudLogger.error("Failed to save migrated config: {}", e.getMessage());
 		}
 	}
 }

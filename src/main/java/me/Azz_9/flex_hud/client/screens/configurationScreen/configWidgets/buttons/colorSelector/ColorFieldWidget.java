@@ -1,36 +1,26 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector;
 
-import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.utils.FlexHudLogger;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.NotNull;
 
 public class ColorFieldWidget extends TextFieldWidget {
 
-	private ColorUpdatable colorSelector;
-	private boolean suppressTextFieldCallback = false;
+	@NotNull
+	private final ColorUpdatable colorSelector;
 
-	ColorFieldWidget(TextRenderer textRenderer, int width, int height, ColorUpdatable colorSelector) {
+	ColorFieldWidget(TextRenderer textRenderer, int width, int height, @NotNull ColorUpdatable colorSelector) {
 		super(textRenderer, width, height, Text.translatable("flex_hud.color_entry_widget"));
 		this.colorSelector = colorSelector;
 
 		setText("#FFFFFF");
 
-		setChangedListener(text -> {
-			if (suppressTextFieldCallback) return;
-
-			this.colorSelector.onUpdateColor(ColorSelector.ColorSelectorElement.COLOR_FIELD);
-		});
 		setTextPredicate(text -> text.matches("^#[0-9a-fA-F]{0,6}$"));
-	}
 
-	@Override
-	public void setText(String text) {
-		// do not call the changed listener when using setText() method
-		suppressTextFieldCallback = true;
-		super.setText(text);
-		suppressTextFieldCallback = false;
+		setChangedListener(text -> this.colorSelector.onUpdateColor(ColorSelector.ColorSelectorElement.COLOR_FIELD));
 	}
 
 	@Override
@@ -51,7 +41,7 @@ public class ColorFieldWidget extends TextFieldWidget {
 				return Integer.parseInt(getText().substring(1), 16);
 			}
 		} catch (NumberFormatException e) {
-			Flex_hudClient.LOGGER.error("Invalid color code: {}", getText());
+			FlexHudLogger.error("Invalid color code: {}", getText());
 		}
 		return 0;
 	}

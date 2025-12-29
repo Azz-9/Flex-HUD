@@ -11,23 +11,26 @@ import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.text.Text;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 public class IntSliderEntry extends ScrollableConfigList.AbstractConfigEntry {
 	private final ConfigIntSliderWidget<?> sliderWidget;
 
-	private <T> IntSliderEntry(
+	private final List<Dependency<?>> dependencies = new ArrayList<>();
+
+	private IntSliderEntry(
 			int intSliderWidth,
 			int intSliderHeight,
 			ConfigInteger variable,
 			Integer step,
 			int resetButtonSize,
-			T disableWhen,
 			Function<Integer, Tooltip> getTooltip
 	) {
 		super(resetButtonSize, Text.translatable(variable.getConfigTextTranslationKey()));
-		sliderWidget = new ConfigIntSliderWidget<>(intSliderWidth, intSliderHeight, variable, step, observers, disableWhen, getTooltip);
+		sliderWidget = new ConfigIntSliderWidget<>(intSliderWidth, intSliderHeight, variable, step, observers, getTooltip);
 		setResetButtonPressAction((btn) -> sliderWidget.setToDefaultState());
 
 		sliderWidget.addObserver(this.resetButtonWidget);
@@ -60,7 +63,7 @@ public class IntSliderEntry extends ScrollableConfigList.AbstractConfigEntry {
 
 	@Override
 	public List<? extends Element> children() {
-		return List.of(sliderWidget, resetButtonWidget, textWidget);
+		return List.of(sliderWidget, resetButtonWidget);
 	}
 
 	@Override
@@ -75,10 +78,28 @@ public class IntSliderEntry extends ScrollableConfigList.AbstractConfigEntry {
 
 	@Override
 	public void onChange(DataGetter<?> dataGetter) {
-		boolean active = !sliderWidget.getDisableWhen().equals(dataGetter.getData());
+		boolean shouldDisable = false;
+
+		for (Dependency<?> dependency : dependencies) {
+			Object value = dependency.entry().getDataGetter().getData();
+			if (Objects.equals(value, dependency.disableWhen())) {
+				shouldDisable = true;
+				break;
+			}
+		}
+
+		setActive(!shouldDisable);
+	}
+
+	@Override
+	public void setActive(boolean active) {
 		sliderWidget.active = active;
-		setActive(active);
+		super.setActive(active);
 		resetButtonWidget.active = active && !sliderWidget.isCurrentValueDefault();
+	}
+
+	public <T> void addDependency(ScrollableConfigList.AbstractConfigEntry entry, T disableWhen) {
+		dependencies.add(new Dependency<>(entry, disableWhen));
 	}
 
 	// Builder
@@ -87,8 +108,7 @@ public class IntSliderEntry extends ScrollableConfigList.AbstractConfigEntry {
 		private int intSliderHeight = 20;
 		private ConfigInteger variable;
 		private Integer step = null;
-		private ScrollableConfigList.AbstractConfigEntry dependency = null;
-		private Object disableWhen;
+		private final List<Dependency<?>> dependencies = new ArrayList<>();
 
 		public IntSliderEntry.Builder setIntSliderWidth(int width) {
 			this.intSliderWidth = width;
@@ -111,9 +131,8 @@ public class IntSliderEntry extends ScrollableConfigList.AbstractConfigEntry {
 			return this;
 		}
 
-		public <T> IntSliderEntry.Builder setDependency(ScrollableConfigList.AbstractConfigEntry entry, T disableWhen) {
-			dependency = entry;
-			this.disableWhen = disableWhen;
+		public <T> Builder addDependency(ScrollableConfigList.AbstractConfigEntry entry, T disableWhen) {
+			dependencies.add(new Dependency<>(entry, disableWhen));
 			return this;
 		}
 
@@ -127,12 +146,12 @@ public class IntSliderEntry extends ScrollableConfigList.AbstractConfigEntry {
 					variable,
 					step,
 					resetButtonSize,
-					disableWhen,
 					getTooltip
 			);
-			if (dependency != null) {
-				dependency.addObserver(entry);
-				entry.onChange(dependency.getDataGetter());
+			for (Dependency<?> dependency : dependencies) {
+				entry.addDependency(dependency.entry(), dependency.disableWhen());
+				dependency.entry().addObserver(entry);
+				entry.onChange(dependency.entry().getDataGetter());
 			}
 			return entry;
 		}

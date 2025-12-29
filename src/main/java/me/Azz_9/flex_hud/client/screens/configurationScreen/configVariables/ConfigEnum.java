@@ -1,8 +1,9 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
-import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.utils.FlexHudLogger;
 
 import java.util.Locale;
 
@@ -28,13 +29,14 @@ public class ConfigEnum<E extends Enum<E>> extends AbstractConfigObject<E> {
 			String name = element.getAsString().toUpperCase(Locale.ROOT);
 			return Enum.valueOf(enumClass, name);
 		} catch (Exception e) {
-			Flex_hudClient.LOGGER.warn("Unknown enum value '{}' for {}, using default.", element, enumClass.getSimpleName());
+			FlexHudLogger.warn("Unknown enum value '{}' for {}, using default.", element, enumClass.getSimpleName());
 			return getDefaultValue();
 		}
 	}
 
 	@Override
 	public JsonElement toJsonValue() {
+		if (getValue() == null) return JsonNull.INSTANCE;
 		return new JsonPrimitive(getValue().name());
 	}
 }

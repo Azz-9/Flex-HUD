@@ -23,7 +23,7 @@ import org.joml.Matrix3x2fStack;
 
 public class HeldItem extends AbstractTextElement {
 
-	private ConfigEnum<ArmorStatus.DurabilityType> durabilityType = new ConfigEnum<>(ArmorStatus.DurabilityType.class, ArmorStatus.DurabilityType.PERCENTAGE, "flex_hud.held_item.config.show_durability");
+	private final ConfigEnum<ArmorStatus.DurabilityType> durabilityType = new ConfigEnum<>(ArmorStatus.DurabilityType.class, ArmorStatus.DurabilityType.PERCENTAGE, "flex_hud.held_item.config.show_durability");
 
 	private final int ITEM_SIZE = 16;
 
@@ -38,7 +38,7 @@ public class HeldItem extends AbstractTextElement {
 
 	@Override
 	public void init() {
-		this.height = ITEM_SIZE;
+		setHeight(ITEM_SIZE);
 	}
 
 	@Override
@@ -95,7 +95,7 @@ public class HeldItem extends AbstractTextElement {
 		if (!label.isEmpty()) {
 			setWidth(label, ITEM_SIZE + gap);
 		} else {
-			this.width = ITEM_SIZE;
+			setWidth(ITEM_SIZE);
 		}
 
 		Matrix3x2fStack matrices = context.getMatrices();
@@ -105,7 +105,7 @@ public class HeldItem extends AbstractTextElement {
 
 		drawBackground(context);
 
-		if (anchorX.getValue() == AnchorPosition.END) {
+		if (getAnchorX() == AnchorPosition.END) {
 			TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 			context.drawText(textRenderer, label, 0, 4, getColor(), this.shadow.getValue());
 			context.drawItem(stack, textRenderer.getWidth(label) + gap, 0);
@@ -134,40 +134,49 @@ public class HeldItem extends AbstractTextElement {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(enabled)
-								.build(),
+								.build()
+				);
+				this.addAllEntries(
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(shadow)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(chromaColor)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 				this.addAllEntries(
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
 								.setVariable(color)
-								.setDependency(this.getConfigList().getLastEntry(), true)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), true)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(drawBackground)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 				this.addAllEntries(
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
 								.setVariable(backgroundColor)
-								.setDependency(this.getConfigList().getLastEntry(), false)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(hideInF3)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new CyclingButtonEntry.Builder<ArmorStatus.DurabilityType>()
 								.setCyclingButtonWidth(80)
 								.setVariable(durabilityType)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 			}

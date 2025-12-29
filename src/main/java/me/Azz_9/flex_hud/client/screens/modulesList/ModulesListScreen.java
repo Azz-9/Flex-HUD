@@ -1,5 +1,6 @@
 package me.Azz_9.flex_hud.client.screens.modulesList;
 
+import com.google.common.collect.ImmutableList;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigLoader;
 import me.Azz_9.flex_hud.client.configurableModules.Configurable;
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
@@ -7,15 +8,12 @@ import me.Azz_9.flex_hud.client.screens.AbstractBackNavigableScreen;
 import me.Azz_9.flex_hud.client.screens.widgets.textFieldWidget.PlaceholderTextFieldWidget;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 public class ModulesListScreen extends AbstractBackNavigableScreen {
@@ -23,7 +21,7 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 	private PlaceholderTextFieldWidget searchBar;
 	private ScrollableModulesList modulesListWidget;
 
-	private final List<Configurable> MODULES_LIST = ModulesHelper.getConfigurableModules();
+	private final ImmutableList<Configurable> MODULES_LIST = ImmutableList.copyOf(ModulesHelper.getConfigurableModules());
 
 	public ModulesListScreen(Screen parent) {
 		super(Text.translatable("flex_hud.configuration_screen"), parent);
@@ -44,9 +42,8 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 		this.searchBar.setPlaceholder(Text.translatable("flex_hud.configuration_screen.searchbar_placeholder"));
 
 		// Initialisation du choix du nombre de colonnes
-		CyclingButtonWidget<Integer> columnsButton = CyclingButtonWidget.<Integer>builder(value -> Text.literal(value.toString()))
+		CyclingButtonWidget<Integer> columnsButton = CyclingButtonWidget.<Integer>builder(value -> Text.literal(value.toString()), columns)
 				.values(IntStream.rangeClosed(1, MAX_COLUMNS).boxed().toList())
-				.initially(columns)
 				.build(Math.clamp(this.width / 2 + 105 + (int) (this.width / 100.0F * 5), this.width / 2 + 105, Math.max(this.width - 105, this.width / 2 + 105)), 20, 100, 20, Text.translatable("flex_hud.configuration_screen.columns"), this::onColumnsUpdate);
 
 		// Initialisation de la liste défilante
@@ -103,23 +100,17 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 	private void addMods(int buttonWidth, int buttonHeight, int columns) {
 		List<Module> modules = new ArrayList<>();
 		for (int i = 0; i < MODULES_LIST.size(); i++) {
-			String moduleId = MODULES_LIST.get(i).getID();
+			Configurable module = MODULES_LIST.get(i);
 
-			Supplier<Tooltip> getTooltip = switch (moduleId) {
-				case "in_game_time", "day_counter" ->
-						() -> ModulesHelper.getInstance().timeChanger.enabled.getValue() ? Tooltip.of(Text.literal("⚠ ").append(Text.translatable("flex_hud.configuration_screen.module_compatibility_warning")).append(Text.translatable("flex_hud.time_changer")).formatted(Formatting.RED)) : null;
-				case "weather_display" ->
-						() -> ModulesHelper.getInstance().weatherChanger.enabled.getValue() ? Tooltip.of(Text.literal("⚠ ").append(Text.translatable("flex_hud.configuration_screen.module_compatibility_warning")).append(Text.translatable("flex_hud.weather_changer")).formatted(Formatting.RED)) : null;
-				default -> null;
-			};
 			modules.add(new Module(
-							MODULES_LIST.get(i).getName().getString(),
-							moduleId,
-							MODULES_LIST.get(i).getConfigScreen(this),
+							module.getName().getString(),
+							module.getID(),
+							module.getConfigScreen(this),
 							buttonWidth,
 							buttonHeight,
 							this,
-							getTooltip
+							module::getTooltip,
+							ImmutableList.copyOf(module.getKeywords())
 					)
 			);
 

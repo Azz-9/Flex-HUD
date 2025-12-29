@@ -8,7 +8,7 @@
 	"flex_hud.configuration_screen.done": "Done",
 	"flex_hud.configuration_screen.module_compatibility_warning": "This module doesn't work properly with ",
 
-	"flex_hud.move_elements_screen": "Move elements",
+	"flex_hud.move_modules_screen": "Move modules",
 
 	"flex_hud.options_screen": "Options",
 	"flex_hud.options_screen.modules": "Modules",
@@ -43,6 +43,10 @@
 
 	"flex_hud.enum.display_mode.horizontal": "Horizontal",
 	"flex_hud.enum.display_mode.vertical": "Vertical",
+	"flex_hud.enum.alignment.left": "Left",
+	"flex_hud.enum.alignment.center": "Center",
+	"flex_hud.enum.alignment.right": "Right",
+	"flex_hud.enum.alignment.auto": "Auto",
 	"flex_hud.enum.weather.clear": "Clear",
 	"flex_hud.enum.weather.rain": "Rain",
 	"flex_hud.enum.weather.thunder": "Thunder",
@@ -56,6 +60,13 @@
 	"flex_hud.enum.speedometer.units.kph": "km/h",
 	"flex_hud.enum.speedometer.units.mph": "mph",
 	"flex_hud.enum.speedometer.units.mps": "m/s",
+	"flex_hud.enum.compass.icons_size.small": "Small",
+	"flex_hud.enum.compass.icons_size.medium": "Medium",
+	"flex_hud.enum.compass.icons_size.large": "Large",
+	"flex_hud.enum.potion_effect.icon_placement.top": "Top",
+	"flex_hud.enum.potion_effect.icon_placement.right": "Right",
+	"flex_hud.enum.potion_effect.icon_placement.bottom": "Bottom",
+	"flex_hud.enum.potion_effect.icon_placement.left": "Left",
 
 	"flex_hud.global.config.quit_and_discard": "Quit & discard changes",
 	"flex_hud.global.config.callback.message_title": "Changes not saved",
@@ -87,6 +98,7 @@
 	"flex_hud.armor_status.config.show_durability_bar": "Show durability bar",
 	"flex_hud.armor_status.config.show_durability": "Show durability",
 	"flex_hud.armor_status.config.orientation": "Orientation",
+	"flex_hud.armor_status.config.alignment": "Alignment",
 
 	"flex_hud.clock": "Clock",
 	"flex_hud.clock.config.enable": "Show clock",
@@ -96,8 +108,6 @@
 	"flex_hud.coordinates": "Coordinates",
 	"flex_hud.coordinates.config.enable": "Show coordinates",
 	"flex_hud.coordinates.config.show_y": "Show Y coordinate",
-	"flex_hud.coordinates.config.show_biome": "Show biome",
-	"flex_hud.coordinates.config.custom_biome_color": "Custom biome colors",
 	"flex_hud.coordinates.config.show_direction": "Show direction",
 	"flex_hud.coordinates.config.direction_abbreviation": "Direction abbreviation",
 	"flex_hud.coordinates.config.number_of_digits": "Number of digits",
@@ -123,10 +133,13 @@
 	"flex_hud.compass.config.show_intermediate_point": "Show intermediate points",
 	"flex_hud.compass.config.show_xaeros_map_waypoints": "Show Xaero's map waypoints",
 	"flex_hud.compass.config.show_xaeros_map_waypoints.not_installed_tooltip": "Xaero's Minimap is not installed",
+	"flex_hud.compass.config.show_journey_map_waypoints": "Show Journey Map waypoints",
+	"flex_hud.compass.config.show_journey_map_waypoints.not_installed_tooltip": "JourneyMap is not installed",
 	"flex_hud.compass.config.show_mobs": "Show all mobs",
 	"flex_hud.compass.config.override_locator_bar": "Override locator bar",
 	"flex_hud.compass.config.show_tamed_entities_point": "Show tamed entities points",
 	"flex_hud.compass.config.show_only_pets": "Show only pets",
+	"flex_hud.compass.config.icons_size": "Icons size",
 
 	"flex_hud.durability_ping": "Durability Ping",
 	"flex_hud.durability_ping.config.enable": "Enable durability ping",
@@ -190,6 +203,8 @@
 
 	"flex_hud.potion_effect": "Potion effect",
 	"flex_hud.potion_effect.config.enable": "Show potion effect",
+	"flex_hud.potion_effect.config.alignment": "Alignment",
+	"flex_hud.potion_effect.config.icon_placement": "Icon placement",
 
 	"flex_hud.tnt_countdown": "TNT countdown",
 	"flex_hud.tnt_countdown.config.enable": "Enable TNT countdown",
@@ -230,6 +245,10 @@
 	"flex_hud.held_item": "Held item info",
 	"flex_hud.held_item.config.enable": "Show held item info",
 	"flex_hud.held_item.config.show_durability": "Show durability",
+
+	"flex_hud.biome_display": "Biome display",
+	"flex_hud.biome_display.config.enable": "Show biome",
+	"flex_hud.biome_display.config.biome_specific_color": "Biome-specific color",
 
 	"flex_hud.coordinates.hud.direction.south": "South",
 	"flex_hud.coordinates.hud.direction.south_west": "South-West",

@@ -1,6 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractBackgroundElement;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
@@ -9,10 +10,13 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2fStack;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
@@ -28,8 +32,8 @@ public class WeatherDisplay extends AbstractBackgroundElement {
 
 	@Override
 	public void init() {
-		this.height = 16;
-		this.width = 16;
+		setHeight(16);
+		setWidth(16);
 	}
 
 	@Override
@@ -67,7 +71,16 @@ public class WeatherDisplay extends AbstractBackgroundElement {
 		}
 	}
 
-	private static @NotNull String getWeatherIconPath(MinecraftClient client) {
+	@Override
+	public @Nullable Tooltip getTooltip() {
+		if (ModulesHelper.getInstance().weatherChanger.enabled.getValue()) {
+			return Tooltip.of(Text.literal("⚠ ").append(Text.translatable("flex_hud.configuration_screen.module_compatibility_warning")).append(Text.translatable("flex_hud.weather_changer")).formatted(Formatting.RED));
+		} else {
+			return null;
+		}
+	}
+
+	private static @NotNull String getWeatherIconPath(@NotNull MinecraftClient client) {
 		String path;
 		if (Flex_hudClient.isInMoveElementScreen || client.world == null) {
 			path = "weather_icons/day_clear.png";
@@ -104,21 +117,26 @@ public class WeatherDisplay extends AbstractBackgroundElement {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(enabled)
-								.build(),
+								.build()
+				);
+				this.addAllEntries(
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(drawBackground)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 				this.addAllEntries(
 						new ColorButtonEntry.Builder()
 								.setColorButtonWidth(buttonWidth)
 								.setVariable(backgroundColor)
-								.setDependency(this.getConfigList().getLastEntry(), false)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(hideInF3)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 			}

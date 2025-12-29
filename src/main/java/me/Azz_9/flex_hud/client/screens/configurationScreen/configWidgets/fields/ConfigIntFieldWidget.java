@@ -11,18 +11,17 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Function;
 
-import static me.Azz_9.flex_hud.client.utils.DrawingUtils.drawBorder;
-
-public class ConfigIntFieldWidget<T> extends TextFieldWidget implements TrackableChange, DataGetter<Integer>, ResetAware {
+public class ConfigIntFieldWidget extends TextFieldWidget implements TrackableChange, DataGetter<Integer>, ResetAware {
 
 	private final int INITIAL_STATE;
 	private final ConfigInteger variable;
-	private final T disableWhen;
 	private final int MIN_VALUE;
 	private final int MAX_VALUE;
 	private final List<Observer> observers;
@@ -32,54 +31,43 @@ public class ConfigIntFieldWidget<T> extends TextFieldWidget implements Trackabl
 
 	private boolean suppressIntFieldCallback = false;
 
-	public ConfigIntFieldWidget(TextRenderer textRenderer, int width, int height, ConfigInteger variable, List<Observer> observers, T disableWhen, @Nullable Function<Integer, Tooltip> getTooltip) {
+	public ConfigIntFieldWidget(TextRenderer textRenderer, int width, int height, ConfigInteger variable, List<Observer> observers, @Nullable Function<Integer, Tooltip> getTooltip) {
 		super(textRenderer, width, height, Text.translatable("flex_hud.integer_field"));
 		this.INITIAL_STATE = variable.getValue();
 		this.variable = variable;
-		this.disableWhen = disableWhen;
 		this.observers = observers;
 		this.getTooltip = getTooltip;
 
 		if (variable.getMin() < 0)
 			throw new IllegalArgumentException("Min value cannot be negative!");
-		if (variable.getMax() < 0) throw new IllegalArgumentException("Max value cannot be negative!");
+		if (variable.getMax() < 0)
+			throw new IllegalArgumentException("Max value cannot be negative!");
 		if (variable.getMin() > variable.getMax())
 			throw new IllegalArgumentException("Min value cannot be greater than max value!");
 
 		this.MIN_VALUE = variable.getMin();
 		this.MAX_VALUE = variable.getMax();
 
-		String regex = String.format("[0-9]{%d,%d}", String.valueOf(MIN_VALUE).length(), String.valueOf(MAX_VALUE).length());
-		setTextPredicate(text -> text.isEmpty() || text.matches(regex));
+		setTextPredicate(text -> text.isEmpty() || text.matches("\\d*") && text.length() <= Integer.toString(MAX_VALUE).length());
 
 		setChangedListener(value -> {
 			if (suppressIntFieldCallback) return;
 
-			if (value.isEmpty()) {
-				value = String.valueOf(MIN_VALUE);
-			} else {
-				int intValue;
-				try {
-					intValue = Integer.parseUnsignedInt(value);
-				} catch (NumberFormatException e) {
-					intValue = Integer.MAX_VALUE;
-					value = String.valueOf(intValue);
-				}
+			boolean valid = isValid();
 
-				if (value.startsWith("0") && value.length() > 1) {
-					value = value.substring(1);
-				} else if (intValue > MAX_VALUE) {
-					value = String.valueOf(MAX_VALUE);
-				} else if (intValue < MIN_VALUE) {
-					value = String.valueOf(MIN_VALUE);
+			if (valid) {
+				setEditableColor(0xffffffff);
+				Integer inputValue = getInputValue();
+				if (inputValue != null) { // ça devrait jamais être null ici mais vzy on sait jamais
+					variable.setValue(getInputValue());
 				}
+			} else {
+				setEditableColor(ColorHelper.withAlpha(255, Formatting.RED.getColorValue() != null ? Formatting.RED.getColorValue() : 0xfc5454));
 			}
-			setText(value);
 
 			for (Observer observer : observers) {
 				observer.onChange(this);
 			}
-			variable.setValue(getValue());
 
 			if (getTooltip != null) this.setTooltip(this.getTooltip.apply(variable.getValue()));
 
@@ -100,7 +88,7 @@ public class ConfigIntFieldWidget<T> extends TextFieldWidget implements Trackabl
 	public void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
 		if (this.active) {
 			if (this.isSelected()) {
-				drawBorder(context, getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+				context.drawStrokedRectangle(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
 			}
 		}
 		super.renderWidget(context, mouseX, mouseY, deltaTicks);
@@ -110,14 +98,16 @@ public class ConfigIntFieldWidget<T> extends TextFieldWidget implements Trackabl
 	}
 
 	public void increase() {
-		if (getValue() < MAX_VALUE) {
-			super.setText(String.valueOf(getValue() + 1));
+		int current = getValue();
+		if (current < MAX_VALUE) {
+			super.setText(String.valueOf(current + 1));
 		}
 	}
 
 	public void decrease() {
-		if (getValue() > MIN_VALUE) {
-			super.setText(String.valueOf(getValue() - 1));
+		int current = getValue();
+		if (current > MIN_VALUE) {
+			super.setText(String.valueOf(current - 1));
 		}
 	}
 
@@ -138,12 +128,12 @@ public class ConfigIntFieldWidget<T> extends TextFieldWidget implements Trackabl
 		suppressIntFieldCallback = false;
 	}
 
-	private int getValue() {
-		return Integer.parseUnsignedInt(getText());
-	}
-
-	public T getDisableWhen() {
-		return disableWhen;
+	private @Nullable Integer getInputValue() {
+		try {
+			return Integer.parseInt(getText());
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	@Override
@@ -163,7 +153,11 @@ public class ConfigIntFieldWidget<T> extends TextFieldWidget implements Trackabl
 
 	@Override
 	public Integer getData() {
-		return getValue();
+		return variable.getValue();
+	}
+
+	private int getValue() {
+		return getData();
 	}
 
 	@Override
@@ -173,5 +167,16 @@ public class ConfigIntFieldWidget<T> extends TextFieldWidget implements Trackabl
 
 	public void addObserver(Observer observer) {
 		observers.add(observer);
+	}
+
+	@Override
+	public boolean isValid() {
+		try {
+			Integer number = getInputValue();
+
+			return number != null && number >= MIN_VALUE && number <= MAX_VALUE;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 }
