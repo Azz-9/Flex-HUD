@@ -7,12 +7,12 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfiguratio
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.text.Text;
-import net.minecraft.world.LightType;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.LightLayer;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 
@@ -31,12 +31,12 @@ public class LightLevel extends AbstractTextElement {
 
 	@Override
 	public void init() {
-		setHeight(MinecraftClient.getInstance().textRenderer.fontHeight);
+		setHeight(Minecraft.getInstance().font.lineHeight);
 	}
 
 	@Override
-	public Text getName() {
-		return Text.translatable("flex_hud.light_level");
+	public Component getName() {
+		return Component.translatable("flex_hud.light_level");
 	}
 
 	@Override
@@ -45,8 +45,10 @@ public class LightLevel extends AbstractTextElement {
 	}
 
 	@Override
-	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		if (shouldNotRender()) {
+	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+		Minecraft minecraft = Minecraft.getInstance();
+
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && (minecraft.level == null || minecraft.player == null)) {
 			return;
 		}
 
@@ -54,7 +56,7 @@ public class LightLevel extends AbstractTextElement {
 		if (Flex_hudClient.isInMoveElementScreen) {
 			lightLevel = 7;
 		} else {
-			lightLevel = MinecraftClient.getInstance().world.getLightLevel(LightType.BLOCK, MinecraftClient.getInstance().player.getBlockPos());
+			lightLevel = minecraft.level.getBrightness(LightLayer.BLOCK, minecraft.player.blockPosition());
 		}
 
 		int color;
@@ -72,27 +74,20 @@ public class LightLevel extends AbstractTextElement {
 			color = getColor();
 		}
 
-		Text text = Text.translatable("flex_hud.light_level").append(": ").append(String.valueOf(lightLevel));
+		Component text = Component.translatable("flex_hud.light_level").append(": ").append(String.valueOf(lightLevel));
 
 		setWidth(text.getString());
 
-		Matrix3x2fStack matrices = context.getMatrices();
+		Matrix3x2fStack matrices = graphics.pose();
 		matrices.pushMatrix();
 		matrices.translate(getRoundedX(), getRoundedY());
 		matrices.scale(getScale());
 
-		drawBackground(context);
+		drawBackground(graphics);
 
-		context.drawText(MinecraftClient.getInstance().textRenderer, text, 0, 0, color, shadow.getValue());
+		graphics.drawString(minecraft.font, text, 0, 0, color, shadow.getValue());
 
 		matrices.popMatrix();
-	}
-
-	@Override
-	public boolean shouldNotRender() {
-		return super.shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && (
-				MinecraftClient.getInstance().world == null || MinecraftClient.getInstance().player == null
-		);
 	}
 
 	@Override
@@ -100,7 +95,7 @@ public class LightLevel extends AbstractTextElement {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (Minecraft.getInstance().getLanguageManager().getSelected().equals("fr_fr")) {
 					buttonWidth = 260;
 				} else {
 					buttonWidth = 170;

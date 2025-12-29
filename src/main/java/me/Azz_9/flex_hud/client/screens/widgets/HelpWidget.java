@@ -2,21 +2,22 @@ package me.Azz_9.flex_hud.client.screens.widgets;
 
 import me.Azz_9.flex_hud.client.utils.Cursors;
 import me.Azz_9.flex_hud.client.utils.EaseUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import org.joml.Matrix3x2fStack;
+import org.jspecify.annotations.NonNull;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 
-public class HelpWidget extends ClickableWidget {
-	private final Identifier texture = Identifier.of(MOD_ID, "widgets/buttons/help/help.png");
+public class HelpWidget extends AbstractWidget.WithInactiveMessage {
+	private final Identifier texture = Identifier.fromNamespaceAndPath(MOD_ID, "widgets/buttons/help/help.png");
 	private boolean displayHelp = false;
 
 	private final int BACKGROUND_COLOR = 0x000000;
@@ -26,20 +27,20 @@ public class HelpWidget extends ClickableWidget {
 	private long timestamp;
 	private boolean isFadingOut = false;
 
-	private final Text[] helpLines;
+	private final Component[] helpLines;
 
-	public HelpWidget(int x, int y, int width, int height, Text[] helpLines) {
-		super(x, y, width, height, Text.translatable("flex_hud.help_widget"));
+	public HelpWidget(int x, int y, int width, int height, Component[] helpLines) {
+		super(x, y, width, height, Component.translatable("flex_hud.help_widget"));
 		this.helpLines = helpLines;
 	}
 
 	@Override
-	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-		if (this.isHovered() && this.isInteractable()) {
-			context.setCursor(Cursors.POINTING_HAND);
+	protected void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+		if (this.isHovered() && this.isActive()) {
+			graphics.requestCursor(Cursors.POINTING_HAND);
 		}
 
-		context.drawTexture(RenderPipelines.GUI_TEXTURED, texture, getX(), getY(), 0, 0, getWidth(), getHeight(), 20, 20);
+		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, texture, getX(), getY(), 0, 0, getWidth(), getHeight(), 20, 20);
 
 		if (displayHelp || isFadingOut) {
 
@@ -58,7 +59,7 @@ public class HelpWidget extends ClickableWidget {
 
 			alpha = (int) (251 * easedProgress) + 4;
 
-			TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
+			Font font = Minecraft.getInstance().font;
 
 			int padding = 4;
 			int marginBottom = 6;
@@ -69,44 +70,44 @@ public class HelpWidget extends ClickableWidget {
 			int popupWidth = 200;
 			int textWidth = popupWidth - padding * 2;
 			int lineSpacing = 3;
-			for (Text line : helpLines) {
-				popupHeight += textRenderer.getWrappedLinesHeight(line, textWidth);
+			for (Component line : helpLines) {
+				popupHeight += font.wordWrapHeight(line, textWidth);
 				popupHeight += lineSpacing;
 			}
 
 			popupY = getY() - marginBottom - popupHeight;
 
-			context.fill(popupX, popupY, popupX + popupWidth, popupY + popupHeight, (alpha / 2 << 24) | BACKGROUND_COLOR);
+			graphics.fill(popupX, popupY, popupX + popupWidth, popupY + popupHeight, (alpha / 2 << 24) | BACKGROUND_COLOR);
 
-			renderArrow(context, marginBottom);
+			renderArrow(graphics, marginBottom);
 
 			int textY = popupY + padding;
-			for (Text helpLine : helpLines) {
-				context.drawWrappedText(textRenderer, helpLine, popupX + padding, textY, textWidth, (alpha << 24) | TEXT_COLOR, false);
-				textY += textRenderer.getWrappedLinesHeight(helpLine, textWidth) + lineSpacing;
+			for (Component helpLine : helpLines) {
+				graphics.drawWordWrap(font, helpLine, popupX + padding, textY, textWidth, (alpha << 24) | TEXT_COLOR, false);
+				textY += font.wordWrapHeight(helpLine, textWidth) + lineSpacing;
 			}
 		}
 	}
 
-	private void renderArrow(DrawContext context, int marginBottom) {
+	private void renderArrow(GuiGraphics graphics, int marginBottom) {
 		int arrowSize = 6;
 
-		context.enableScissor(getX(), getY() - marginBottom, getRight(), getY() - marginBottom + arrowSize);
+		graphics.enableScissor(getX(), getY() - marginBottom, getRight(), getY() - marginBottom + arrowSize);
 
-		Matrix3x2fStack matrices = context.getMatrices();
+		Matrix3x2fStack matrices = graphics.pose();
 		matrices.pushMatrix();
 		matrices.translate((float) (getX() + getWidth() / 2.0), (float) (getY() - marginBottom - Math.sqrt(Math.pow(arrowSize, 2) * 2) / 2));
 		matrices.rotate((float) Math.toRadians(45));
 
-		context.fill(0, 0, arrowSize, arrowSize, (alpha / 2 << 24) | BACKGROUND_COLOR);
+		graphics.fill(0, 0, arrowSize, arrowSize, (alpha / 2 << 24) | BACKGROUND_COLOR);
 
 		matrices.popMatrix();
 
-		context.disableScissor();
+		graphics.disableScissor();
 	}
 
 	@Override
-	public void onClick(Click click, boolean bl) {
+	public void onClick(@NonNull MouseButtonEvent click, boolean bl) {
 		isFadingOut = displayHelp;
 		timestamp = System.currentTimeMillis();
 		displayHelp = !displayHelp;
@@ -121,6 +122,6 @@ public class HelpWidget extends ClickableWidget {
 	}
 
 	@Override
-	protected void appendClickableNarrations(NarrationMessageBuilder builder) {
+	protected void updateWidgetNarration(@NonNull NarrationElementOutput output) {
 	}
 }

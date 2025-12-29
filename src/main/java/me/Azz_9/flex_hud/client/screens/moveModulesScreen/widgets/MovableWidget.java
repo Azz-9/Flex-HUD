@@ -1,5 +1,6 @@
 package me.Azz_9.flex_hud.client.screens.moveModulesScreen.widgets;
 
+import com.mojang.blaze3d.platform.cursor.CursorType;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractHudElement;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.MovableModule;
 import me.Azz_9.flex_hud.client.mixin.CursorAccessor;
@@ -8,21 +9,21 @@ import me.Azz_9.flex_hud.client.screens.moveModulesScreen.MoveModulesScreen;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.actions.MoveAction;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.actions.ScaleAction;
 import me.Azz_9.flex_hud.client.utils.Cursors;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.cursor.Cursor;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.Component;
 import org.joml.Matrix3x2fStack;
+import org.jspecify.annotations.NonNull;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class MovableWidget extends ClickableWidget implements TrackableChange {
+public class MovableWidget extends AbstractWidget.WithInactiveMessage implements TrackableChange {
 	private final MoveModulesScreen PARENT;
 	private final MovableModule HUD_ELEMENT;
 	private double offsetX, offsetY;
@@ -64,7 +65,7 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 		super(
 				hudElement.getRoundedX(),
 				hudElement.getRoundedY(),
-				hudElement.getWidth(), hudElement.getHeight(), Text.empty()
+				hudElement.getWidth(), hudElement.getHeight(), Component.empty()
 		);
 		this.PARENT = parent;
 		this.HUD_ELEMENT = hudElement;
@@ -78,49 +79,49 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 	}
 
 	// i don't want to use the render method that already exists in ClickableWidget because it sets the value of hovered, and here, i'm setting this in the method mouseMove
-	public void draw(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+	public void draw(GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (this.visible) {
-			this.renderWidget(context, mouseX, mouseY, deltaTicks);
+			this.renderWidget(graphics, mouseX, mouseY, deltaTicks);
 		}
 	}
 
 	@Override
-	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-		if (((CursorAccessor) context).getCursor() == Cursor.DEFAULT) {
+	protected void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
+		if (((CursorAccessor) graphics).getCursor() == CursorType.DEFAULT) {
 			if (this.isScaleHandleHovered(mouseX, mouseY) || isDraggingScalehandle) {
-				context.setCursor(
+				graphics.requestCursor(
 						switch (handlePosition) {
 							case BOTTOM_RIGHT, TOP_LEFT -> Cursors.RESIZE_NWSE;
 							case BOTTOM_LEFT, TOP_RIGHT -> Cursors.RESIZE_NESW;
 						}
 				);
 			} else if (this.isHovered()) {
-				context.setCursor(Cursors.RESIZE_ALL);
+				graphics.requestCursor(Cursors.RESIZE_ALL);
 			}
 		}
 
-		context.fill(getX(), getY(), getRight(), getBottom(), 0x4f88888c);
+		graphics.fill(getX(), getY(), getRight(), getBottom(), 0x4f88888c);
 		int color;
 		if (this.isHovered() || this.isFocused()) {
 			color = 0x7ff8f8fc;
 		} else {
 			color = 0x7fa8a8ac;
 		}
-		// not using context.drawStrokedRectangle() because it makes the border drawn above the scale handle
-		context.drawStrokedRectangle(getX(), getY(), getWidth(), getHeight(), color);
+
+		graphics.renderOutline(getX(), getY(), getWidth(), getHeight(), color);
 
 		if (shouldDrawHorizontalSnapLine) {
-			context.drawHorizontalLine(0, context.getScaledWindowWidth(), snapLineY, 0x7fff0000);
+			graphics.hLine(0, graphics.guiWidth(), snapLineY, 0x7fff0000);
 		}
 		if (shouldDrawVerticalSnapLine) {
-			context.drawVerticalLine(snapLineX, 0, context.getScaledWindowHeight(), 0x7fff0000);
+			graphics.vLine(snapLineX, 0, graphics.guiHeight(), 0x7fff0000);
 		}
 
-		renderScaleHandler(context);
+		renderScaleHandler(graphics);
 	}
 
-	public void renderScaleHandler(DrawContext context) {
-		context.fill(handleX, handleY, handleX + HANDLE_SIZE, handleY + HANDLE_SIZE, 0xffF8F8FC);
+	public void renderScaleHandler(GuiGraphics graphics) {
+		graphics.fill(handleX, handleY, handleX + HANDLE_SIZE, handleY + HANDLE_SIZE, 0xffF8F8FC);
 
 		if (shouldDrawScaleValue) {
 			String text = "×" + HUD_ELEMENT.getScale();
@@ -130,24 +131,24 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 				valueX = handleX + HANDLE_SIZE + HANDLE_SIZE / 2;
 			} else {
 				// text to the left of the handle
-				valueX = handleX + HANDLE_SIZE - MinecraftClient.getInstance().textRenderer.getWidth(text);
+				valueX = handleX + HANDLE_SIZE - Minecraft.getInstance().font.width(text);
 			}
 			int valueY = handleY;
 
-			Matrix3x2fStack matrices = context.getMatrices();
+			Matrix3x2fStack matrices = graphics.pose();
 			matrices.pushMatrix();
 			matrices.translate(valueX, valueY);
 			matrices.scale(0.75f, 0.75f);
 
-			context.drawText(MinecraftClient.getInstance().textRenderer, text, 0, 0, 0xffffffff, true);
+			graphics.drawString(Minecraft.getInstance().font, text, 0, 0, 0xffffffff, true);
 
 			matrices.popMatrix();
 		}
 	}
 
 	public void updateScaleHandle() {
-		double screenCenterX = MinecraftClient.getInstance().getWindow().getScaledWidth() / 2.0;
-		double screenCenterY = MinecraftClient.getInstance().getWindow().getScaledHeight() / 2.0;
+		double screenCenterX = Minecraft.getInstance().getWindow().getGuiScaledWidth() / 2.0;
+		double screenCenterY = Minecraft.getInstance().getWindow().getGuiScaledHeight() / 2.0;
 		double centerX = getX() + getWidth() / 2.0;
 		double centerY = getY() + getHeight() / 2.0;
 
@@ -190,14 +191,14 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 	}
 
 	public void updateDimensionAndPosition() {
-		setDimensionsAndPosition(
+		setRectangle(
 				(int) Math.ceil(HUD_ELEMENT.getScaledWidth()), (int) Math.ceil(HUD_ELEMENT.getScaledHeight()),
 				HUD_ELEMENT.getRoundedX(), HUD_ELEMENT.getRoundedY()
 		);
 	}
 
 	@Override
-	public void onClick(Click click, boolean bl) {
+	public void onClick(MouseButtonEvent click, boolean bl) {
 		if (isScaleHandleHovered(click.x(), click.y())) {
 			isDraggingScalehandle = true;
 			onClickRight = HUD_ELEMENT.getWidth() + getX();
@@ -212,7 +213,7 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 	}
 
 	@Override
-	protected void onDrag(Click click, double d, double e) {
+	protected void onDrag(@NonNull MouseButtonEvent click, double d, double e) {
 		if (!isDraggingScalehandle) {
 			isMoving = true;
 			double x = click.x() - offsetX;
@@ -268,7 +269,7 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 					/ Math.sqrt(dx * dx + dy * dy));
 
 			// Arrondi à STEP près si Maj est enfoncé
-			if (MinecraftClient.getInstance().isShiftPressed()) {
+			if (Minecraft.getInstance().hasShiftDown()) {
 				newScale = Math.round(newScale / STEP) * STEP;
 				shouldDrawScaleValue = true;
 			}
@@ -278,7 +279,7 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 	}
 
 	@Override
-	public void onRelease(Click click) {
+	public void onRelease(@NonNull MouseButtonEvent click) {
 		if (isDraggingScalehandle) {
 			updateScaleHandle();
 
@@ -297,7 +298,7 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 	}
 
 	@Override
-	public boolean keyPressed(KeyInput input) {
+	public boolean keyPressed(@NonNull KeyEvent input) {
 		if (isDraggingScalehandle) {
 			return true; // so pressing a key won't do anything
 		}
@@ -326,7 +327,7 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 	}
 
 	@Override
-	public boolean keyReleased(KeyInput input) {
+	public boolean keyReleased(KeyEvent input) {
 		shouldDrawScaleValue = false;
 
 		if (input.key() >= 262 && input.key() <= 265) { // the key released is one of the arrow keys
@@ -340,8 +341,8 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 	}
 
 	private void snapElement(double x, double y) {
-		int screenW = MinecraftClient.getInstance().getWindow().getScaledWidth();
-		int screenH = MinecraftClient.getInstance().getWindow().getScaledHeight();
+		int screenW = Minecraft.getInstance().getWindow().getGuiScaledWidth();
+		int screenH = Minecraft.getInstance().getWindow().getGuiScaledHeight();
 
 		x = Math.clamp(x, 0, screenW - this.getWidth());
 		y = Math.clamp(y, 0, screenH - this.getHeight());
@@ -366,7 +367,7 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 		double thisW = this.HUD_ELEMENT.getScaledWidth();
 		double thisH = this.HUD_ELEMENT.getScaledHeight();
 
-		if (!MinecraftClient.getInstance().isShiftPressed()) {
+		if (!Minecraft.getInstance().hasShiftDown()) {
 			// ---- Center snapping (screen center) ----
 			double dxCenter = Math.abs((x + thisW / 2.0) - centerX);
 			if (dxCenter < CENTERED_LINES_SNAP_DISTANCE) {
@@ -394,7 +395,7 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 					snappedX = posX;
 				}
 			}
-			
+
 			double[] screenYEdges = new double[]{0, screenH - thisH};
 
 			for (double posY : screenYEdges) {
@@ -405,7 +406,7 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 				}
 			}
 
-			if (!MinecraftClient.getInstance().isCtrlPressed()) {
+			if (!Minecraft.getInstance().hasControlDown()) {
 				for (MovableWidget widget : PARENT.getMovableWidgets()) {
 					if (!widget.HUD_ELEMENT.getID().equals(this.HUD_ELEMENT.getID())) {
 						double otherX = widget.getX();
@@ -465,8 +466,8 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 
 
 	public void moveTo(double x, double y) {
-		x = Math.clamp(x, 0, MinecraftClient.getInstance().getWindow().getScaledWidth() - this.getWidth());
-		y = Math.clamp(y, 0, MinecraftClient.getInstance().getWindow().getScaledHeight() - this.getHeight());
+		x = Math.clamp(x, 0, Minecraft.getInstance().getWindow().getGuiScaledWidth() - this.getWidth());
+		y = Math.clamp(y, 0, Minecraft.getInstance().getWindow().getGuiScaledHeight() - this.getHeight());
 
 		HUD_ELEMENT.setX(x);
 		HUD_ELEMENT.setY(y);
@@ -503,13 +504,13 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		return this.active && this.visible && this.hovered;
+		return this.active && this.visible && this.isHovered;
 	}
 
 	@Override
 	public void mouseMoved(double mouseX, double mouseY) {
 		boolean isScaleHandleHovered = isScaleHandleHovered(mouseX, mouseY);
-		this.hovered = (mouseX >= getX() && mouseY >= getY() && mouseX <= getRight() && mouseY <= getBottom()) || isScaleHandleHovered;
+		this.isHovered = (mouseX >= getX() && mouseY >= getY() && mouseX <= getRight() && mouseY <= getBottom()) || isScaleHandleHovered;
 	}
 
 	@Override
@@ -527,7 +528,7 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 	}
 
 	@Override
-	protected void appendClickableNarrations(NarrationMessageBuilder builder) {
+	protected void updateWidgetNarration(@NonNull NarrationElementOutput output) {
 	}
 
 	private enum HandlePosition {

@@ -8,13 +8,14 @@ import me.Azz_9.flex_hud.client.screens.AbstractCallbackScreen;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.actions.UndoManager;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.widgets.MovableWidget;
 import me.Azz_9.flex_hud.client.screens.widgets.HelpWidget;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.text.Text;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.Component;
+import org.jspecify.annotations.NonNull;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 	private boolean firstFrame = true;
 
 	public MoveModulesScreen(Screen parent) {
-		super(Text.translatable("flex_hud.move_modules_screen"), parent, Text.translatable("flex_hud.global.config.callback.message_title"), Text.translatable("flex_hud.global.config.callback.message_content"));
+		super(Component.translatable("flex_hud.move_modules_screen"), parent, Component.translatable("flex_hud.global.config.callback.message_title"), Component.translatable("flex_hud.global.config.callback.message_content"));
 	}
 
 	@Override
@@ -42,15 +43,15 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 
 		int helpWidgetPadding = 4;
 		int helpWidgetSize = 20;
-		helpWidget = new HelpWidget(helpWidgetPadding, this.height - helpWidgetPadding - helpWidgetSize, helpWidgetSize, helpWidgetSize, new Text[]{
-				Text.translatable("flex_hud.move_module_screen.help_widget.line1"),
-				Text.translatable("flex_hud.move_module_screen.help_widget.line2"),
-				Text.translatable("flex_hud.move_module_screen.help_widget.line3"),
-				Text.translatable("flex_hud.move_module_screen.help_widget.line4"),
-				Text.translatable("flex_hud.move_module_screen.help_widget.line5"),
+		helpWidget = new HelpWidget(helpWidgetPadding, this.height - helpWidgetPadding - helpWidgetSize, helpWidgetSize, helpWidgetSize, new Component[]{
+				Component.translatable("flex_hud.move_module_screen.help_widget.line1"),
+				Component.translatable("flex_hud.move_module_screen.help_widget.line2"),
+				Component.translatable("flex_hud.move_module_screen.help_widget.line3"),
+				Component.translatable("flex_hud.move_module_screen.help_widget.line4"),
+				Component.translatable("flex_hud.move_module_screen.help_widget.line5"),
 		});
 
-		this.addDrawableChild(helpWidget);
+		this.addRenderableWidget(helpWidget);
 
 		for (MovableModule movableModule : ModulesHelper.getMovableModules()) {
 			if (movableModule.isEnabled()) {
@@ -60,27 +61,27 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 
 				MovableWidget movableWidget = new MovableWidget(movableModule, this);
 				movableWidgets.add(movableWidget);
-				this.addDrawableChild(movableWidget);
+				this.addRenderableWidget(movableWidget);
 				registerTrackableWidget(movableWidget);
 			}
 		}
 	}
 
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-		if (MinecraftClient.getInstance().world == null) {
-			super.renderBackground(context, mouseX, mouseY, deltaTicks);
+	public void render(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
+		if (Minecraft.getInstance().level == null) {
+			super.renderBackground(graphics, mouseX, mouseY, deltaTicks);
 		}
 
-		if (renderCallback(context, mouseX, mouseY, deltaTicks)) {
+		if (renderCallback(graphics, mouseX, mouseY, deltaTicks)) {
 			return;
 		}
 
 		ModulesHelper.getHudElements().forEach(hudElement -> {
 			if (Flex_hudClient.isDebug()) {
-				hudElement.renderWithSpeedTest(context, RenderTickCounter.ZERO);
+				hudElement.renderWithSpeedTest(graphics, DeltaTracker.ZERO);
 			} else {
-				hudElement.render(context, RenderTickCounter.ZERO);
+				hudElement.render(graphics, DeltaTracker.ZERO);
 			}
 		});
 
@@ -92,9 +93,9 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 			firstFrame = false;
 		}
 
-		movableWidgets.forEach(widget -> widget.draw(context, mouseX, mouseY, deltaTicks));
+		movableWidgets.forEach(widget -> widget.draw(graphics, mouseX, mouseY, deltaTicks));
 
-		helpWidget.render(context, mouseX, mouseY, deltaTicks);
+		helpWidget.render(graphics, mouseX, mouseY, deltaTicks);
 	}
 
 	public List<MovableWidget> getMovableWidgets() {
@@ -102,9 +103,9 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 	}
 
 	@Override
-	public void renderBackground(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-		if (isCallbackScreen() && MinecraftClient.getInstance().world != null) {
-			super.renderBackground(context, mouseX, mouseY, deltaTicks);
+	public void renderBackground(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
+		if (isCallbackScreen() && Minecraft.getInstance().level != null) {
+			super.renderBackground(graphics, mouseX, mouseY, deltaTicks);
 		}
 	}
 
@@ -128,7 +129,7 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 	}
 
 	@Override
-	public boolean mouseClicked(Click click, boolean doubled) {
+	public boolean mouseClicked(@NonNull MouseButtonEvent click, boolean doubled) {
 		if (helpWidget.getDisplayHelp() && !helpWidget.isMouseOver(click.x(), click.y())) {
 			helpWidget.onClick(click, doubled);
 		}
@@ -136,7 +137,7 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 	}
 
 	@Override
-	public boolean keyPressed(KeyInput input) {
+	public boolean keyPressed(KeyEvent input) {
 		if (input.key() == 87 && input.modifiers() == GLFW.GLFW_MOD_CONTROL) { // CTRL + Z
 			undoManager.undo();
 		} else if ((input.key() == GLFW.GLFW_KEY_Y && input.modifiers() == GLFW.GLFW_MOD_CONTROL) ||
@@ -147,9 +148,9 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 	}
 
 	@Override
-	public void close() {
+	public void onClose() {
 		Flex_hudClient.isInMoveElementScreen = false;
-		super.close();
+		super.onClose();
 	}
 
 	public void onWidgetChange() {

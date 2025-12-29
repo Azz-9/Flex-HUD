@@ -1,20 +1,21 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.crosshairEditor;
 
 import me.Azz_9.flex_hud.client.utils.Cursors;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.Component;
+import org.jspecify.annotations.NonNull;
 
-public class Pixel extends ClickableWidget {
+public class Pixel extends AbstractWidget.WithInactiveMessage {
 	private CrosshairEditor crosshairEditor;
 	private int color;
 	private int pixelX, pixelY;
 	private boolean isCenter;
 
 	public Pixel(int x, int y, int width, int height, int color, int pixelX, int pixelY, boolean isCenter, CrosshairEditor crosshairEditor) {
-		super(x, y, width, height, Text.empty());
+		super(x, y, width, height, Component.empty());
 		this.crosshairEditor = crosshairEditor;
 		this.color = color;
 		this.pixelX = pixelX;
@@ -23,27 +24,27 @@ public class Pixel extends ClickableWidget {
 	}
 
 	@Override
-	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+	protected void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (this.isHovered()) {
-			context.setCursor(Cursors.POINTING_HAND);
+			graphics.requestCursor(Cursors.POINTING_HAND);
 		}
 
 		if (color >> 24 == 0) {
-			context.fill(getX() + getWidth() / 4, getY() + getHeight() / 4, getRight() - getWidth() / 4, getBottom() - getHeight() / 4, (isCenter ? 0xff424242 : 0xff3a3a3a));
+			graphics.fill(getX() + getWidth() / 4, getY() + getHeight() / 4, getRight() - getWidth() / 4, getBottom() - getHeight() / 4, (isCenter ? 0xff424242 : 0xff3a3a3a));
 		} else {
-			context.fill(getX(), getY(), getRight(), getBottom(), color);
+			graphics.fill(getX(), getY(), getRight(), getBottom(), color);
 		}
 
 
 		if (this.isHovered()) {
-			context.drawStrokedRectangle(getX(), getY(), getWidth(), getHeight(), 0xffdf1515);
+			graphics.renderOutline(getX(), getY(), getWidth(), getHeight(), 0xffdf1515);
 		} else {
-			context.drawStrokedRectangle(getX(), getY(), getWidth(), getHeight(), 0xffdfdfdf);
+			graphics.renderOutline(getX(), getY(), getWidth(), getHeight(), 0xffdfdfdf);
 		}
 	}
 
 	@Override
-	public boolean mouseClicked(Click click, boolean doubled) {
+	public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
 		if (isMouseOver(click.x(), click.y())) {
 			if (click.button() == 0) {
 				if (color != crosshairEditor.getColor()) {
@@ -62,7 +63,7 @@ public class Pixel extends ClickableWidget {
 	}
 
 	@Override
-	public boolean mouseDragged(Click click, double offsetX, double offsetY) {
+	public boolean mouseDragged(@NonNull MouseButtonEvent click, double offsetX, double offsetY) {
 		return mouseClicked(click, false);
 	}
 
@@ -75,6 +76,6 @@ public class Pixel extends ClickableWidget {
 	}
 
 	@Override
-	protected void appendClickableNarrations(NarrationMessageBuilder builder) {
+	protected void updateWidgetNarration(@NonNull NarrationElementOutput output) {
 	}
 }

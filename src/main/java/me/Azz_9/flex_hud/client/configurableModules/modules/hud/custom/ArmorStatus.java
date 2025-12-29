@@ -16,16 +16,16 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.Toggle
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
 import me.Azz_9.flex_hud.client.utils.ItemUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.ColorHelper;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.ARGB;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 
@@ -70,32 +70,32 @@ public class ArmorStatus extends AbstractTextElement {
 	}
 
 	@Override
-	public Text getName() {
-		return Text.translatable("flex_hud.armor_status");
+	public Component getName() {
+		return Component.translatable("flex_hud.armor_status");
 	}
 
 	@Override
-	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
-		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && client.player == null) {
+	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+		Minecraft minecraft = Minecraft.getInstance();
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && minecraft.player == null) {
 			return;
 		}
 
 		ItemStack[] items;
 		if (!Flex_hudClient.isInMoveElementScreen) {
-			PlayerEntity player = client.player;
+			LocalPlayer player = minecraft.player;
 
 			items = new ItemStack[]{
-					player.getInventory().getStack(39),
-					player.getInventory().getStack(38),
-					player.getInventory().getStack(37),
-					player.getInventory().getStack(36),
-					player.getOffHandStack(),
-					player.getMainHandStack()
+					player.getInventory().getItem(39),
+					player.getInventory().getItem(38),
+					player.getInventory().getItem(37),
+					player.getInventory().getItem(36),
+					player.getOffhandItem(),
+					player.getMainHandItem()
 			};
 		} else {
 			items = new ItemStack[]{
-					new ItemStack(Items.DIAMOND_HELMET),
+					new ItemStack(net.minecraft.world.item.Items.DIAMOND_HELMET),
 					new ItemStack(Items.DIAMOND_CHESTPLATE),
 					new ItemStack(Items.DIAMOND_LEGGINGS),
 					new ItemStack(Items.DIAMOND_BOOTS),
@@ -144,7 +144,7 @@ public class ArmorStatus extends AbstractTextElement {
 						setWidth(hudX);
 					}
 
-					if ((i == 4 || i == 5) && this.showArrowsWhenBowInHand.getValue() && (stack.isOf(Items.BOW) || stack.isOf(Items.CROSSBOW))) {
+					if ((i == 4 || i == 5) && this.showArrowsWhenBowInHand.getValue() && (stack.is(Items.BOW) || stack.is(Items.CROSSBOW))) {
 						shouldDrawArrows = true;
 					}
 				}
@@ -163,15 +163,15 @@ public class ArmorStatus extends AbstractTextElement {
 			}
 		}
 
-		Matrix3x2fStack matrices = context.getMatrices();
+		Matrix3x2fStack matrices = graphics.pose();
 		matrices.pushMatrix();
 		matrices.translate(getRoundedX(), getRoundedY());
 		matrices.scale(getScale());
 
-		drawBackground(context);
+		drawBackground(graphics);
 
 		for (MultiRenderable multiRenderable : multiRenderables) {
-			multiRenderable.render(context, tickCounter);
+			multiRenderable.render(graphics, deltaTracker);
 		}
 
 		matrices.popMatrix();
@@ -184,17 +184,17 @@ public class ArmorStatus extends AbstractTextElement {
 		String text;
 		int color;
 		// creating a new item to make "unbreakable" items display durability
-		if (new ItemStack(stack.getItem()).isDamageable()) {
+		if (new ItemStack(stack.getItem()).isDamageableItem()) {
 			switch (this.durabilityType.getValue()) {
 				case PERCENTAGE -> {
 					text = Math.round(ItemUtils.getDurabilityPercentage(stack)) + "%";
-					color = ColorHelper.withAlpha(255, stack.getItemBarColor());
-					drawingWidth += MinecraftClient.getInstance().textRenderer.getWidth(text);
+					color = ARGB.color(255, stack.getBarColor());
+					drawingWidth += Minecraft.getInstance().font.width(text);
 				}
 				case VALUE -> {
 					text = String.valueOf(ItemUtils.getDurabilityValue(stack));
-					color = ColorHelper.withAlpha(255, stack.getItemBarColor());
-					drawingWidth += MinecraftClient.getInstance().textRenderer.getWidth(text);
+					color = ARGB.color(255, stack.getBarColor());
+					drawingWidth += Minecraft.getInstance().font.width(text);
 				}
 				default -> {
 					text = "";
@@ -203,26 +203,26 @@ public class ArmorStatus extends AbstractTextElement {
 			}
 
 		} else {
-			if (Flex_hudClient.isInMoveElementScreen || MinecraftClient.getInstance().player == null) {
-				text = String.valueOf(stack.getMaxCount());
+			if (Flex_hudClient.isInMoveElementScreen || Minecraft.getInstance().player == null) {
+				text = String.valueOf(stack.getMaxStackSize());
 			} else {
-				text = String.valueOf(ItemUtils.getStackCount(stack, MinecraftClient.getInstance().player.getInventory()));
+				text = String.valueOf(ItemUtils.getStackCount(stack, Minecraft.getInstance().player.getInventory()));
 			}
 			color = getColor();
-			drawingWidth += MinecraftClient.getInstance().textRenderer.getWidth(text);
+			drawingWidth += Minecraft.getInstance().font.width(text);
 		}
 
 		if (shadow.getValue() && !text.isEmpty()) drawingWidth++;
 
 		if (displayMode.getValue() == DisplayMode.VERTICAL && (getAnchorX() == AnchorPosition.END || alignment.getValue() == Alignment.RIGHT)) {
 			multiRenderables.add(new MultiRenderable(x, x + drawingWidth,
-					new RenderableText(x, y + 4, Text.of(text), color, shadow.getValue()),
-					new RenderableItem(x + MinecraftClient.getInstance().textRenderer.getWidth(text) + 1, y, 16, stack, showDurabilityBar.getValue())
+					new RenderableText(x, y + 4, Component.literal(text), color, shadow.getValue()),
+					new RenderableItem(x + Minecraft.getInstance().font.width(text) + 1, y, 16, stack, showDurabilityBar.getValue())
 			));
 		} else {
 			multiRenderables.add(new MultiRenderable(x, x + drawingWidth,
 					new RenderableItem(x, y, 16, stack, showDurabilityBar.getValue()),
-					new RenderableText(x + 17, y + 4, Text.of(text), color, shadow.getValue())
+					new RenderableText(x + 17, y + 4, Component.literal(text), color, shadow.getValue())
 			));
 		}
 
@@ -236,24 +236,24 @@ public class ArmorStatus extends AbstractTextElement {
 				int drawingWidth = 16;
 				String text;
 
-				if (Flex_hudClient.isInMoveElementScreen || MinecraftClient.getInstance().player == null) {
-					text = String.valueOf(new ItemStack(arrow).getMaxCount());
+				if (Flex_hudClient.isInMoveElementScreen || Minecraft.getInstance().player == null) {
+					text = String.valueOf(new ItemStack(arrow).getMaxStackSize());
 				} else {
-					text = String.valueOf(ItemUtils.getItemCount(arrow, MinecraftClient.getInstance().player.getInventory()));
+					text = String.valueOf(ItemUtils.getItemCount(arrow, Minecraft.getInstance().player.getInventory()));
 				}
-				drawingWidth += MinecraftClient.getInstance().textRenderer.getWidth(text);
+				drawingWidth += Minecraft.getInstance().font.width(text);
 
 				if (shadow.getValue()) drawingWidth++;
 
 				if (displayMode.getValue() == DisplayMode.VERTICAL && (getAnchorX() == AnchorPosition.END || alignment.getValue() == Alignment.RIGHT)) {
 					multiRenderables.add(new MultiRenderable(x, x + drawingWidth,
-							new RenderableText(x, y + 4, Text.of(text), getColor(), shadow.getValue()),
-							new RenderableItem(x + MinecraftClient.getInstance().textRenderer.getWidth(text) + 1, y, 16, arrow, showDurabilityBar.getValue())
+							new RenderableText(x, y + 4, Component.literal(text), getColor(), shadow.getValue()),
+							new RenderableItem(x + Minecraft.getInstance().font.width(text) + 1, y, 16, arrow, showDurabilityBar.getValue())
 					));
 				} else {
 					multiRenderables.add(new MultiRenderable(x, x + drawingWidth,
 							new RenderableItem(x, y, 16, arrow, showDurabilityBar.getValue()),
-							new RenderableText(x + 17, y + 4, Text.of(text), getColor(), shadow.getValue())
+							new RenderableText(x + 17, y + 4, Component.literal(text), getColor(), shadow.getValue())
 					));
 				}
 
@@ -269,10 +269,10 @@ public class ArmorStatus extends AbstractTextElement {
 		} else {
 			ItemStack arrowStack = new ItemStack(Items.ARROW);
 
-			PlayerEntity player = MinecraftClient.getInstance().player;
+			LocalPlayer player = Minecraft.getInstance().player;
 			int totalCount;
 			if (Flex_hudClient.isInMoveElementScreen || player == null) {
-				totalCount = arrowStack.getMaxCount();
+				totalCount = arrowStack.getMaxStackSize();
 			} else {
 				totalCount = ItemUtils.getItemCount(Items.ARROW, player.getInventory());
 				totalCount += ItemUtils.getItemCount(Items.SPECTRAL_ARROW, player.getInventory());
@@ -281,20 +281,20 @@ public class ArmorStatus extends AbstractTextElement {
 
 			String text = String.valueOf(totalCount);
 
-			int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(text) + (shadow.getValue() ? 1 : 0);
+			int textWidth = Minecraft.getInstance().font.width(text) + (shadow.getValue() ? 1 : 0);
 			int drawingWidth = 17 + textWidth;
 			setWidth(Math.max(getWidth(), drawingWidth));
 			setHeight(getHeight() + 16);
 
 			if (displayMode.getValue() == DisplayMode.VERTICAL && (getAnchorX() == AnchorPosition.END || alignment.getValue() == Alignment.RIGHT)) {
 				multiRenderables.add(new MultiRenderable(x, x + drawingWidth,
-						new RenderableText(x, y + 4, Text.of(text), getColor(), shadow.getValue()),
+						new RenderableText(x, y + 4, Component.literal(text), getColor(), shadow.getValue()),
 						new RenderableItem(x + textWidth + 1, y, 16, arrowStack, showDurabilityBar.getValue())
 				));
 			} else {
 				multiRenderables.add(new MultiRenderable(x, x + drawingWidth,
 						new RenderableItem(x, y, 16, arrowStack, showDurabilityBar.getValue()),
-						new RenderableText(x + 17, y + 4, Text.of(text), getColor(), shadow.getValue())
+						new RenderableText(x + 17, y + 4, Component.literal(text), getColor(), shadow.getValue())
 				));
 			}
 		}
@@ -303,7 +303,7 @@ public class ArmorStatus extends AbstractTextElement {
 
 	@Override
 	public AbstractConfigurationScreen getConfigScreen(Screen parent) {
-		return new AbstractConfigurationScreen(Text.translatable("flex_hud.armor_status"), parent) {
+		return new AbstractConfigurationScreen(Component.translatable("flex_hud.armor_status"), parent) {
 			@Override
 			protected void init() {
 				super.buttonWidth = 230;

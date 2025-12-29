@@ -6,18 +6,19 @@ import me.Azz_9.flex_hud.client.screens.modulesList.ModulesListScreen;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.MoveModulesScreen;
 import me.Azz_9.flex_hud.client.screens.widgets.buttons.IconButton;
 import me.Azz_9.flex_hud.client.utils.EaseUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import org.joml.Matrix3x2fStack;
+import org.jspecify.annotations.NonNull;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 import static me.Azz_9.flex_hud.client.Flex_hudClient.openOptionScreenKeyBind;
@@ -27,11 +28,11 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 	private IconButton enableModButton;
 
 	public OptionsScreen() {
-		super(Text.translatable("flex_hud.options_screen"), null);
+		super(Component.translatable("flex_hud.options_screen"), null);
 	}
 
 	public OptionsScreen(Screen parent) {
-		super(Text.translatable("flex_hud.options_screen"), parent);
+		super(Component.translatable("flex_hud.options_screen"), parent);
 	}
 
 	@Override
@@ -54,43 +55,43 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 				}
 		);
 		updateEnableButton();
-		this.addDrawableChild(enableModButton);
+		this.addRenderableWidget(enableModButton);
 
-		ButtonWidget modsButton = ButtonWidget.builder(Text.translatable("flex_hud.options_screen.modules"),
-						(btn) -> MinecraftClient.getInstance().setScreen(new ModulesListScreen(this))
-				).dimensions((width - centralButtonWidth) / 2, (height - squareButtonSize) / 2, centralButtonWidth, squareButtonSize)
+		Button modsButton = Button.builder(Component.translatable("flex_hud.options_screen.modules"),
+						(btn) -> Minecraft.getInstance().setScreen(new ModulesListScreen(this))
+				).bounds((width - centralButtonWidth) / 2, (height - squareButtonSize) / 2, centralButtonWidth, squareButtonSize)
 				.build();
-		this.addDrawableChild(modsButton);
+		this.addRenderableWidget(modsButton);
 
 		IconButton moveButton = new IconButton(
 				(width - squareButtonSize + centralButtonWidth) / 2 + buttonGap,
 				(height - squareButtonSize) / 2,
 				squareButtonSize, squareButtonSize,
-				Identifier.of(MOD_ID, "widgets/buttons/options_menu_buttons/move.png"),
+				Identifier.fromNamespaceAndPath(MOD_ID, "widgets/buttons/options_menu_buttons/move.png"),
 				14, 14, (btn) -> {
-			MinecraftClient.getInstance().setScreen(new MoveModulesScreen(this));
+			Minecraft.getInstance().setScreen(new MoveModulesScreen(this));
 			Flex_hudClient.isInMoveElementScreen = true;
 		});
-		this.addDrawableChild(moveButton);
+		this.addRenderableWidget(moveButton);
 	}
 
 	private void updateEnableButton() {
 		if (ModulesHelper.getInstance().isEnabled.getValue()) {
-			enableModButton.setTooltip(Tooltip.of(Text.translatable("flex_hud.options_screen.disable.tooltip")));
-			enableModButton.setTexture(Identifier.of(MOD_ID, "widgets/buttons/options_menu_buttons/enabled.png"));
+			enableModButton.setTooltip(Tooltip.create(Component.translatable("flex_hud.options_screen.disable.tooltip")));
+			enableModButton.setTexture(Identifier.fromNamespaceAndPath(MOD_ID, "widgets/buttons/options_menu_buttons/enabled.png"));
 		} else {
-			enableModButton.setTooltip(Tooltip.of(Text.translatable("flex_hud.options_screen.enable.tooltip")));
-			enableModButton.setTexture(Identifier.of(MOD_ID, "widgets/buttons/options_menu_buttons/disabled.png"));
+			enableModButton.setTooltip(Tooltip.create(Component.translatable("flex_hud.options_screen.enable.tooltip")));
+			enableModButton.setTexture(Identifier.fromNamespaceAndPath(MOD_ID, "widgets/buttons/options_menu_buttons/disabled.png"));
 		}
 	}
 
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void render(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
 		final int ANIMATION_DURATION = 500;
 		float progress = Math.min((float) (System.currentTimeMillis() - initTimestamp) / ANIMATION_DURATION, 1.0f);
 		float easedProgress = EaseUtils.getEaseOutQuad(progress);
 
-		final Identifier modIcon = Identifier.of(MOD_ID, "logo-without-bg.png");
+		final Identifier modIcon = Identifier.fromNamespaceAndPath(MOD_ID, "logo-without-bg.png");
 
 		// set the icon width and height
 		int iconWidth = 64;
@@ -105,38 +106,38 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 		//TODO trouver comment remplacer ça
 		//RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, easedProgress);
 
-		super.render(context, mouseX, mouseY, delta);
+		super.render(graphics, mouseX, mouseY, delta);
 
-		Matrix3x2fStack matrices = context.getMatrices();
+		Matrix3x2fStack matrices = graphics.pose();
 		matrices.pushMatrix();
 		matrices.translate((float) x, (float) y);
 
 		// Draw the icon
-		context.drawTexture(RenderPipelines.GUI_TEXTURED, modIcon, 0, 0, 0, 0, iconWidth, iconHeight, iconWidth, iconHeight);
+		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, modIcon, 0, 0, 0, 0, iconWidth, iconHeight, iconWidth, iconHeight);
 
 		matrices.popMatrix();
 
 		//RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F); // Opacité à 100%
 
 		if (!ModulesHelper.getInstance().isEnabled.getValue()) {
-			context.drawCenteredTextWithShadow(MinecraftClient.getInstance().textRenderer, Text.translatable("flex_hud.options_screen.mod_is_disabled_warning").formatted(Formatting.RED, Formatting.ITALIC), this.width / 2, this.height / 2 + 20, 0xffffffff);
+			graphics.drawCenteredString(Minecraft.getInstance().font, Component.translatable("flex_hud.options_screen.mod_is_disabled_warning").withStyle(ChatFormatting.RED, ChatFormatting.ITALIC), this.width / 2, this.height / 2 + 20, 0xffffffff);
 		}
 	}
 
 	@Override
-	public boolean keyPressed(KeyInput input) {
-		if (openOptionScreenKeyBind.matchesKey(input)) {
-			this.close();
+	public boolean keyPressed(@NonNull KeyEvent input) {
+		if (openOptionScreenKeyBind.matches(input)) {
+			this.onClose();
 			return true;
 		}
 		return super.keyPressed(input);
 	}
 
 	@Override
-	public boolean mouseClicked(Click click, boolean doubled) {
+	public boolean mouseClicked(@NonNull MouseButtonEvent click, boolean doubled) {
 		//if the keybind is on a mouse button
 		if (openOptionScreenKeyBind.matchesMouse(click)) {
-			this.close();
+			this.onClose();
 			return true;
 		}
 		return super.mouseClicked(click, doubled);

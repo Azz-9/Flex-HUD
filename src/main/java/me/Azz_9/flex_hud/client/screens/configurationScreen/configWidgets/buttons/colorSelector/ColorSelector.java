@@ -1,18 +1,19 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector;
 
 import me.Azz_9.flex_hud.client.utils.Cursors;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.input.CharInput;
-import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
-public class ColorSelector extends ColorUpdatable implements Element, Drawable {
+public class ColorSelector extends ColorUpdatable implements GuiEventListener, Renderable {
 	@NotNull
 	private final GradientWidget gradientWidget;
 	@NotNull
@@ -37,7 +38,7 @@ public class ColorSelector extends ColorUpdatable implements Element, Drawable {
 
 		this.gradientWidget = new GradientWidget(gradientWidth, gradientHeight, this);
 		this.hueWidget = new HueWidget(hueBarWidth, hueBarHeight, this);
-		this.colorFieldWidget = new ColorFieldWidget(MinecraftClient.getInstance().textRenderer, hexaFieldWidth, hexaFieldHeight, this);
+		this.colorFieldWidget = new ColorFieldWidget(Minecraft.getInstance().font, hexaFieldWidth, hexaFieldHeight, this);
 
 		this.gradientWidget.updateColor(colorBindable.getColor());
 		this.hueWidget.updateHue(colorBindable.getColor());
@@ -56,17 +57,17 @@ public class ColorSelector extends ColorUpdatable implements Element, Drawable {
 	}
 
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+	public void render(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (this.isMouseOver(mouseX, mouseY)) {
-			context.setCursor(Cursors.DEFAULT);
+			graphics.requestCursor(Cursors.DEFAULT);
 		}
 
 		int backgroundColor = 0xff1e1f22;
-		context.fill(getX(), getY(), getRight(), getBottom(), backgroundColor);
+		graphics.fill(getX(), getY(), getRight(), getBottom(), backgroundColor);
 
-		gradientWidget.render(context, mouseX, mouseY, deltaTicks);
-		hueWidget.render(context, mouseX, mouseY, deltaTicks);
-		colorFieldWidget.render(context, mouseX, mouseY, deltaTicks);
+		gradientWidget.render(graphics, mouseX, mouseY, deltaTicks);
+		hueWidget.render(graphics, mouseX, mouseY, deltaTicks);
+		colorFieldWidget.render(graphics, mouseX, mouseY, deltaTicks);
 	}
 
 	public void updatePosition(int scrollableListTop) {
@@ -86,9 +87,9 @@ public class ColorSelector extends ColorUpdatable implements Element, Drawable {
 	}
 
 	@Override
-	public boolean mouseClicked(Click click, boolean doubled) {
+	public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
 		if (this.isMouseOver(click.x(), click.y())) {
-			for (Element child : getChildren()) {
+			for (GuiEventListener child : getChildren()) {
 				child.mouseClicked(click, doubled);
 			}
 
@@ -98,7 +99,7 @@ public class ColorSelector extends ColorUpdatable implements Element, Drawable {
 	}
 
 	@Override
-	public boolean mouseReleased(Click click) {
+	public boolean mouseReleased(MouseButtonEvent click) {
 		if (this.isMouseOver(click.x(), click.y()) || this.isDraggingACursor()) {
 			gradientWidget.mouseReleased(click);
 			hueWidget.mouseReleased(click);
@@ -109,7 +110,7 @@ public class ColorSelector extends ColorUpdatable implements Element, Drawable {
 	}
 
 	@Override
-	public boolean mouseDragged(Click click, double offsetX, double offsetY) {
+	public boolean mouseDragged(MouseButtonEvent click, double offsetX, double offsetY) {
 		if (this.isMouseOver(click.x(), click.y()) || this.isDraggingACursor()) {
 			gradientWidget.mouseDragged(click, offsetX, offsetY);
 			hueWidget.mouseDragged(click, offsetX, offsetY);
@@ -120,7 +121,7 @@ public class ColorSelector extends ColorUpdatable implements Element, Drawable {
 	}
 
 	@Override
-	public boolean keyPressed(KeyInput input) {
+	public boolean keyPressed(@NonNull KeyEvent input) {
 		if (colorFieldWidget.isFocused()) {
 			colorFieldWidget.keyPressed(input);
 
@@ -130,7 +131,7 @@ public class ColorSelector extends ColorUpdatable implements Element, Drawable {
 	}
 
 	@Override
-	public boolean charTyped(CharInput input) {
+	public boolean charTyped(@NonNull CharacterEvent input) {
 		if (colorFieldWidget.isFocused()) {
 			return colorFieldWidget.charTyped(input);
 		}
@@ -203,7 +204,7 @@ public class ColorSelector extends ColorUpdatable implements Element, Drawable {
 		return width;
 	}
 
-	private List<Element> getChildren() {
+	private List<GuiEventListener> getChildren() {
 		return List.of(gradientWidget, hueWidget, colorFieldWidget);
 	}
 

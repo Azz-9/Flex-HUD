@@ -6,12 +6,13 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.ScrollableConfigList
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.ConfigCyclingButtonWidget;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +31,7 @@ public class CyclingButtonEntry<E extends Enum<E> & Translatable> extends Scroll
 			int resetButtonSize,
 			@Nullable Function<E, Tooltip> getTooltip
 	) {
-		super(resetButtonSize, Text.translatable(variable.getConfigTextTranslationKey()));
+		super(resetButtonSize, Component.translatable(Objects.requireNonNull(variable.getConfigTextTranslationKey())));
 		cyclingButtonWidget = new ConfigCyclingButtonWidget<>(cyclingButtonWidth, cyclingButtonHeight, variable, observers, getTooltip);
 		setResetButtonPressAction((btn) -> cyclingButtonWidget.setToDefaultState());
 
@@ -51,19 +52,19 @@ public class CyclingButtonEntry<E extends Enum<E> & Translatable> extends Scroll
 	}
 
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
-		super.render(context, mouseX, mouseY, hovered, deltaTicks);
+	public void renderContent(@NonNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+		super.renderContent(graphics, mouseX, mouseY, hovered, deltaTicks);
 
-		cyclingButtonWidget.render(context, mouseX, mouseY, deltaTicks);
+		cyclingButtonWidget.render(graphics, mouseX, mouseY, deltaTicks);
 	}
 
 	@Override
-	public List<? extends Selectable> selectableChildren() {
+	public @NonNull List<? extends NarratableEntry> narratables() {
 		return List.of(cyclingButtonWidget, resetButtonWidget);
 	}
 
 	@Override
-	public List<? extends Element> children() {
+	public @NonNull List<? extends GuiEventListener> children() {
 		return List.of(cyclingButtonWidget, resetButtonWidget);
 	}
 

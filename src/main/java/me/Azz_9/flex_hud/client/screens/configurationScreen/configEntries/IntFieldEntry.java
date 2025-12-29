@@ -6,14 +6,15 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.Conf
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.fields.ConfigIntFieldWidget;
 import me.Azz_9.flex_hud.client.screens.widgets.buttons.TexturedButtonWidget;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.screen.ButtonTextures;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.WidgetSprites;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,9 +39,9 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 			int resetButtonSize,
 			Function<Integer, Tooltip> getTooltip
 	) {
-		super(resetButtonSize, Text.translatable(variable.getConfigTextTranslationKey()));
+		super(resetButtonSize, Component.translatable(Objects.requireNonNull(variable.getConfigTextTranslationKey())));
 		intFieldWidget = new ConfigIntFieldWidget(
-				MinecraftClient.getInstance().textRenderer,
+				Minecraft.getInstance().font,
 				intFieldWidth, intFieldHeight,
 				variable,
 				observers,
@@ -48,13 +49,13 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 		);
 		setResetButtonPressAction((btn) -> intFieldWidget.setToDefaultState());
 
-		increaseButton = new TexturedButtonWidget(increaseAndDecreaseButtonsSize, increaseAndDecreaseButtonsSize, new ButtonTextures(
-				Identifier.of(MOD_ID, "widgets/buttons/int_field/increase/unfocused.png"),
-				Identifier.of(MOD_ID, "widgets/buttons/int_field/increase/focused.png")
+		increaseButton = new TexturedButtonWidget(increaseAndDecreaseButtonsSize, increaseAndDecreaseButtonsSize, new WidgetSprites(
+				Identifier.fromNamespaceAndPath(MOD_ID, "widgets/buttons/int_field/increase/unfocused.png"),
+				Identifier.fromNamespaceAndPath(MOD_ID, "widgets/buttons/int_field/increase/focused.png")
 		), (btn) -> this.intFieldWidget.increase());
-		decreaseButton = new TexturedButtonWidget(increaseAndDecreaseButtonsSize, increaseAndDecreaseButtonsSize, new ButtonTextures(
-				Identifier.of(MOD_ID, "widgets/buttons/int_field/decrease/unfocused.png"),
-				Identifier.of(MOD_ID, "widgets/buttons/int_field/decrease/focused.png")
+		decreaseButton = new TexturedButtonWidget(increaseAndDecreaseButtonsSize, increaseAndDecreaseButtonsSize, new WidgetSprites(
+				Identifier.fromNamespaceAndPath(MOD_ID, "widgets/buttons/int_field/decrease/unfocused.png"),
+				Identifier.fromNamespaceAndPath(MOD_ID, "widgets/buttons/int_field/decrease/focused.png")
 		), (btn) -> this.intFieldWidget.decrease());
 
 		intFieldWidget.setIncreaseButton(increaseButton);
@@ -81,27 +82,27 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 	}
 
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
-		super.render(context, mouseX, mouseY, hovered, deltaTicks);
+	public void renderContent(@NonNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+		super.renderContent(graphics, mouseX, mouseY, hovered, deltaTicks);
 
-		increaseButton.render(context, mouseX, mouseY, deltaTicks);
+		increaseButton.render(graphics, mouseX, mouseY, deltaTicks);
 		if (!increaseButton.active) {
-			context.fill(increaseButton.getX(), increaseButton.getY(), increaseButton.getRight(), increaseButton.getBottom(), 0xcf4e4e4e);
+			graphics.fill(increaseButton.getX(), increaseButton.getY(), increaseButton.getRight(), increaseButton.getBottom(), 0xcf4e4e4e);
 		}
-		decreaseButton.render(context, mouseX, mouseY, deltaTicks);
+		decreaseButton.render(graphics, mouseX, mouseY, deltaTicks);
 		if (!decreaseButton.active) {
-			context.fill(decreaseButton.getX(), decreaseButton.getY(), decreaseButton.getRight(), decreaseButton.getBottom(), 0xcf4e4e4e);
+			graphics.fill(decreaseButton.getX(), decreaseButton.getY(), decreaseButton.getRight(), decreaseButton.getBottom(), 0xcf4e4e4e);
 		}
-		intFieldWidget.render(context, mouseX, mouseY, deltaTicks);
+		intFieldWidget.render(graphics, mouseX, mouseY, deltaTicks);
 	}
 
 	@Override
-	public List<? extends Selectable> selectableChildren() {
+	public @NonNull List<? extends NarratableEntry> narratables() {
 		return List.of(intFieldWidget, increaseButton, decreaseButton, resetButtonWidget);
 	}
 
 	@Override
-	public List<? extends Element> children() {
+	public @NonNull List<? extends GuiEventListener> children() {
 		return List.of(intFieldWidget, increaseButton, decreaseButton, resetButtonWidget);
 	}
 

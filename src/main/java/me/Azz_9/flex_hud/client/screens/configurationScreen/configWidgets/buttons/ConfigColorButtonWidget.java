@@ -8,17 +8,18 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetA
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector.ColorBindable;
 import me.Azz_9.flex_hud.client.utils.Cursors;
 import me.Azz_9.flex_hud.client.utils.EaseUtils;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
@@ -27,7 +28,7 @@ import java.util.function.Function;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 
-public class ConfigColorButtonWidget extends ClickableWidget implements TrackableChange, DataGetter<Integer>, ResetAware, ColorBindable {
+public class ConfigColorButtonWidget extends AbstractWidget.WithInactiveMessage implements TrackableChange, DataGetter<Integer>, ResetAware, ColorBindable {
 	private ConfigInteger variable;
 	private final int INITIAL_COLOR;
 	private final List<Observer> observers;
@@ -42,7 +43,7 @@ public class ConfigColorButtonWidget extends ClickableWidget implements Trackabl
 	private static final int TRANSITION_DURATION = 300;
 
 	public ConfigColorButtonWidget(int x, int y, int width, int height, ConfigInteger variable, List<Observer> observers, Consumer<ConfigColorButtonWidget> onClickAction, @Nullable Function<Integer, Tooltip> getTooltip) {
-		super(x, y, width, height, Text.empty());
+		super(x, y, width, height, Component.empty());
 		this.variable = variable;
 		this.INITIAL_COLOR = variable.getValue();
 		this.observers = observers;
@@ -59,28 +60,28 @@ public class ConfigColorButtonWidget extends ClickableWidget implements Trackabl
 	}
 
 	@Override
-	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+	protected void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 
 		if (this.active) {
-			if (this.isHovered()) context.setCursor(Cursors.POINTING_HAND);
+			if (this.isHovered()) graphics.requestCursor(Cursors.POINTING_HAND);
 
-			drawSelectedTexture(context);
+			drawSelectedTexture(graphics);
 
-			if (this.isSelected()) {
-				context.drawStrokedRectangle(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+			if (this.isHoveredOrFocused()) {
+				graphics.renderOutline(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
 			}
-			context.drawStrokedRectangle(getRight() - getHeight(), getY(), getHeight(), getHeight(), (this.isHovered() ? 0xffd0d0d0 : 0xff404040));
+			graphics.renderOutline(getRight() - getHeight(), getY(), getHeight(), getHeight(), (this.isHovered() ? 0xffd0d0d0 : 0xff404040));
 		}
-		context.fill(getRight() - getHeight() + 1, getY() + 1, getRight() - 1, getBottom() - 1, variable.getValue() | 0xff000000);
+		graphics.fill(getRight() - getHeight() + 1, getY() + 1, getRight() - 1, getBottom() - 1, variable.getValue() | 0xff000000);
 
 		if (!this.active) {
-			if (this.isHovered()) context.setCursor(Cursors.NOT_ALLOWED);
+			if (this.isHovered()) graphics.requestCursor(Cursors.NOT_ALLOWED);
 
-			context.fill(getRight() - getHeight(), getY(), getRight(), getBottom(), 0xcf4e4e4e);
+			graphics.fill(getRight() - getHeight(), getY(), getRight(), getBottom(), 0xcf4e4e4e);
 		}
 	}
 
-	private void drawSelectedTexture(DrawContext context) {
+	private void drawSelectedTexture(GuiGraphics graphics) {
 		boolean currentlyHovered = this.isHovered();
 
 		// Handle transition triggers
@@ -115,18 +116,18 @@ public class ConfigColorButtonWidget extends ClickableWidget implements Trackabl
 		}
 
 		if (alpha > 0) {
-			Identifier selectedTexture = Identifier.of(MOD_ID, "widgets/buttons/selected.png");
-			context.drawTexture(RenderPipelines.GUI_TEXTURED, selectedTexture, this.getX(), this.getY(), 0, 0, this.width, this.height, 120, 20, ColorHelper.withAlpha(alpha, 0xFFFFFF));
+			Identifier selectedTexture = Identifier.fromNamespaceAndPath(MOD_ID, "widgets/buttons/selected.png");
+			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selectedTexture, this.getX(), this.getY(), 0, 0, this.width, this.height, 120, 20, ARGB.color(alpha, 0xFFFFFF));
 		}
 	}
 
 	@Override
-	public void onClick(Click click, boolean bl) {
+	public void onClick(@NonNull MouseButtonEvent click, boolean bl) {
 		onClickAction.accept(this);
 	}
 
 	@Override
-	public boolean keyPressed(KeyInput input) {
+	public boolean keyPressed(KeyEvent input) {
 		if (input.key() == GLFW.GLFW_KEY_ENTER || input.key() == GLFW.GLFW_KEY_KP_ENTER) {
 			onClickAction.accept(this);
 			return true;
@@ -155,7 +156,7 @@ public class ConfigColorButtonWidget extends ClickableWidget implements Trackabl
 	}
 
 	@Override
-	public boolean isSelected() {
+	public boolean isHoveredOrFocused() {
 		return this.isFocused();
 	}
 
@@ -178,7 +179,7 @@ public class ConfigColorButtonWidget extends ClickableWidget implements Trackabl
 	}
 
 	@Override
-	protected void appendClickableNarrations(NarrationMessageBuilder builder) {
+	protected void updateWidgetNarration(@NonNull NarrationElementOutput output) {
 	}
 
 	@Override

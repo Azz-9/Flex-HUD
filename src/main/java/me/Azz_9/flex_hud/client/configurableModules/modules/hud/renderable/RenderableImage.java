@@ -1,9 +1,9 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable;
 
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 public class RenderableImage extends Renderable {
@@ -19,7 +19,7 @@ public class RenderableImage extends Renderable {
 	}
 
 	@Override
-	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, image, x, y, width, height);
+	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, image, x, y, width, height);
 	}
 }

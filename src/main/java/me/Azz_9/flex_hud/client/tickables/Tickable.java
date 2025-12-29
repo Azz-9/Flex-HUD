@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.client.tickables;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 public interface Tickable {
 
@@ -8,5 +8,5 @@ public interface Tickable {
 		return true;
 	}
 
-	void tick(MinecraftClient client);
+	void tick(Minecraft minecraft);
 }

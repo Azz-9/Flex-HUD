@@ -1,22 +1,23 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector;
 
 import me.Azz_9.flex_hud.client.utils.Cursors;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import org.joml.Matrix3x2fStack;
+import org.jspecify.annotations.NonNull;
 import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 
-public class GradientWidget extends ClickableWidget {
+public class GradientWidget extends AbstractWidget.WithInactiveMessage {
 	private float selectedHue;
 	private int selectedColor;
 	private double cursorX;
@@ -27,29 +28,29 @@ public class GradientWidget extends ClickableWidget {
 	private ColorUpdatable colorSelector;
 
 	GradientWidget(int width, int height, ColorUpdatable colorSelector) {
-		super(0, 0, width, height, Text.translatable("flex_hud.gradient_widget"));
+		super(0, 0, width, height, Component.translatable("flex_hud.gradient_widget"));
 		selectedHue = 0;
 		selectedColor = 0;
 		this.colorSelector = colorSelector;
 	}
 
 	@Override
-	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-		if (this.isInteractable() && this.isHovered()) {
-			context.setCursor(Cursors.CROSSHAIR);
+	protected void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
+		if (this.isActive() && this.isHovered()) {
+			graphics.requestCursor(Cursors.CROSSHAIR);
 		}
 
-		renderGradient(context);
+		renderGradient(graphics);
 
-		Matrix3x2fStack matrices = context.getMatrices();
+		Matrix3x2fStack matrices = graphics.pose();
 		matrices.pushMatrix();
 		matrices.translate((float) (cursorX + getX()), (float) (cursorY + getY()));
 
 		// Draw the cursor
 		int cursorSize = 6;
-		context.drawTexture(
+		graphics.blitSprite(
 				RenderPipelines.GUI_TEXTURED,
-				Identifier.of(MOD_ID, "widgets/color_selector/gradient_cursor.png"),
+				Identifier.fromNamespaceAndPath(MOD_ID, "widgets/color_selector/gradient_cursor.png"),
 				-cursorSize / 2, -cursorSize / 2,
 				0, 0,
 				cursorSize, cursorSize,
@@ -59,26 +60,26 @@ public class GradientWidget extends ClickableWidget {
 		matrices.popMatrix();
 	}
 
-	private void renderGradient(DrawContext context) {
+	private void renderGradient(GuiGraphics graphics) {
 		for (int x = 0; x < getWidth(); x++) {
 			float saturation = x / (float) getWidth();
 
 			int topColor = Color.HSBtoRGB(selectedHue / 360.0f, saturation, 1.0f);
 			int bottomColor = Color.HSBtoRGB(selectedHue / 360.0f, saturation, 0.0f);
-			context.fillGradient(getX() + x, getY(), getX() + x + 1, getBottom(), topColor, bottomColor);
+			graphics.fillGradient(getX() + x, getY(), getX() + x + 1, getBottom(), topColor, bottomColor);
 		}
 	}
 
 	@Override
-	public void onClick(Click click, boolean bl) {
-		long window = MinecraftClient.getInstance().getWindow().getHandle();
+	public void onClick(MouseButtonEvent click, boolean bl) {
+		long window = Minecraft.getInstance().getWindow().handle();
 		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);
 		moveCursor(click.x(), click.y());
 		isDraggingCursor = true;
 	}
 
 	@Override
-	public boolean mouseDragged(Click click, double offsetX, double offsetY) {
+	public boolean mouseDragged(@NonNull MouseButtonEvent click, double offsetX, double offsetY) {
 		if (isDraggingCursor) {
 			return super.mouseDragged(click, offsetX, offsetY);
 		}
@@ -86,12 +87,12 @@ public class GradientWidget extends ClickableWidget {
 	}
 
 	@Override
-	protected void onDrag(Click click, double d, double e) {
+	protected void onDrag(MouseButtonEvent click, double d, double e) {
 		moveCursor(click.x(), click.y());
 	}
 
 	@Override
-	public boolean mouseReleased(Click click) {
+	public boolean mouseReleased(@NonNull MouseButtonEvent click) {
 		if (isDraggingCursor) {
 			return super.mouseReleased(click);
 		}
@@ -99,8 +100,8 @@ public class GradientWidget extends ClickableWidget {
 	}
 
 	@Override
-	public void onRelease(Click click) {
-		long window = MinecraftClient.getInstance().getWindow().getHandle();
+	public void onRelease(@NonNull MouseButtonEvent click) {
+		long window = Minecraft.getInstance().getWindow().handle();
 		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
 		isDraggingCursor = false;
 	}
@@ -152,6 +153,6 @@ public class GradientWidget extends ClickableWidget {
 	}
 
 	@Override
-	protected void appendClickableNarrations(NarrationMessageBuilder builder) {
+	protected void updateWidgetNarration(@NonNull NarrationElementOutput output) {
 	}
 }

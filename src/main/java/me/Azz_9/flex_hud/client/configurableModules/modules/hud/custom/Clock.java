@@ -10,12 +10,12 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.Toggle
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigString;
 import me.Azz_9.flex_hud.client.utils.clock.ClockUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.text.Text;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 
@@ -43,7 +43,7 @@ public class Clock extends AbstractTextElement implements TickableModule {
 
 	@Override
 	public void init() {
-		setHeight(MinecraftClient.getInstance().textRenderer.fontHeight);
+		setHeight(Minecraft.getInstance().font.lineHeight);
 	}
 
 	@Override
@@ -52,13 +52,13 @@ public class Clock extends AbstractTextElement implements TickableModule {
 	}
 
 	@Override
-	public Text getName() {
-		return Text.translatable("flex_hud.clock");
+	public Component getName() {
+		return Component.translatable("flex_hud.clock");
 	}
 
 	@Override
-	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
+	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+		Minecraft minecraft = Minecraft.getInstance();
 
 		if (shouldNotRender()) {
 			return;
@@ -66,14 +66,14 @@ public class Clock extends AbstractTextElement implements TickableModule {
 
 		setWidth(formattedTime);
 
-		Matrix3x2fStack matrices = context.getMatrices();
+		Matrix3x2fStack matrices = graphics.pose();
 		matrices.pushMatrix();
 		matrices.translate(getRoundedX(), getRoundedY());
 		matrices.scale(getScale());
 
-		drawBackground(context);
+		drawBackground(graphics);
 
-		context.drawText(client.textRenderer, formattedTime, 0, 0, getColor(), this.shadow.getValue());
+		graphics.drawString(minecraft.font, formattedTime, 0, 0, getColor(), this.shadow.getValue());
 
 		matrices.popMatrix();
 	}
@@ -84,7 +84,7 @@ public class Clock extends AbstractTextElement implements TickableModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (Minecraft.getInstance().getLanguageManager().getSelected().equals("fr_fr")) {
 					buttonWidth = 180;
 				}
 
@@ -159,8 +159,11 @@ public class Clock extends AbstractTextElement implements TickableModule {
 										return false;
 									}
 								})
-								.setGetTooltip((value) -> Tooltip.of(Text.of("hh: " + Text.translatable("flex_hud.global.hours").getString() + "\nmm: " + Text.translatable("flex_hud.global.minutes").getString() + "\nss: " + Text.translatable("flex_hud.global.seconds").getString())))
-								.setText(Text.translatable("flex_hud.clock.config.text_format"))
+								.setGetTooltip((value) -> Tooltip.create(Component.literal("hh: " +
+										Component.translatable("flex_hud.global.hours").getString() + "\nmm: " +
+										Component.translatable("flex_hud.global.minutes").getString() + "\nss: " +
+										Component.translatable("flex_hud.global.seconds").getString())))
+								.setText(Component.translatable("flex_hud.clock.config.text_format"))
 								.build()
 				);
 			}

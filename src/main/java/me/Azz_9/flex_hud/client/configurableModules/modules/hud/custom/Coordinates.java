@@ -14,12 +14,12 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.Toggle
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.Text;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 
@@ -52,19 +52,19 @@ public class Coordinates extends AbstractTextElement {
 	}
 
 	@Override
-	public Text getName() {
-		return Text.translatable("flex_hud.coordinates");
+	public Component getName() {
+		return Component.translatable("flex_hud.coordinates");
 	}
 
 	@Override
-	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
+	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+		Minecraft minecraft = Minecraft.getInstance();
 
-		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && client.player == null) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && minecraft.player == null) {
 			return;
 		}
 
-		PlayerEntity player = client.player;
+		LocalPlayer player = minecraft.player;
 
 		List<Renderable> renderables = new ArrayList<>();
 
@@ -95,23 +95,23 @@ public class Coordinates extends AbstractTextElement {
 			int hudX = 0;
 			int hudY = 0;
 
-			renderables.add(new RenderableText(hudX, hudY, Text.of(xCoords), getColor(), this.shadow.getValue()));
+			renderables.add(new RenderableText(hudX, hudY, Component.literal(xCoords), getColor(), this.shadow.getValue()));
 			updateWidth(xCoords);
 			if (this.showY.getValue()) {
 				hudY += 10;
-				renderables.add(new RenderableText(hudX, hudY, Text.of(yCoords), getColor(), this.shadow.getValue()));
+				renderables.add(new RenderableText(hudX, hudY, Component.literal(yCoords), getColor(), this.shadow.getValue()));
 				updateWidth(yCoords);
 			}
 			hudY += 10;
-			renderables.add(new RenderableText(hudX, hudY, Text.of(zCoords), getColor(), this.shadow.getValue()));
+			renderables.add(new RenderableText(hudX, hudY, Component.literal(zCoords), getColor(), this.shadow.getValue()));
 			updateWidth(zCoords);
 
 			setHeight(hudY + 10);
 
 			if (this.showDirection.getValue()) {
-				int widestCoords = Math.max(client.textRenderer.getWidth(xCoords), client.textRenderer.getWidth(yCoords));
+				int widestCoords = Math.max(minecraft.font.width(xCoords), minecraft.font.width(yCoords));
 				if (this.showY.getValue()) {
-					widestCoords = Math.max(widestCoords, client.textRenderer.getWidth(zCoords));
+					widestCoords = Math.max(widestCoords, minecraft.font.width(zCoords));
 				}
 				hudX = 24 + widestCoords;
 				hudY = 0;
@@ -127,18 +127,18 @@ public class Coordinates extends AbstractTextElement {
 				}
 
 
-				renderables.add(new RenderableText(hudX, hudY, Text.of(axisX), getColor(), this.shadow.getValue()));
+				renderables.add(new RenderableText(hudX, hudY, Component.literal(axisX), getColor(), this.shadow.getValue()));
 				updateWidth(axisX, hudX);
 				if (this.showY.getValue()) {
 					hudY += 10;
-					renderables.add(new RenderableText(hudX, hudY, Text.of(facing), getColor(), this.shadow.getValue()));
+					renderables.add(new RenderableText(hudX, hudY, Component.literal(facing), getColor(), this.shadow.getValue()));
 					updateWidth(facing, hudX);
 				} else {
-					renderables.add(new RenderableText(hudX + 8, hudY + 5, Text.of(facing), getColor(), this.shadow.getValue()));
+					renderables.add(new RenderableText(hudX + 8, hudY + 5, Component.literal(facing), getColor(), this.shadow.getValue()));
 					updateWidth(facing, hudX + 8);
 				}
 				hudY += 10;
-				renderables.add(new RenderableText(hudX, hudY, Text.of(axisZ), getColor(), this.shadow.getValue()));
+				renderables.add(new RenderableText(hudX, hudY, Component.literal(axisZ), getColor(), this.shadow.getValue()));
 				updateWidth(axisZ, hudX);
 			}
 
@@ -160,57 +160,49 @@ public class Coordinates extends AbstractTextElement {
 				}
 			}
 
-			renderables.add(new RenderableText(0, 0, Text.of(text.toString()), getColor(), this.shadow.getValue()));
+			renderables.add(new RenderableText(0, 0, Component.literal(text.toString()), getColor(), this.shadow.getValue()));
 			updateWidth(text.toString());
-			setHeight(client.textRenderer.fontHeight);
+			setHeight(minecraft.font.lineHeight);
 		}
 
-		Matrix3x2fStack matrices = context.getMatrices();
+		Matrix3x2fStack matrices = graphics.pose();
 		matrices.pushMatrix();
 		matrices.translate(getRoundedX(), getRoundedY());
 		matrices.scale(getScale());
 
-		drawBackground(context);
+		drawBackground(graphics);
 
 		for (Renderable renderable : renderables) {
-			renderable.render(context, tickCounter);
+			renderable.render(graphics, deltaTracker);
 		}
 
 		matrices.popMatrix();
 	}
 
-	private String[] getDirection(PlayerEntity p) {
+	private String[] getDirection(LocalPlayer player) {
 		float yaw;
 		if (Flex_hudClient.isInMoveElementScreen) {
 			yaw = 45;
 		} else {
-			yaw = (p.getYaw() % 360 + 360) % 360;
+			yaw = (player.getVisualRotationYInDegrees() % 360 + 360) % 360;
 		}
 
 		if (337.5 < yaw || yaw < 22.5) {
-			return new String[]{Text.translatable("flex_hud.coordinates.hud.direction.south").getString(),
-					Text.translatable("flex_hud.coordinates.hud.direction_abbr.south").getString(), "", "+"};
+			return new String[]{Component.translatable("flex_hud.coordinates.hud.direction.south").getString(), Component.translatable("flex_hud.coordinates.hud.direction_abbr.south").getString(), "", "+"};
 		} else if (22.5 <= yaw && yaw < 67.5) {
-			return new String[]{Text.translatable("flex_hud.coordinates.hud.direction.south_west").getString(),
-					Text.translatable("flex_hud.coordinates.hud.direction_abbr.south_west").getString(), "-", "+"};
+			return new String[]{Component.translatable("flex_hud.coordinates.hud.direction.south_west").getString(), Component.translatable("flex_hud.coordinates.hud.direction_abbr.south_west").getString(), "-", "+"};
 		} else if (67.5 <= yaw && yaw < 112.5) {
-			return new String[]{Text.translatable("flex_hud.coordinates.hud.direction.west").getString(),
-					Text.translatable("flex_hud.coordinates.hud.direction_abbr.west").getString(), "-", ""};
+			return new String[]{Component.translatable("flex_hud.coordinates.hud.direction.west").getString(), Component.translatable("flex_hud.coordinates.hud.direction_abbr.west").getString(), "-", ""};
 		} else if (112.5 <= yaw && yaw < 157.5) {
-			return new String[]{Text.translatable("flex_hud.coordinates.hud.direction.north_west").getString(),
-					Text.translatable("flex_hud.coordinates.hud.direction_abbr.north_west").getString(), "-", "-"};
+			return new String[]{Component.translatable("flex_hud.coordinates.hud.direction.north_west").getString(), Component.translatable("flex_hud.coordinates.hud.direction_abbr.north_west").getString(), "-", "-"};
 		} else if (157.5 <= yaw && yaw < 202.5) {
-			return new String[]{Text.translatable("flex_hud.coordinates.hud.direction.north").getString(),
-					Text.translatable("flex_hud.coordinates.hud.direction_abbr.north").getString(), "", "-"};
+			return new String[]{Component.translatable("flex_hud.coordinates.hud.direction.north").getString(), Component.translatable("flex_hud.coordinates.hud.direction_abbr.north").getString(), "", "-"};
 		} else if (202.5 <= yaw && yaw < 247.5) {
-			return new String[]{Text.translatable("flex_hud.coordinates.hud.direction.north_east").getString(),
-					Text.translatable("flex_hud.coordinates.hud.direction_abbr.north_east").getString(), "+", "-"};
+			return new String[]{Component.translatable("flex_hud.coordinates.hud.direction.north_east").getString(), Component.translatable("flex_hud.coordinates.hud.direction_abbr.north_east").getString(), "+", "-"};
 		} else if (247.5 <= yaw && yaw < 292.5) {
-			return new String[]{Text.translatable("flex_hud.coordinates.hud.direction.east").getString(),
-					Text.translatable("flex_hud.coordinates.hud.direction_abbr.east").getString(), "+", ""};
+			return new String[]{Component.translatable("flex_hud.coordinates.hud.direction.east").getString(), Component.translatable("flex_hud.coordinates.hud.direction_abbr.east").getString(), "+", ""};
 		} else {
-			return new String[]{Text.translatable("flex_hud.coordinates.hud.direction.south_east").getString(),
-					Text.translatable("flex_hud.coordinates.hud.direction_abbr.south_east").getString(), "+", "+"};
+			return new String[]{Component.translatable("flex_hud.coordinates.hud.direction.south_east").getString(), Component.translatable("flex_hud.coordinates.hud.direction_abbr.south_east").getString(), "+", "+"};
 		}
 
 	}
@@ -220,7 +212,7 @@ public class Coordinates extends AbstractTextElement {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (Minecraft.getInstance().getLanguageManager().getSelected().equals("fr_fr")) {
 					buttonWidth = 220;
 				} else {
 					buttonWidth = 185;

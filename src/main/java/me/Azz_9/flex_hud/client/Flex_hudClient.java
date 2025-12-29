@@ -1,5 +1,6 @@
 package me.Azz_9.flex_hud.client;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
@@ -18,9 +19,8 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +30,7 @@ public class Flex_hudClient implements ClientModInitializer {
 	private static final boolean DEBUG = Boolean.parseBoolean(System.getenv().getOrDefault("FLEXHUD_DEBUG", "false"));
 
 	public static final String MOD_ID = "flex_hud";
-	public static KeyBinding openOptionScreenKeyBind;
+	public static KeyMapping openOptionScreenKeyBind;
 
 	public static boolean isInMoveElementScreen;
 
@@ -73,7 +73,7 @@ public class Flex_hudClient implements ClientModInitializer {
 			for (HudElement hudElement : ModulesHelper.getHudElements()) {
 				HudElementRegistry.attachElementBefore(
 						hudElement.getLayer(),
-						Identifier.of(MOD_ID, hudElement.getID()),
+						Identifier.fromNamespaceAndPath(MOD_ID, hudElement.getID()),
 						Flex_hudClient.isDebug() ? hudElement::renderWithSpeedTest : hudElement::render
 				);
 			}
@@ -94,8 +94,8 @@ public class Flex_hudClient implements ClientModInitializer {
 		});
 
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
-			if (client.getCurrentServerEntry() != null) { // joined a multiplayer server
-				FaviconUtils.registerServerIcon(client.getCurrentServerEntry().getFavicon());
+			if (client.getCurrentServer() != null) { // joined a multiplayer server
+				FaviconUtils.registerServerIcon(client.getCurrentServer().getIconBytes());
 			}
 
 			waypointCollectors.forEach(Collector::onJoinWorld);
@@ -105,10 +105,10 @@ public class Flex_hudClient implements ClientModInitializer {
 			waypointCollectors.forEach(Collector::onLeaveWorld);
 		});
 
-		final KeyBinding.Category FLEX_HUD = KeyBinding.Category.create(Identifier.of(MOD_ID, "flex-hud"));
+		final KeyMapping.Category FLEX_HUD = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MOD_ID, "flex-hud"));
 
 		// see KeyBindingMixin
-		openOptionScreenKeyBind = KeyBindingHelper.registerKeyBinding(new KeyBinding("flex_hud.controls.open_menu", InputUtil.Type.KEYSYM, InputUtil.GLFW_KEY_RIGHT_SHIFT, FLEX_HUD));
+		openOptionScreenKeyBind = KeyBindingHelper.registerKeyBinding(new KeyMapping("flex_hud.controls.open_menu", InputConstants.Type.KEYSYM, InputConstants.KEY_RSHIFT, FLEX_HUD));
 	}
 
 	public static long getLaunchTime() {

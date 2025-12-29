@@ -4,14 +4,15 @@ import me.Azz_9.flex_hud.client.screens.AbstractSmoothScrollableList;
 import me.Azz_9.flex_hud.client.screens.TrackableChange;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.ConfigResetButtonWidget;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ElementListWidget;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.ContainerObjectSelectionList;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.network.chat.Component;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,7 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 	private final int itemWidth;
 	private final Observer observer;
 
-	public ScrollableConfigList(MinecraftClient minecraftClient, int width, int height, int y, int x, int itemHeight, int itemWidth, Observer observer) {
+	public ScrollableConfigList(Minecraft minecraftClient, int width, int height, int y, int x, int itemHeight, int itemWidth, Observer observer) {
 		super(minecraftClient, width, height, y, itemHeight);
 		setX(x);
 		this.itemWidth = itemWidth;
@@ -34,7 +35,7 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 	}
 
 	public AbstractConfigEntry getLastEntry() {
-		return children().get(super.getEntryCount() - 1);
+		return children().get(super.getItemCount() - 1);
 	}
 
 	public AbstractConfigEntry getFirstEntry() {
@@ -46,8 +47,8 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 	}
 
 	@Override
-	public int getEntryCount() {
-		return super.getEntryCount();
+	public int getItemCount() {
+		return super.getItemCount();
 	}
 
 	public void addConfigEntry(AbstractConfigEntry entry) {
@@ -55,10 +56,10 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 		entry.addObserver(observer);
 	}
 
-	public abstract static class AbstractConfigEntry extends ElementListWidget.Entry<AbstractConfigEntry> implements Observer {
+	public abstract static class AbstractConfigEntry extends ContainerObjectSelectionList.Entry<AbstractConfigEntry> implements Observer {
 		protected ConfigResetButtonWidget resetButtonWidget;
 		//protected TextWidget textWidget;
-		private Text text;
+		private Component text;
 		private int textX, textY;
 		private int textColor;
 		protected List<Observer> observers = new ArrayList<>();
@@ -67,7 +68,7 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 
 		private static final int TEXT_MARGIN_LEFT = 6;
 
-		public AbstractConfigEntry(int resetButtonSize, Text text) {
+		public AbstractConfigEntry(int resetButtonSize, Component text) {
 			this.resetButtonSize = resetButtonSize;
 			this.text = text;
 			this.textX = 0;
@@ -75,8 +76,8 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 			this.textColor = 0xffffffff;
 		}
 
-		protected void setResetButtonPressAction(ButtonWidget.PressAction pressAction) {
-			this.resetButtonWidget = new ConfigResetButtonWidget(resetButtonSize, resetButtonSize, pressAction);
+		protected void setResetButtonPressAction(Button.OnPress onPress) {
+			this.resetButtonWidget = new ConfigResetButtonWidget(resetButtonSize, resetButtonSize, onPress);
 		}
 
 		@Override
@@ -90,22 +91,22 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 		public void setY(int y) {
 			super.setY(y);
 			this.resetButtonWidget.setY(y);
-			textY = (int) (y + (this.resetButtonSize - MinecraftClient.getInstance().textRenderer.fontHeight) / 2.0);
+			textY = (int) (y + (this.resetButtonSize - Minecraft.getInstance().font.lineHeight) / 2.0);
 		}
 
 		@Override
-		public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
-			this.resetButtonWidget.render(context, mouseX, mouseY, deltaTicks);
-			context.drawText(MinecraftClient.getInstance().textRenderer, text, textX, textY, textColor, true);
+		public void renderContent(@NonNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+			this.resetButtonWidget.render(graphics, mouseX, mouseY, deltaTicks);
+			graphics.drawString(Minecraft.getInstance().font, text, textX, textY, textColor, true);
 		}
 
 		@Override
-		public List<? extends Element> children() {
+		public @NonNull List<? extends GuiEventListener> children() {
 			return List.of(resetButtonWidget);
 		}
 
 		@Override
-		public List<? extends Selectable> selectableChildren() {
+		public @NonNull List<? extends NarratableEntry> narratables() {
 			return List.of(resetButtonWidget);
 		}
 
@@ -124,7 +125,7 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 
 		public abstract static class AbstractBuilder<T> {
 			protected int resetButtonSize = 20;
-			protected Text text;
+			protected Component text;
 			protected Function<T, Tooltip> getTooltip = null;
 
 			public AbstractBuilder<T> setResetButtonSize(int size) {
@@ -132,7 +133,7 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 				return this;
 			}
 
-			public AbstractBuilder<T> setText(Text text) {
+			public AbstractBuilder<T> setText(Component text) {
 				this.text = text;
 				return this;
 			}

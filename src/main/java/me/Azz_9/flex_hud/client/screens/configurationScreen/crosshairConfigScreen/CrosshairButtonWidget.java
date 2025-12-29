@@ -7,15 +7,16 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGe
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
 import me.Azz_9.flex_hud.client.utils.Cursors;
 import me.Azz_9.flex_hud.client.utils.EaseUtils;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import org.joml.Matrix3x2fStack;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,7 +24,7 @@ import java.util.function.Consumer;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 
-public class CrosshairButtonWidget<T> extends ClickableWidget implements TrackableChange, DataGetter<int[][]>, ResetAware {
+public class CrosshairButtonWidget<T> extends AbstractWidget.WithInactiveMessage implements TrackableChange, DataGetter<int[][]>, ResetAware {
 	private ConfigIntGrid variable;
 	private final int[][] INITIAL_STATE;
 	private final List<Observer> observers;
@@ -36,7 +37,7 @@ public class CrosshairButtonWidget<T> extends ClickableWidget implements Trackab
 	private static final int TRANSITION_DURATION = 300;
 
 	public CrosshairButtonWidget(int width, int height, ConfigIntGrid variable, List<Observer> observers, Consumer<CrosshairButtonWidget<T>> onClickAction) {
-		super(0, 0, width, height, Text.empty());
+		super(0, 0, width, height, Component.empty());
 		this.variable = variable;
 		this.INITIAL_STATE = variable.getValue();
 		this.observers = observers;
@@ -44,39 +45,39 @@ public class CrosshairButtonWidget<T> extends ClickableWidget implements Trackab
 	}
 
 	@Override
-	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+	protected void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (this.active) {
-			if (this.isHovered()) context.setCursor(Cursors.POINTING_HAND);
+			if (this.isHovered()) graphics.requestCursor(Cursors.POINTING_HAND);
 
-			drawSelectedTexture(context);
+			drawSelectedTexture(graphics);
 
-			if (this.isSelected()) {
-				context.drawStrokedRectangle(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+			if (this.isHoveredOrFocused()) {
+				graphics.renderOutline(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
 			}
-			context.drawStrokedRectangle(getRight() - getHeight(), getY(), getHeight(), getHeight(), (this.isHovered() ? 0xffd0d0d0 : 0xff404040));
+			graphics.renderOutline(getRight() - getHeight(), getY(), getHeight(), getHeight(), (this.isHovered() ? 0xffd0d0d0 : 0xff404040));
 		} else {
-			if (this.isHovered()) context.setCursor(Cursors.NOT_ALLOWED);
+			if (this.isHovered()) graphics.requestCursor(Cursors.NOT_ALLOWED);
 		}
 		float startX = getRight() - getHeight() + 1 + (getHeight() - 2 - variable.getRowLength(0)) / 2.0f;
 		float startY = getY() + 1 + (getHeight() - 2 - variable.getLength()) / 2.0f;
-		Matrix3x2fStack matrices = context.getMatrices();
+		Matrix3x2fStack matrices = graphics.pose();
 		matrices.pushMatrix();
 		matrices.translate(startX, startY);
 
 		for (int y = 0; y < variable.getLength(); y++) {
 			for (int x = 0; x < variable.getRowLength(y); x++) {
-				context.fill(x, y, x + 1, y + 1, variable.getIntValue(x, y));
+				graphics.fill(x, y, x + 1, y + 1, variable.getIntValue(x, y));
 			}
 		}
 
 		matrices.popMatrix();
 
 		if (!this.active) {
-			context.fill(getRight() - getHeight(), getY(), getRight(), getBottom(), 0xcf4e4e4e);
+			graphics.fill(getRight() - getHeight(), getY(), getRight(), getBottom(), 0xcf4e4e4e);
 		}
 	}
 
-	private void drawSelectedTexture(DrawContext context) {
+	private void drawSelectedTexture(GuiGraphics graphics) {
 		boolean currentlyHovered = this.isHovered();
 
 		// Handle transition triggers
@@ -111,8 +112,8 @@ public class CrosshairButtonWidget<T> extends ClickableWidget implements Trackab
 		}
 
 		if (alpha > 0) {
-			Identifier selectedTexture = Identifier.of(MOD_ID, "widgets/buttons/selected.png");
-			context.drawTexture(RenderPipelines.GUI_TEXTURED, selectedTexture, this.getX(), this.getY(), 0, 0, this.width - this.height, this.height, 120, 20, ColorHelper.withAlpha(alpha, 0xFFFFFF));
+			Identifier selectedTexture = Identifier.fromNamespaceAndPath(MOD_ID, "widgets/buttons/selected.png");
+			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selectedTexture, this.getX(), this.getY(), 0, 0, this.width - this.height, this.height, 120, 20, ARGB.color(alpha, 0xFFFFFF));
 		}
 	}
 
@@ -135,7 +136,7 @@ public class CrosshairButtonWidget<T> extends ClickableWidget implements Trackab
 	}
 
 	@Override
-	public void onClick(Click click, boolean bl) {
+	public void onClick(@NonNull MouseButtonEvent click, boolean bl) {
 		onClickAction.accept(this);
 	}
 
@@ -173,11 +174,11 @@ public class CrosshairButtonWidget<T> extends ClickableWidget implements Trackab
 	}
 
 	@Override
-	public boolean isSelected() {
+	public boolean isHoveredOrFocused() {
 		return this.isFocused();
 	}
 
 	@Override
-	protected void appendClickableNarrations(NarrationMessageBuilder builder) {
+	protected void updateWidgetNarration(@NonNull NarrationElementOutput output) {
 	}
 }

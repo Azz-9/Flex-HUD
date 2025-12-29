@@ -1,15 +1,15 @@
 package me.Azz_9.flex_hud.client.configurableModules;
 
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public interface Configurable extends Activable {
-	Text getName();
+	Component getName();
 
 	String getID();
 

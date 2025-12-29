@@ -6,11 +6,12 @@ import me.Azz_9.flex_hud.client.configurableModules.Configurable;
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.screens.AbstractBackNavigableScreen;
 import me.Azz_9.flex_hud.client.screens.widgets.textFieldWidget.PlaceholderTextFieldWidget;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.CyclingButtonWidget;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.CycleButton;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,7 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 	private final ImmutableList<Configurable> MODULES_LIST = ImmutableList.copyOf(ModulesHelper.getConfigurableModules());
 
 	public ModulesListScreen(Screen parent) {
-		super(Text.translatable("flex_hud.configuration_screen"), parent);
+		super(Component.translatable("flex_hud.configuration_screen"), parent);
 	}
 
 	@Override
@@ -37,27 +38,27 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 		int columns = Math.clamp(ModulesHelper.getInstance().numberOfColumns.getValue(), 1, MAX_COLUMNS);
 
 		// Initialisation de la barre de recherche
-		this.searchBar = new PlaceholderTextFieldWidget(this.textRenderer, this.width / 2 - 100, 20, 200, 20, Text.empty());
-		this.searchBar.setChangedListener(this::onSearchUpdate); // Met à jour la liste lorsque le texte change
-		this.searchBar.setPlaceholder(Text.translatable("flex_hud.configuration_screen.searchbar_placeholder"));
+		this.searchBar = new PlaceholderTextFieldWidget(this.font, this.width / 2 - 100, 20, 200, 20, Component.empty());
+		this.searchBar.setResponder(this::onSearchUpdate); // Met à jour la liste lorsque le texte change
+		this.searchBar.setPlaceholder(Component.translatable("flex_hud.configuration_screen.searchbar_placeholder"));
 
 		// Initialisation du choix du nombre de colonnes
-		CyclingButtonWidget<Integer> columnsButton = CyclingButtonWidget.<Integer>builder(value -> Text.literal(value.toString()), columns)
-				.values(IntStream.rangeClosed(1, MAX_COLUMNS).boxed().toList())
-				.build(Math.clamp(this.width / 2 + 105 + (int) (this.width / 100.0F * 5), this.width / 2 + 105, Math.max(this.width - 105, this.width / 2 + 105)), 20, 100, 20, Text.translatable("flex_hud.configuration_screen.columns"), this::onColumnsUpdate);
+		CycleButton<Integer> columnsButton = CycleButton.<Integer>builder(value -> Component.literal(value.toString()), columns)
+				.withValues(IntStream.rangeClosed(1, MAX_COLUMNS).boxed().toList())
+				.create(Math.clamp(this.width / 2 + 105 + (int) (this.width / 100.0F * 5), this.width / 2 + 105, Math.max(this.width - 105, this.width / 2 + 105)), 20, 100, 20, Component.translatable("flex_hud.configuration_screen.columns"), this::onColumnsUpdate);
 
 		// Initialisation de la liste défilante
-		this.modulesListWidget = new ScrollableModulesList(this.client, this.width, this.height - 84, 50, BUTTON_HEIGHT + ICON_WIDTH_HEIGHT + PADDING, BUTTON_WIDTH, BUTTON_HEIGHT, ICON_WIDTH_HEIGHT, PADDING, columns);
+		this.modulesListWidget = new ScrollableModulesList(this.minecraft, this.width, this.height - 84, 50, BUTTON_HEIGHT + ICON_WIDTH_HEIGHT + PADDING, BUTTON_WIDTH, BUTTON_HEIGHT, ICON_WIDTH_HEIGHT, PADDING, columns);
 
 		//Initialisation du bouton done
-		ButtonWidget doneButton = ButtonWidget.builder(Text.translatable("flex_hud.configuration_screen.done"), (btn) -> close())
-				.dimensions(this.width / 2 - 80, this.height - 27, 160, 20)
+		Button doneButton = Button.builder(Component.translatable("flex_hud.configuration_screen.done"), (btn) -> onClose())
+				.bounds(this.width / 2 - 80, this.height - 27, 160, 20)
 				.build();
 
-		this.addDrawableChild(this.searchBar);
-		this.addDrawableChild(columnsButton);
-		this.addSelectableChild(this.modulesListWidget);
-		this.addDrawableChild(doneButton);
+		this.addRenderableWidget(this.searchBar);
+		this.addRenderableWidget(columnsButton);
+		this.addWidget(this.modulesListWidget);
+		this.addRenderableWidget(doneButton);
 
 
 		//Ajout des modules
@@ -69,28 +70,28 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 	}
 
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		super.render(context, mouseX, mouseY, delta);
+	public void render(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+		super.render(graphics, mouseX, mouseY, delta);
 
-		context.drawCenteredTextWithShadow(textRenderer, title, this.width / 2, 7, 0xffffffff);
+		graphics.drawCenteredString(font, title, this.width / 2, 7, 0xffffffff);
 
-		this.modulesListWidget.render(context, mouseX, mouseY, delta);
+		this.modulesListWidget.render(graphics, mouseX, mouseY, delta);
 	}
 
 	@Override
-	public void close() {
+	public void onClose() {
 		ConfigLoader.saveConfig();
-		super.close();
+		super.onClose();
 	}
 
-	private void onColumnsUpdate(CyclingButtonWidget<Integer> integerCyclingButtonWidget, Integer columns) {
+	private void onColumnsUpdate(CycleButton<Integer> integerCyclingButtonWidget, Integer columns) {
 		this.modulesListWidget.setColumns(columns);
 
 		this.modulesListWidget.clearEntries();
 
 		addMods(this.modulesListWidget.getButtonWidth(), this.modulesListWidget.getButtonHeight(), columns);
 
-		onSearchUpdate(this.searchBar.getText());
+		onSearchUpdate(this.searchBar.getValue());
 	}
 
 	private void onSearchUpdate(String text) {

@@ -2,13 +2,14 @@ package me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScre
 
 import me.Azz_9.flex_hud.client.screens.AbstractSmoothScrollableList;
 import me.Azz_9.flex_hud.client.utils.Cursors;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.gui.widget.ElementListWidget;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.ContainerObjectSelectionList;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.input.MouseButtonEvent;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class CrosshairPresetsList extends AbstractSmoothScrollableList<Crosshair
 	private final int PIXEL_SIZE = 2;
 
 	public CrosshairPresetsList(int width, int height, int y, int x, CrosshairEditor crosshairEditor) {
-		super(MinecraftClient.getInstance(), width, height, y, crosshairEditor.getPixels().length * 2);
+		super(Minecraft.getInstance(), width, height, y, crosshairEditor.getPixels().length * 2);
 		this.setX(x);
 		this.crosshairEditor = crosshairEditor;
 		int[][][] textures = new int[][][]{
@@ -278,11 +279,11 @@ public class CrosshairPresetsList extends AbstractSmoothScrollableList<Crosshair
 	}
 
 	@Override
-	protected int getScrollbarX() {
+	protected int scrollBarX() {
 		return this.getRight();
 	}
 
-	public static class CrosshairEntry extends ElementListWidget.Entry<CrosshairEntry> {
+	public static class CrosshairEntry extends ContainerObjectSelectionList.Entry<CrosshairEntry> {
 		private final int[][] texture;
 		private CrosshairPresetsList parent = null;
 		private final int PIXEL_SIZE;
@@ -293,12 +294,12 @@ public class CrosshairPresetsList extends AbstractSmoothScrollableList<Crosshair
 		}
 
 		@Override
-		public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+		public void renderContent(@NonNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
 			if (this.isMouseOver(mouseX, mouseY)) {
-				context.setCursor(Cursors.POINTING_HAND);
-				context.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), 0x10000000);
+				graphics.requestCursor(Cursors.POINTING_HAND);
+				graphics.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), 0x10000000);
 			} else {
-				context.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), 0x50000000);
+				graphics.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), 0x50000000);
 			}
 
 			int centerX = getX() + (getWidth() - texture.length * PIXEL_SIZE) / 2;
@@ -308,16 +309,16 @@ public class CrosshairPresetsList extends AbstractSmoothScrollableList<Crosshair
 					if (texture[textureY][textureX] >> 24 != 0) {
 						int pixelX = centerX + textureX * PIXEL_SIZE;
 						int pixelY = centerY + textureY * PIXEL_SIZE;
-						context.fill(pixelX, pixelY, pixelX + PIXEL_SIZE, pixelY + PIXEL_SIZE, texture[textureY][textureX]);
+						graphics.fill(pixelX, pixelY, pixelX + PIXEL_SIZE, pixelY + PIXEL_SIZE, texture[textureY][textureX]);
 					}
 				}
 			}
 		}
 
 		@Override
-		public boolean mouseClicked(Click click, boolean doubled) {
+		public boolean mouseClicked(@NonNull MouseButtonEvent click, boolean doubled) {
 			if (parent != null) {
-				
+
 				int[][] texture = new int[this.texture.length][this.texture[0].length];
 				for (int textureY = 0; textureY < texture.length; textureY++) {
 					texture[textureY] = this.texture[textureY].clone();
@@ -325,19 +326,19 @@ public class CrosshairPresetsList extends AbstractSmoothScrollableList<Crosshair
 
 				parent.crosshairEditor.onPresetUpdate(texture);
 
-				ClickableWidget.playClickSound(MinecraftClient.getInstance().getSoundManager());
+				AbstractWidget.WithInactiveMessage.playButtonClickSound(Minecraft.getInstance().getSoundManager());
 				return true;
 			}
 			return false;
 		}
 
 		@Override
-		public List<? extends Selectable> selectableChildren() {
+		public @NonNull List<? extends NarratableEntry> narratables() {
 			return List.of();
 		}
 
 		@Override
-		public List<? extends Element> children() {
+		public @NonNull List<? extends GuiEventListener> children() {
 			return List.of();
 		}
 	}

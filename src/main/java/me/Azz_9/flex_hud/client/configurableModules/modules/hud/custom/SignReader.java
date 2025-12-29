@@ -6,29 +6,30 @@ import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractHudEleme
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.tickables.RaycastTickable;
-import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.HangingSignBlockEntity;
-import net.minecraft.block.entity.SignBlockEntity;
-import net.minecraft.block.entity.SignText;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.client.render.TexturedRenderLayers;
-import net.minecraft.client.render.block.entity.AbstractSignBlockEntityRenderer;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.DyeColor;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.Sheets;
+import net.minecraft.client.renderer.blockentity.AbstractSignRenderer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.HangingSignBlockEntity;
+import net.minecraft.world.level.block.entity.SignBlockEntity;
+import net.minecraft.world.level.block.entity.SignText;
+import net.minecraft.world.level.block.state.properties.WoodType;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2fStack;
@@ -46,8 +47,8 @@ public class SignReader extends AbstractHudElement implements TickableModule {
 	}
 
 	@Override
-	public Text getName() {
-		return Text.translatable("flex_hud.sign_reader");
+	public Component getName() {
+		return Component.translatable("flex_hud.sign_reader");
 	}
 
 	@Override
@@ -56,19 +57,19 @@ public class SignReader extends AbstractHudElement implements TickableModule {
 	}
 
 	@Override
-	public void render(DrawContext context, RenderTickCounter tickCounter) {
+	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
 		if (shouldNotRender()) {
 			return;
 		}
 
 		if (Flex_hudClient.isInMoveElementScreen) {
-			renderSign(context, getPlaceholderRenderData());
+			renderSign(graphics, getPlaceholderRenderData());
 		} else if (this.renderData.texture != null) {
-			renderSign(context, this.renderData);
+			renderSign(graphics, this.renderData);
 		}
 	}
 
-	private void renderSign(@NotNull DrawContext context, @NotNull RenderData data) {
+	private void renderSign(@NotNull GuiGraphics graphics, @NotNull RenderData data) {
 		if (data.texture == null) return;
 
 		float textureScale; // used to make the texture bigger by default
@@ -91,62 +92,62 @@ public class SignReader extends AbstractHudElement implements TickableModule {
 		}
 		float offsetY = data.isHangingSign ? 14 * textureScale : 2 * textureScale;
 
-		Matrix3x2fStack matrices = context.getMatrices();
+		Matrix3x2fStack matrices = graphics.pose();
 		matrices.pushMatrix();
 		matrices.translate(getRoundedX(), getRoundedY());
 		matrices.scale(getScale(), getScale());
 
 		// only draw the side of the sign texture
-		context.drawTexture(RenderPipelines.GUI_TEXTURED, data.texture, 0, 0,
+		graphics.blit(RenderPipelines.GUI_TEXTURED, data.texture, 0, 0,
 				offsetX, offsetY,
 				getWidth(), getHeight(),
 				textureWidth, textureHeight,
 				0xffffffff);
 
-		renderSignText(context, data);
+		renderSignText(graphics, data);
 
 		matrices.popMatrix();
 	}
 
-	private void renderSignText(@NotNull DrawContext context, @NotNull RenderData data) {
+	private void renderSignText(@NotNull GuiGraphics graphics, @NotNull RenderData data) {
 		if (data.texture == null) return;
 
-		TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
+		Font font = Minecraft.getInstance().font;
 
 		for (int i = 0; i < 4; i++) {
 			if (i >= data.content.length) continue;
-			Text line = data.content[i];
-			int x = (getWidth() - textRenderer.getWidth(line)) / 2;
+			Component line = data.content[i];
+			int x = (getWidth() - font.width(line)) / 2;
 			int y = data.isHangingSign ? 5 + 9 * i : 4 + 10 * i;
 
 			// render glow
 			if (data.isGlowing) {
-				MutableText glowLine = deepCopyText(line);
+				MutableComponent glowLine = deepCopyText(line);
 
 				glowLine.setStyle(Style.EMPTY.withItalic(glowLine.getStyle().isItalic()).withBold(glowLine.getStyle().isBold()));
 
-				for (Text sibling : glowLine.getSiblings()) {
+				for (Component sibling : glowLine.getSiblings()) {
 					boolean isItalic = sibling.getStyle().isItalic();
 					boolean isBold = sibling.getStyle().isBold();
-					((MutableText) sibling).setStyle(Style.EMPTY.withItalic(isItalic).withBold(isBold));
+					((MutableComponent) sibling).setStyle(Style.EMPTY.withItalic(isItalic).withBold(isBold));
 				}
 
 				for (int dx = -1; dx <= 1; dx++) {
 					for (int dy = -1; dy <= 1; dy++) {
 						if (dx == 0 && dy == 0) continue;
-						context.drawText(textRenderer, glowLine, x + dx, y + dy, data.glowColor, false);
+						graphics.drawString(font, glowLine, x + dx, y + dy, data.glowColor, false);
 					}
 				}
 			}
 
-			context.drawText(textRenderer, line, x, y, data.textColor, false);
+			graphics.drawString(font, line, x, y, data.textColor, false);
 		}
 	}
 
-	private static @NotNull MutableText deepCopyText(@NotNull Text original) {
-		MutableText copy = original.copyContentOnly();
+	private static @NotNull MutableComponent deepCopyText(@NotNull Component original) {
+		MutableComponent copy = original.copy();
 		copy.setStyle(original.getStyle());
-		for (Text sibling : original.getSiblings()) {
+		for (Component sibling : original.getSiblings()) {
 			copy.append(deepCopyText(sibling));
 		}
 		return copy;
@@ -156,9 +157,9 @@ public class SignReader extends AbstractHudElement implements TickableModule {
 	public boolean shouldNotRender() {
 		return super.shouldNotRender() ||
 				!Flex_hudClient.isInMoveElementScreen && (
-						MinecraftClient.getInstance().getCameraEntity() == null ||
-								MinecraftClient.getInstance().world == null ||
-								MinecraftClient.getInstance().player == null
+						Minecraft.getInstance().getCameraEntity() == null ||
+								Minecraft.getInstance().level == null ||
+								Minecraft.getInstance().player == null
 				);
 	}
 
@@ -167,7 +168,7 @@ public class SignReader extends AbstractHudElement implements TickableModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (Minecraft.getInstance().getLanguageManager().getSelected().equals("fr_fr")) {
 					buttonWidth = 190;
 				}
 
@@ -195,20 +196,20 @@ public class SignReader extends AbstractHudElement implements TickableModule {
 		renderData = getSignRenderData();
 
 		if (renderData.texture != null) {
-			renderData.texture = renderData.texture.withPrefixedPath("textures/").withSuffixedPath(".png");
+			renderData.texture = renderData.texture.withPrefix("textures/").withSuffix(".png");
 		}
 	}
 
 	private @NotNull RenderData getPlaceholderRenderData() {
 		RenderData data = new RenderData();
-		data.texture = TexturedRenderLayers.getSignTextureId(WoodType.OAK).getTextureId().withPrefixedPath("textures/").withSuffixedPath(".png");
-		data.content = new Text[]{
-				Text.of(""),
-				Text.translatable("flex_hud.sign_reader.placeholder_content"),
-				Text.of(""),
-				Text.of("")
+		data.texture = Sheets.getSignMaterial(WoodType.OAK).texture().withPrefix("textures/").withSuffix(".png");
+		data.content = new Component[]{
+				Component.literal(""),
+				Component.translatable("flex_hud.sign_reader.placeholder_content"),
+				Component.literal(""),
+				Component.literal("")
 		};
-		data.textColor = DyeColor.BLACK.getSignColor();
+		data.textColor = DyeColor.BLACK.getTextColor();
 		data.isHangingSign = false;
 		return data;
 	}
@@ -216,13 +217,13 @@ public class SignReader extends AbstractHudElement implements TickableModule {
 	private @NotNull RenderData getSignRenderData() {
 		RenderData data = new RenderData();
 
-		MinecraftClient client = MinecraftClient.getInstance();
-		if (client.player == null || client.world == null || client.getCameraEntity() == null) {
+		Minecraft minecraft = Minecraft.getInstance();
+		if (minecraft.player == null || minecraft.level == null || minecraft.getCameraEntity() == null) {
 			return data;
 		}
 
-		PlayerEntity player = client.player;
-		World world = client.world;
+		LocalPlayer player = minecraft.player;
+		Level world = minecraft.level;
 
 		HitResult hitResult = RaycastTickable.getHitResult();
 
@@ -236,40 +237,43 @@ public class SignReader extends AbstractHudElement implements TickableModule {
 		WoodType woodType = null;
 
 
-		if (block instanceof SignBlock signBlock && blockEntity instanceof SignBlockEntity signBlockEntity) {
-			signEntity = signBlockEntity;
-			woodType = signBlock.getWoodType();
-			data.isHangingSign = false;
-
-		} else if (block instanceof WallSignBlock signBlock && blockEntity instanceof SignBlockEntity signBlockEntity) {
-			signEntity = signBlockEntity;
-			woodType = signBlock.getWoodType();
-			data.isHangingSign = false;
-
-		} else if (block instanceof HangingSignBlock hangingSignBlock && blockEntity instanceof HangingSignBlockEntity hangingSignBlockEntity) {
-			signEntity = hangingSignBlockEntity;
-			woodType = hangingSignBlock.getWoodType();
-			data.isHangingSign = true;
-
-		} else if (block instanceof WallHangingSignBlock hangingSignBlock && blockEntity instanceof HangingSignBlockEntity hangingSignBlockEntity) {
-			signEntity = hangingSignBlockEntity;
-			woodType = hangingSignBlock.getWoodType();
-			data.isHangingSign = true;
-
+		switch (block) {
+			case StandingSignBlock signBlock when blockEntity instanceof SignBlockEntity signBlockEntity -> {
+				signEntity = signBlockEntity;
+				woodType = signBlock.type();
+				data.isHangingSign = false;
+			}
+			case WallSignBlock signBlock when blockEntity instanceof SignBlockEntity signBlockEntity -> {
+				signEntity = signBlockEntity;
+				woodType = signBlock.type();
+				data.isHangingSign = false;
+			}
+			case CeilingHangingSignBlock hangingSignBlock when blockEntity instanceof HangingSignBlockEntity hangingSignBlockEntity -> {
+				signEntity = hangingSignBlockEntity;
+				woodType = hangingSignBlock.type();
+				data.isHangingSign = true;
+			}
+			case WallHangingSignBlock hangingSignBlock when blockEntity instanceof HangingSignBlockEntity hangingSignBlockEntity -> {
+				signEntity = hangingSignBlockEntity;
+				woodType = hangingSignBlock.type();
+				data.isHangingSign = true;
+			}
+			default -> {
+			}
 		}
 
-		if (signEntity == null || woodType == null) return data;
+		if (signEntity == null) return data;
 
-		data.playerFacingFront = signEntity.isPlayerFacingFront(player);
+		data.playerFacingFront = signEntity.isFacingFrontText(player);
 		SignText signText = signEntity.getText(data.playerFacingFront);
 
 		data.content = signText.getMessages(false);
-		data.textColor = signText.getColor().getSignColor();
-		data.glowColor = AbstractSignBlockEntityRenderer.getTextColor(signText);
-		data.isGlowing = signText.isGlowing();
+		data.textColor = signText.getColor().getTextColor();
+		data.glowColor = AbstractSignRenderer.getDarkColor(signText);
+		data.isGlowing = signText.hasGlowingText();
 		data.texture = (data.isHangingSign
-				? TexturedRenderLayers.getHangingSignTextureId(woodType)
-				: TexturedRenderLayers.getSignTextureId(woodType)).getTextureId();
+				? Sheets.getHangingSignMaterial(woodType)
+				: Sheets.getSignMaterial(woodType)).texture();
 
 		return data;
 	}
@@ -279,10 +283,10 @@ public class SignReader extends AbstractHudElement implements TickableModule {
 		Identifier texture = null;
 		boolean playerFacingFront;
 		@NotNull
-		Text[] content = new Text[0];
-		int textColor = DyeColor.BLACK.getSignColor();
+		Component[] content = new Component[0];
+		int textColor = DyeColor.BLACK.getTextColor();
 		boolean isGlowing;
-		int glowColor = AbstractSignBlockEntityRenderer.getTextColor(
+		int glowColor = AbstractSignRenderer.getDarkColor(
 				new SignText(null, null, DyeColor.BLACK, true)
 		);
 		boolean isHangingSign;

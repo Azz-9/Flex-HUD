@@ -1,14 +1,12 @@
 package me.Azz_9.flex_hud.compat.waypointsCollectors;
 
-import journeymap.common.waypoint.WaypointStore;
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom.Compass;
 import me.Azz_9.flex_hud.client.tickables.TickRegistry;
 import me.Azz_9.flex_hud.client.tickables.Tickable;
 import me.Azz_9.flex_hud.client.utils.FlexHudLogger;
 import me.Azz_9.flex_hud.compat.CompatManager;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
 
 import java.lang.reflect.Method;
 
@@ -54,7 +52,7 @@ public class JourneyMapWaypointCollector extends Collector<Compass.JourneyMapWay
 		getWaypoints().clear();
 
 		try {
-			for (Object waypoint : WaypointStore.getInstance().getAll()) {
+			/*for (Object waypoint : WaypointStore.getInstance().getAll()) {
 				getWaypoints().add(new Compass.JourneyMapWaypoint(
 						(int) getX.invoke(waypoint),
 						(int) getZ.invoke(waypoint),
@@ -65,7 +63,7 @@ public class JourneyMapWaypointCollector extends Collector<Compass.JourneyMapWay
 						(int) getTextureHeight.invoke(waypoint),
 						(boolean) isInPlayerDimension.invoke(waypoint)
 				));
-			}
+			}*/
 		} catch (Throwable ignored) {
 		}
 	}
@@ -79,7 +77,7 @@ public class JourneyMapWaypointCollector extends Collector<Compass.JourneyMapWay
 	}
 
 	@Override
-	public void tick(MinecraftClient client) {
+	public void tick(Minecraft minecraft) {
 		updateWaypoints();
 	}
 }

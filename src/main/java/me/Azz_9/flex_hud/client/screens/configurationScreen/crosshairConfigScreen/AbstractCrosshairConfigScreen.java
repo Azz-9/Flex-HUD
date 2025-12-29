@@ -3,19 +3,20 @@ package me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScre
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.crosshairEditor.CrosshairEditor;
 import me.Azz_9.flex_hud.client.screens.widgets.HelpWidget;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.input.CharInput;
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.Component;
+import org.jspecify.annotations.NonNull;
 import org.lwjgl.glfw.GLFW;
 
 public abstract class AbstractCrosshairConfigScreen extends AbstractConfigurationScreen {
 	private CrosshairEditor crosshairEditor = null;
 	private HelpWidget helpWidget;
 
-	public AbstractCrosshairConfigScreen(Text title, Screen parent) {
+	public AbstractCrosshairConfigScreen(Component title, Screen parent) {
 		super(title, parent);
 	}
 
@@ -25,21 +26,21 @@ public abstract class AbstractCrosshairConfigScreen extends AbstractConfiguratio
 
 		int helpWidgetPadding = 4;
 		int helpWidgetSize = 20;
-		helpWidget = new HelpWidget(helpWidgetPadding, this.height - helpWidgetPadding - helpWidgetSize, helpWidgetSize, helpWidgetSize, new Text[]{
-				Text.translatable("flex_hud.crosshair_editor.help_widget.line1"),
-				Text.translatable("flex_hud.crosshair_editor.help_widget.line2"),
-				Text.translatable("flex_hud.crosshair_editor.help_widget.line3"),
-				Text.translatable("flex_hud.crosshair_editor.help_widget.line4"),
+		helpWidget = new HelpWidget(helpWidgetPadding, this.height - helpWidgetPadding - helpWidgetSize, helpWidgetSize, helpWidgetSize, new Component[]{
+				Component.translatable("flex_hud.crosshair_editor.help_widget.line1"),
+				Component.translatable("flex_hud.crosshair_editor.help_widget.line2"),
+				Component.translatable("flex_hud.crosshair_editor.help_widget.line3"),
+				Component.translatable("flex_hud.crosshair_editor.help_widget.line4"),
 		});
 	}
 
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-		super.render(context, mouseX, mouseY, deltaTicks);
+	public void render(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
+		super.render(graphics, mouseX, mouseY, deltaTicks);
 
 		if (crosshairEditor != null && crosshairEditor.isFocused()) {
-			crosshairEditor.render(context, mouseX, mouseY, deltaTicks);
-			helpWidget.render(context, mouseX, mouseY, deltaTicks);
+			crosshairEditor.render(graphics, mouseX, mouseY, deltaTicks);
+			helpWidget.render(graphics, mouseX, mouseY, deltaTicks);
 		}
 	}
 
@@ -48,7 +49,7 @@ public abstract class AbstractCrosshairConfigScreen extends AbstractConfiguratio
 	}
 
 	@Override
-	public boolean mouseClicked(Click click, boolean doubled) {
+	public boolean mouseClicked(@NonNull MouseButtonEvent click, boolean doubled) {
 		if (crosshairEditor != null && crosshairEditor.isFocused()) {
 			if (crosshairEditor.mouseClicked(click, doubled) || helpWidget.mouseClicked(click, doubled)) {
 				return true;
@@ -61,7 +62,7 @@ public abstract class AbstractCrosshairConfigScreen extends AbstractConfiguratio
 	}
 
 	@Override
-	public boolean mouseDragged(Click click, double offsetX, double offsetY) {
+	public boolean mouseDragged(@NonNull MouseButtonEvent click, double offsetX, double offsetY) {
 		if (crosshairEditor != null && crosshairEditor.isFocused()) {
 			if (crosshairEditor.mouseDragged(click, offsetX, offsetY)) {
 				return true;
@@ -71,7 +72,7 @@ public abstract class AbstractCrosshairConfigScreen extends AbstractConfiguratio
 	}
 
 	@Override
-	public boolean mouseReleased(Click click) {
+	public boolean mouseReleased(@NonNull MouseButtonEvent click) {
 		if (crosshairEditor != null && crosshairEditor.isFocused()) {
 			if (crosshairEditor.mouseReleased(click)) {
 				return true;
@@ -91,7 +92,7 @@ public abstract class AbstractCrosshairConfigScreen extends AbstractConfiguratio
 	}
 
 	@Override
-	public boolean keyPressed(KeyInput input) {
+	public boolean keyPressed(@NonNull KeyEvent input) {
 		if (crosshairEditor != null && crosshairEditor.isFocused()) {
 			if (input.key() == GLFW.GLFW_KEY_ESCAPE) {
 				closeEditor();
@@ -102,7 +103,7 @@ public abstract class AbstractCrosshairConfigScreen extends AbstractConfiguratio
 	}
 
 	@Override
-	public boolean charTyped(CharInput input) {
+	public boolean charTyped(@NonNull CharacterEvent input) {
 		return crosshairEditor.charTyped(input);
 	}
 

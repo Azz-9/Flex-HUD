@@ -1,10 +1,11 @@
 package me.Azz_9.flex_hud.client.utils;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.client.texture.TextureManager;
-import net.minecraft.util.Identifier;
+
+import com.mojang.blaze3d.platform.NativeImage;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.resources.Identifier;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -15,25 +16,25 @@ public class FaviconUtils {
 	private static Identifier currentServerFavicon = null;
 
 	public static void registerServerIcon(byte[] faviconBytes) {
-		NativeImageBackedTexture texture = createTextureFromBytes(faviconBytes);
+		DynamicTexture texture = createTextureFromBytes(faviconBytes);
 		if (texture == null) {
 			currentServerFavicon = null;
 			return;
 		}
 
-		TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
-		currentServerFavicon = Identifier.of(MOD_ID, "server_icon");
+		TextureManager textureManager = Minecraft.getInstance().getTextureManager();
+		currentServerFavicon = Identifier.fromNamespaceAndPath(MOD_ID, "server_icon");
 
-		textureManager.registerTexture(currentServerFavicon, texture);
+		textureManager.register(currentServerFavicon, texture);
 	}
 
-	public static NativeImageBackedTexture createTextureFromBytes(byte[] favicon) {
+	public static DynamicTexture createTextureFromBytes(byte[] favicon) {
 		if (favicon == null) return null;
 
 		try {
 			InputStream stream = new ByteArrayInputStream(favicon);
 			NativeImage image = NativeImage.read(stream);
-			return new NativeImageBackedTexture(() -> "server_icon", image);
+			return new DynamicTexture(() -> "server_icon", image);
 		} catch (Exception e) {
 			FlexHudLogger.warn("Failed to load server favicon: {}", e.getMessage());
 			return null;

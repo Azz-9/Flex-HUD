@@ -7,13 +7,14 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.Conf
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.ConfigColorButtonWidget;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector.ColorSelector;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,10 +33,10 @@ public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 			int resetButtonSize,
 			@Nullable Function<Integer, Tooltip> getTooltip
 	) {
-		super(resetButtonSize, Text.translatable(variable.getConfigTextTranslationKey()));
+		super(resetButtonSize, Component.translatable(Objects.requireNonNull(variable.getConfigTextTranslationKey())));
 		colorButtonWidget = new ConfigColorButtonWidget(colorButtonWidth, colorButtonHeight, variable, observers,
 				(btn) -> {
-					AbstractConfigurationScreen screen = (AbstractConfigurationScreen) MinecraftClient.getInstance().currentScreen;
+					AbstractConfigurationScreen screen = (AbstractConfigurationScreen) Minecraft.getInstance().screen;
 					if (screen != null) {
 						ColorSelector colorSelector = screen.getColorSelector();
 						if (colorSelector == null || !colorSelector.isFocused()) {
@@ -64,19 +65,19 @@ public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 	}
 
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
-		super.render(context, mouseX, mouseY, hovered, deltaTicks);
+	public void renderContent(@NonNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+		super.renderContent(graphics, mouseX, mouseY, hovered, deltaTicks);
 
-		colorButtonWidget.render(context, mouseX, mouseY, deltaTicks);
+		colorButtonWidget.render(graphics, mouseX, mouseY, deltaTicks);
 	}
 
 	@Override
-	public List<? extends Selectable> selectableChildren() {
+	public @NonNull List<? extends NarratableEntry> narratables() {
 		return List.of(colorButtonWidget, resetButtonWidget);
 	}
 
 	@Override
-	public List<? extends Element> children() {
+	public @NonNull List<? extends GuiEventListener> children() {
 		return List.of(colorButtonWidget, resetButtonWidget);
 	}
 
@@ -104,7 +105,7 @@ public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 
 		setActive(!shouldDisable);
 		// fermer le color selector si le color button est désacitvé
-		AbstractConfigurationScreen screen = (AbstractConfigurationScreen) MinecraftClient.getInstance().currentScreen;
+		AbstractConfigurationScreen screen = (AbstractConfigurationScreen) Minecraft.getInstance().screen;
 		if (screen != null && shouldDisable) {
 			screen.closeColorSelector();
 		}

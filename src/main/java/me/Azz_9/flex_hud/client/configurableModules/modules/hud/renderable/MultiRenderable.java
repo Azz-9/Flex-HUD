@@ -1,7 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable;
 
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.GuiGraphics;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -19,9 +19,9 @@ public class MultiRenderable {
 		this.right = right;
 	}
 
-	public void render(DrawContext context, RenderTickCounter tickCounter) {
+	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
 		for (Renderable renderable : renderables) {
-			renderable.render(context, tickCounter);
+			renderable.render(graphics, deltaTracker);
 		}
 	}
 

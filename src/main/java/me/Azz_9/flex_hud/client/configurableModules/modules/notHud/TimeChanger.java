@@ -7,9 +7,9 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.IntSli
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 
 import java.time.LocalTime;
 
@@ -32,8 +32,8 @@ public class TimeChanger extends AbstractModule {
 	}
 
 	@Override
-	public Text getName() {
-		return Text.translatable("flex_hud.time_changer");
+	public Component getName() {
+		return Component.translatable("flex_hud.time_changer");
 	}
 
 	public static long getRealTimeAsMinecraftTime() {
@@ -56,7 +56,7 @@ public class TimeChanger extends AbstractModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (Minecraft.getInstance().getLanguageManager().getSelected().equals("fr_fr")) {
 					buttonWidth = 200;
 				} else {
 					buttonWidth = 155;

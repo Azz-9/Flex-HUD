@@ -8,7 +8,7 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.Conf
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigDouble;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigFloat;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractHudElement extends AbstractModule implements MovableModule, HudElement {
@@ -40,7 +40,7 @@ public abstract class AbstractHudElement extends AbstractModule implements Movab
 
 	@Override
 	public boolean shouldNotRender() {
-		return !ModulesHelper.getInstance().isEnabled.getValue() || !this.enabled.getValue() || (!Flex_hudClient.isInMoveElementScreen && this.hideInF3.getValue() && MinecraftClient.getInstance().debugHudEntryList.isF3Enabled());
+		return !ModulesHelper.getInstance().isEnabled.getValue() || !this.enabled.getValue() || (!Flex_hudClient.isInMoveElementScreen && this.hideInF3.getValue() && Minecraft.getInstance().debugEntries.isOverlayVisible());
 	}
 
 	@Override

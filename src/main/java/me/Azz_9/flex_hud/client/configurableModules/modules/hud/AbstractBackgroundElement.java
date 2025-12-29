@@ -3,7 +3,7 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractBackgroundElement extends AbstractHudElement {
@@ -19,7 +19,7 @@ public abstract class AbstractBackgroundElement extends AbstractHudElement {
 		ConfigRegistry.register(getID(), "backgroundColor", backgroundColor);
 	}
 
-	protected void drawBackground(DrawContext context) {
+	protected void drawBackground(GuiGraphics context) {
 		if (drawBackground.getValue() && getWidth() != 0 && getHeight() != 0) {
 			context.fill(-BACKGROUND_PADDING, -BACKGROUND_PADDING, getWidth() + BACKGROUND_PADDING, getHeight() + BACKGROUND_PADDING, getBackgroundColor());
 		}

@@ -1,7 +1,7 @@
 package me.Azz_9.flex_hud.client.tickables;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 import java.awt.*;
 
@@ -17,7 +17,7 @@ public class ChromaColorTickable implements Tickable {
 		return color;
 	}
 
-	public void tick(MinecraftClient client) {
+	public void tick(Minecraft minecraft) {
 		long elapsedTime = System.currentTimeMillis() - Flex_hudClient.getLaunchTime();
 
 		// Conversion en teinte (Hue) : 0.0 -> 1.0 correspond à 0° -> 360°

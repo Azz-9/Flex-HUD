@@ -1,7 +1,6 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 
 public class ConfigString extends AbstractConfigObject<String> {
@@ -22,7 +21,6 @@ public class ConfigString extends AbstractConfigObject<String> {
 
 	@Override
 	public JsonElement toJsonValue() {
-		if (getValue() == null) return JsonNull.INSTANCE;
 		return new JsonPrimitive(getValue());
 	}
 }

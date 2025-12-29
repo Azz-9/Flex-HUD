@@ -7,31 +7,34 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGe
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
 import me.Azz_9.flex_hud.client.utils.Cursors;
 import me.Azz_9.flex_hud.client.utils.EaseUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ButtonTextures;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.WidgetSprites;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 
-public class ConfigToggleButtonWidget extends ButtonWidget implements TrackableChange, DataGetter<Boolean>, ResetAware {
+public class ConfigToggleButtonWidget extends Button implements TrackableChange, DataGetter<Boolean>, ResetAware {
 	private final ConfigBoolean variable;
 	private final boolean INITIAL_STATE;
 	private final List<Observer> observers;
 	@Nullable
 	private final Function<Boolean, Tooltip> getTooltip;
-	private final ButtonTextures textures;
+	private final WidgetSprites textures;
 
 	private boolean toggled;
 
@@ -44,15 +47,15 @@ public class ConfigToggleButtonWidget extends ButtonWidget implements TrackableC
 
 
 	public ConfigToggleButtonWidget(int width, int height, ConfigBoolean variable, List<Observer> observers, @Nullable Function<Boolean, Tooltip> getTooltip) {
-		super(0, 0, width, height, net.minecraft.text.Text.translatable(variable.getConfigTextTranslationKey()), btn -> {
-		}, DEFAULT_NARRATION_SUPPLIER);
+		super(0, 0, width, height, Component.translatable(Objects.requireNonNull(variable.getConfigTextTranslationKey())), btn -> {
+		}, DEFAULT_NARRATION);
 		this.variable = variable;
 		this.INITIAL_STATE = variable.getValue();
-		this.textures = new ButtonTextures(
-				Identifier.of(MOD_ID, "widgets/buttons/toggle/unfocused_enabled.png"),
-				Identifier.of(MOD_ID, "widgets/buttons/toggle/unfocused_disabled.png"),
-				Identifier.of(MOD_ID, "widgets/buttons/toggle/focused_enabled.png"),
-				Identifier.of(MOD_ID, "widgets/buttons/toggle/focused_disabled.png")
+		this.textures = new WidgetSprites(
+				Identifier.fromNamespaceAndPath(MOD_ID, "widgets/buttons/toggle/unfocused_enabled.png"),
+				Identifier.fromNamespaceAndPath(MOD_ID, "widgets/buttons/toggle/unfocused_disabled.png"),
+				Identifier.fromNamespaceAndPath(MOD_ID, "widgets/buttons/toggle/focused_enabled.png"),
+				Identifier.fromNamespaceAndPath(MOD_ID, "widgets/buttons/toggle/focused_disabled.png")
 		);
 		this.observers = observers;
 		this.getTooltip = getTooltip;
@@ -62,29 +65,29 @@ public class ConfigToggleButtonWidget extends ButtonWidget implements TrackableC
 	}
 
 	@Override
-	public void drawIcon(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void renderContents(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
 		if (this.active) {
-			if (this.isHovered()) context.setCursor(Cursors.POINTING_HAND);
+			if (this.isHovered()) graphics.requestCursor(Cursors.POINTING_HAND);
 
-			drawSelectedTexture(context);
+			drawSelectedTexture(graphics);
 
-			if (this.isSelected()) {
-				context.drawStrokedRectangle(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+			if (this.isHoveredOrFocused()) {
+				graphics.renderOutline(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
 			}
 		}
 
 		if (this.textures != null) {
-			context.drawTexture(RenderPipelines.GUI_TEXTURED, this.textures.get(this.toggled, this.isHovered() && this.active), this.getX() + this.width - this.height, this.getY(), 0, 0, this.height, this.height, 20, 20);
+			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, this.textures.get(this.toggled, this.isHovered() && this.active), this.getX() + this.width - this.height, this.getY(), 0, 0, this.height, this.height, 20, 20);
 		}
 
 		if (!this.active) {
-			if (this.isHovered()) context.setCursor(Cursors.NOT_ALLOWED);
+			if (this.isHovered()) graphics.requestCursor(Cursors.NOT_ALLOWED);
 
-			context.fill(getRight() - getHeight(), getY(), getRight(), getBottom(), 0xcf4e4e4e);
+			graphics.fill(getRight() - getHeight(), getY(), getRight(), getBottom(), 0xcf4e4e4e);
 		}
 	}
 
-	private void drawSelectedTexture(DrawContext context) {
+	private void drawSelectedTexture(GuiGraphics graphics) {
 		boolean currentlyHovered = this.isHovered();
 
 		// Handle transition triggers
@@ -119,21 +122,21 @@ public class ConfigToggleButtonWidget extends ButtonWidget implements TrackableC
 		}
 
 		if (alpha > 0) {
-			Identifier selectedTexture = Identifier.of(MOD_ID, "widgets/buttons/selected.png");
-			context.drawTexture(RenderPipelines.GUI_TEXTURED, selectedTexture, this.getX(), this.getY(), 0, 0, this.width, this.height, 120, 20, ColorHelper.withAlpha(alpha, 0xFFFFFF));
+			Identifier selectedTexture = Identifier.fromNamespaceAndPath(MOD_ID, "widgets/buttons/selected.png");
+			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selectedTexture, this.getX(), this.getY(), 0, 0, this.width, this.height, 120, 20, ARGB.color(alpha, 0xFFFFFF));
 		}
 	}
 
 	@Override
-	public void onClick(Click click, boolean bl) {
+	public void onClick(@NonNull MouseButtonEvent click, boolean bl) {
 		onClickAction();
 	}
 
 	@Override
-	public boolean keyPressed(KeyInput input) {
+	public boolean keyPressed(KeyEvent input) {
 		if (input.key() == GLFW.GLFW_KEY_ENTER || input.key() == GLFW.GLFW_KEY_KP_ENTER) {
 			onClickAction();
-			this.playDownSound(MinecraftClient.getInstance().getSoundManager());
+			this.playDownSound(Minecraft.getInstance().getSoundManager());
 		}
 
 		return super.keyPressed(input);
@@ -178,7 +181,7 @@ public class ConfigToggleButtonWidget extends ButtonWidget implements TrackableC
 	}
 
 	@Override
-	public boolean isSelected() {
+	public boolean isHoveredOrFocused() {
 		return this.isFocused();
 	}
 

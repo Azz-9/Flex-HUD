@@ -9,14 +9,14 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.Conf
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 import me.Azz_9.flex_hud.client.tickables.ChromaColorTickable;
 import me.Azz_9.flex_hud.client.utils.cps.CpsUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.ColorHelper;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.ARGB;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 
@@ -39,7 +39,7 @@ public class KeyStrokes extends AbstractTextElement {
 	private final int borderThickness = 1;
 	private final int gap = borderThickness;
 	private final int keySize = 22;
-	private final Map<KeyBinding, KeyAnimation> keyAnimations = new HashMap<>();
+	private final Map<KeyMapping, KeyAnimation> keyAnimations = new HashMap<>();
 
 	private static class KeyAnimation {
 		long lastChangeTime;
@@ -71,8 +71,8 @@ public class KeyStrokes extends AbstractTextElement {
 	}
 
 	@Override
-	public Text getName() {
-		return Text.translatable("flex_hud.key_strokes");
+	public Component getName() {
+		return Component.translatable("flex_hud.key_strokes");
 	}
 
 	@Override
@@ -81,56 +81,56 @@ public class KeyStrokes extends AbstractTextElement {
 	}
 
 	@Override
-	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
+	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+		Minecraft minecraft = Minecraft.getInstance();
 
 		if (shouldNotRender()) {
 			return;
 		}
 
-		Matrix3x2fStack matrices = context.getMatrices();
+		Matrix3x2fStack matrices = graphics.pose();
 		matrices.pushMatrix();
 		matrices.translate(getRoundedX(), getRoundedY());
 		matrices.scale(getScale());
 
 		// forward key
-		Text forwardText = useArrow.getValue() ? Text.of("▲") : client.options.forwardKey.getBoundKeyLocalizedText();
-		renderMovementKey(context, keySize + gap * 2, gap, keySize, keySize, client.options.forwardKey, forwardText);
+		Component forwardText = useArrow.getValue() ? Component.literal("▲") : minecraft.options.keyUp.getTranslatedKeyMessage();
+		renderMovementKey(graphics, keySize + gap * 2, gap, keySize, keySize, minecraft.options.keyUp, forwardText);
 
 		// back key
-		Text backText = useArrow.getValue() ? Text.of("▼") : client.options.backKey.getBoundKeyLocalizedText();
-		renderMovementKey(context, keySize + gap * 2, keySize + gap * 2, keySize, keySize, client.options.backKey, backText);
+		Component backText = useArrow.getValue() ? Component.literal("▼") : minecraft.options.keyDown.getTranslatedKeyMessage();
+		renderMovementKey(graphics, keySize + gap * 2, keySize + gap * 2, keySize, keySize, minecraft.options.keyDown, backText);
 
 		// right key
-		Text rightText = useArrow.getValue() ? Text.of("▶") : client.options.rightKey.getBoundKeyLocalizedText();
-		renderMovementKey(context, keySize * 2 + gap * 3, keySize + gap * 2, keySize, keySize, client.options.rightKey, rightText);
+		Component rightText = useArrow.getValue() ? Component.literal("▶") : minecraft.options.keyRight.getTranslatedKeyMessage();
+		renderMovementKey(graphics, keySize * 2 + gap * 3, keySize + gap * 2, keySize, keySize, minecraft.options.keyRight, rightText);
 
 		// left key
-		Text leftText = useArrow.getValue() ? Text.of("◀") : client.options.leftKey.getBoundKeyLocalizedText();
-		renderMovementKey(context, gap, keySize + gap * 2, keySize, keySize, client.options.leftKey, leftText);
+		Component leftText = useArrow.getValue() ? Component.literal("◀") : minecraft.options.keyLeft.getTranslatedKeyMessage();
+		renderMovementKey(graphics, gap, keySize + gap * 2, keySize, keySize, minecraft.options.keyLeft, leftText);
 
 		// jump key
-		renderJumpKey(context, gap, keySize * 2 + gap * 3, keySize * 3 + gap * 2, keySize / 2, client.options.jumpKey);
+		renderJumpKey(graphics, gap, keySize * 2 + gap * 3, keySize * 3 + gap * 2, keySize / 2, minecraft.options.keyJump);
 
 		if (displayCps.getValue()) {
 			// attack key
-			renderMouseKey(context, gap, (int) (keySize * 2.5) + gap * 4, (int) (keySize * 1.5) + gap / 2, keySize, client.options.attackKey, CpsUtils.getLeftCps(), Text.of("LMB"));
+			renderMouseKey(graphics, gap, (int) (keySize * 2.5) + gap * 4, (int) (keySize * 1.5) + gap / 2, keySize, minecraft.options.keyAttack, CpsUtils.getLeftCps(), Component.literal("LMB"));
 
 			// use key
-			renderMouseKey(context, (int) (keySize * 1.5 + gap * 2.5) + 1, (int) (keySize * 2.5) + gap * 4, (int) (keySize * 1.5) + gap / 2, keySize, client.options.useKey, CpsUtils.getRightCps(), Text.of("RMB"));
+			renderMouseKey(graphics, (int) (keySize * 1.5 + gap * 2.5) + 1, (int) (keySize * 2.5) + gap * 4, (int) (keySize * 1.5) + gap / 2, keySize, minecraft.options.keyUse, CpsUtils.getRightCps(), Component.literal("RMB"));
 		}
 
 		matrices.popMatrix();
 	}
 
-	private float renderKey(DrawContext context, int x, int y, int keyWidth, int keyHeight, KeyBinding keyBinding) {
-		boolean isPressed = keyBinding.isPressed();
+	private float renderKey(GuiGraphics graphics, int x, int y, int keyWidth, int keyHeight, KeyMapping keyMapping) {
+		boolean isPressed = keyMapping.isDown();
 		long now = System.currentTimeMillis();
 
 		long fadeInDuration = 100;
 		long fadeOutDuration = 400;
 
-		KeyAnimation anim = keyAnimations.computeIfAbsent(keyBinding, k -> {
+		KeyAnimation anim = keyAnimations.computeIfAbsent(keyMapping, k -> {
 			KeyAnimation a = new KeyAnimation();
 			a.lastChangeTime = -1;
 			a.wasPressed = isPressed;
@@ -152,35 +152,35 @@ public class KeyStrokes extends AbstractTextElement {
 		}
 
 		if (drawBackground.getValue()) {
-			context.fill(x, y, x + keyWidth, y + keyHeight, getBackgroundColor());
+			graphics.fill(x, y, x + keyWidth, y + keyHeight, getBackgroundColor());
 		}
 		if (drawBackgroundPressed.getValue()) {
-			context.fill(x, y, x + keyWidth, y + keyHeight, ColorHelper.withAlpha(fadeFactor / 2, backgroundColorPressed.getValue()));
+			graphics.fill(x, y, x + keyWidth, y + keyHeight, ARGB.color(fadeFactor / 2, backgroundColorPressed.getValue()));
 		}
 
 		if (showBorder.getValue()) {
-			drawBorder(context, x - borderThickness, y - borderThickness, keyWidth + borderThickness * 2, keyHeight + borderThickness * 2, borderThickness, getBorderColor());
+			drawBorder(graphics, x - borderThickness, y - borderThickness, keyWidth + borderThickness * 2, keyHeight + borderThickness * 2, borderThickness, getBorderColor());
 		}
 
 		return fadeFactor;
 	}
 
-	private void renderMovementKey(DrawContext context, int x, int y, int keyWidth, int keyHeight, KeyBinding keyBinding, Text label) {
-		float fadeFactor = renderKey(context, x, y, keyWidth, keyHeight, keyBinding);
+	private void renderMovementKey(GuiGraphics graphics, int x, int y, int keyWidth, int keyHeight, KeyMapping keyMapping, Component label) {
+		float fadeFactor = renderKey(graphics, x, y, keyWidth, keyHeight, keyMapping);
 
-		TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
+		Font font = Minecraft.getInstance().font;
 
-		Matrix3x2fStack matrices = context.getMatrices();
+		Matrix3x2fStack matrices = graphics.pose();
 		matrices.pushMatrix();
-		matrices.translate(x + (keyWidth - textRenderer.getWidth(label)) / 2.0f, y + (keyHeight - textRenderer.fontHeight) / 2.0f);
+		matrices.translate(x + (keyWidth - font.width(label)) / 2.0f, y + (keyHeight - font.lineHeight) / 2.0f);
 
-		context.drawText(textRenderer, label, 0, 0, getColor(fadeFactor), shadow.getValue());
+		graphics.drawString(font, label, 0, 0, getColor(fadeFactor), shadow.getValue());
 
 		matrices.popMatrix();
 	}
 
-	private void renderJumpKey(DrawContext context, int x, int y, int keyWidth, int keyHeight, KeyBinding keyBinding) {
-		float fadeFactor = renderKey(context, x, y, keyWidth, keyHeight, keyBinding);
+	private void renderJumpKey(GuiGraphics graphics, int x, int y, int keyWidth, int keyHeight, KeyMapping keyMapping) {
+		float fadeFactor = renderKey(graphics, x, y, keyWidth, keyHeight, keyMapping);
 
 		int barX1 = x + keyWidth / 4;
 		int barY1 = y + keyHeight / 2 - 2;
@@ -189,29 +189,29 @@ public class KeyStrokes extends AbstractTextElement {
 
 		int color = getColor(fadeFactor);
 
-		context.fill(barX1 + 1, barY1 + 1, barX2 + 1, barY2 + 1, getTextShadowColor(color));
+		graphics.fill(barX1 + 1, barY1 + 1, barX2 + 1, barY2 + 1, getTextShadowColor(color));
 
-		context.fill(barX1, barY1, barX2, barY2, color);
+		graphics.fill(barX1, barY1, barX2, barY2, color);
 	}
 
-	private void renderMouseKey(DrawContext context, int x, int y, int keyWidth, int keyHeight, KeyBinding keyBinding, int cps, Text label) {
-		float fadeFactor = renderKey(context, x, y, keyWidth, keyHeight, keyBinding);
+	private void renderMouseKey(GuiGraphics graphics, int x, int y, int keyWidth, int keyHeight, KeyMapping keyMapping, int cps, Component label) {
+		float fadeFactor = renderKey(graphics, x, y, keyWidth, keyHeight, keyMapping);
 
-		TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
+		Font font = Minecraft.getInstance().font;
 		int color = getColor(fadeFactor);
 
-		Matrix3x2fStack matrices = context.getMatrices();
+		Matrix3x2fStack matrices = graphics.pose();
 
 		matrices.pushMatrix();
-		matrices.translate(x + (keyWidth - textRenderer.getWidth(label)) / 2.0f, y + keyHeight / 2.0f - textRenderer.fontHeight + 2);
-		context.drawText(textRenderer, label, 0, 0, color, shadow.getValue());
+		matrices.translate(x + (keyWidth - font.width(label)) / 2.0f, y + keyHeight / 2.0f - font.lineHeight + 2);
+		graphics.drawString(font, label, 0, 0, color, shadow.getValue());
 		matrices.popMatrix();
 
-		Text cpsLabel = Text.of(cps + " CPS");
+		Component cpsLabel = Component.literal(cps + " CPS");
 		matrices.pushMatrix();
-		matrices.translate(x + (keyWidth - textRenderer.getWidth(cpsLabel) * 0.7f) / 2.0f, y + keyHeight / 2.0f + 3);
+		matrices.translate(x + (keyWidth - font.width(cpsLabel) * 0.7f) / 2.0f, y + keyHeight / 2.0f + 3);
 		matrices.scale(0.7f);
-		context.drawText(textRenderer, cpsLabel, 0, 0, color, shadow.getValue());
+		graphics.drawString(font, cpsLabel, 0, 0, color, shadow.getValue());
 		matrices.popMatrix();
 	}
 
@@ -220,18 +220,18 @@ public class KeyStrokes extends AbstractTextElement {
 	}
 
 	private int getColor(float fadeFactor) {
-		return ColorHelper.lerp(fadeFactor, getColor(), getColorPressed());
+		return ARGB.srgbLerp(fadeFactor, getColor(), getColorPressed());
 	}
 
 	private int getColorPressed() {
 		if (chromaColorPressed.getValue()) {
 			return ChromaColorTickable.getColor();
 		}
-		return ColorHelper.withAlpha(255, colorPressed.getValue());
+		return ARGB.color(255, colorPressed.getValue());
 	}
 
 	private int getBorderColor() {
-		return ColorHelper.withAlpha(255, borderColor.getValue());
+		return ARGB.color(255, borderColor.getValue());
 	}
 
 	@Override
@@ -239,7 +239,7 @@ public class KeyStrokes extends AbstractTextElement {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (Minecraft.getInstance().getLanguageManager().getSelected().equals("fr_fr")) {
 					buttonWidth = 200;
 				} else {
 					buttonWidth = 170;

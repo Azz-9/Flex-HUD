@@ -1,11 +1,11 @@
 package me.Azz_9.flex_hud.client.tickables;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
 public class ReachTickable implements Tickable {
 	private static double reach = 0.0;
@@ -15,25 +15,25 @@ public class ReachTickable implements Tickable {
 		TickRegistry.register(new ReachTickable());
 	}
 
-	public static void calculateReach(PlayerEntity playerAttacking, Entity entityAttacked) {
-		MinecraftClient client = MinecraftClient.getInstance();
+	public static void calculateReach(LocalPlayer playerAttacking, Entity entityAttacked) {
+		Minecraft client = Minecraft.getInstance();
 
 		if (entityAttacked instanceof LivingEntity &&
-				client.crosshairTarget != null && client.crosshairTarget.getType() == HitResult.Type.ENTITY &&
+				client.hitResult != null && client.hitResult.getType() == HitResult.Type.ENTITY &&
 				client.getCameraEntity() != null) {
 
-			Vec3d lerpedPos = client.getCameraEntity().getLerpedPos(0);
+			Vec3 lerpedPos = client.getCameraEntity().getPosition(0);
 			float eyeHeight = client.getCameraEntity().getEyeHeight(playerAttacking.getPose());
-			Vec3d cameraPos = new Vec3d(lerpedPos.getX(), lerpedPos.getY() + eyeHeight, lerpedPos.getZ());
+			Vec3 cameraPos = new Vec3(lerpedPos.x(), lerpedPos.y() + eyeHeight, lerpedPos.z());
 
-			reach = client.crosshairTarget.getPos().distanceTo(cameraPos);
+			reach = client.hitResult.getLocation().distanceTo(cameraPos);
 
 			lastHitTime = System.currentTimeMillis();
 		}
 	}
 
 	@Override
-	public void tick(MinecraftClient client) {
+	public void tick(Minecraft minecraft) {
 		if (lastHitTime == -1 || System.currentTimeMillis() - lastHitTime > 5000) {
 			reach = 0.0; // reset the reach 5s after the last hit
 		}

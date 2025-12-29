@@ -12,13 +12,13 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.Toggle
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigString;
 import me.Azz_9.flex_hud.client.utils.clock.ClockUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2fStack;
@@ -49,12 +49,12 @@ public class InGameTime extends AbstractTextElement implements TickableModule {
 
 	@Override
 	public void init() {
-		setHeight(MinecraftClient.getInstance().textRenderer.fontHeight);
+		setHeight(Minecraft.getInstance().font.lineHeight);
 	}
 
 	@Override
-	public Text getName() {
-		return Text.translatable("flex_hud.in_game_time");
+	public Component getName() {
+		return Component.translatable("flex_hud.in_game_time");
 	}
 
 	@Override
@@ -63,21 +63,21 @@ public class InGameTime extends AbstractTextElement implements TickableModule {
 	}
 
 	@Override
-	public void render(DrawContext context, RenderTickCounter tickCounter) {
+	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
 		if (shouldNotRender()) {
 			return;
 		}
 
 		setWidth(formattedTime);
 
-		Matrix3x2fStack matrices = context.getMatrices();
+		Matrix3x2fStack matrices = graphics.pose();
 		matrices.pushMatrix();
 		matrices.translate(getRoundedX(), getRoundedY());
 		matrices.scale(getScale());
 
-		drawBackground(context);
+		drawBackground(graphics);
 
-		context.drawText(MinecraftClient.getInstance().textRenderer, formattedTime, 0, 0, getColor(), shadow.getValue());
+		graphics.drawString(Minecraft.getInstance().font, formattedTime, 0, 0, getColor(), shadow.getValue());
 
 		matrices.popMatrix();
 	}
@@ -85,7 +85,7 @@ public class InGameTime extends AbstractTextElement implements TickableModule {
 	@Override
 	public @Nullable Tooltip getTooltip() {
 		if (ModulesHelper.getInstance().timeChanger.isEnabled()) {
-			return Tooltip.of(Text.literal("⚠ ").append(Text.translatable("flex_hud.configuration_screen.module_compatibility_warning")).append(Text.translatable("flex_hud.time_changer")).formatted(Formatting.RED));
+			return Tooltip.create(Component.literal("⚠ ").append(Component.translatable("flex_hud.configuration_screen.module_compatibility_warning")).append(Component.translatable("flex_hud.time_changer")).withStyle(ChatFormatting.RED));
 		} else {
 			return null;
 		}
@@ -167,8 +167,11 @@ public class InGameTime extends AbstractTextElement implements TickableModule {
 										return false;
 									}
 								})
-								.setGetTooltip((value) -> Tooltip.of(Text.of("hh: " + Text.translatable("flex_hud.global.hours").getString() + "\nmm: " + Text.translatable("flex_hud.global.minutes").getString() + "\nss: " + Text.translatable("flex_hud.global.seconds").getString())))
-								.setText(Text.translatable("flex_hud.clock.config.text_format"))
+								.setGetTooltip((value) -> Tooltip.create(Component.literal(
+										"hh: " + Component.translatable("flex_hud.global.hours").getString() +
+												"\nmm: " + Component.translatable("flex_hud.global.minutes").getString() +
+												"\nss: " + Component.translatable("flex_hud.global.seconds").getString())))
+								.setText(Component.translatable("flex_hud.clock.config.text_format"))
 								.build()
 				);
 			}
@@ -177,13 +180,13 @@ public class InGameTime extends AbstractTextElement implements TickableModule {
 
 	@Override
 	public void tick() {
-		if (MinecraftClient.getInstance().world == null && !Flex_hudClient.isInMoveElementScreen) return;
+		if (Minecraft.getInstance().level == null && !Flex_hudClient.isInMoveElementScreen) return;
 
 		int timeOfDay;
 		if (Flex_hudClient.isInMoveElementScreen) {
 			timeOfDay = 12000;
 		} else {
-			timeOfDay = (int) (MinecraftClient.getInstance().world.getTimeOfDay() % 24000 + 6000) % 24000;
+			timeOfDay = (int) (Minecraft.getInstance().level.getDayTime() % 24000 + 6000) % 24000;
 		}
 
 		int totalSeconds = (int) Math.round(timeOfDay * 3.6);

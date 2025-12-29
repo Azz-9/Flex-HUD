@@ -6,18 +6,13 @@ import me.Azz_9.flex_hud.client.tickables.TickRegistry;
 import me.Azz_9.flex_hud.client.tickables.Tickable;
 import me.Azz_9.flex_hud.client.utils.compass.DimensionTracker;
 import me.Azz_9.flex_hud.compat.CompatManager;
-import net.minecraft.client.MinecraftClient;
-import xaero.common.minimap.waypoints.Waypoint;
-import xaero.hud.minimap.BuiltInHudModules;
-import xaero.hud.minimap.module.MinimapSession;
-import xaero.hud.minimap.waypoint.set.WaypointSet;
-import xaero.hud.minimap.world.MinimapWorld;
+import net.minecraft.client.Minecraft;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class XaeroWaypointCollector extends Collector<Compass.XaeroWaypoint> implements Tickable {
-	private MinimapWorld minimapWorld;
+	//private MinimapWorld minimapWorld;
 	private final List<Compass.XaeroWaypoint> waypoints = new ArrayList<>();
 
 	public boolean available = false;
@@ -28,14 +23,14 @@ public class XaeroWaypointCollector extends Collector<Compass.XaeroWaypoint> imp
 
 	public void init() {
 		try {
-			MinimapSession session = BuiltInHudModules.MINIMAP.getCurrentSession();
+			/*MinimapSession session = BuiltInHudModules.MINIMAP.getCurrentSession();
 			if (session == null) {
 				available = false;
 				return;
 			}
 
 			minimapWorld = session.getWorldManager().getCurrentWorld();
-			available = minimapWorld != null;
+			available = minimapWorld != null;*/
 		} catch (Throwable t) {
 			available = false;
 		}
@@ -48,7 +43,7 @@ public class XaeroWaypointCollector extends Collector<Compass.XaeroWaypoint> imp
 
 	@Override
 	public void updateWaypoints() {
-		if (!available || minimapWorld == null) return;
+		/*if (!available || minimapWorld == null) return;
 
 		waypoints.clear();
 
@@ -66,7 +61,7 @@ public class XaeroWaypointCollector extends Collector<Compass.XaeroWaypoint> imp
 				}
 			}
 		} catch (Throwable ignored) {
-		}
+		}*/
 	}
 
 	@Override
@@ -93,7 +88,7 @@ public class XaeroWaypointCollector extends Collector<Compass.XaeroWaypoint> imp
 	}
 
 	@Override
-	public void tick(MinecraftClient client) {
+	public void tick(Minecraft minecraft) {
 		if ((isJoinedWorld() && !available) || DimensionTracker.shouldInit) {
 			init();
 		} else {

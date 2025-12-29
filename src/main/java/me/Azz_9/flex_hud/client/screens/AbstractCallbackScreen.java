@@ -1,29 +1,30 @@
 package me.Azz_9.flex_hud.client.screens;
 
 import me.Azz_9.flex_hud.client.configurableModules.ConfigLoader;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.network.chat.Component;
+import org.jspecify.annotations.NonNull;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractCallbackScreen extends AbstractBackNavigableScreen {
-	private final Text MESSAGE_TITLE;
-	private final Text MESSAGE_CONTENT;
-	private ButtonWidget callbackDiscardButton;
-	private ButtonWidget callbackCancelButton;
-	private ButtonWidget cancelButton;
-	private ButtonWidget saveButton;
+	private final Component MESSAGE_TITLE;
+	private final Component MESSAGE_CONTENT;
+	private Button callbackDiscardButton;
+	private Button callbackCancelButton;
+	private Button cancelButton;
+	private Button saveButton;
 
 	private boolean callbackScreen;
 	private final List<TrackableChange> trackableWidgets;
 
-	protected AbstractCallbackScreen(Text title, Screen parent, Text callbackTitle, Text callbackContent) {
+	protected AbstractCallbackScreen(Component title, Screen parent, Component callbackTitle, Component callbackContent) {
 		super(title, parent);
 		MESSAGE_TITLE = callbackTitle;
 		MESSAGE_CONTENT = callbackContent;
@@ -35,8 +36,8 @@ public abstract class AbstractCallbackScreen extends AbstractBackNavigableScreen
 		int callbackButtonsWidth = 190;
 		int callbackButtonsHeight = 20;
 		int callbackButtonsGap = 10;
-		callbackDiscardButton = ButtonWidget.builder(Text.translatable("flex_hud.global.config.quit_and_discard"), (btn) -> this.cancel())
-				.dimensions(
+		callbackDiscardButton = Button.builder(Component.translatable("flex_hud.global.config.quit_and_discard"), (btn) -> this.cancel())
+				.bounds(
 						this.width / 2 - callbackButtonsWidth - callbackButtonsGap / 2,
 						this.height / 2,
 						callbackButtonsWidth,
@@ -44,8 +45,8 @@ public abstract class AbstractCallbackScreen extends AbstractBackNavigableScreen
 				).build();
 		callbackDiscardButton.active = callbackScreen;
 
-		callbackCancelButton = ButtonWidget.builder(Text.translatable("flex_hud.global.config.cancel"), (btn) -> setCallbackScreen(false))
-				.dimensions(
+		callbackCancelButton = Button.builder(Component.translatable("flex_hud.global.config.cancel"), (btn) -> setCallbackScreen(false))
+				.bounds(
 						this.width / 2 + callbackButtonsGap / 2,
 						this.height / 2,
 						callbackButtonsWidth,
@@ -57,8 +58,8 @@ public abstract class AbstractCallbackScreen extends AbstractBackNavigableScreen
 		int buttonsWidth = 160;
 		int buttonsHeight = 20;
 		int buttonsGap = 10;
-		cancelButton = ButtonWidget.builder(Text.translatable("flex_hud.global.config.cancel"), (btn) -> onCancelButtonClick())
-				.dimensions(
+		cancelButton = Button.builder(Component.translatable("flex_hud.global.config.cancel"), (btn) -> onCancelButtonClick())
+				.bounds(
 						this.width / 2 - buttonsWidth - buttonsGap / 2,
 						this.height - 30,
 						buttonsWidth,
@@ -66,8 +67,8 @@ public abstract class AbstractCallbackScreen extends AbstractBackNavigableScreen
 				).build();
 		if (callbackScreen) cancelButton.active = false;
 
-		saveButton = ButtonWidget.builder(Text.translatable("flex_hud.global.config.save_and_quit"), (btn) -> saveAndClose())
-				.dimensions(
+		saveButton = Button.builder(Component.translatable("flex_hud.global.config.save_and_quit"), (btn) -> saveAndClose())
+				.bounds(
 						this.width / 2 + buttonsGap / 2,
 						this.height - 30,
 						buttonsWidth,
@@ -77,13 +78,13 @@ public abstract class AbstractCallbackScreen extends AbstractBackNavigableScreen
 		else updateSaveButton();
 
 
-		this.addDrawableChild(callbackDiscardButton);
-		this.addDrawableChild(callbackCancelButton);
-		this.addDrawableChild(cancelButton);
-		this.addDrawableChild(saveButton);
+		this.addRenderableWidget(callbackDiscardButton);
+		this.addRenderableWidget(callbackCancelButton);
+		this.addRenderableWidget(cancelButton);
+		this.addRenderableWidget(saveButton);
 	}
 
-	protected final boolean renderCallback(DrawContext context, int mouseX, int mouseY, float delta) {
+	protected final boolean renderCallback(GuiGraphics context, int mouseX, int mouseY, float delta) {
 		if (!callbackScreen) {
 			cancelButton.render(context, mouseX, mouseY, delta);
 			saveButton.render(context, mouseX, mouseY, delta);
@@ -94,15 +95,15 @@ public abstract class AbstractCallbackScreen extends AbstractBackNavigableScreen
 			callbackCancelButton.render(context, mouseX, mouseY, delta);
 
 			int textColor = 0xffffffff;
-			context.drawCenteredTextWithShadow(textRenderer, MESSAGE_TITLE, this.width / 2, this.height / 2 - 42, textColor);
-			context.drawCenteredTextWithShadow(textRenderer, MESSAGE_CONTENT, this.width / 2, this.height / 2 - 30, textColor);
+			context.drawCenteredString(font, MESSAGE_TITLE, this.width / 2, this.height / 2 - 42, textColor);
+			context.drawCenteredString(font, MESSAGE_CONTENT, this.width / 2, this.height / 2 - 30, textColor);
 
 			return true;
 		}
 	}
 
 	@Override
-	public boolean keyPressed(KeyInput input) {
+	public boolean keyPressed(@NonNull KeyEvent input) {
 		if (shouldCloseOnEsc() && input.key() == GLFW.GLFW_KEY_ESCAPE) {
 			if (callbackScreen) {
 				setCallbackScreen(false);
@@ -116,16 +117,16 @@ public abstract class AbstractCallbackScreen extends AbstractBackNavigableScreen
 
 	protected void cancel() {
 		trackableWidgets.forEach(TrackableChange::cancel);
-		close();
+		onClose();
 	}
 
 	protected void saveAndClose() {
 		ConfigLoader.saveConfig();
-		close();
+		onClose();
 	}
 
 	protected void onCancelButtonClick() {
-		if (!MinecraftClient.getInstance().isShiftPressed() && trackableWidgets.stream().anyMatch(TrackableChange::hasChanged)) {
+		if (!Minecraft.getInstance().hasShiftDown() && trackableWidgets.stream().anyMatch(TrackableChange::hasChanged)) {
 			setCallbackScreen(true);
 		} else {
 			cancel();

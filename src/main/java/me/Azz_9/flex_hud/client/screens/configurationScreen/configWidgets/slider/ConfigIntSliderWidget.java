@@ -6,17 +6,18 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.Conf
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
 import me.Azz_9.flex_hud.client.utils.Cursors;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.SliderWidget;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractSliderButton;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.function.Function;
 
-public class ConfigIntSliderWidget<T> extends SliderWidget implements TrackableChange, DataGetter<Integer>, ResetAware {
+public class ConfigIntSliderWidget<T> extends AbstractSliderButton implements TrackableChange, DataGetter<Integer>, ResetAware {
 	private final Integer STEP;
 	private final int INITIAL_STATE;
 	private final ConfigInteger variable;
@@ -25,7 +26,7 @@ public class ConfigIntSliderWidget<T> extends SliderWidget implements TrackableC
 	private final Function<Integer, Tooltip> getTooltip;
 
 	public ConfigIntSliderWidget(int width, int height, ConfigInteger variable, Integer step, List<Observer> observers, @Nullable Function<Integer, Tooltip> getTooltip) {
-		super(0, 0, width, height, Text.of(String.valueOf(variable.getValue())), (double) (variable.getValue() - variable.getMin()) / (variable.getMax() - variable.getMin()));
+		super(0, 0, width, height, Component.literal(String.valueOf(variable.getValue())), (double) (variable.getValue() - variable.getMin()) / (variable.getMax() - variable.getMin()));
 		this.STEP = step;
 		this.INITIAL_STATE = variable.getValue();
 		this.variable = variable;
@@ -36,21 +37,21 @@ public class ConfigIntSliderWidget<T> extends SliderWidget implements TrackableC
 	}
 
 	@Override
-	public void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+	public void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (this.active) {
-			if (this.isHovered()) context.setCursor(Cursors.POINTING_HAND);
+			if (this.isHovered()) graphics.requestCursor(Cursors.POINTING_HAND);
 
-			if (this.isSelected()) {
-				context.drawStrokedRectangle(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+			if (this.isHoveredOrFocused()) {
+				graphics.renderOutline(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
 			}
 		}
 
-		super.renderWidget(context, mouseX, mouseY, deltaTicks);
+		super.renderWidget(graphics, mouseX, mouseY, deltaTicks);
 
 		if (!this.active) {
-			if (this.isHovered()) context.setCursor(Cursors.NOT_ALLOWED);
+			if (this.isHovered()) graphics.requestCursor(Cursors.NOT_ALLOWED);
 
-			context.fill(getX(), getY(), getRight(), getBottom(), 0xcf4e4e4e);
+			graphics.fill(getX(), getY(), getRight(), getBottom(), 0xcf4e4e4e);
 		}
 	}
 
@@ -92,12 +93,12 @@ public class ConfigIntSliderWidget<T> extends SliderWidget implements TrackableC
 
 	@Override
 	protected void updateMessage() {
-		setMessage(Text.of(String.valueOf(getRelativeValue())));
+		setMessage(Component.literal(String.valueOf(getRelativeValue())));
 	}
 
 	@Override
 	protected void applyValue() {
-		if (MinecraftClient.getInstance().isShiftPressed() && STEP != null) {
+		if (Minecraft.getInstance().hasShiftDown() && STEP != null) {
 			// Snap to the nearest multiple of STEP
 			int rawValue = getRelativeValue();
 			int snappedValue = Math.round((float) rawValue / STEP) * STEP;

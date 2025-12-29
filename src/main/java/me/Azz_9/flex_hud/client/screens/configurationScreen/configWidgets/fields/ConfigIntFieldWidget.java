@@ -6,19 +6,21 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.Conf
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
 import me.Azz_9.flex_hud.client.screens.widgets.buttons.TexturedButtonWidget;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.math.ColorHelper;
+import me.Azz_9.flex_hud.client.screens.widgets.textFieldWidget.FilteredEditBox;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.ARGB;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
-public class ConfigIntFieldWidget extends TextFieldWidget implements TrackableChange, DataGetter<Integer>, ResetAware {
+public class ConfigIntFieldWidget extends FilteredEditBox implements TrackableChange, DataGetter<Integer>, ResetAware {
 
 	private final int INITIAL_STATE;
 	private final ConfigInteger variable;
@@ -29,10 +31,8 @@ public class ConfigIntFieldWidget extends TextFieldWidget implements TrackableCh
 	private final Function<Integer, Tooltip> getTooltip;
 	private TexturedButtonWidget increaseButton, decreaseButton;
 
-	private boolean suppressIntFieldCallback = false;
-
-	public ConfigIntFieldWidget(TextRenderer textRenderer, int width, int height, ConfigInteger variable, List<Observer> observers, @Nullable Function<Integer, Tooltip> getTooltip) {
-		super(textRenderer, width, height, Text.translatable("flex_hud.integer_field"));
+	public ConfigIntFieldWidget(Font font, int width, int height, ConfigInteger variable, List<Observer> observers, @Nullable Function<Integer, Tooltip> getTooltip) {
+		super(font, width, height, Component.translatable("flex_hud.integer_field"));
 		this.INITIAL_STATE = variable.getValue();
 		this.variable = variable;
 		this.observers = observers;
@@ -48,21 +48,19 @@ public class ConfigIntFieldWidget extends TextFieldWidget implements TrackableCh
 		this.MIN_VALUE = variable.getMin();
 		this.MAX_VALUE = variable.getMax();
 
-		setTextPredicate(text -> text.isEmpty() || text.matches("\\d*") && text.length() <= Integer.toString(MAX_VALUE).length());
+		setFilter(text -> text.isEmpty() || text.matches("\\d*") && text.length() <= Integer.toString(MAX_VALUE).length());
 
-		setChangedListener(value -> {
-			if (suppressIntFieldCallback) return;
-
+		setResponder(value -> {
 			boolean valid = isValid();
 
 			if (valid) {
-				setEditableColor(0xffffffff);
+				setTextColor(0xffffffff);
 				Integer inputValue = getInputValue();
 				if (inputValue != null) { // ça devrait jamais être null ici mais vzy on sait jamais
 					variable.setValue(getInputValue());
 				}
 			} else {
-				setEditableColor(ColorHelper.withAlpha(255, Formatting.RED.getColorValue() != null ? Formatting.RED.getColorValue() : 0xfc5454));
+				setTextColor(ARGB.color(255, ChatFormatting.RED.getColor() != null ? ChatFormatting.RED.getColor() : 0xfc5454));
 			}
 
 			for (Observer observer : observers) {
@@ -71,66 +69,59 @@ public class ConfigIntFieldWidget extends TextFieldWidget implements TrackableCh
 
 			if (getTooltip != null) this.setTooltip(this.getTooltip.apply(variable.getValue()));
 
-			if (increaseButton != null) increaseButton.active = getValue() < MAX_VALUE;
-			if (decreaseButton != null) decreaseButton.active = getValue() > MIN_VALUE;
+			if (increaseButton != null) increaseButton.active = getData() < MAX_VALUE;
+			if (decreaseButton != null) decreaseButton.active = getData() > MIN_VALUE;
 		});
 
-		setText(String.valueOf(variable.getValue()));
+		setValue(String.valueOf(variable.getValue()));
 
 		if (getTooltip != null) {
 			this.setTooltip(this.getTooltip.apply(variable.getValue()));
 		} else {
-			this.setTooltip(Tooltip.of(Text.of("Min: " + MIN_VALUE + (MAX_VALUE == Integer.MAX_VALUE ? "" : "\nMax: " + MAX_VALUE))));
+			this.setTooltip(Tooltip.create(Component.literal("Min: " + MIN_VALUE + (MAX_VALUE == Integer.MAX_VALUE ? "" : "\nMax: " + MAX_VALUE))));
 		}
 	}
 
 	@Override
-	public void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+	public void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (this.active) {
-			if (this.isSelected()) {
-				context.drawStrokedRectangle(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+			if (this.isHoveredOrFocused()) {
+				graphics.renderOutline(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
 			}
 		}
-		super.renderWidget(context, mouseX, mouseY, deltaTicks);
+		super.renderWidget(graphics, mouseX, mouseY, deltaTicks);
 		if (!this.active) {
-			context.fill(getX(), getY(), getRight(), getBottom(), 0xcf4e4e4e);
+			graphics.fill(getX(), getY(), getRight(), getBottom(), 0xcf4e4e4e);
 		}
 	}
 
 	public void increase() {
-		int current = getValue();
+		int current = getData();
 		if (current < MAX_VALUE) {
-			super.setText(String.valueOf(current + 1));
+			super.setValue(String.valueOf(current + 1));
 		}
 	}
 
 	public void decrease() {
-		int current = getValue();
+		int current = getData();
 		if (current > MIN_VALUE) {
-			super.setText(String.valueOf(current - 1));
+			super.setValue(String.valueOf(current - 1));
 		}
 	}
 
 	public void setIncreaseButton(TexturedButtonWidget increaseButton) {
 		this.increaseButton = increaseButton;
-		increaseButton.active = getValue() < MAX_VALUE;
+		increaseButton.active = getData() < MAX_VALUE;
 	}
 
 	public void setDecreaseButton(TexturedButtonWidget decreaseButton) {
 		this.decreaseButton = decreaseButton;
-		decreaseButton.active = getValue() > MIN_VALUE;
-	}
-
-	@Override
-	public void setText(String text) {
-		suppressIntFieldCallback = true;
-		super.setText(text);
-		suppressIntFieldCallback = false;
+		decreaseButton.active = getData() > MIN_VALUE;
 	}
 
 	private @Nullable Integer getInputValue() {
 		try {
-			return Integer.parseInt(getText());
+			return Integer.parseInt(getValue());
 		} catch (Exception e) {
 			return null;
 		}
@@ -138,12 +129,12 @@ public class ConfigIntFieldWidget extends TextFieldWidget implements TrackableCh
 
 	@Override
 	public void setToDefaultState() {
-		super.setText(String.valueOf(variable.getDefaultValue()));
+		super.setValue(String.valueOf(variable.getDefaultValue()));
 	}
 
 	@Override
 	public boolean hasChanged() {
-		return INITIAL_STATE != getValue();
+		return INITIAL_STATE != getData();
 	}
 
 	@Override
@@ -156,13 +147,9 @@ public class ConfigIntFieldWidget extends TextFieldWidget implements TrackableCh
 		return variable.getValue();
 	}
 
-	private int getValue() {
-		return getData();
-	}
-
 	@Override
 	public boolean isCurrentValueDefault() {
-		return getValue() == variable.getDefaultValue();
+		return Objects.equals(getData(), variable.getDefaultValue());
 	}
 
 	public void addObserver(Observer observer) {

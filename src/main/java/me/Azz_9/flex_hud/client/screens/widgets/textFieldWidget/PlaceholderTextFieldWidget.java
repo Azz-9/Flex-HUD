@@ -1,39 +1,40 @@
 package me.Azz_9.flex_hud.client.screens.widgets.textFieldWidget;
 
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.network.chat.Component;
+import org.jspecify.annotations.NonNull;
 
-public class PlaceholderTextFieldWidget extends TextFieldWidget {
+public class PlaceholderTextFieldWidget extends EditBox {
 
 	private int placeholderColor = 0xffa0a0a0;
-	private Text placeholderText;
-	private final TextRenderer TEXT_RENDERER;
+	private Component placeholderText;
+	private final Font FONT;
 
-	public PlaceholderTextFieldWidget(TextRenderer textRenderer, int x, int y, int width, int height, Text text) {
-		super(textRenderer, x, y, width, height, text);
-		this.TEXT_RENDERER = textRenderer;
+	public PlaceholderTextFieldWidget(Font font, int x, int y, int width, int height, Component text) {
+		super(font, x, y, width, height, text);
+		this.FONT = font;
 	}
 
 	public void setPlaceholderColor(int color) {
 		this.placeholderColor = color;
 	}
 
-	public void setPlaceholder(Text placeholder) {
+	public void setPlaceholder(Component placeholder) {
 		this.placeholderText = placeholder;
 	}
 
 	@Override
-	public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
 		if (this.isVisible()) {
-			super.renderWidget(context, mouseX, mouseY, delta);
+			super.renderWidget(graphics, mouseX, mouseY, delta);
 
-			if (this.placeholderText != null && this.getText().isEmpty()) {
-				int x = this.drawsBackground() ? this.getX() + 4 : this.getX();
-				int y = this.drawsBackground() ? this.getY() + (this.height - 8) / 2 : this.getY();
+			if (this.placeholderText != null && this.getValue().isEmpty()) {
+				int x = this.isBordered() ? this.getX() + 4 : this.getX();
+				int y = this.isBordered() ? this.getY() + (this.height - 8) / 2 : this.getY();
 
-				context.drawTextWithShadow(TEXT_RENDERER, this.placeholderText, x, y, this.placeholderColor);
+				graphics.drawString(FONT, this.placeholderText, x, y, this.placeholderColor);
 			}
 		}
 	}

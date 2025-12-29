@@ -7,13 +7,13 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfiguratio
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.world.World;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 
@@ -31,12 +31,12 @@ public class NetherCoordinates extends AbstractTextElement {
 
 	@Override
 	public void init() {
-		setHeight(MinecraftClient.getInstance().textRenderer.fontHeight);
+		setHeight(Minecraft.getInstance().font.lineHeight);
 	}
 
 	@Override
-	public Text getName() {
-		return Text.translatable("flex_hud.nether_coordinates");
+	public Component getName() {
+		return Component.translatable("flex_hud.nether_coordinates");
 	}
 
 	@Override
@@ -45,11 +45,11 @@ public class NetherCoordinates extends AbstractTextElement {
 	}
 
 	@Override
-	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
-		PlayerEntity player = client.player;
+	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+		Minecraft minecraft = Minecraft.getInstance();
+		LocalPlayer player = minecraft.player;
 
-		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && (player == null || !player.getEntityWorld().getRegistryKey().equals(World.OVERWORLD) && this.onlyWhenInOverworld.getValue() || player.getEntityWorld().getRegistryKey().equals(World.END))) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && (player == null || !player.level().dimension().equals(Level.OVERWORLD) && this.onlyWhenInOverworld.getValue() || player.level().dimension().equals(Level.END))) {
 			return;
 		}
 
@@ -60,7 +60,7 @@ public class NetherCoordinates extends AbstractTextElement {
 			z = -6;
 			dimension = "Nether";
 		} else {
-			if (player.getEntityWorld().getRegistryKey().equals(World.OVERWORLD)) {
+			if (player.level().dimension().equals(Level.OVERWORLD)) {
 				x = (int) Math.floor(player.getX() / 8);
 				z = (int) Math.floor(player.getZ() / 8);
 
@@ -77,14 +77,14 @@ public class NetherCoordinates extends AbstractTextElement {
 
 		setWidth(text);
 
-		Matrix3x2fStack matrices = context.getMatrices();
+		Matrix3x2fStack matrices = graphics.pose();
 		matrices.pushMatrix();
 		matrices.translate(getRoundedX(), getRoundedY());
 		matrices.scale(getScale());
 
-		drawBackground(context);
+		drawBackground(graphics);
 
-		context.drawText(client.textRenderer, text, 0, 0, getColor(), this.shadow.getValue());
+		graphics.drawString(minecraft.font, text, 0, 0, getColor(), this.shadow.getValue());
 
 		matrices.popMatrix();
 	}
@@ -94,7 +94,7 @@ public class NetherCoordinates extends AbstractTextElement {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (Minecraft.getInstance().getLanguageManager().getSelected().equals("fr_fr")) {
 					buttonWidth = 190;
 				} else {
 					buttonWidth = 160;

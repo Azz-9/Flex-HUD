@@ -14,14 +14,14 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.Conf
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 import me.Azz_9.flex_hud.client.tickables.SpeedTickable;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.text.Text;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.vehicle.boat.Boat;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 
@@ -45,7 +45,7 @@ public class Speedometer extends AbstractTextElement implements TickableModule {
 
 	@Override
 	public void init() {
-		setHeight(MinecraftClient.getInstance().textRenderer.fontHeight);
+		setHeight(Minecraft.getInstance().font.lineHeight);
 	}
 
 	@Override
@@ -54,13 +54,13 @@ public class Speedometer extends AbstractTextElement implements TickableModule {
 	}
 
 	@Override
-	public Text getName() {
-		return Text.translatable("flex_hud.speedometer");
+	public Component getName() {
+		return Component.translatable("flex_hud.speedometer");
 	}
 
 	@Override
-	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
+	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+		Minecraft minecraft = Minecraft.getInstance();
 
 		if (shouldNotRender()) {
 			return;
@@ -68,14 +68,14 @@ public class Speedometer extends AbstractTextElement implements TickableModule {
 
 		setWidth(formattedSpeed);
 
-		Matrix3x2fStack matrices = context.getMatrices();
+		Matrix3x2fStack matrices = graphics.pose();
 		matrices.pushMatrix();
 		matrices.translate(getRoundedX(), getRoundedY());
 		matrices.scale(getScale());
 
-		drawBackground(context);
+		drawBackground(graphics);
 
-		context.drawText(client.textRenderer, formattedSpeed, 0, 0, getColor(), this.shadow.getValue());
+		graphics.drawString(minecraft.font, formattedSpeed, 0, 0, getColor(), this.shadow.getValue());
 
 		matrices.popMatrix();
 	}
@@ -85,7 +85,7 @@ public class Speedometer extends AbstractTextElement implements TickableModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (Minecraft.getInstance().getLanguageManager().getSelected().equals("fr_fr")) {
 					buttonWidth = 250;
 				} else {
 					buttonWidth = 170;
@@ -153,11 +153,11 @@ public class Speedometer extends AbstractTextElement implements TickableModule {
 								.setGetTooltip(
 										value -> switch (value) {
 											case KPH ->
-													Tooltip.of(Text.translatable("flex_hud.speedometer.config.tooltip.kph"));
+													Tooltip.create(Component.translatable("flex_hud.speedometer.config.tooltip.kph"));
 											case MPH ->
-													Tooltip.of(Text.translatable("flex_hud.speedometer.config.tooltip.mph"));
+													Tooltip.create(Component.translatable("flex_hud.speedometer.config.tooltip.mph"));
 											case MPS ->
-													Tooltip.of(Text.translatable("flex_hud.speedometer.config.tooltip.mps"));
+													Tooltip.create(Component.translatable("flex_hud.speedometer.config.tooltip.mps"));
 											default -> null;
 										}
 								)
@@ -169,15 +169,15 @@ public class Speedometer extends AbstractTextElement implements TickableModule {
 
 	@Override
 	public void tick() {
-		PlayerEntity player = MinecraftClient.getInstance().player;
+		LocalPlayer player = Minecraft.getInstance().player;
 
 		String format = "%." + this.digits.getValue() + "f";
 		String speed = String.format(format, Flex_hudClient.isInMoveElementScreen ? 0 : SpeedTickable.getSpeed());
 
-		if (this.units.getValue() == Speedometer.SpeedometerUnits.KNOT || (this.useKnotInBoat.getValue() && player != null && player.getVehicle() instanceof BoatEntity)) {
-			formattedSpeed = speed + " " + Text.translatable(Speedometer.SpeedometerUnits.KNOT.getTranslationKey()).getString();
+		if (this.units.getValue() == Speedometer.SpeedometerUnits.KNOT || (this.useKnotInBoat.getValue() && player != null && player.getVehicle() instanceof Boat)) {
+			formattedSpeed = speed + " " + Component.translatable(Speedometer.SpeedometerUnits.KNOT.getTranslationKey()).getString();
 		} else {
-			formattedSpeed = speed + " " + Text.translatable(this.units.getValue().getTranslationKey()).getString();
+			formattedSpeed = speed + " " + Component.translatable(this.units.getValue().getTranslationKey()).getString();
 		}
 	}
 

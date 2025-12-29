@@ -10,13 +10,13 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.IntFie
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 import me.Azz_9.flex_hud.client.tickables.RaycastTickable;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.text.Text;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 
@@ -38,12 +38,12 @@ public class Distance extends AbstractTextElement implements TickableModule {
 
 	@Override
 	public void init() {
-		setHeight(MinecraftClient.getInstance().textRenderer.fontHeight);
+		setHeight(Minecraft.getInstance().font.lineHeight);
 	}
 
 	@Override
-	public Text getName() {
-		return Text.translatable("flex_hud.distance");
+	public Component getName() {
+		return Component.translatable("flex_hud.distance");
 	}
 
 	@Override
@@ -52,21 +52,21 @@ public class Distance extends AbstractTextElement implements TickableModule {
 	}
 
 	@Override
-	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && MinecraftClient.getInstance().getCameraEntity() == null) {
+	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && Minecraft.getInstance().getCameraEntity() == null) {
 			return;
 		}
 
 		setWidth(distanceText);
 
-		Matrix3x2fStack matrices = context.getMatrices();
+		Matrix3x2fStack matrices = graphics.pose();
 		matrices.pushMatrix();
 		matrices.translate(getRoundedX(), getRoundedY());
 		matrices.scale(getScale());
 
-		drawBackground(context);
+		drawBackground(graphics);
 
-		context.drawText(MinecraftClient.getInstance().textRenderer, distanceText, 0, 0, getColor(), shadow.getValue());
+		graphics.drawString(Minecraft.getInstance().font, distanceText, 0, 0, getColor(), shadow.getValue());
 
 		matrices.popMatrix();
 	}
@@ -76,7 +76,7 @@ public class Distance extends AbstractTextElement implements TickableModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (Minecraft.getInstance().getLanguageManager().getSelected().equals("fr_fr")) {
 					buttonWidth = 160;
 				}
 
@@ -143,19 +143,19 @@ public class Distance extends AbstractTextElement implements TickableModule {
 			return;
 		}
 
-		MinecraftClient client = MinecraftClient.getInstance();
+		Minecraft minecraft = Minecraft.getInstance();
 		HitResult hitResult = RaycastTickable.getHitResult();
 
-		if (client.getCameraEntity() == null || client.player == null || hitResult == null) return;
+		if (minecraft.getCameraEntity() == null || minecraft.player == null || hitResult == null) return;
 
 		if (hitResult.getType() == HitResult.Type.MISS) {
 			distanceText = "[∞]";
 		} else if (hitResult.getType() == HitResult.Type.BLOCK) {
-			Vec3d lerpedPos = client.getCameraEntity().getLerpedPos(0);
-			float eyeHeight = client.getCameraEntity().getEyeHeight(client.player.getPose());
-			Vec3d eyePos = new Vec3d(lerpedPos.getX(), lerpedPos.getY() + eyeHeight, lerpedPos.getZ());
+			Vec3 lerpedPos = minecraft.getCameraEntity().getPosition(0);
+			float eyeHeight = minecraft.getCameraEntity().getEyeHeight(minecraft.player.getPose());
+			Vec3 eyePos = new Vec3(lerpedPos.x(), lerpedPos.y() + eyeHeight, lerpedPos.z());
 
-			double distance = hitResult.getPos().distanceTo(eyePos);
+			double distance = hitResult.getLocation().distanceTo(eyePos);
 
 			// format distance to string with selected amount of digits
 			String format = "[%." + digits.getValue() + "f]";

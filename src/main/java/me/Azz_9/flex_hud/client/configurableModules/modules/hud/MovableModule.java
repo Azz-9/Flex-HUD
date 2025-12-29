@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud;
 
 import me.Azz_9.flex_hud.client.configurableModules.Configurable;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.widgets.MovableWidget;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 public interface MovableModule extends Configurable {
 	int getWidth();
@@ -26,7 +26,7 @@ public interface MovableModule extends Configurable {
 	AbstractHudElement.AnchorPosition getAnchorY();
 
 	default float getX() {
-		int screenWidth = MinecraftClient.getInstance().getWindow().getScaledWidth();
+		int screenWidth = Minecraft.getInstance().getWindow().getGuiScaledWidth();
 
 		if (getAnchorX() == AbstractHudElement.AnchorPosition.START) {
 			return (float) Math.clamp(getOffsetX(), 0, Math.max(screenWidth - getScaledWidth(), 0));
@@ -38,7 +38,7 @@ public interface MovableModule extends Configurable {
 	}
 
 	default float getY() {
-		int screenHeight = MinecraftClient.getInstance().getWindow().getScaledHeight();
+		int screenHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();
 
 		if (getAnchorY() == AbstractHudElement.AnchorPosition.START) {
 			return (float) Math.clamp(getOffsetY(), 0, Math.max(screenHeight - getScaledHeight(), 0));
@@ -50,7 +50,7 @@ public interface MovableModule extends Configurable {
 	}
 
 	default float getXWithScale(float scale) {
-		int screenWidth = MinecraftClient.getInstance().getWindow().getScaledWidth();
+		int screenWidth = Minecraft.getInstance().getWindow().getGuiScaledWidth();
 
 		if (getAnchorX() == AbstractHudElement.AnchorPosition.START) {
 			return (float) getOffsetX();
@@ -62,7 +62,7 @@ public interface MovableModule extends Configurable {
 	}
 
 	default float getYWithScale(float scale) {
-		int screenHeight = MinecraftClient.getInstance().getWindow().getScaledHeight();
+		int screenHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();
 
 		if (getAnchorY() == AbstractHudElement.AnchorPosition.START) {
 			return (float) getOffsetY();
@@ -74,7 +74,7 @@ public interface MovableModule extends Configurable {
 	}
 
 	default void setX(double x) {
-		int screenWidth = MinecraftClient.getInstance().getWindow().getScaledWidth();
+		int screenWidth = Minecraft.getInstance().getWindow().getGuiScaledWidth();
 
 		double centerX = x + getScaledWidth() / 2.0;
 
@@ -88,7 +88,7 @@ public interface MovableModule extends Configurable {
 	}
 
 	default void setY(double y) {
-		int screenHeight = MinecraftClient.getInstance().getWindow().getScaledHeight();
+		int screenHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();
 
 		double centerY = y + getScaledHeight() / 2.0;
 
@@ -114,8 +114,8 @@ public interface MovableModule extends Configurable {
 	float getScale();
 
 	default float computeMaxScale() {
-		int screenWidth = MinecraftClient.getInstance().getWindow().getScaledWidth();
-		int screenHeight = MinecraftClient.getInstance().getWindow().getScaledHeight();
+		int screenWidth = Minecraft.getInstance().getWindow().getGuiScaledWidth();
+		int screenHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();
 
 		float maxWidthScale;
 		float maxHeightScale;

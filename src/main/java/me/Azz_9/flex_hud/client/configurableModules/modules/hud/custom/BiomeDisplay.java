@@ -7,15 +7,15 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfiguratio
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.text.Text;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomeKeys;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Biomes;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 
@@ -27,7 +27,7 @@ public class BiomeDisplay extends AbstractTextElement {
 	private final ConfigBoolean biomeSpecificColor = new ConfigBoolean(true, "flex_hud.biome_display.config.biome_specific_color");
 
 	//biome colors for coordinates overlay
-	public static final Map<RegistryKey<Biome>, Integer> BIOME_COLORS = getBiomeColors();
+	public static final Map<ResourceKey<Biome>, Integer> BIOME_COLORS = getBiomeColors();
 
 	public BiomeDisplay(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
@@ -38,12 +38,12 @@ public class BiomeDisplay extends AbstractTextElement {
 
 	@Override
 	public void init() {
-		setHeight(MinecraftClient.getInstance().textRenderer.fontHeight);
+		setHeight(Minecraft.getInstance().font.lineHeight);
 	}
 
 	@Override
-	public Text getName() {
-		return Text.translatable("flex_hud.biome_display");
+	public Component getName() {
+		return Component.translatable("flex_hud.biome_display");
 	}
 
 	@Override
@@ -52,50 +52,50 @@ public class BiomeDisplay extends AbstractTextElement {
 	}
 
 	@Override
-	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
+	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+		Minecraft minecraft = Minecraft.getInstance();
 
-		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && client.player == null) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && minecraft.player == null) {
 			return;
 		}
 
-		RegistryKey<Biome> biomeKey;
+		ResourceKey<Biome> biomeKey;
 		String biomeName;
 
 		if (Flex_hudClient.isInMoveElementScreen) {
-			biomeKey = BiomeKeys.PLAINS;
+			biomeKey = Biomes.PLAINS;
 			biomeName = "plains";
 		} else {
-			PlayerEntity player = client.player;
+			LocalPlayer player = minecraft.player;
 
-			if (client.world == null) {
+			if (minecraft.level == null) {
 				return;
 			}
 
-			biomeKey = client.world.getBiome(player.getBlockPos()).getKey().orElse(null);
+			biomeKey = minecraft.level.getBiome(player.getOnPos()).unwrapKey().orElse(null);
 
 			if (biomeKey == null) return;
 
-			biomeName = biomeKey.getValue().getPath();
+			biomeName = biomeKey.identifier().getPath();
 		}
 
 		String prefix = "Biome: ";
-		int prefixWidth = client.textRenderer.getWidth(prefix);
+		int prefixWidth = minecraft.font.width(prefix);
 		setWidth(biomeName, prefixWidth);
 
 		int biomeTextColor = (biomeSpecificColor.getValue() ?
 				BIOME_COLORS.getOrDefault(biomeKey, 0xffffffff) :
 				getColor());
 
-		Matrix3x2fStack matrices = context.getMatrices();
+		Matrix3x2fStack matrices = graphics.pose();
 		matrices.pushMatrix();
 		matrices.translate(getRoundedX(), getRoundedY());
 		matrices.scale(getScale());
 
-		drawBackground(context);
+		drawBackground(graphics);
 
-		context.drawText(client.textRenderer, prefix, 0, 0, getColor(), shadow.getValue());
-		context.drawText(client.textRenderer, biomeName, prefixWidth, 0, biomeTextColor, shadow.getValue());
+		graphics.drawString(minecraft.font, prefix, 0, 0, getColor(), shadow.getValue());
+		graphics.drawString(minecraft.font, biomeName, prefixWidth, 0, biomeTextColor, shadow.getValue());
 
 		matrices.popMatrix();
 	}
@@ -160,72 +160,72 @@ public class BiomeDisplay extends AbstractTextElement {
 		};
 	}
 
-	private static Map<RegistryKey<Biome>, Integer> getBiomeColors() {
-		return Map.<RegistryKey<Biome>, Integer>ofEntries(
-				entry(BiomeKeys.THE_VOID, 0xffffffff),
-				entry(BiomeKeys.PLAINS, 0xff5e9d34),
-				entry(BiomeKeys.SUNFLOWER_PLAINS, 0xfffcd500),
-				entry(BiomeKeys.SNOWY_PLAINS, 0xff9dbcf0),
-				entry(BiomeKeys.ICE_SPIKES, 0xff9dbcf0),
-				entry(BiomeKeys.DESERT, 0xffe5d9af),
-				entry(BiomeKeys.SWAMP, 0xff436024),
-				entry(BiomeKeys.MANGROVE_SWAMP, 0xff436024),
-				entry(BiomeKeys.FOREST, 0xff4d8a25),
-				entry(BiomeKeys.FLOWER_FOREST, 0xfffc7dea),
-				entry(BiomeKeys.BIRCH_FOREST, 0xffcccccc),
-				entry(BiomeKeys.DARK_FOREST, 0xff366821),
-				entry(BiomeKeys.OLD_GROWTH_BIRCH_FOREST, 0xffcccccc),
-				entry(BiomeKeys.OLD_GROWTH_PINE_TAIGA, 0xff4d6a4c),
-				entry(BiomeKeys.OLD_GROWTH_SPRUCE_TAIGA, 0xff4d6a4c),
-				entry(BiomeKeys.TAIGA, 0xff4d6a4c),
-				entry(BiomeKeys.SNOWY_TAIGA, 0xff9dbcf0),
-				entry(BiomeKeys.SAVANNA, 0xff807b39),
-				entry(BiomeKeys.SAVANNA_PLATEAU, 0xff807b39),
-				entry(BiomeKeys.WINDSWEPT_HILLS, 0xff4d8a25),
-				entry(BiomeKeys.WINDSWEPT_GRAVELLY_HILLS, 0xffff4d8a),
-				entry(BiomeKeys.WINDSWEPT_FOREST, 0xff4d8a25),
-				entry(BiomeKeys.WINDSWEPT_SAVANNA, 0xff807b39),
-				entry(BiomeKeys.JUNGLE, 0xff1c6e06),
-				entry(BiomeKeys.SPARSE_JUNGLE, 0xff1c6e06),
-				entry(BiomeKeys.BAMBOO_JUNGLE, 0xff678c39),
-				entry(BiomeKeys.BADLANDS, 0xffb15b25),
-				entry(BiomeKeys.ERODED_BADLANDS, 0xffb15b25),
-				entry(BiomeKeys.WOODED_BADLANDS, 0xffb15b25),
-				entry(BiomeKeys.MEADOW, 0xff8d8d8d),
-				entry(BiomeKeys.CHERRY_GROVE, 0xffbf789b),
-				entry(BiomeKeys.GROVE, 0xff4d8a25),
-				entry(BiomeKeys.SNOWY_SLOPES, 0xff9dbcf0),
-				entry(BiomeKeys.FROZEN_PEAKS, 0xff8d8d8d),
-				entry(BiomeKeys.JAGGED_PEAKS, 0xff8d8d8d),
-				entry(BiomeKeys.STONY_PEAKS, 0xff8d8d8d),
-				entry(BiomeKeys.RIVER, 0xff005eec),
-				entry(BiomeKeys.FROZEN_RIVER, 0xff9dbcf0),
-				entry(BiomeKeys.BEACH, 0xffe5d9af),
-				entry(BiomeKeys.SNOWY_BEACH, 0xff9dbcf0),
-				entry(BiomeKeys.STONY_SHORE, 0xff8d8d8d),
-				entry(BiomeKeys.WARM_OCEAN, 0xff00fccf),
-				entry(BiomeKeys.LUKEWARM_OCEAN, 0xff00fccf),
-				entry(BiomeKeys.DEEP_LUKEWARM_OCEAN, 0xff00fccf),
-				entry(BiomeKeys.OCEAN, 0xff005eec),
-				entry(BiomeKeys.DEEP_OCEAN, 0xff005eec),
-				entry(BiomeKeys.COLD_OCEAN, 0xff9dbcf0),
-				entry(BiomeKeys.DEEP_COLD_OCEAN, 0xff9dbcf0),
-				entry(BiomeKeys.FROZEN_OCEAN, 0xff9dbcf0),
-				entry(BiomeKeys.DEEP_FROZEN_OCEAN, 0xff9dbcf0),
-				entry(BiomeKeys.MUSHROOM_FIELDS, 0xff746f82),
-				entry(BiomeKeys.DRIPSTONE_CAVES, 0xff816759),
-				entry(BiomeKeys.LUSH_CAVES, 0xff576b2c),
-				entry(BiomeKeys.DEEP_DARK, 0xff0d1f25),
-				entry(BiomeKeys.NETHER_WASTES, 0xff880f0f),
-				entry(BiomeKeys.WARPED_FOREST, 0xff0f8976),
-				entry(BiomeKeys.CRIMSON_FOREST, 0xff880f0f),
-				entry(BiomeKeys.SOUL_SAND_VALLEY, 0xff62493b),
-				entry(BiomeKeys.BASALT_DELTAS, 0xff55576a),
-				entry(BiomeKeys.THE_END, 0xff6d00a3),
-				entry(BiomeKeys.END_HIGHLANDS, 0xff6d00a3),
-				entry(BiomeKeys.END_MIDLANDS, 0xff6d00a3),
-				entry(BiomeKeys.SMALL_END_ISLANDS, 0xff6d00a3),
-				entry(BiomeKeys.END_BARRENS, 0xff6d00a3)
+	private static Map<ResourceKey<Biome>, Integer> getBiomeColors() {
+		return Map.<ResourceKey<Biome>, Integer>ofEntries(
+				entry(Biomes.THE_VOID, 0xffffffff),
+				entry(Biomes.PLAINS, 0xff5e9d34),
+				entry(Biomes.SUNFLOWER_PLAINS, 0xfffcd500),
+				entry(Biomes.SNOWY_PLAINS, 0xff9dbcf0),
+				entry(Biomes.ICE_SPIKES, 0xff9dbcf0),
+				entry(Biomes.DESERT, 0xffe5d9af),
+				entry(Biomes.SWAMP, 0xff436024),
+				entry(Biomes.MANGROVE_SWAMP, 0xff436024),
+				entry(Biomes.FOREST, 0xff4d8a25),
+				entry(Biomes.FLOWER_FOREST, 0xfffc7dea),
+				entry(Biomes.BIRCH_FOREST, 0xffcccccc),
+				entry(Biomes.DARK_FOREST, 0xff366821),
+				entry(Biomes.OLD_GROWTH_BIRCH_FOREST, 0xffcccccc),
+				entry(Biomes.OLD_GROWTH_PINE_TAIGA, 0xff4d6a4c),
+				entry(Biomes.OLD_GROWTH_SPRUCE_TAIGA, 0xff4d6a4c),
+				entry(Biomes.TAIGA, 0xff4d6a4c),
+				entry(Biomes.SNOWY_TAIGA, 0xff9dbcf0),
+				entry(Biomes.SAVANNA, 0xff807b39),
+				entry(Biomes.SAVANNA_PLATEAU, 0xff807b39),
+				entry(Biomes.WINDSWEPT_HILLS, 0xff4d8a25),
+				entry(Biomes.WINDSWEPT_GRAVELLY_HILLS, 0xffff4d8a),
+				entry(Biomes.WINDSWEPT_FOREST, 0xff4d8a25),
+				entry(Biomes.WINDSWEPT_SAVANNA, 0xff807b39),
+				entry(Biomes.JUNGLE, 0xff1c6e06),
+				entry(Biomes.SPARSE_JUNGLE, 0xff1c6e06),
+				entry(Biomes.BAMBOO_JUNGLE, 0xff678c39),
+				entry(Biomes.BADLANDS, 0xffb15b25),
+				entry(Biomes.ERODED_BADLANDS, 0xffb15b25),
+				entry(Biomes.WOODED_BADLANDS, 0xffb15b25),
+				entry(Biomes.MEADOW, 0xff8d8d8d),
+				entry(Biomes.CHERRY_GROVE, 0xffbf789b),
+				entry(Biomes.GROVE, 0xff4d8a25),
+				entry(Biomes.SNOWY_SLOPES, 0xff9dbcf0),
+				entry(Biomes.FROZEN_PEAKS, 0xff8d8d8d),
+				entry(Biomes.JAGGED_PEAKS, 0xff8d8d8d),
+				entry(Biomes.STONY_PEAKS, 0xff8d8d8d),
+				entry(Biomes.RIVER, 0xff005eec),
+				entry(Biomes.FROZEN_RIVER, 0xff9dbcf0),
+				entry(Biomes.BEACH, 0xffe5d9af),
+				entry(Biomes.SNOWY_BEACH, 0xff9dbcf0),
+				entry(Biomes.STONY_SHORE, 0xff8d8d8d),
+				entry(Biomes.WARM_OCEAN, 0xff00fccf),
+				entry(Biomes.LUKEWARM_OCEAN, 0xff00fccf),
+				entry(Biomes.DEEP_LUKEWARM_OCEAN, 0xff00fccf),
+				entry(Biomes.OCEAN, 0xff005eec),
+				entry(Biomes.DEEP_OCEAN, 0xff005eec),
+				entry(Biomes.COLD_OCEAN, 0xff9dbcf0),
+				entry(Biomes.DEEP_COLD_OCEAN, 0xff9dbcf0),
+				entry(Biomes.FROZEN_OCEAN, 0xff9dbcf0),
+				entry(Biomes.DEEP_FROZEN_OCEAN, 0xff9dbcf0),
+				entry(Biomes.MUSHROOM_FIELDS, 0xff746f82),
+				entry(Biomes.DRIPSTONE_CAVES, 0xff816759),
+				entry(Biomes.LUSH_CAVES, 0xff576b2c),
+				entry(Biomes.DEEP_DARK, 0xff0d1f25),
+				entry(Biomes.NETHER_WASTES, 0xff880f0f),
+				entry(Biomes.WARPED_FOREST, 0xff0f8976),
+				entry(Biomes.CRIMSON_FOREST, 0xff880f0f),
+				entry(Biomes.SOUL_SAND_VALLEY, 0xff62493b),
+				entry(Biomes.BASALT_DELTAS, 0xff55576a),
+				entry(Biomes.THE_END, 0xff6d00a3),
+				entry(Biomes.END_HIGHLANDS, 0xff6d00a3),
+				entry(Biomes.END_MIDLANDS, 0xff6d00a3),
+				entry(Biomes.SMALL_END_ISLANDS, 0xff6d00a3),
+				entry(Biomes.END_BARRENS, 0xff6d00a3)
 		);
 	}
 }
