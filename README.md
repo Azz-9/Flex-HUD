@@ -11,6 +11,7 @@ in one place.
 - **Clock** – _display the current real time_
 - **FPS** – _show your framerate in real time_
 - **Coordinates** – _always know where you are_
+- **Biome Display** – _show the biome you’re currently in directly on your HUD_
 - **Compass** – _navigate easily without opening the F3 screen_
 - **Nether Coordinates** - _instantly view the equivalent coordinates between the Overworld and the Nether_
 - **Day Counter** – _see how many days have passed in your world_
