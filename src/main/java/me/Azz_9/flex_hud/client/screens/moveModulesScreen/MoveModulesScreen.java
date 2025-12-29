@@ -58,7 +58,7 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 
 				MovableWidget movableWidget = new MovableWidget(movableModule, this);
 				movableWidgets.add(movableWidget);
-				this.addDrawableChild(movableWidget);
+				this.addSelectableChild(movableWidget);
 				registerTrackableWidget(movableWidget);
 			}
 		}
@@ -90,7 +90,7 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 			firstFrame = false;
 		}
 
-		movableWidgets.forEach(widget -> widget.render(context, mouseX, mouseY, deltaTicks));
+		movableWidgets.forEach(widget -> widget.render(context, deltaTicks));
 
 		helpWidget.render(context, mouseX, mouseY, deltaTicks);
 	}
