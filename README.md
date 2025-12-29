@@ -38,5 +38,7 @@ in one place.
 - **Weather Changer** – _set clear skies, rain, or thunderstorms_
 - **Time Changer** – _adjust the in-game time to your liking_
 - **TNT Countdown** – _displays a timer for ignited TNT_
+- **Durability Ping** – _get alerted with a sound and/or on-screen message when an item’s durability reaches a set
+  threshold_
 
 _All modules can be toggled, moved, and configured to fit your personal playstyle._
