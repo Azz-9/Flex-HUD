@@ -3,6 +3,9 @@ plugins {
 	id 'maven-publish'
 }
 
+def includeModMenu = project.hasProperty("launch_with_modmenu") && project.launch_with_modmenu.toBoolean()
+def includeXaero = project.hasProperty("launch_with_xaero_minimap") && project.launch_with_xaero_minimap.toBoolean()
+
 version = project.mod_version
 group = project.maven_group
 
@@ -16,6 +19,12 @@ repositories {
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
+	/*mavenCentral()
+	maven { url = "https://maven.shedaniel.me/" }
+	maven {
+		name = "Terraformers"
+		url = "https://maven.terraformersmc.com/"
+	}*/
 }
 
 dependencies {
@@ -27,13 +36,33 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
+	/*if (includeModMenu) {
+		modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
+	} else {
+		compileOnly("com.terraformersmc:modmenu:${project.modmenu_version}")
+	}
+
+	if (includeXaero) {
+		modImplementation files("libs/Xaeros_Minimap_${project.xaero_minimap_version}_Fabric_${project.minecraft_version}.jar")
+	} else {
+		//compileOnly files("libs/Xaeros_Minimap_${project.xaero_minimap_version}_Fabric_${project.minecraft_version}.jar")
+		compileOnly files("libs/Xaeros_Minimap_${project.xaero_minimap_version}_Fabric_1.21.9.jar")
+	}
+
+	compileOnly files("libs/journeymap-fabric-${project.minecraft_version}-${project.journeymap_version}.jar")*/
+
 }
 
 processResources {
 	inputs.property "version", project.version
+	inputs.property "minecraft_version", minecraft_compatibility
+	inputs.property "loader_version", loader_version
+	filteringCharset = "UTF-8"
 
 	filesMatching("fabric.mod.json") {
-		expand "version": inputs.properties.version
+		expand "version": project.version,
+				"minecraft_version": minecraft_compatibility,
+				"loader_version": loader_version
 	}
 }
 
