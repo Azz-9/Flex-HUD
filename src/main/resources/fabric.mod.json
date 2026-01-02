@@ -8,7 +8,10 @@
 	"authors": [
 		"Azz_9"
 	],
-	"contact": {},
+	"contact": {
+		"issues": "https://github.com/Azz-9/Flex-HUD/issues",
+		"sources": "https://github.com/Azz-9/Flex-HUD"
+	},
 
 	"license": "MIT",
 	"icon": "assets/flex_hud/logo.png",
