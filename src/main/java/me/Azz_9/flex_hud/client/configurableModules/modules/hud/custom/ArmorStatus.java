@@ -46,6 +46,8 @@ public class ArmorStatus extends AbstractTextElement {
 	private final ConfigEnum<DisplayMode> displayMode = new ConfigEnum<>(DisplayMode.class, DisplayMode.VERTICAL, "flex_hud.armor_status.config.orientation");
 	private final ConfigEnum<Alignment> alignment = new ConfigEnum<>(Alignment.class, Alignment.AUTO, "flex_hud.armor_status.config.alignment");
 
+	private boolean invertedLayout;
+
 	public ArmorStatus(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.armor_status.config.enable");
@@ -104,6 +106,8 @@ public class ArmorStatus extends AbstractTextElement {
 			};
 		}
 
+		invertedLayout = getRoundedX() + (getWidth() * getScale()) / 2.0f > context.getScaledWindowWidth() / 2.0;
+
 		// reset height and width
 		setHeight((displayMode.getValue() == DisplayMode.HORIZONTAL) ? 16 : 0);
 		setWidth(0);
@@ -117,7 +121,6 @@ public class ArmorStatus extends AbstractTextElement {
 				showHeldItem.getValue()
 
 		};
-
 
 		int hudX = 0;
 		int hudY = 0;
@@ -214,7 +217,7 @@ public class ArmorStatus extends AbstractTextElement {
 
 		if (shadow.getValue() && !text.isEmpty()) drawingWidth++;
 
-		if (displayMode.getValue() == DisplayMode.VERTICAL && (alignment.getValue() == Alignment.AUTO && getAnchorX() == AnchorPosition.END || alignment.getValue() == Alignment.RIGHT)) {
+		if (displayMode.getValue() == DisplayMode.VERTICAL && invertedLayout) {
 			multiRenderables.add(new MultiRenderable(x, x + drawingWidth,
 					new RenderableText(x, y + 4, Text.of(text), color, shadow.getValue()),
 					new RenderableItem(x + MinecraftClient.getInstance().textRenderer.getWidth(text) + 1, y, 16, stack, showDurabilityBar.getValue())
@@ -245,7 +248,7 @@ public class ArmorStatus extends AbstractTextElement {
 
 				if (shadow.getValue()) drawingWidth++;
 
-				if (displayMode.getValue() == DisplayMode.VERTICAL && (alignment.getValue() == Alignment.AUTO && getAnchorX() == AnchorPosition.END || alignment.getValue() == Alignment.RIGHT)) {
+				if (displayMode.getValue() == DisplayMode.VERTICAL && invertedLayout) {
 					multiRenderables.add(new MultiRenderable(x, x + drawingWidth,
 							new RenderableText(x, y + 4, Text.of(text), getColor(), shadow.getValue()),
 							new RenderableItem(x + MinecraftClient.getInstance().textRenderer.getWidth(text) + 1, y, 16, arrow, showDurabilityBar.getValue())
@@ -286,7 +289,7 @@ public class ArmorStatus extends AbstractTextElement {
 			setWidth(Math.max(getWidth(), drawingWidth));
 			setHeight(getHeight() + 16);
 
-			if (displayMode.getValue() == DisplayMode.VERTICAL && (alignment.getValue() == Alignment.AUTO && getAnchorX() == AnchorPosition.END || alignment.getValue() == Alignment.RIGHT)) {
+			if (displayMode.getValue() == DisplayMode.VERTICAL && invertedLayout) {
 				multiRenderables.add(new MultiRenderable(x, x + drawingWidth,
 						new RenderableText(x, y + 4, Text.of(text), getColor(), shadow.getValue()),
 						new RenderableItem(x + textWidth + 1, y, 16, arrowStack, showDurabilityBar.getValue())
