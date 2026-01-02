@@ -19,12 +19,12 @@ repositories {
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
-	/*mavenCentral()
+	mavenCentral()
 	maven { url = "https://maven.shedaniel.me/" }
 	maven {
 		name = "Terraformers"
 		url = "https://maven.terraformersmc.com/"
-	}*/
+	}
 }
 
 dependencies {
@@ -36,14 +36,14 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	/*if (includeModMenu) {
-		modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
+	if (includeModMenu) {
+		implementation("com.terraformersmc:modmenu:${project.modmenu_version}")
 	} else {
 		compileOnly("com.terraformersmc:modmenu:${project.modmenu_version}")
 	}
 
-	if (includeXaero) {
-		modImplementation files("libs/Xaeros_Minimap_${project.xaero_minimap_version}_Fabric_${project.minecraft_version}.jar")
+	/*if (includeXaero) {
+		implementation files("libs/Xaeros_Minimap_${project.xaero_minimap_version}_Fabric_${project.minecraft_version}.jar")
 	} else {
 		//compileOnly files("libs/Xaeros_Minimap_${project.xaero_minimap_version}_Fabric_${project.minecraft_version}.jar")
 		compileOnly files("libs/Xaeros_Minimap_${project.xaero_minimap_version}_Fabric_1.21.9.jar")
