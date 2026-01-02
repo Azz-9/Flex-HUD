@@ -214,7 +214,7 @@ public class ArmorStatus extends AbstractTextElement {
 
 		if (shadow.getValue() && !text.isEmpty()) drawingWidth++;
 
-		if (displayMode.getValue() == DisplayMode.VERTICAL && (getAnchorX() == AnchorPosition.END || alignment.getValue() == Alignment.RIGHT)) {
+		if (displayMode.getValue() == DisplayMode.VERTICAL && (alignment.getValue() == Alignment.AUTO && getAnchorX() == AnchorPosition.END || alignment.getValue() == Alignment.RIGHT)) {
 			multiRenderables.add(new MultiRenderable(x, x + drawingWidth,
 					new RenderableText(x, y + 4, Component.literal(text), color, shadow.getValue()),
 					new RenderableItem(x + Minecraft.getInstance().font.width(text) + 1, y, 16, stack, showDurabilityBar.getValue())
@@ -245,7 +245,7 @@ public class ArmorStatus extends AbstractTextElement {
 
 				if (shadow.getValue()) drawingWidth++;
 
-				if (displayMode.getValue() == DisplayMode.VERTICAL && (getAnchorX() == AnchorPosition.END || alignment.getValue() == Alignment.RIGHT)) {
+				if (displayMode.getValue() == DisplayMode.VERTICAL && (alignment.getValue() == Alignment.AUTO && getAnchorX() == AnchorPosition.END || alignment.getValue() == Alignment.RIGHT)) {
 					multiRenderables.add(new MultiRenderable(x, x + drawingWidth,
 							new RenderableText(x, y + 4, Component.literal(text), getColor(), shadow.getValue()),
 							new RenderableItem(x + Minecraft.getInstance().font.width(text) + 1, y, 16, arrow, showDurabilityBar.getValue())
@@ -286,7 +286,7 @@ public class ArmorStatus extends AbstractTextElement {
 			setWidth(Math.max(getWidth(), drawingWidth));
 			setHeight(getHeight() + 16);
 
-			if (displayMode.getValue() == DisplayMode.VERTICAL && (getAnchorX() == AnchorPosition.END || alignment.getValue() == Alignment.RIGHT)) {
+			if (displayMode.getValue() == DisplayMode.VERTICAL && (alignment.getValue() == Alignment.AUTO && getAnchorX() == AnchorPosition.END || alignment.getValue() == Alignment.RIGHT)) {
 				multiRenderables.add(new MultiRenderable(x, x + drawingWidth,
 						new RenderableText(x, y + 4, Component.literal(text), getColor(), shadow.getValue()),
 						new RenderableItem(x + textWidth + 1, y, 16, arrowStack, showDurabilityBar.getValue())
