@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
@@ -23,7 +23,7 @@ import java.util.Map;
 
 import static java.util.Map.entry;
 
-public class BiomeDisplay extends AbstractTextElement {
+public class BiomeDisplay extends AbstractTextModule {
 	private final ConfigBoolean biomeSpecificColor = new ConfigBoolean(true, "flex_hud.biome_display.config.biome_specific_color");
 
 	//biome colors for coordinates overlay

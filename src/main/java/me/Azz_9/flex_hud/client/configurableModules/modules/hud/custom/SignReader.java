@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractHudElement;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractMovableModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.tickables.RaycastTickable;
@@ -33,7 +33,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class SignReader extends AbstractHudElement implements TickableModule {
+public class SignReader extends AbstractMovableModule implements TickableModule {
 
 	@NotNull
 	private RenderData renderData = new RenderData();
