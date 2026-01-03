@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.DisplayMode;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable.Renderable;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable.RenderableText;
@@ -28,7 +28,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Coordinates extends AbstractTextElement {
+public class Coordinates extends AbstractTextModule {
 	private final ConfigBoolean showY = new ConfigBoolean(true, "flex_hud.coordinates.config.show_y");
 	private final ConfigInteger numberOfDigits = new ConfigInteger(0, "flex_hud.coordinates.config.number_of_digits", 0, 14);
 	private final ConfigBoolean showDirection = new ConfigBoolean(true, "flex_hud.coordinates.config.show_direction");
