@@ -1,7 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
@@ -25,7 +25,7 @@ import java.util.Map;
 
 import static me.Azz_9.flex_hud.client.utils.DrawingUtils.drawBorder;
 
-public class KeyStrokes extends AbstractTextElement {
+public class KeyStrokes extends AbstractTextModule {
 
 	private final ConfigBoolean chromaColorPressed = new ConfigBoolean(false, "flex_hud.key_strokes.config.chroma_color_pressed");
 	private final ConfigInteger colorPressed = new ConfigInteger(0x323232, "flex_hud.key_strokes.config.color_pressed");

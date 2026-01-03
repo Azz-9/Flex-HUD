@@ -3,8 +3,9 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.Translatable;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.Alignment;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.DimensionHud;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.DisplayMode;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable.MultiRenderable;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable.RenderableItem;
@@ -15,6 +16,7 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.Cyclin
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
+import me.Azz_9.flex_hud.client.utils.BoolBinding;
 import me.Azz_9.flex_hud.client.utils.ItemUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -29,10 +31,7 @@ import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 
-import java.util.LinkedList;
-import java.util.List;
-
-public class ArmorStatus extends AbstractTextElement {
+public class ArmorStatus extends AbstractTextModule {
 	private final ConfigBoolean showHelmet = new ConfigBoolean(true, "flex_hud.armor_status.config.show_helmet");
 	private final ConfigBoolean showChestplate = new ConfigBoolean(true, "flex_hud.armor_status.config.show_chestplate");
 	private final ConfigBoolean showLeggings = new ConfigBoolean(true, "flex_hud.armor_status.config.show_leggings");
@@ -45,12 +44,28 @@ public class ArmorStatus extends AbstractTextElement {
 	private final ConfigEnum<DurabilityType> durabilityType = new ConfigEnum<>(DurabilityType.class, DurabilityType.PERCENTAGE, "flex_hud.armor_status.config.show_durability");
 	private final ConfigEnum<DisplayMode> displayMode = new ConfigEnum<>(DisplayMode.class, DisplayMode.VERTICAL, "flex_hud.armor_status.config.orientation");
 	private final ConfigEnum<Alignment> alignment = new ConfigEnum<>(Alignment.class, Alignment.AUTO, "flex_hud.armor_status.config.alignment");
+	private final ConfigBoolean moveEachPiecesIndependently = new ConfigBoolean(false, "flex_hud.armor_status.config.move_each_pieces_independently");
 
 	private boolean invertedLayout;
 
 	public ArmorStatus(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.armor_status.config.enable");
+
+		int nbItems = 9; // armor pieces (4), hands (2), arrows types (3) = 9
+
+		// skipping the first one that was already added in the super constructor
+		for (int i = 1; i < nbItems; i++) {
+			getDimensionHudList().add(new DimensionHud(defaultOffsetX, defaultOffsetY + i * 17, defaultAnchorX, defaultAnchorY));
+		}
+
+		ConfigRegistry.unregister(getID(), "offsetX");
+		ConfigRegistry.unregister(getID(), "offsetY");
+		ConfigRegistry.unregister(getID(), "anchorX");
+		ConfigRegistry.unregister(getID(), "anchorY");
+		ConfigRegistry.unregister(getID(), "scale");
+
+		DimensionHud.register(getID(), getDimensionHudList());
 
 		ConfigRegistry.register(getID(), "showHelmet", showHelmet);
 		ConfigRegistry.register(getID(), "showChestplate", showChestplate);
@@ -64,6 +79,21 @@ public class ArmorStatus extends AbstractTextElement {
 		ConfigRegistry.register(getID(), "durabilityType", durabilityType);
 		ConfigRegistry.register(getID(), "displayMode", displayMode);
 		ConfigRegistry.register(getID(), "alignment", alignment);
+		ConfigRegistry.register(getID(), "moveEachPiecesIndependently", moveEachPiecesIndependently);
+
+		getDimensionHudList().get(0).bindEnabled(BoolBinding.or(BoolBinding.not(moveEachPiecesIndependently), showHelmet::getValue));
+		getDimensionHudList().get(1).bindEnabled(BoolBinding.and(moveEachPiecesIndependently, showChestplate));
+		getDimensionHudList().get(2).bindEnabled(BoolBinding.and(moveEachPiecesIndependently, showLeggings));
+		getDimensionHudList().get(3).bindEnabled(BoolBinding.and(moveEachPiecesIndependently, showBoots));
+		getDimensionHudList().get(4).bindEnabled(BoolBinding.and(moveEachPiecesIndependently, showHeldItem));
+		getDimensionHudList().get(5).bindEnabled(BoolBinding.and(moveEachPiecesIndependently, showOffHandItem));
+		getDimensionHudList().get(6).bindEnabled(BoolBinding.and(moveEachPiecesIndependently, showArrowsWhenBowInHand));
+		getDimensionHudList().get(7).bindEnabled(BoolBinding.and(moveEachPiecesIndependently, showArrowsWhenBowInHand, separateArrowTypes));
+		getDimensionHudList().get(8).bindEnabled(BoolBinding.and(moveEachPiecesIndependently, showArrowsWhenBowInHand, separateArrowTypes));
+
+		moveEachPiecesIndependently.setOnChange(value -> {
+			if (!value) getDimensionHudList().getFirst().setDisplayed(true);
+		});
 	}
 
 	@Override
@@ -119,7 +149,6 @@ public class ArmorStatus extends AbstractTextElement {
 				showBoots.getValue(),
 				showOffHandItem.getValue(),
 				showHeldItem.getValue()
-
 		};
 
 		int hudX = 0;
@@ -128,7 +157,9 @@ public class ArmorStatus extends AbstractTextElement {
 		int horizontalGap = 4;
 		int verticalGap = 1;
 
-		List<MultiRenderable> multiRenderables = new LinkedList<>();
+		for (DimensionHud dimensionHud : getDimensionHudList()) {
+			dimensionHud.clearMultiRenderables();
+		}
 
 		boolean shouldDrawArrows = false;
 		for (int i = 0; i < booleans.length; i++) {
@@ -136,52 +167,70 @@ public class ArmorStatus extends AbstractTextElement {
 				ItemStack stack = items[i];
 
 				if (!stack.isEmpty()) {
-					int drawingWidth = drawItemStack(stack, hudX, hudY, multiRenderables);
+					if (moveEachPiecesIndependently.getValue()) getDimensionHudList().get(i).setDisplayed(true);
+					int drawingWidth = drawItemStack(stack, hudX, hudY, i);
+					if (moveEachPiecesIndependently.getValue()) {
+						setWidth(i, drawingWidth);
+						setHeight(i, 16);
+					}
 
 					if (this.displayMode.getValue() == DisplayMode.VERTICAL) {
-						hudY += 16 + verticalGap;
-						setHeight(hudY - verticalGap);
-						setWidth(Math.max(getWidth(), drawingWidth));
+						if (!moveEachPiecesIndependently.getValue()) {
+							hudY += 16 + verticalGap;
+							setHeight(hudY - verticalGap);
+							setWidth(Math.max(getWidth(), drawingWidth));
+						}
 					} else {
-						hudX += drawingWidth + horizontalGap;
-						setWidth(hudX);
+						if (!moveEachPiecesIndependently.getValue()) {
+							hudX += drawingWidth + horizontalGap;
+							setWidth(hudX);
+						}
 					}
 
 					if ((i == 4 || i == 5) && this.showArrowsWhenBowInHand.getValue() && (stack.isOf(Items.BOW) || stack.isOf(Items.CROSSBOW))) {
 						shouldDrawArrows = true;
 					}
+				} else {
+					if (moveEachPiecesIndependently.getValue()) getDimensionHudList().get(i).setDisplayed(false);
 				}
 			}
 		}
 
-		if (shouldDrawArrows) {
-			drawArrowsStacks(hudX, hudY, horizontalGap, verticalGap, multiRenderables);
+		if (moveEachPiecesIndependently.getValue()) {
+			getDimensionHudList().get(6).setDisplayed(shouldDrawArrows);
+			getDimensionHudList().get(7).setDisplayed(shouldDrawArrows);
+			getDimensionHudList().get(8).setDisplayed(shouldDrawArrows);
 		}
 
-		if (displayMode.getValue() == DisplayMode.VERTICAL) {
+		if (shouldDrawArrows) {
+			drawArrowsStacks(hudX, hudY, horizontalGap, verticalGap);
+		}
+
+		if (displayMode.getValue() == DisplayMode.VERTICAL && !moveEachPiecesIndependently.getValue()) {
 			if (alignment.getValue() == Alignment.RIGHT || alignment.getValue() == Alignment.AUTO && getAnchorX() == AnchorPosition.END) {
-				MultiRenderable.alignRight(multiRenderables, getWidth());
+				MultiRenderable.alignRight(getDimensionHudList().getFirst().getMultiRenderables(), getWidth());
 			} else if (alignment.getValue() == Alignment.CENTER || alignment.getValue() == Alignment.AUTO && getAnchorX() == AnchorPosition.CENTER) {
-				MultiRenderable.alignCenter(multiRenderables, getWidth() / 2);
+				MultiRenderable.alignCenter(getDimensionHudList().getFirst().getMultiRenderables(), getWidth() / 2);
 			}
 		}
 
-		Matrix3x2fStack matrices = context.getMatrices();
-		matrices.pushMatrix();
-		matrices.translate(getRoundedX(), getRoundedY());
-		matrices.scale(getScale());
+		for (int i = 0; i < getDimensionHudList().size(); i++) {
+			DimensionHud dimensionHud = getDimensionHudList().get(i);
+			Matrix3x2fStack matrices = context.getMatrices();
+			matrices.pushMatrix();
+			matrices.translate(dimensionHud.getRoundedX(), dimensionHud.getRoundedY());
+			matrices.scale(dimensionHud.getScale());
 
-		drawBackground(context);
+			drawBackground(i, context);
 
-		for (MultiRenderable multiRenderable : multiRenderables) {
-			multiRenderable.render(context, tickCounter);
+			dimensionHud.render(context, tickCounter);
+
+			matrices.popMatrix();
 		}
-
-		matrices.popMatrix();
 	}
 
 	//return width
-	private int drawItemStack(ItemStack stack, int x, int y, List<MultiRenderable> multiRenderables) {
+	private int drawItemStack(ItemStack stack, int x, int y, int index) {
 		int drawingWidth = 16;
 
 		String text;
@@ -192,12 +241,12 @@ public class ArmorStatus extends AbstractTextElement {
 				case PERCENTAGE -> {
 					text = Math.round(ItemUtils.getDurabilityPercentage(stack)) + "%";
 					color = ColorHelper.withAlpha(255, stack.getItemBarColor());
-					drawingWidth += MinecraftClient.getInstance().textRenderer.getWidth(text);
+					drawingWidth += MinecraftClient.getInstance().textRenderer.getWidth(text) + 1;
 				}
 				case VALUE -> {
 					text = String.valueOf(ItemUtils.getDurabilityValue(stack));
 					color = ColorHelper.withAlpha(255, stack.getItemBarColor());
-					drawingWidth += MinecraftClient.getInstance().textRenderer.getWidth(text);
+					drawingWidth += MinecraftClient.getInstance().textRenderer.getWidth(text) + 1;
 				}
 				default -> {
 					text = "";
@@ -212,18 +261,16 @@ public class ArmorStatus extends AbstractTextElement {
 				text = String.valueOf(ItemUtils.getStackCount(stack, MinecraftClient.getInstance().player.getInventory()));
 			}
 			color = getColor();
-			drawingWidth += MinecraftClient.getInstance().textRenderer.getWidth(text);
+			drawingWidth += MinecraftClient.getInstance().textRenderer.getWidth(text) + 1;
 		}
 
-		if (shadow.getValue() && !text.isEmpty()) drawingWidth++;
-
-		if (displayMode.getValue() == DisplayMode.VERTICAL && invertedLayout) {
-			multiRenderables.add(new MultiRenderable(x, x + drawingWidth,
+		if (displayMode.getValue() == DisplayMode.VERTICAL && invertedLayout || moveEachPiecesIndependently.getValue() && getRoundedX(index) + (drawingWidth * getScale(index)) / 2.0 > MinecraftClient.getInstance().getWindow().getScaledWidth() / 2.0) {
+			getDimensionHudList().get(moveEachPiecesIndependently.getValue() ? index : 0).addMultiRenderable(new MultiRenderable(x, x + drawingWidth,
 					new RenderableText(x, y + 4, Text.of(text), color, shadow.getValue()),
 					new RenderableItem(x + MinecraftClient.getInstance().textRenderer.getWidth(text) + 1, y, 16, stack, showDurabilityBar.getValue())
 			));
 		} else {
-			multiRenderables.add(new MultiRenderable(x, x + drawingWidth,
+			getDimensionHudList().get(moveEachPiecesIndependently.getValue() ? index : 0).addMultiRenderable(new MultiRenderable(x, x + drawingWidth,
 					new RenderableItem(x, y, 16, stack, showDurabilityBar.getValue()),
 					new RenderableText(x + 17, y + 4, Text.of(text), color, shadow.getValue())
 			));
@@ -232,10 +279,11 @@ public class ArmorStatus extends AbstractTextElement {
 		return drawingWidth;
 	}
 
-	private void drawArrowsStacks(int x, int y, int horizontalGap, int verticalGap, List<MultiRenderable> multiRenderables) {
+	private void drawArrowsStacks(int x, int y, int horizontalGap, int verticalGap) {
 		if (separateArrowTypes.getValue()) {
 			Item[] arrows = new Item[]{Items.ARROW, Items.SPECTRAL_ARROW, Items.TIPPED_ARROW};
-			for (Item arrow : arrows) {
+			for (int i = 0; i < arrows.length; i++) {
+				Item arrow = arrows[i];
 				int drawingWidth = 16;
 				String text;
 
@@ -244,29 +292,32 @@ public class ArmorStatus extends AbstractTextElement {
 				} else {
 					text = String.valueOf(ItemUtils.getItemCount(arrow, MinecraftClient.getInstance().player.getInventory()));
 				}
-				drawingWidth += MinecraftClient.getInstance().textRenderer.getWidth(text);
+				drawingWidth += MinecraftClient.getInstance().textRenderer.getWidth(text) + 1;
 
-				if (shadow.getValue()) drawingWidth++;
-
-				if (displayMode.getValue() == DisplayMode.VERTICAL && invertedLayout) {
-					multiRenderables.add(new MultiRenderable(x, x + drawingWidth,
+				if (displayMode.getValue() == DisplayMode.VERTICAL && invertedLayout || moveEachPiecesIndependently.getValue() && getRoundedX(6 + i) + (drawingWidth * getScale(6 + i)) / 2.0 > MinecraftClient.getInstance().getWindow().getScaledWidth() / 2.0) {
+					getDimensionHudList().get(moveEachPiecesIndependently.getValue() ? 6 + i : 0).addMultiRenderable(new MultiRenderable(x, x + drawingWidth,
 							new RenderableText(x, y + 4, Text.of(text), getColor(), shadow.getValue()),
 							new RenderableItem(x + MinecraftClient.getInstance().textRenderer.getWidth(text) + 1, y, 16, arrow, showDurabilityBar.getValue())
 					));
 				} else {
-					multiRenderables.add(new MultiRenderable(x, x + drawingWidth,
+					getDimensionHudList().get(moveEachPiecesIndependently.getValue() ? 6 + i : 0).addMultiRenderable(new MultiRenderable(x, x + drawingWidth,
 							new RenderableItem(x, y, 16, arrow, showDurabilityBar.getValue()),
 							new RenderableText(x + 17, y + 4, Text.of(text), getColor(), shadow.getValue())
 					));
 				}
 
-				if (displayMode.getValue() == DisplayMode.VERTICAL) {
-					y += 16 + verticalGap;
-					setHeight(y);
-					setWidth(Math.max(getWidth(), drawingWidth));
+				if (!moveEachPiecesIndependently.getValue()) {
+					if (displayMode.getValue() == DisplayMode.VERTICAL) {
+						y += 16 + verticalGap;
+						setHeight(y);
+						setWidth(Math.max(getWidth(), drawingWidth));
+					} else {
+						x += drawingWidth + horizontalGap;
+						setWidth(x);
+					}
 				} else {
-					x += drawingWidth + horizontalGap;
-					setWidth(x + (shadow.getValue() ? 1 : 0));
+					setWidth(6 + i, drawingWidth);
+					setHeight(6 + i, 16);
 				}
 			}
 		} else {
@@ -284,18 +335,27 @@ public class ArmorStatus extends AbstractTextElement {
 
 			String text = String.valueOf(totalCount);
 
-			int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(text) + (shadow.getValue() ? 1 : 0);
+			int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(text);
 			int drawingWidth = 17 + textWidth;
-			setWidth(Math.max(getWidth(), drawingWidth));
-			setHeight(getHeight() + 16);
+			if (!moveEachPiecesIndependently.getValue()) {
+				if (displayMode.getValue() == DisplayMode.VERTICAL) {
+					setWidth(Math.max(getWidth(), drawingWidth));
+					setHeight(getHeight() + 16);
+				} else {
+					setWidth(x + drawingWidth);
+				}
+			} else {
+				setWidth(6, drawingWidth);
+				setHeight(6, 16);
+			}
 
-			if (displayMode.getValue() == DisplayMode.VERTICAL && invertedLayout) {
-				multiRenderables.add(new MultiRenderable(x, x + drawingWidth,
+			if (displayMode.getValue() == DisplayMode.VERTICAL && invertedLayout || moveEachPiecesIndependently.getValue() && getRoundedX(6) + (drawingWidth * getScale(6)) / 2.0 > MinecraftClient.getInstance().getWindow().getScaledWidth() / 2.0) {
+				getDimensionHudList().get(moveEachPiecesIndependently.getValue() ? 6 : 0).addMultiRenderable(new MultiRenderable(x, x + drawingWidth,
 						new RenderableText(x, y + 4, Text.of(text), getColor(), shadow.getValue()),
 						new RenderableItem(x + textWidth + 1, y, 16, arrowStack, showDurabilityBar.getValue())
 				));
 			} else {
-				multiRenderables.add(new MultiRenderable(x, x + drawingWidth,
+				getDimensionHudList().get(moveEachPiecesIndependently.getValue() ? 6 : 0).addMultiRenderable(new MultiRenderable(x, x + drawingWidth,
 						new RenderableItem(x, y, 16, arrowStack, showDurabilityBar.getValue()),
 						new RenderableText(x + 17, y + 4, Text.of(text), getColor(), shadow.getValue())
 				));
@@ -406,10 +466,18 @@ public class ArmorStatus extends AbstractTextElement {
 								.setVariable(durabilityType)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(moveEachPiecesIndependently)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build()
+				);
+				this.addAllEntries(
 						new CyclingButtonEntry.Builder<DisplayMode>()
 								.setCyclingButtonWidth(80)
 								.setVariable(displayMode)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), true)
 								.build()
 				);
 				this.addAllEntries(
@@ -418,6 +486,7 @@ public class ArmorStatus extends AbstractTextElement {
 								.setVariable(alignment)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.addDependency(this.getConfigList().getLastEntry(), DisplayMode.HORIZONTAL)
+								.addDependency(this.getConfigList().getEntry(this.getConfigList().getEntryCount() - 2), true)
 								.build()
 				);
 			}

@@ -99,6 +99,7 @@
 	"flex_hud.armor_status.config.show_durability": "Show durability",
 	"flex_hud.armor_status.config.orientation": "Orientation",
 	"flex_hud.armor_status.config.alignment": "Alignment",
+	"flex_hud.armor_status.config.move_each_pieces_independently": "Move each item independently",
 
 	"flex_hud.clock": "Clock",
 	"flex_hud.clock.config.enable": "Show clock",
