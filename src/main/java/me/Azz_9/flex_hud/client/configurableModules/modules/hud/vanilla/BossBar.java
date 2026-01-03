@@ -2,8 +2,7 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.vanilla;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractHudElement;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.MovableModule;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractMovableModule;
 import me.Azz_9.flex_hud.client.mixin.bossBar.BossBarAccessor;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
@@ -25,7 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class BossBar extends AbstractHudElement implements MovableModule {
+public class BossBar extends AbstractMovableModule {
 	private static final Identifier[] BACKGROUND_TEXTURES = new Identifier[]{
 			Identifier.ofVanilla("boss_bar/pink_background"), Identifier.ofVanilla("boss_bar/blue_background"),
 			Identifier.ofVanilla("boss_bar/red_background"), Identifier.ofVanilla("boss_bar/green_background"),

@@ -3,7 +3,7 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.IntFieldEntry;
@@ -20,7 +20,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
 
-public class Distance extends AbstractTextElement implements TickableModule {
+public class Distance extends AbstractTextModule implements TickableModule {
 
 	private final ConfigInteger digits = new ConfigInteger(0, "flex_hud.distance.config.number_of_digits", 0, 16);
 

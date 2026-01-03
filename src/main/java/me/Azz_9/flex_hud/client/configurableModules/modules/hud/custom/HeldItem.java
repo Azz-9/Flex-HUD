@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
@@ -21,7 +21,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.NotNull;
 
-public class HeldItem extends AbstractTextElement {
+public class HeldItem extends AbstractTextModule {
 
 	private final ConfigEnum<ArmorStatus.DurabilityType> durabilityType = new ConfigEnum<>(ArmorStatus.DurabilityType.class, ArmorStatus.DurabilityType.PERCENTAGE, "flex_hud.held_item.config.show_durability");
 
