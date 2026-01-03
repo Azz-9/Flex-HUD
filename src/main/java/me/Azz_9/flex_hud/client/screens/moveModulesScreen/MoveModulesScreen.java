@@ -3,7 +3,8 @@ package me.Azz_9.flex_hud.client.screens.moveModulesScreen;
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.MovableModule;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractMovableModule;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.DimensionHud;
 import me.Azz_9.flex_hud.client.screens.AbstractCallbackScreen;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.actions.UndoManager;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.widgets.MovableWidget;
@@ -53,16 +54,20 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 
 		this.addRenderableWidget(helpWidget);
 
-		for (MovableModule movableModule : ModulesHelper.getMovableModules()) {
+		for (AbstractMovableModule movableModule : ModulesHelper.getMovableModules()) {
 			if (movableModule.isEnabled()) {
 				// certains modules utilisent des placeholder, pour ces modules il faut forcer le tick pour que
 				// les données utilisées soient les placeholders et que la taille du MovableWidget soit la bonne
 				if (movableModule instanceof TickableModule tickable) tickable.tick();
 
-				MovableWidget movableWidget = new MovableWidget(movableModule, this);
-				movableWidgets.add(movableWidget);
-				this.addRenderableWidget(movableWidget);
-				registerTrackableWidget(movableWidget);
+				for (DimensionHud dimensionHud : movableModule.getDimensionHudList()) {
+					if (dimensionHud.isEnabled()) {
+						MovableWidget movableWidget = new MovableWidget(dimensionHud, this);
+						movableWidgets.add(movableWidget);
+						this.addRenderableWidget(movableWidget);
+						registerTrackableWidget(movableWidget);
+					}
+				}
 			}
 		}
 	}

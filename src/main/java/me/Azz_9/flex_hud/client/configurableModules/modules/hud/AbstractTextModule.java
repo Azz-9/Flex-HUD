@@ -8,13 +8,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.ARGB;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class AbstractTextElement extends AbstractBackgroundElement {
+public abstract class AbstractTextModule extends AbstractBackgroundModule {
 
 	public ConfigBoolean shadow = new ConfigBoolean(true, "flex_hud.global.config.text_shadow");
 	public ConfigBoolean chromaColor = new ConfigBoolean(false, "flex_hud.global.config.chroma_text_color");
 	public ConfigInteger color = new ConfigInteger(0xffffff, "flex_hud.global.config.text_color");
 
-	public AbstractTextElement(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
+	public AbstractTextModule(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 
 		ConfigRegistry.register(getID(), "shadow", shadow);
