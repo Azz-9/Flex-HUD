@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
@@ -17,7 +17,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 
-public class NetherCoordinates extends AbstractTextElement {
+public class NetherCoordinates extends AbstractTextModule {
 	private final ConfigBoolean onlyWhenInOverworld = new ConfigBoolean(false, "flex_hud.nether_coordinates.config.only_show_in_overworld");
 
 	public NetherCoordinates(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {

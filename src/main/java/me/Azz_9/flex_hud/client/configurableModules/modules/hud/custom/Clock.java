@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.StringFieldEntry;
@@ -23,7 +23,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-public class Clock extends AbstractTextElement implements TickableModule {
+public class Clock extends AbstractTextModule implements TickableModule {
 	public final ConfigString textFormat = new ConfigString("hh:mm:ss", "flex_hud.clock.config.text_format");
 	public final ConfigBoolean isTwentyFourHourFormat;
 

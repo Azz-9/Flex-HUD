@@ -1,6 +1,7 @@
 package me.Azz_9.flex_hud.client.screens.moveModulesScreen.widgets;
 
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractHudElement;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractMovableModule;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.DimensionHud;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.MovableModule;
 import me.Azz_9.flex_hud.client.screens.TrackableChange;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.MoveModulesScreen;
@@ -30,7 +31,7 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 
 	private final float INITIAL_SCALE;
 	private final double INITIAL_OFFSET_X, INITIAL_OFFSET_Y;
-	private final AbstractHudElement.AnchorPosition INITIAL_ANCHOR_X, INITIAL_ANCHOR_Y;
+	private final AbstractMovableModule.AnchorPosition INITIAL_ANCHOR_X, INITIAL_ANCHOR_Y;
 
 	// snap
 	private final int SNAP_DISTANCE = 3;
@@ -56,7 +57,7 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 	private boolean shouldDrawScaleValue = false;
 	private final float STEP = 0.25f;
 
-	public MovableWidget(MovableModule hudElement, MoveModulesScreen parent) {
+	public MovableWidget(DimensionHud hudElement, MoveModulesScreen parent) {
 		super(
 				hudElement.getRoundedX(),
 				hudElement.getRoundedY(),
@@ -390,7 +391,7 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 
 			if (!Screen.hasControlDown()) {
 				for (MovableWidget widget : PARENT.getMovableWidgets()) {
-					if (!widget.HUD_ELEMENT.getID().equals(this.HUD_ELEMENT.getID())) {
+					if (widget.HUD_ELEMENT != this.HUD_ELEMENT) {
 						double otherX = widget.getX();
 						double otherY = widget.getY();
 						double otherRight = widget.getRight();
