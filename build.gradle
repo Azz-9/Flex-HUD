@@ -36,13 +36,13 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	if (includeModMenu) {
+	/*if (includeModMenu) {
 		implementation("com.terraformersmc:modmenu:${project.modmenu_version}")
 	} else {
 		compileOnly("com.terraformersmc:modmenu:${project.modmenu_version}")
 	}
 
-	/*if (includeXaero) {
+	if (includeXaero) {
 		implementation files("libs/Xaeros_Minimap_${project.xaero_minimap_version}_Fabric_${project.minecraft_version}.jar")
 	} else {
 		//compileOnly files("libs/Xaeros_Minimap_${project.xaero_minimap_version}_Fabric_${project.minecraft_version}.jar")
