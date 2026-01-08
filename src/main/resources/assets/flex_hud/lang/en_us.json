@@ -131,6 +131,7 @@
 	"flex_hud.compass.config.enable": "Show compass",
 	"flex_hud.compass.config.show_marker": "Show marker",
 	"flex_hud.compass.config.show_degrees": "Show degrees",
+	"flex_hud.compass.config.degrees_decimals": "Degrees decimals",
 	"flex_hud.compass.config.show_intermediate_point": "Show intermediate points",
 	"flex_hud.compass.config.show_xaeros_map_waypoints": "Show Xaero's map waypoints",
 	"flex_hud.compass.config.show_xaeros_map_waypoints.not_installed_tooltip": "Xaero's Minimap is not installed",
