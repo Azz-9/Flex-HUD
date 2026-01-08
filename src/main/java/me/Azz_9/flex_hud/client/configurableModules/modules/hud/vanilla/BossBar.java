@@ -57,6 +57,10 @@ public class BossBar extends AbstractMovableModule {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.bossbar.config.enable");
 
+		// show boss bar even in f3, same behavior as minecraft boss bar
+		this.hideInF3.setValue(false);
+		this.hideInF3.setDefaultValue(false);
+
 		ConfigRegistry.register(getID(), "showBossBar", showBossBar);
 	}
 
