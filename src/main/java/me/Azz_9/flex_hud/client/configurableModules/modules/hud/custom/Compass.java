@@ -571,6 +571,13 @@ public class Compass extends AbstractTextModule {
 	}
 
 	@Override
+	public List<String> getKeywords() {
+		List<String> keywords = new ArrayList<>(super.getKeywords());
+		keywords.add("yaw");
+		return keywords;
+	}
+
+	@Override
 	public AbstractConfigurationScreen getConfigScreen(Screen parent) {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
