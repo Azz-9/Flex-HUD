@@ -251,6 +251,9 @@
 	"flex_hud.biome_display.config.enable": "Show biome",
 	"flex_hud.biome_display.config.biome_specific_color": "Biome-specific color",
 
+	"flex_hud.pitch_display": "Pitch display",
+	"flex_hud.pitch_display.config.enable": "Show pitch display",
+
 	"flex_hud.coordinates.hud.direction.south": "South",
 	"flex_hud.coordinates.hud.direction.south_west": "South-West",
 	"flex_hud.coordinates.hud.direction.west": "West",
