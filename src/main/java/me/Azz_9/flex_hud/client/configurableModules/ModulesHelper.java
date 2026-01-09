@@ -28,6 +28,7 @@ public class ModulesHelper {
 	public BiomeDisplay biomeDisplay = new BiomeDisplay(2, 45, AbstractMovableModule.AnchorPosition.START, AbstractMovableModule.AnchorPosition.START);
 	public NetherCoordinates netherCoordinates = new NetherCoordinates(2, 60, AbstractMovableModule.AnchorPosition.START, AbstractMovableModule.AnchorPosition.START);
 	public Compass compass = new Compass(0, 0, AbstractMovableModule.AnchorPosition.CENTER, AbstractMovableModule.AnchorPosition.START);
+	public PitchDisplay pitchDisplay = new PitchDisplay(0, 0, AbstractMovableModule.AnchorPosition.END, AbstractMovableModule.AnchorPosition.CENTER);
 	public DayCounter dayCounter = new DayCounter(148, 2, AbstractMovableModule.AnchorPosition.CENTER, AbstractMovableModule.AnchorPosition.START);
 	public Ping ping = new Ping(-129, 2, AbstractMovableModule.AnchorPosition.END, AbstractMovableModule.AnchorPosition.START);
 	public ServerAddress serverAddress = new ServerAddress(200, 2, AbstractMovableModule.AnchorPosition.START, AbstractMovableModule.AnchorPosition.START);
@@ -84,6 +85,7 @@ public class ModulesHelper {
 				getInstance().biomeDisplay,
 				getInstance().netherCoordinates,
 				getInstance().compass,
+				getInstance().pitchDisplay,
 				getInstance().dayCounter,
 				getInstance().ping,
 				getInstance().serverAddress,

@@ -1,15 +1,18 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.NotNull;
@@ -17,11 +20,15 @@ import org.joml.Matrix3x2fStack;
 
 public class PitchDisplay extends AbstractTextModule {
 
+	private final ConfigBoolean displayWhenElytraIsEquipped = new ConfigBoolean(false, ""); //TODO trad
+
 	public PitchDisplay(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setValue(false);
 		this.enabled.setDefaultValue(false);
 		this.enabled.setConfigTextTranslationKey("flex_hud.pitch_display.config.enable");
+
+		ConfigRegistry.register(getID(), "displayWhenElytraIsEquipped", displayWhenElytraIsEquipped);
 
 		setHeight(210);
 		setWidth(30);
@@ -62,10 +69,16 @@ public class PitchDisplay extends AbstractTextModule {
 		drawBackground(context);
 
 		for (int angle = 0; angle < 360; angle += 45) {
-			drawPitchPoint(context, matrices, 0, pitch);
+			drawPitchPoint(context, matrices, angle, pitch);
 		}
 
 		matrices.popMatrix();
+	}
+
+	@Override
+	public boolean shouldNotRender() {
+		PlayerEntity player = MinecraftClient.getInstance().player;
+		return super.shouldNotRender() || player != null && displayWhenElytraIsEquipped.getValue() && !player.getInventory().getStack(38).isOf(Items.ELYTRA);
 	}
 
 	private void drawPitchPoint(DrawContext drawContext, Matrix3x2fStack matrices, int angle, float pitch) {
@@ -77,16 +90,18 @@ public class PitchDisplay extends AbstractTextModule {
 		if (Math.abs(angleDifference) <= 120) {
 			float scaleFactor = 1.25f;
 			// Calculer la position Y de chaque point cardinal en fonction de l'angle
-			float positionY = ((getWidth() / 2.0f) + (angleDifference * (getWidth() / 180.0f)));
+			float positionY = ((getHeight() / 2.0f) + (angleDifference * (getHeight() / 180.0f)));
 			float pointWidth = client.textRenderer.getWidth(label) * scaleFactor;
 
 			// Afficher le label des directions avec couleur et taille de texte ajustée
 			matrices.pushMatrix();
-			matrices.translate(positionY - pointWidth / 2.0f, 8);
+			matrices.translate(8, positionY - pointWidth / 2.0f);
 			matrices.scale(scaleFactor, scaleFactor);
-			matrices.rotate(90);
+			matrices.rotate((float) Math.toRadians(90));
 			drawContext.drawText(client.textRenderer, label, 0, 0, getColorWithFadeEffect(positionY), this.shadow.getValue());
 			matrices.popMatrix();
+
+
 		}
 	}
 
@@ -95,11 +110,11 @@ public class PitchDisplay extends AbstractTextModule {
 	}
 
 	private int getAlpha(float CenterYOfDrawing) {
-		double distanceFromCenter = Math.abs(CenterYOfDrawing - getWidth() / 2.0);
+		double distanceFromCenter = Math.abs(CenterYOfDrawing - getHeight() / 2.0);
 
 		int alpha = 0xff;
-		if (distanceFromCenter > getWidth() / 4.0) {
-			alpha = Math.max(0xff - (int) ((distanceFromCenter - getWidth() / 4.0) / (getWidth() / 4.0) * 0xff), 0);
+		if (distanceFromCenter > getHeight() / 4.0) {
+			alpha = Math.max(0xff - (int) ((distanceFromCenter - getHeight() / 4.0) / (getHeight() / 4.0) * 0xff), 0);
 		}
 
 		return alpha;
@@ -153,6 +168,11 @@ public class PitchDisplay extends AbstractTextModule {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(hideInF3)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(displayWhenElytraIsEquipped)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
