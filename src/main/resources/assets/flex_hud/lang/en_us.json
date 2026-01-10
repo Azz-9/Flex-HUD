@@ -252,6 +252,10 @@
 
 	"flex_hud.pitch_display": "Pitch display",
 	"flex_hud.pitch_display.config.enable": "Show pitch display",
+	"flex_hud.pitch_display.config.display_when_elytra_equipped": "Display when elytra is equipped",
+	"flex_hud.pitch_display.config.show_marker": "Show marker",
+	"flex_hud.pitch_display.config.show_degrees": "Show degrees",
+	"flex_hud.pitch_display.config.degrees_decimals": "Degrees decimals",
 
 	"flex_hud.coordinates.hud.direction.south": "South",
 	"flex_hud.coordinates.hud.direction.south_west": "South-West",
