@@ -250,8 +250,12 @@
 	"flex_hud.biome_display.config.enable": "Afficher les biome",
 	"flex_hud.biome_display.config.biome_specific_color": "Couleur spécifique au biome",
 
-	"flex_hud.pitch_display": "Pitch display",
-	"flex_hud.pitch_display.config.enable": "Show pitch display",
+	"flex_hud.pitch_display": "Affichage de l'inclinaison",
+	"flex_hud.pitch_display.config.enable": "Afficher l'inclinaison",
+	"flex_hud.pitch_display.config.display_when_elytra_equipped": "Afficher lorsque des élytres sont équipées",
+	"flex_hud.pitch_display.config.show_marker": "Afficher le marqueur",
+	"flex_hud.pitch_display.config.show_degrees": "Afficher les degrés",
+	"flex_hud.pitch_display.config.degrees_decimals": "Décimales des degrés",
 
 	"flex_hud.coordinates.hud.direction.south": "Sud",
 	"flex_hud.coordinates.hud.direction.south_west": "Sud-Ouest",
