@@ -154,7 +154,7 @@ public class Crosshair extends AbstractModule implements HudElement {
 
 	public boolean shouldNotRenderCrosshair() {
 		MinecraftClient client = MinecraftClient.getInstance();
-		return client.getDebugHud().shouldShowDebugHud() && client.options.getPerspective() == Perspective.FIRST_PERSON && client.player != null && !client.player.hasReducedDebugInfo() && !(Boolean) client.options.getReducedDebugInfo().getValue();
+		return client.debugHudEntryList.isF3Enabled() && client.options.getPerspective() == Perspective.FIRST_PERSON && client.player != null && !client.player.hasReducedDebugInfo() && !(Boolean) client.options.getReducedDebugInfo().getValue();
 	}
 
 	private boolean shouldRenderSpectatorCrosshair(@Nullable HitResult hitResult) {
