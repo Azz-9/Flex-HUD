@@ -118,7 +118,7 @@ public class Compass extends AbstractTextModule {
 			yaw = 180;
 		} else {
 			// Calcul de la direction (yaw)
-			yaw = (player.getVisualRotationYInDegrees() % 360 + 360) % 360;
+			yaw = (player.getYRot() % 360 + 360) % 360;
 		}
 
 		Matrix3x2fStack matrices = graphics.pose();
@@ -214,14 +214,13 @@ public class Compass extends AbstractTextModule {
 
 	private void drawCompassPoint(GuiGraphics graphics, Matrix3x2fStack matrices, Component label, int angle, float yaw, int y) {
 		Minecraft minecraft = Minecraft.getInstance();
-		int screenWidth = graphics.guiWidth();
 
 		float angleDifference = (angle - yaw + 540) % 360 - 180;
 
 		if (Math.abs(angleDifference) <= 120) {
 			float scaleFactor = 1.25f;
 			// Calculer la position X de chaque point cardinal en fonction de l'angle
-			float positionX = ((getWidth() / 2.0f) + (angleDifference * (screenWidth / 180.0f)));
+			float positionX = ((getWidth() / 2.0f) + (angleDifference * (getWidth() / 180.0f)));
 			float pointWidth = minecraft.font.width(label) * scaleFactor;
 
 			// Afficher le label des directions avec couleur et taille de texte ajustée
@@ -235,7 +234,6 @@ public class Compass extends AbstractTextModule {
 
 	private void drawIntermediatePoint(GuiGraphics graphics, Matrix3x2fStack matrices, int angle, float yaw, int y) {
 		Minecraft minecraft = Minecraft.getInstance();
-		int screenWidth = graphics.guiWidth();
 
 		float angleDifference = (angle - yaw + 540) % 360 - 180;
 
