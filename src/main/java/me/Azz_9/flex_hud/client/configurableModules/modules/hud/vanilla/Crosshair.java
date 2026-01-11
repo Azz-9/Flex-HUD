@@ -158,7 +158,7 @@ public class Crosshair extends AbstractModule implements HudElement {
 
 	public boolean shouldNotRenderCrosshair() {
 		Minecraft minecraft = Minecraft.getInstance();
-		return minecraft.getDebugOverlay().showDebugScreen() && minecraft.options.getCameraType() == CameraType.FIRST_PERSON && minecraft.player != null && !minecraft.player.isReducedDebugInfo() && !(Boolean) minecraft.options.reducedDebugInfo().get();
+		return minecraft.debugEntries.isOverlayVisible() && minecraft.options.getCameraType() == CameraType.FIRST_PERSON && minecraft.player != null && !minecraft.player.isReducedDebugInfo() && !(Boolean) minecraft.options.reducedDebugInfo().get();
 	}
 
 	private boolean canRenderCrosshairForSpectator(@Nullable HitResult hitResult) {
