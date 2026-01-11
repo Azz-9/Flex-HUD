@@ -1,9 +1,9 @@
 package me.Azz_9.flex_hud.client.tickables;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
@@ -15,7 +15,7 @@ public class ReachTickable implements Tickable {
 		TickRegistry.register(new ReachTickable());
 	}
 
-	public static void calculateReach(LocalPlayer playerAttacking, Entity entityAttacked) {
+	public static void calculateReach(Player playerAttacking, Entity entityAttacked) {
 		Minecraft client = Minecraft.getInstance();
 
 		if (entityAttacked instanceof LivingEntity &&

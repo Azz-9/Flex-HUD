@@ -19,7 +19,8 @@
 		"drawContext.GuiGraphicsAccessor",
 		"durabilityPing.ClientPlayNetworkHandlerMixin",
 		"keybind.KeyBindingMixin",
-		"potionEffect.PotionEffectMixin"
+		"potionEffect.PotionEffectMixin",
+		"reach.MultiPlayerGameModeMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
