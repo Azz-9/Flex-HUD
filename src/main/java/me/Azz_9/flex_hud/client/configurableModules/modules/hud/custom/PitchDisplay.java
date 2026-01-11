@@ -13,12 +13,13 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.ColorHelper;
+import net.minecraft.util.math.RotationAxis;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
 public class PitchDisplay extends AbstractTextModule {
 
@@ -85,10 +86,10 @@ public class PitchDisplay extends AbstractTextModule {
 						: 0) + 34));
 
 
-		Matrix3x2fStack matrices = context.getMatrices();
-		matrices.pushMatrix();
-		matrices.translate(getRoundedX(), getRoundedY());
-		matrices.scale(getScale());
+		MatrixStack matrices = context.getMatrices();
+		matrices.push();
+		matrices.translate(getRoundedX(), getRoundedY(), 0);
+		matrices.scale(getScale(), getScale(), 1.0f);
 
 		drawBackground(context);
 
@@ -96,21 +97,21 @@ public class PitchDisplay extends AbstractTextModule {
 
 		float hudX = 0;
 		if (showDegrees.getValue()) {
-			matrices.pushMatrix();
-			matrices.translate(hudX, (getHeight() - client.textRenderer.fontHeight) / 2.0f);
-			matrices.scale(degreesScale);
+			matrices.push();
+			matrices.translate(hudX, (getHeight() - client.textRenderer.fontHeight) / 2.0f, 0);
+			matrices.scale(degreesScale, degreesScale, 1.0f);
 			context.drawText(client.textRenderer, pitchStr, 0, 0, getColor(), shadow.getValue());
-			matrices.popMatrix();
+			matrices.pop();
 
 			hudX += client.textRenderer.getWidth(pitchStr) * degreesScale + 2;
 		}
 
 		if (this.showMarker.getValue()) {
-			matrices.pushMatrix();
-			matrices.translate(hudX, (getHeight() - client.textRenderer.fontHeight) / 2.0f);
-			matrices.scale(0.5f, 1.0f);
+			matrices.push();
+			matrices.translate(hudX, (getHeight() - client.textRenderer.fontHeight) / 2.0f, 0);
+			matrices.scale(0.5f, 1.0f, 1.0f);
 			context.drawText(client.textRenderer, markerText, 0, 0, getColor(), this.shadow.getValue());
-			matrices.popMatrix();
+			matrices.pop();
 
 			hudX += client.textRenderer.getWidth(markerText) / 2.0f + 5;
 		}
@@ -125,7 +126,7 @@ public class PitchDisplay extends AbstractTextModule {
 
 		context.disableScissor();
 
-		matrices.popMatrix();
+		matrices.pop();
 	}
 
 	@Override
@@ -134,7 +135,7 @@ public class PitchDisplay extends AbstractTextModule {
 		return super.shouldNotRender() || player != null && displayWhenElytraIsEquipped.getValue() && !player.getInventory().getStack(38).isOf(Items.ELYTRA);
 	}
 
-	private void drawPitchPoint(DrawContext context, Matrix3x2fStack matrices, int angle, float pitch, float x) {
+	private void drawPitchPoint(DrawContext context, MatrixStack matrices, int angle, float pitch, float x) {
 		MinecraftClient client = MinecraftClient.getInstance();
 		String label = "|";
 		String angleStr = String.valueOf(angle);
@@ -151,22 +152,22 @@ public class PitchDisplay extends AbstractTextModule {
 			float pointWidth = client.textRenderer.getWidth(label) * scaleFactor;
 			float angleHeight = client.textRenderer.fontHeight * angleScale;
 
-			matrices.pushMatrix();
-			matrices.translate(x + 14, positionY - angleHeight / 2.0f);
-			matrices.scale(angleScale, angleScale);
+			matrices.push();
+			matrices.translate(x + 14, positionY - angleHeight / 2.0f, 0);
+			matrices.scale(angleScale, angleScale, 1.0f);
 			context.drawText(client.textRenderer, angleStr, 0, 0, getColorWithFadeEffect(positionY), shadow.getValue());
-			matrices.popMatrix();
+			matrices.pop();
 
-			matrices.pushMatrix();
-			matrices.translate(x + 9, positionY - pointWidth / 2.0f);
-			matrices.scale(scaleFactor, scaleFactor);
-			matrices.rotate((float) Math.toRadians(90));
+			matrices.push();
+			matrices.translate(x + 9, positionY - pointWidth / 2.0f, 0);
+			matrices.scale(scaleFactor, scaleFactor, 1.0f);
+			matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90));
 			context.drawText(client.textRenderer, label, 0, 0, getColorWithFadeEffect(positionY), shadow.getValue());
-			matrices.popMatrix();
+			matrices.pop();
 		}
 	}
 
-	private void drawIntermediatePoint(DrawContext context, Matrix3x2fStack matrices, int angle, float pitch, float x) {
+	private void drawIntermediatePoint(DrawContext context, MatrixStack matrices, int angle, float pitch, float x) {
 		MinecraftClient client = MinecraftClient.getInstance();
 		String label = "|";
 		angle = -angle;
@@ -179,12 +180,12 @@ public class PitchDisplay extends AbstractTextModule {
 			float positionY = ((getHeight() / 2.0f) + (angleDifference * (getHeight() / 180.0f)));
 			float pointWidth = client.textRenderer.getWidth(label) * scaleFactor;
 
-			matrices.pushMatrix();
-			matrices.translate(x + 5.6f, positionY - pointWidth / 2.0f);
-			matrices.scale(scaleFactor, scaleFactor);
-			matrices.rotate((float) Math.toRadians(90));
+			matrices.push();
+			matrices.translate(x + 5.6f, positionY - pointWidth / 2.0f, 0);
+			matrices.scale(scaleFactor, scaleFactor, 1.0f);
+			matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90));
 			context.drawText(client.textRenderer, label, 0, 0, getColorWithFadeEffect(positionY), shadow.getValue());
-			matrices.popMatrix();
+			matrices.pop();
 		}
 	}
 
