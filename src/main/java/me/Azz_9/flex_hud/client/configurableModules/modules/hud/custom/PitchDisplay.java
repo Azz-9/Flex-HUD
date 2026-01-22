@@ -190,7 +190,8 @@ public class PitchDisplay extends AbstractTextModule {
 	}
 
 	private int getColorWithFadeEffect(float CenterYOfDrawing) {
-		return ColorHelper.withAlpha(getAlpha(CenterYOfDrawing), getColor());
+		// in this version alpha less than 4 make the text display like the alpha was 255
+		return ColorHelper.withAlpha(Math.max(getAlpha(CenterYOfDrawing), 4), getColor());
 	}
 
 	private int getAlpha(float CenterYOfDrawing) {
