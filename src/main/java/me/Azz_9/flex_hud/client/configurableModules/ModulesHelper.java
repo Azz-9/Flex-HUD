@@ -48,6 +48,7 @@ public class ModulesHelper {
 	public InGameTime inGameTime = new InGameTime(-5, 2, AbstractMovableModule.AnchorPosition.END, AbstractMovableModule.AnchorPosition.START);
 	public Distance distance = new Distance(0, 50, AbstractMovableModule.AnchorPosition.CENTER, AbstractMovableModule.AnchorPosition.START);
 	public HeldItem heldItem = new HeldItem(0, -80, AbstractMovableModule.AnchorPosition.CENTER, AbstractMovableModule.AnchorPosition.END);
+	public EntityCount entityCount = new EntityCount(0, -65, AbstractMovableModule.AnchorPosition.CENTER, AbstractMovableModule.AnchorPosition.END);
 	//others
 	public WeatherChanger weatherChanger = new WeatherChanger();
 	public TimeChanger timeChanger = new TimeChanger();
@@ -103,6 +104,7 @@ public class ModulesHelper {
 				getInstance().inGameTime,
 				getInstance().distance,
 				getInstance().heldItem,
+				getInstance().entityCount,
 				getInstance().weatherChanger,
 				getInstance().timeChanger,
 				getInstance().crosshair,

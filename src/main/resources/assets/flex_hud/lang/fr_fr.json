@@ -257,6 +257,12 @@
 	"flex_hud.pitch_display.config.show_degrees": "Afficher les degrés",
 	"flex_hud.pitch_display.config.degrees_decimals": "Décimales des degrés",
 
+	"flex_hud.entity_count": "Compteur d'entité",
+	"flex_hud.entity_count.config.enable": "Afficher le compteur d'entité",
+	"flex_hud.entity_count.config.only_mbos": "Uniquement les mobs",
+	"flex_hud.entity_count.config.only_items": "Uniquement les objets",
+	"flex_hud.entity_count.config.range": "Rayon",
+
 	"flex_hud.coordinates.hud.direction.south": "Sud",
 	"flex_hud.coordinates.hud.direction.south_west": "Sud-Ouest",
 	"flex_hud.coordinates.hud.direction.west": "Ouest",
@@ -299,5 +305,9 @@
 
 	"flex_hud.sign_reader.placeholder_content": "texte",
 
-	"flex_hud.full_inventory_indicator.label": "Inventaire plein !"
+	"flex_hud.full_inventory_indicator.label": "Inventaire plein !",
+
+	"flex_hud.entity_count.text.entities": "Compteur d'entités: %d (rayon %d)",
+	"flex_hud.entity_count.text.mobs": "Compteur de mobs: %d (radius %d)",
+	"flex_hud.entity_count.text.items": "Compteur d'objets: %d (radius %d)"
 }
