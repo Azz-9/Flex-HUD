@@ -201,7 +201,7 @@ public class PotionEffect extends AbstractTextModule {
 		float tickDelta = minecraft.getDeltaTracker().getGameTimeDeltaTicks();
 
 		// Add tickDelta to world time for smooth animation
-		float ticks = minecraft.level.getDayTime() + tickDelta;
+		float ticks = minecraft.level.getOverworldClockTime() + tickDelta;
 
 		// 20 ticks ~= 1 second at 20 TPS
 		float cycle = (ticks % 20.0f) / 20.0f;

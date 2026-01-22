@@ -85,7 +85,7 @@ public class WeatherDisplay extends AbstractBackgroundModule {
 		if (Flex_hudClient.isInMoveElementScreen || client.level == null) {
 			path = "weather_icons/day_clear.png";
 		} else {
-			int timeOfDay = (int) (client.level.getDayTime() % 24000L);
+			int timeOfDay = (int) (client.level.getOverworldClockTime() % 24000L);
 			if (timeOfDay >= 12600 && timeOfDay <= 23400) {
 				path = "weather_icons/night_";
 			} else {

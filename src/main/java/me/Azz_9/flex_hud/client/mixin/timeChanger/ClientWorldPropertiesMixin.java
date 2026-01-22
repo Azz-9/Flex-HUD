@@ -4,18 +4,18 @@ import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.TimeChanger;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(ClientLevel.ClientLevelData.class)
+@Mixin(Level.class)
 public abstract class ClientWorldPropertiesMixin {
 
-	@Inject(at = @At("RETURN"), method = "getDayTime", cancellable = true)
+	@Inject(at = @At("RETURN"), method = "getOverworldClockTime", cancellable = true)
 	@Environment(EnvType.CLIENT)
-	public void getTimeOfDay(CallbackInfoReturnable<Long> cir) {
+	public void getOverworldClockTime(CallbackInfoReturnable<Long> cir) {
 		if (ModulesHelper.getInstance().isEnabled.getValue() &&
 				ModulesHelper.getInstance().timeChanger.enabled.getValue()) {
 
@@ -25,7 +25,7 @@ public abstract class ClientWorldPropertiesMixin {
 			} else if (ModulesHelper.getInstance().timeChanger.useRealTime.getValue()) {
 				cir.setReturnValue(TimeChanger.getRealTimeAsMinecraftTime());
 			}
-			
+
 		} else cir.cancel();
 	}
 }

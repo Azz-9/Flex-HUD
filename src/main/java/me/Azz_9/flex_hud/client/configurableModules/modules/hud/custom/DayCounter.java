@@ -53,7 +53,7 @@ public class DayCounter extends AbstractTextModule {
 		if (Flex_hudClient.isInMoveElementScreen) {
 			day = 5;
 		} else {
-			day = minecraft.level.getDayTime() / 24000;
+			day = minecraft.level.getOverworldClockTime() / 24000;
 		}
 		Component text = Component.translatable("flex_hud.day_counter.hud.prefix").append(" " + (int) day);
 
