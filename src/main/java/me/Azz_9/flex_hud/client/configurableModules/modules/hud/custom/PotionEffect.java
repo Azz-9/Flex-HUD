@@ -4,7 +4,7 @@ import com.google.common.collect.Ordering;
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.Translatable;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.Alignment;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable.MultiRenderable;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable.RenderableImage;
@@ -30,7 +30,7 @@ import org.joml.Matrix3x2fStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PotionEffect extends AbstractTextElement {
+public class PotionEffect extends AbstractTextModule {
 	private final ConfigEnum<Alignment> alignment = new ConfigEnum<>(Alignment.class, Alignment.AUTO, "flex_hud.potion_effect.config.alignment");
 	private final ConfigEnum<IconPlacement> iconPlacement = new ConfigEnum<>(IconPlacement.class, IconPlacement.RIGHT, "flex_hud.potion_effect.config.icon_placement");
 

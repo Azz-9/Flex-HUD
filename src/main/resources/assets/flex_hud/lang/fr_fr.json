@@ -99,6 +99,7 @@
 	"flex_hud.armor_status.config.show_durability": "Afficher la durabilité",
 	"flex_hud.armor_status.config.orientation": "Orientation",
 	"flex_hud.armor_status.config.alignment": "Alignement",
+	"flex_hud.armor_status.config.move_each_pieces_independently": "Bouger les objets indépendaments",
 
 	"flex_hud.clock": "Horloge",
 	"flex_hud.clock.config.enable": "Afficher l'horloge",
@@ -130,6 +131,7 @@
 	"flex_hud.compass.config.enable": "Afficher la boussole",
 	"flex_hud.compass.config.show_marker": "Afficher le marqueur",
 	"flex_hud.compass.config.show_degrees": "Afficher les degrés",
+	"flex_hud.compass.config.degrees_decimals": "Décimales des degrés",
 	"flex_hud.compass.config.show_intermediate_point": "Afficher les points intermédiaires",
 	"flex_hud.compass.config.show_xaeros_map_waypoints": "Afficher les waypoints de Xaero's map",
 	"flex_hud.compass.config.show_xaeros_map_waypoints.not_installed_tooltip": "Xaero's Minimap n'est pas installé",
@@ -250,6 +252,19 @@
 	"flex_hud.biome_display.config.enable": "Afficher les biome",
 	"flex_hud.biome_display.config.biome_specific_color": "Couleur spécifique au biome",
 
+	"flex_hud.pitch_display": "Affichage de l'inclinaison",
+	"flex_hud.pitch_display.config.enable": "Afficher l'inclinaison",
+	"flex_hud.pitch_display.config.display_when_elytra_equipped": "Afficher lorsque des élytres sont équipées",
+	"flex_hud.pitch_display.config.show_marker": "Afficher le marqueur",
+	"flex_hud.pitch_display.config.show_degrees": "Afficher les degrés",
+	"flex_hud.pitch_display.config.degrees_decimals": "Décimales des degrés",
+
+	"flex_hud.entity_count": "Compteur d'entité",
+	"flex_hud.entity_count.config.enable": "Afficher le compteur d'entité",
+	"flex_hud.entity_count.config.only_mbos": "Uniquement les mobs",
+	"flex_hud.entity_count.config.only_items": "Uniquement les objets",
+	"flex_hud.entity_count.config.range": "Rayon",
+
 	"flex_hud.coordinates.hud.direction.south": "Sud",
 	"flex_hud.coordinates.hud.direction.south_west": "Sud-Ouest",
 	"flex_hud.coordinates.hud.direction.west": "Ouest",
@@ -292,5 +307,9 @@
 
 	"flex_hud.sign_reader.placeholder_content": "texte",
 
-	"flex_hud.full_inventory_indicator.label": "Inventaire plein !"
+	"flex_hud.full_inventory_indicator.label": "Inventaire plein !",
+
+	"flex_hud.entity_count.text.entities": "Compteur d'entités: %d (rayon %d)",
+	"flex_hud.entity_count.text.mobs": "Compteur de mobs: %d (radius %d)",
+	"flex_hud.entity_count.text.items": "Compteur d'objets: %d (radius %d)"
 }

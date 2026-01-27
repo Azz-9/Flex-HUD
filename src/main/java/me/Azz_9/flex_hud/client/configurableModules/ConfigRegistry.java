@@ -13,6 +13,10 @@ public class ConfigRegistry {
 		MODULES.computeIfAbsent(moduleName, k -> new HashMap<>()).put(key, configObject);
 	}
 
+	public static void unregister(String moduleName, String key) {
+		MODULES.get(moduleName).remove(key);
+	}
+
 	public static Map<String, AbstractConfigObject<?>> getModule(String moduleName) {
 		return MODULES.get(moduleName);
 	}

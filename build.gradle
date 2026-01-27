@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.14-SNAPSHOT'
+	id 'fabric-loom' version '1.15-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -25,6 +25,10 @@ repositories {
 		name = "Terraformers"
 		url = "https://maven.terraformersmc.com/"
 	}
+	maven {
+		name "Xaero's Maven"
+		url "https://chocolateminecraft.com/maven"
+	}
 }
 
 dependencies {
@@ -42,10 +46,9 @@ dependencies {
 	}
 
 	if (includeXaero) {
-		modImplementation files("libs/Xaeros_Minimap_${project.xaero_minimap_version}_Fabric_${project.minecraft_version}.jar")
+		modImplementation "xaero.minimap:xaerominimap-fabric-${project.minecraft_version}:${project.xaero_minimap_version}"
 	} else {
-		//compileOnly files("libs/Xaeros_Minimap_${project.xaero_minimap_version}_Fabric_${project.minecraft_version}.jar")
-		compileOnly files("libs/Xaeros_Minimap_${project.xaero_minimap_version}_Fabric_1.21.9.jar")
+		compileOnly "xaero.minimap:xaerominimap-fabric-${project.minecraft_version}:${project.xaero_minimap_version}"
 	}
 
 	compileOnly files("libs/journeymap-fabric-${project.minecraft_version}-${project.journeymap_version}.jar")

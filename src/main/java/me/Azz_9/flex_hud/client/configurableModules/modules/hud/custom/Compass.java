@@ -3,13 +3,15 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.Translatable;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextElement;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.IntFieldEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 import me.Azz_9.flex_hud.client.tickables.LivingEntitiesTickable;
 import me.Azz_9.flex_hud.compat.CompatManager;
 import net.minecraft.client.MinecraftClient;
@@ -37,9 +39,10 @@ import java.util.List;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 
-public class Compass extends AbstractTextElement {
+public class Compass extends AbstractTextModule {
 	private final ConfigBoolean showMarker = new ConfigBoolean(true, "flex_hud.compass.config.show_marker");
 	private final ConfigBoolean showDegrees = new ConfigBoolean(false, "flex_hud.compass.config.show_degrees");
+	private final ConfigInteger degreesDecimals = new ConfigInteger(0, "flex_hud.compass.config.degrees_decimals", 0, 14);
 	private final ConfigBoolean showIntermediatePoint = new ConfigBoolean(true, "flex_hud.compass.config.show_intermediate_point");
 	public final ConfigBoolean showXaerosMapWaypoints = new ConfigBoolean(true, "flex_hud.compass.config.show_xaeros_map_waypoints");
 	public final ConfigBoolean showJourneyMapWaypoints = new ConfigBoolean(true, "flex_hud.compass.config.show_journey_map_waypoints");
@@ -61,6 +64,7 @@ public class Compass extends AbstractTextElement {
 
 		ConfigRegistry.register(getID(), "showMarker", showMarker);
 		ConfigRegistry.register(getID(), "showDegrees", showDegrees);
+		ConfigRegistry.register(getID(), "degreesDecimals", degreesDecimals);
 		ConfigRegistry.register(getID(), "showIntermediatePoint", showIntermediatePoint);
 		ConfigRegistry.register(getID(), "showXaerosMapWaypoints", showXaerosMapWaypoints);
 		ConfigRegistry.register(getID(), "showJourneyMapWaypoints", showJourneyMapWaypoints);
@@ -185,7 +189,9 @@ public class Compass extends AbstractTextElement {
 		context.disableScissor();
 
 		if (this.showDegrees.getValue()) {
-			String degrees = String.valueOf(Math.round(yaw));
+			String format = "%." + this.degreesDecimals.getValue() + "f";
+			String degrees = String.format(format, yaw);
+
 			matrices.pushMatrix();
 			matrices.translate((getWidth() / 2.0f) - (client.textRenderer.getWidth(degrees) / 2.0f) * 0.75f, 1);
 			matrices.scale(0.75f, 0.75f);
@@ -565,6 +571,13 @@ public class Compass extends AbstractTextElement {
 	}
 
 	@Override
+	public List<String> getKeywords() {
+		List<String> keywords = new ArrayList<>(super.getKeywords());
+		keywords.add("yaw");
+		return keywords;
+	}
+
+	@Override
 	public AbstractConfigurationScreen getConfigScreen(Screen parent) {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
@@ -629,6 +642,14 @@ public class Compass extends AbstractTextElement {
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(showDegrees)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build()
+				);
+				this.addAllEntries(
+						new IntFieldEntry.Builder()
+								.setIntFieldWidth(20)
+								.setVariable(degreesDecimals)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)

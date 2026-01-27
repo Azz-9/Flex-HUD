@@ -1,10 +1,9 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud;
 
-import me.Azz_9.flex_hud.client.configurableModules.Configurable;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.widgets.MovableWidget;
 import net.minecraft.client.MinecraftClient;
 
-public interface MovableModule extends Configurable {
+public interface MovableModule {
 	int getWidth();
 
 	int getHeight();
@@ -21,16 +20,16 @@ public interface MovableModule extends Configurable {
 
 	double getOffsetY();
 
-	AbstractHudElement.AnchorPosition getAnchorX();
+	AbstractMovableModule.AnchorPosition getAnchorX();
 
-	AbstractHudElement.AnchorPosition getAnchorY();
+	AbstractMovableModule.AnchorPosition getAnchorY();
 
 	default float getX() {
 		int screenWidth = MinecraftClient.getInstance().getWindow().getScaledWidth();
 
-		if (getAnchorX() == AbstractHudElement.AnchorPosition.START) {
+		if (getAnchorX() == AbstractMovableModule.AnchorPosition.START) {
 			return (float) Math.clamp(getOffsetX(), 0, Math.max(screenWidth - getScaledWidth(), 0));
-		} else if (getAnchorX() == AbstractHudElement.AnchorPosition.CENTER) {
+		} else if (getAnchorX() == AbstractMovableModule.AnchorPosition.CENTER) {
 			return (float) Math.clamp((screenWidth - getScaledWidth()) / 2.0 + getOffsetX(), 0, Math.max(screenWidth - getScaledWidth(), 0));
 		} else {
 			return (float) Math.clamp(screenWidth - getScaledWidth() + getOffsetX(), 0, Math.max(screenWidth - getScaledWidth(), 0));
@@ -40,9 +39,9 @@ public interface MovableModule extends Configurable {
 	default float getY() {
 		int screenHeight = MinecraftClient.getInstance().getWindow().getScaledHeight();
 
-		if (getAnchorY() == AbstractHudElement.AnchorPosition.START) {
+		if (getAnchorY() == AbstractMovableModule.AnchorPosition.START) {
 			return (float) Math.clamp(getOffsetY(), 0, Math.max(screenHeight - getScaledHeight(), 0));
-		} else if (getAnchorY() == AbstractHudElement.AnchorPosition.CENTER) {
+		} else if (getAnchorY() == AbstractMovableModule.AnchorPosition.CENTER) {
 			return (float) Math.clamp((screenHeight - getScaledHeight()) / 2.0 + getOffsetY(), 0, Math.max(screenHeight - getScaledHeight(), 0));
 		} else {
 			return (float) Math.clamp(screenHeight - getScaledHeight() + getOffsetY(), 0, Math.max(screenHeight - getScaledHeight(), 0));
@@ -52,9 +51,9 @@ public interface MovableModule extends Configurable {
 	default float getXWithScale(float scale) {
 		int screenWidth = MinecraftClient.getInstance().getWindow().getScaledWidth();
 
-		if (getAnchorX() == AbstractHudElement.AnchorPosition.START) {
+		if (getAnchorX() == AbstractMovableModule.AnchorPosition.START) {
 			return (float) getOffsetX();
-		} else if (getAnchorX() == AbstractHudElement.AnchorPosition.CENTER) {
+		} else if (getAnchorX() == AbstractMovableModule.AnchorPosition.CENTER) {
 			return (float) ((screenWidth - getWidth() * scale) / 2.0 + getOffsetX());
 		} else {
 			return (float) (screenWidth - getWidth() * scale + getOffsetX());
@@ -64,9 +63,9 @@ public interface MovableModule extends Configurable {
 	default float getYWithScale(float scale) {
 		int screenHeight = MinecraftClient.getInstance().getWindow().getScaledHeight();
 
-		if (getAnchorY() == AbstractHudElement.AnchorPosition.START) {
+		if (getAnchorY() == AbstractMovableModule.AnchorPosition.START) {
 			return (float) getOffsetY();
-		} else if (getAnchorY() == AbstractHudElement.AnchorPosition.CENTER) {
+		} else if (getAnchorY() == AbstractMovableModule.AnchorPosition.CENTER) {
 			return (float) ((screenHeight - getHeight() * scale) / 2.0 + getOffsetY());
 		} else {
 			return (float) (screenHeight - getHeight() * scale + getOffsetY());
@@ -79,11 +78,11 @@ public interface MovableModule extends Configurable {
 		double centerX = x + getScaledWidth() / 2.0;
 
 		if (centerX < screenWidth * 0.25) {
-			setPos(x, getOffsetY(), AbstractHudElement.AnchorPosition.START, getAnchorY());
+			setPos(x, getOffsetY(), AbstractMovableModule.AnchorPosition.START, getAnchorY());
 		} else if (centerX > screenWidth * 0.75) {
-			setPos(x - screenWidth + getScaledWidth(), getOffsetY(), AbstractHudElement.AnchorPosition.END, getAnchorY());
+			setPos(x - screenWidth + getScaledWidth(), getOffsetY(), AbstractMovableModule.AnchorPosition.END, getAnchorY());
 		} else {
-			setPos(x - (screenWidth - getScaledWidth()) / 2.0, getOffsetY(), AbstractHudElement.AnchorPosition.CENTER, getAnchorY());
+			setPos(x - (screenWidth - getScaledWidth()) / 2.0, getOffsetY(), AbstractMovableModule.AnchorPosition.CENTER, getAnchorY());
 		}
 	}
 
@@ -93,11 +92,11 @@ public interface MovableModule extends Configurable {
 		double centerY = y + getScaledHeight() / 2.0;
 
 		if (centerY < screenHeight * 0.25) {
-			setPos(getOffsetX(), y, getAnchorX(), AbstractHudElement.AnchorPosition.START);
+			setPos(getOffsetX(), y, getAnchorX(), AbstractMovableModule.AnchorPosition.START);
 		} else if (centerY > screenHeight * 0.75) {
-			setPos(getOffsetX(), y - screenHeight + getScaledHeight(), getAnchorX(), AbstractHudElement.AnchorPosition.END);
+			setPos(getOffsetX(), y - screenHeight + getScaledHeight(), getAnchorX(), AbstractMovableModule.AnchorPosition.END);
 		} else {
-			setPos(getOffsetX(), y - (screenHeight - getScaledHeight()) / 2.0, getAnchorX(), AbstractHudElement.AnchorPosition.CENTER);
+			setPos(getOffsetX(), y - (screenHeight - getScaledHeight()) / 2.0, getAnchorX(), AbstractMovableModule.AnchorPosition.CENTER);
 		}
 	}
 
@@ -109,7 +108,7 @@ public interface MovableModule extends Configurable {
 		return Math.round(getY());
 	}
 
-	void setPos(double offsetX, double offsetY, AbstractHudElement.AnchorPosition anchorX, AbstractHudElement.AnchorPosition anchorY);
+	void setPos(double offsetX, double offsetY, AbstractMovableModule.AnchorPosition anchorX, AbstractMovableModule.AnchorPosition anchorY);
 
 	float getScale();
 
@@ -121,18 +120,18 @@ public interface MovableModule extends Configurable {
 		float maxHeightScale;
 
 		// --- Horizontal ---
-		if (getAnchorX() == AbstractHudElement.AnchorPosition.START) {
+		if (getAnchorX() == AbstractMovableModule.AnchorPosition.START) {
 			maxWidthScale = (float) (screenWidth - Math.round(getOffsetX())) / getWidth();
-		} else if (getAnchorX() == AbstractHudElement.AnchorPosition.END) {
+		} else if (getAnchorX() == AbstractMovableModule.AnchorPosition.END) {
 			maxWidthScale = (float) (screenWidth + Math.round(getOffsetX())) / getWidth();
 		} else { // CENTER
 			maxWidthScale = (float) ((screenWidth / 2.0 - Math.abs(getOffsetX())) / (getWidth() / 2.0));
 		}
 
 		// --- Vertical ---
-		if (getAnchorY() == AbstractHudElement.AnchorPosition.START) {
+		if (getAnchorY() == AbstractMovableModule.AnchorPosition.START) {
 			maxHeightScale = (float) (screenHeight - Math.round(getOffsetY())) / getHeight();
-		} else if (getAnchorY() == AbstractHudElement.AnchorPosition.END) {
+		} else if (getAnchorY() == AbstractMovableModule.AnchorPosition.END) {
 			maxHeightScale = (float) (screenHeight + Math.round(getOffsetY())) / getHeight();
 		} else { // CENTER
 			maxHeightScale = (float) ((screenHeight / 2.0 - Math.abs(getOffsetY())) / (getHeight() / 2.0));
@@ -143,6 +142,4 @@ public interface MovableModule extends Configurable {
 
 
 	void setScale(float scale);
-
-	void setEnabled(boolean enabled);
 }

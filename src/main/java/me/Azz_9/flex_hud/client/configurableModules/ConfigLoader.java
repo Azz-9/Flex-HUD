@@ -3,6 +3,7 @@ package me.Azz_9.flex_hud.client.configurableModules;
 import com.google.gson.*;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.AbstractConfigObject;
 import me.Azz_9.flex_hud.client.utils.FlexHudLogger;
+import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.File;
 import java.io.Reader;
@@ -14,7 +15,7 @@ import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 
 public class ConfigLoader {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-	private final static File CONFIG_FILE = new File("config/" + MOD_ID + ".json");
+	private final static File CONFIG_FILE = FabricLoader.getInstance().getConfigDir().resolve(MOD_ID + ".json").toFile();
 
 	public static void loadConfig() {
 		if (!CONFIG_FILE.exists()) {

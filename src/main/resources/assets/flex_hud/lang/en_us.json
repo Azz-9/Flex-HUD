@@ -99,6 +99,7 @@
 	"flex_hud.armor_status.config.show_durability": "Show durability",
 	"flex_hud.armor_status.config.orientation": "Orientation",
 	"flex_hud.armor_status.config.alignment": "Alignment",
+	"flex_hud.armor_status.config.move_each_pieces_independently": "Move each item independently",
 
 	"flex_hud.clock": "Clock",
 	"flex_hud.clock.config.enable": "Show clock",
@@ -130,6 +131,7 @@
 	"flex_hud.compass.config.enable": "Show compass",
 	"flex_hud.compass.config.show_marker": "Show marker",
 	"flex_hud.compass.config.show_degrees": "Show degrees",
+	"flex_hud.compass.config.degrees_decimals": "Degrees decimals",
 	"flex_hud.compass.config.show_intermediate_point": "Show intermediate points",
 	"flex_hud.compass.config.show_xaeros_map_waypoints": "Show Xaero's map waypoints",
 	"flex_hud.compass.config.show_xaeros_map_waypoints.not_installed_tooltip": "Xaero's Minimap is not installed",
@@ -250,6 +252,19 @@
 	"flex_hud.biome_display.config.enable": "Show biome",
 	"flex_hud.biome_display.config.biome_specific_color": "Biome-specific color",
 
+	"flex_hud.pitch_display": "Pitch display",
+	"flex_hud.pitch_display.config.enable": "Show pitch display",
+	"flex_hud.pitch_display.config.display_when_elytra_equipped": "Display when elytra is equipped",
+	"flex_hud.pitch_display.config.show_marker": "Show marker",
+	"flex_hud.pitch_display.config.show_degrees": "Show degrees",
+	"flex_hud.pitch_display.config.degrees_decimals": "Degrees decimals",
+
+	"flex_hud.entity_count": "Entity count",
+	"flex_hud.entity_count.config.enable": "Show entity count",
+	"flex_hud.entity_count.config.only_mbos": "Only mobs",
+	"flex_hud.entity_count.config.only_items": "Only items",
+	"flex_hud.entity_count.config.range": "Range",
+
 	"flex_hud.coordinates.hud.direction.south": "South",
 	"flex_hud.coordinates.hud.direction.south_west": "South-West",
 	"flex_hud.coordinates.hud.direction.west": "West",
@@ -292,5 +307,9 @@
 
 	"flex_hud.sign_reader.placeholder_content": "text",
 
-	"flex_hud.full_inventory_indicator.label": "Inventory full !"
+	"flex_hud.full_inventory_indicator.label": "Inventory full !",
+
+	"flex_hud.entity_count.text.entities": "Entity count: %d (radius %d)",
+	"flex_hud.entity_count.text.mobs": "Mobs count: %d (radius %d)",
+	"flex_hud.entity_count.text.items": "Items count: %d (radius %d)"
 }

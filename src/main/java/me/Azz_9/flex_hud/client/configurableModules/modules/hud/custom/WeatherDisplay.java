@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractBackgroundElement;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractBackgroundModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
@@ -21,7 +21,7 @@ import org.joml.Matrix3x2fStack;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 
-public class WeatherDisplay extends AbstractBackgroundElement {
+public class WeatherDisplay extends AbstractBackgroundModule {
 
 	public WeatherDisplay(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
