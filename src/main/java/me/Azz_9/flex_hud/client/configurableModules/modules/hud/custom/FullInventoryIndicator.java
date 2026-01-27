@@ -157,7 +157,7 @@ public class FullInventoryIndicator extends AbstractTextModule implements Tickab
 		}
 
 		if (!isInventoryFull && playSound.getValue()) {
-			MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.ITEM_ARMOR_EQUIP_LEATHER.value(), 1.0f, 2.0f));
+			MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.ui(SoundEvents.ITEM_ARMOR_EQUIP_LEATHER.value(), 1.0f, 2.0f));
 		}
 
 		isInventoryFull = true;

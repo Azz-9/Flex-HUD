@@ -80,7 +80,7 @@ public class DurabilityPing extends AbstractModule {
 				player.sendMessage(message, true);
 			}
 			if (pingType.getValue() != PingType.MESSAGE) {
-				MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.BLOCK_ANVIL_LAND, 2.0f));
+				MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.ui(SoundEvents.BLOCK_ANVIL_LAND, 2.0f));
 			}
 		}
 	}
