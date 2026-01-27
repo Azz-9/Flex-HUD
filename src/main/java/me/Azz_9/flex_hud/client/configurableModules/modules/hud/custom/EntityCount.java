@@ -1,6 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
@@ -34,6 +35,10 @@ public class EntityCount extends AbstractTextModule implements TickableModule {
 		this.enabled.setValue(false);
 		this.enabled.setDefaultValue(false);
 		this.enabled.setConfigTextTranslationKey("flex_hud.entity_count.config.enable");
+
+		ConfigRegistry.register(getID(), "onlyMobs", onlyMobs);
+		ConfigRegistry.register(getID(), "onlyItems", onlyItems);
+		ConfigRegistry.register(getID(), "range", range);
 	}
 
 	@Override
