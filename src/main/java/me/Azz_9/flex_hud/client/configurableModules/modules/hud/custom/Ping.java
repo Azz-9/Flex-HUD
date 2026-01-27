@@ -2,6 +2,7 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
+import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
@@ -10,14 +11,15 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.Conf
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
+import net.minecraft.util.profiler.MultiValueDebugSampleLogImpl;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 
-public class Ping extends AbstractTextModule {
+public class Ping extends AbstractTextModule implements TickableModule {
 	private final ConfigBoolean hideWhenOffline = new ConfigBoolean(true, "flex_hud.ping.config.hide_when_offline");
+	private long averagePing = 0;
 
 	public Ping(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
@@ -60,15 +62,7 @@ public class Ping extends AbstractTextModule {
 		} else {
 			if (client.getCurrentServerEntry() != null) {
 
-				if (client.getNetworkHandler() != null) {
-					PlayerListEntry entry = client.getNetworkHandler().getPlayerListEntry(client.player.getUuid());
-
-					if (entry != null) {
-						int latency = entry.getLatency();
-
-						text = latency + " ms";
-					}
-				}
+				text = averagePing + " ms";
 
 			} else if (!this.hideWhenOffline.getValue()) {
 
@@ -161,5 +155,19 @@ public class Ping extends AbstractTextModule {
 				);
 			}
 		};
+	}
+
+	@Override
+	public void tick() {
+		MultiValueDebugSampleLogImpl pingLogger = MinecraftClient.getInstance().getDebugHud().getPingLog();
+
+		if (pingLogger.getLength() > 0) {
+			long total = 0;
+			for (int i = 0; i < pingLogger.getLength(); i++) {
+				total += pingLogger.get(i);
+			}
+
+			averagePing = total / pingLogger.getLength();
+		}
 	}
 }
