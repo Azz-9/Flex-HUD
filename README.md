@@ -14,6 +14,7 @@ in one place.
 - **Biome Display** – _show the biome you’re currently in directly on your HUD_
 - **Nether Coordinates** - _instantly view the equivalent coordinates between the Overworld and the Nether_
 - **Compass** – _navigate easily without opening the F3 screen_
+- **Pitch Display** – _show your vertical viewing angle, similar to the compass module but vertical_
 - **Day Counter** – _see how many days have passed in your world_
 - **Ping** – _check your server connection latency_
 - **Server Address** – _display the IP of the server you’re playing on_
