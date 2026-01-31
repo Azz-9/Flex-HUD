@@ -2,7 +2,6 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
-import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
@@ -12,14 +11,13 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.debugchart.LocalSampleLogger;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 
-public class Ping extends AbstractTextModule implements TickableModule {
+public class Ping extends AbstractTextModule {
 	private final ConfigBoolean hideWhenOffline = new ConfigBoolean(true, "flex_hud.ping.config.hide_when_offline");
-	private long averagePing = 0;
 
 	public Ping(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
@@ -62,7 +60,15 @@ public class Ping extends AbstractTextModule implements TickableModule {
 		} else {
 			if (minecraft.getCurrentServer() != null) {
 
-				text = averagePing + " ms";
+				if (minecraft.getConnection() != null) {
+					PlayerInfo entry = minecraft.getConnection().getPlayerInfo(minecraft.player.getUUID());
+
+					if (entry != null) {
+						int latency = entry.getLatency();
+
+						text = latency + " ms";
+					}
+				}
 
 			} else if (!this.hideWhenOffline.getValue()) {
 
@@ -155,19 +161,5 @@ public class Ping extends AbstractTextModule implements TickableModule {
 				);
 			}
 		};
-	}
-
-	@Override
-	public void tick() {
-		LocalSampleLogger pingLogger = Minecraft.getInstance().getDebugOverlay().getPingLogger();
-
-		if (pingLogger.size() > 0) {
-			long total = 0;
-			for (int i = 0; i < pingLogger.size(); i++) {
-				total += pingLogger.get(i);
-			}
-
-			averagePing = total / pingLogger.size();
-		}
 	}
 }
