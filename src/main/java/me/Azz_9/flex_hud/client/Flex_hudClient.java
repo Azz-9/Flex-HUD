@@ -5,6 +5,7 @@ import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.HudElement;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom.Ping;
 import me.Azz_9.flex_hud.client.tickables.TickRegistry;
 import me.Azz_9.flex_hud.client.utils.FaviconUtils;
 import me.Azz_9.flex_hud.client.utils.FlexHudLogger;
@@ -94,6 +95,11 @@ public class Flex_hudClient implements ClientModInitializer {
 		});
 
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+			if (!client.isLocalServer()) {
+				Ping.packetSender = sender;
+				Ping.startPinging();
+			}
+			
 			if (client.getCurrentServer() != null) { // joined a multiplayer server
 				FaviconUtils.registerServerIcon(client.getCurrentServer().getIconBytes());
 			}
@@ -102,6 +108,8 @@ public class Flex_hudClient implements ClientModInitializer {
 		});
 
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
+			Ping.stopPinging();
+			Ping.packetSender = null;
 			waypointCollectors.forEach(Collector::onLeaveWorld);
 		});
 
