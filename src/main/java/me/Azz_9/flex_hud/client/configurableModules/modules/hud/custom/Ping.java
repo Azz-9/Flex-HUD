@@ -2,22 +2,34 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.network.packet.c2s.query.QueryPingC2SPacket;
 import net.minecraft.text.Text;
+import net.minecraft.util.Util;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2fStack;
+
+import java.util.concurrent.*;
 
 public class Ping extends AbstractTextModule {
 	private final ConfigBoolean hideWhenOffline = new ConfigBoolean(true, "flex_hud.ping.config.hide_when_offline");
+
+	private final static @NotNull ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor();
+	private final static int PERIOD = 1000; // ms
+	private static @Nullable ScheduledFuture<?> pingFuture;
+	public static @Nullable PacketSender packetSender;
+	public static long ping;
 
 	public Ping(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
@@ -26,6 +38,21 @@ public class Ping extends AbstractTextModule {
 		this.enabled.setValue(false);
 
 		ConfigRegistry.register(getID(), "hideWhenOffline", hideWhenOffline);
+	}
+
+	public static void startPinging() {
+		pingFuture = SCHEDULED_EXECUTOR_SERVICE.scheduleAtFixedRate(() -> {
+			if (ModulesHelper.getInstance().ping.isEnabled() && packetSender != null) {
+				packetSender.sendPacket(new QueryPingC2SPacket(Util.getMeasuringTimeMs()));
+			}
+		}, 0, PERIOD, TimeUnit.MILLISECONDS);
+	}
+
+	public static void stopPinging() {
+		if (pingFuture != null && pingFuture.state().equals(Future.State.RUNNING)) {
+			pingFuture.cancel(true);
+		}
+		packetSender = null;
 	}
 
 	@Override
@@ -60,15 +87,7 @@ public class Ping extends AbstractTextModule {
 		} else {
 			if (client.getCurrentServerEntry() != null) {
 
-				if (client.getNetworkHandler() != null) {
-					PlayerListEntry entry = client.getNetworkHandler().getPlayerListEntry(client.player.getUuid());
-
-					if (entry != null) {
-						int latency = entry.getLatency();
-
-						text = latency + " ms";
-					}
-				}
+				text = ping + " ms";
 
 			} else if (!this.hideWhenOffline.getValue()) {
 
