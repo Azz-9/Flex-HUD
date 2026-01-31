@@ -17,6 +17,7 @@
 		"drawContext.DrawContextAccessor",
 		"durabilityPing.ClientPlayNetworkHandlerMixin",
 		"keybind.KeyBindingMixin",
+		"ping.ClientPlayNetworkHandlerMixin",
 		"potionEffect.PotionEffectMixin",
 		"reach.ClientPlayerInteractionManagerMixin"
 	],
