@@ -15,7 +15,7 @@ public abstract class ClientPlayNetworkHandlerMixin {
 
 	@Inject(method = "onPingResult", at = @At("HEAD"))
 	private void onPingResult(PingResultS2CPacket packet, CallbackInfo ci) {
-		Ping.ping = Util.getMeasuringTimeMs() - packet.startTime();
+		Ping.addPingValue(Util.getMeasuringTimeMs() - packet.startTime());
 	}
 
 	@Inject(method = "onEnterReconfiguration", at = @At("HEAD"))
