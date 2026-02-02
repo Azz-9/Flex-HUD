@@ -20,6 +20,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2fStack;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.concurrent.*;
 
 public class Ping extends AbstractTextModule {
@@ -29,7 +31,9 @@ public class Ping extends AbstractTextModule {
 	private final static int PERIOD = 1000; // ms
 	private static @Nullable ScheduledFuture<?> pingFuture;
 	public static @Nullable PacketSender packetSender;
-	public static long ping;
+	private final static Deque<Long> pings = new ArrayDeque<>();
+	private final static int maxSize = 20;
+	private static long sum = 0;
 
 	public Ping(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
@@ -53,6 +57,17 @@ public class Ping extends AbstractTextModule {
 			pingFuture.cancel(true);
 		}
 		packetSender = null;
+		pings.clear();
+		sum = 0;
+	}
+
+	public static void addPingValue(long ping) {
+		pings.addLast(ping);
+		sum += ping;
+
+		if (pings.size() > maxSize) {
+			sum -= pings.removeFirst();
+		}
 	}
 
 	@Override
@@ -87,6 +102,7 @@ public class Ping extends AbstractTextModule {
 		} else {
 			if (client.getCurrentServerEntry() != null) {
 
+				long ping = pings.isEmpty() ? 0 : sum / pings.size();
 				text = ping + " ms";
 
 			} else if (!this.hideWhenOffline.getValue()) {
