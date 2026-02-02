@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ClientPlayNetworkHandlerMixin {
 	@Inject(method = "handlePongResponse", at = @At("HEAD"))
 	private void onPingResult(ClientboundPongResponsePacket packet, CallbackInfo ci) {
-		Ping.ping = Util.getMillis() - packet.time();
+		Ping.addPingValue(Util.getMillis() - packet.time());
 	}
 
 	@Inject(method = "handleConfigurationStart", at = @At("HEAD"))
