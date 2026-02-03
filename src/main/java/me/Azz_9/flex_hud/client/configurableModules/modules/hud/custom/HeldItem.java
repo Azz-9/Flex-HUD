@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
@@ -54,8 +56,6 @@ public class HeldItem extends AbstractTextModule {
 
 	@Override
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
-
 		if (shouldNotRender()) {
 			return;
 		}
@@ -65,14 +65,14 @@ public class HeldItem extends AbstractTextModule {
 		String label = "";
 		ItemStack stack;
 		int textColor;
-		if (Flex_hudClient.isInMoveElementScreen || client.player == null) {
+		if (Flex_hudClient.isInMoveElementScreen || CLIENT.player == null) {
 			// placeholder
 			label = "64/256";
 			stack = new ItemStack(Items.DIAMOND_BLOCK);
 			textColor = getColor();
 
 		} else {
-			stack = client.player.getMainHandStack();
+			stack = CLIENT.player.getMainHandStack();
 
 			if (stack == null || stack.isEmpty() || stack.isOf(Items.AIR)) {
 				return;
@@ -86,7 +86,7 @@ public class HeldItem extends AbstractTextModule {
 				}
 				textColor = ColorHelper.withAlpha(255, stack.getItemBarColor());
 			} else {
-				label = stack.getCount() + "/" + ItemUtils.getStackCount(stack, client.player.getInventory());
+				label = stack.getCount() + "/" + ItemUtils.getStackCount(stack, CLIENT.player.getInventory());
 				textColor = getColor();
 			}
 		}
@@ -106,12 +106,12 @@ public class HeldItem extends AbstractTextModule {
 		drawBackground(context);
 
 		if (getAnchorX() == AnchorPosition.END) {
-			TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
+			TextRenderer textRenderer = CLIENT.textRenderer;
 			context.drawText(textRenderer, label, 0, 4, getColor(), this.shadow.getValue());
 			context.drawItem(stack, textRenderer.getWidth(label) + gap, 0);
 		} else {
 			context.drawItem(stack, 0, 0);
-			context.drawText(MinecraftClient.getInstance().textRenderer, label, ITEM_SIZE + gap, 4, textColor, this.shadow.getValue());
+			context.drawText(CLIENT.textRenderer, label, ITEM_SIZE + gap, 4, textColor, this.shadow.getValue());
 		}
 
 		matrices.pop();
@@ -122,7 +122,7 @@ public class HeldItem extends AbstractTextModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (CLIENT.getLanguageManager().getLanguage().equals("fr_fr")) {
 					buttonWidth = 210;
 				} else {
 					buttonWidth = 170;

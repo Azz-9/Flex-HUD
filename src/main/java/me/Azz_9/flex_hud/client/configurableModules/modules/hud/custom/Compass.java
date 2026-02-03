@@ -38,6 +38,7 @@ import org.joml.Vector3f;
 import java.util.ArrayList;
 import java.util.List;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 
 public class Compass extends AbstractTextModule {
@@ -106,8 +107,7 @@ public class Compass extends AbstractTextModule {
 	}
 
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
-		PlayerEntity player = client.player;
+		PlayerEntity player = CLIENT.player;
 
 		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && player == null) {
 			return;
@@ -187,9 +187,9 @@ public class Compass extends AbstractTextModule {
 			String degrees = String.format(format, yaw);
 
 			matrices.push();
-			matrices.translate((getWidth() / 2.0f) - (client.textRenderer.getWidth(degrees) / 2.0f) * 0.75f, 1, 0);
+			matrices.translate((getWidth() / 2.0f) - (CLIENT.textRenderer.getWidth(degrees) / 2.0f) * 0.75f, 1, 0);
 			matrices.scale(0.75f, 0.75f, 1.0f);
-			context.drawText(client.textRenderer, degrees, 0, 0, getColor(), this.shadow.getValue());
+			context.drawText(CLIENT.textRenderer, degrees, 0, 0, getColor(), this.shadow.getValue());
 			matrices.pop();
 		}
 
@@ -198,9 +198,9 @@ public class Compass extends AbstractTextModule {
 			String markerText = "▼";
 
 			matrices.push();
-			matrices.translate((getWidth() / 2.0f) - (client.textRenderer.getWidth(markerText) / 2.0f), this.showDegrees.getValue() ? 8 : 0, 0);
+			matrices.translate((getWidth() / 2.0f) - (CLIENT.textRenderer.getWidth(markerText) / 2.0f), this.showDegrees.getValue() ? 8 : 0, 0);
 			matrices.scale(1.0f, 0.5f, 1.0f);
-			context.drawText(client.textRenderer, markerText, 0, 0, getColor(), this.shadow.getValue());
+			context.drawText(CLIENT.textRenderer, markerText, 0, 0, getColor(), this.shadow.getValue());
 			matrices.pop();
 		}
 
@@ -208,28 +208,24 @@ public class Compass extends AbstractTextModule {
 	}
 
 	private void drawCompassPoint(DrawContext drawContext, MatrixStack matrices, Text label, int angle, float yaw, int y) {
-		MinecraftClient client = MinecraftClient.getInstance();
-
 		float angleDifference = (angle - yaw + 540) % 360 - 180;
 
 		if (Math.abs(angleDifference) <= 120) {
 			float scaleFactor = 1.25f;
 			// Calculer la position X de chaque point cardinal en fonction de l'angle
 			float positionX = ((getWidth() / 2.0f) + (angleDifference * (getWidth() / 180.0f)));
-			float pointWidth = client.textRenderer.getWidth(label) * scaleFactor;
+			float pointWidth = CLIENT.textRenderer.getWidth(label) * scaleFactor;
 
 			// Afficher le label des directions avec couleur et taille de texte ajustée
 			matrices.push();
 			matrices.translate(positionX - pointWidth / 2.0f, y, 0);
 			matrices.scale(scaleFactor, scaleFactor, 1.0f);
-			drawContext.drawText(client.textRenderer, label, 0, 0, getColorWithFadeEffect(positionX), this.shadow.getValue());
+			drawContext.drawText(CLIENT.textRenderer, label, 0, 0, getColorWithFadeEffect(positionX), this.shadow.getValue());
 			matrices.pop();
 		}
 	}
 
 	private void drawIntermediatePoint(DrawContext drawContext, MatrixStack matrices, int angle, float yaw, int y) {
-		MinecraftClient client = MinecraftClient.getInstance();
-
 		float angleDifference = (angle - yaw + 540) % 360 - 180;
 
 		if (Math.abs(angleDifference) <= 120) {
@@ -237,16 +233,16 @@ public class Compass extends AbstractTextModule {
 			float positionX = ((getWidth() / 2.0f) + (angleDifference * (getWidth() / 180.0f)));
 
 			matrices.push();
-			matrices.translate(positionX - (client.textRenderer.getWidth("|") / 2.0f), y, 0);
+			matrices.translate(positionX - (CLIENT.textRenderer.getWidth("|") / 2.0f), y, 0);
 			matrices.scale(1.0f, 0.75f, 1.0f); // slightly smaller
-			drawContext.drawText(client.textRenderer, "|", 0, 0, getColorWithFadeEffect(positionX), this.shadow.getValue());
+			drawContext.drawText(CLIENT.textRenderer, "|", 0, 0, getColorWithFadeEffect(positionX), this.shadow.getValue());
 			matrices.pop();
 
 
 			matrices.push();
-			matrices.translate(positionX - (client.textRenderer.getWidth(String.valueOf(angle)) / 4.0f), y + 8, 0);
+			matrices.translate(positionX - (CLIENT.textRenderer.getWidth(String.valueOf(angle)) / 4.0f), y + 8, 0);
 			matrices.scale(0.5f, 0.5f, 1.0f); // 2 times smaller
-			drawContext.drawText(client.textRenderer, String.valueOf(angle), 0, 0, getColorWithFadeEffect(positionX), this.shadow.getValue());
+			drawContext.drawText(CLIENT.textRenderer, String.valueOf(angle), 0, 0, getColorWithFadeEffect(positionX), this.shadow.getValue());
 			matrices.pop();
 
 		}
@@ -268,8 +264,7 @@ public class Compass extends AbstractTextModule {
 	}
 
 	private void drawXaerosMapWaypoints(DrawContext context, MatrixStack matrices, float yaw, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
-		PlayerEntity player = client.player;
+		PlayerEntity player = CLIENT.player;
 		if (player == null) return;
 
 		float y = this.showDegrees.getValue() ? 10 : 2;
@@ -302,7 +297,7 @@ public class Compass extends AbstractTextModule {
 				int backgroundColor = ((getAlpha(positionX) / 2) << 24) | (color & 0x00ffffff);
 
 				matrices.push();
-				matrices.translate(positionX - (client.textRenderer.getWidth(waypoint.getInitials()) / 2.0f), y, 0);
+				matrices.translate(positionX - (CLIENT.textRenderer.getWidth(waypoint.getInitials()) / 2.0f), y, 0);
 				matrices.scale(scale, scale, 1.0f);
 				renderTextWithBackground(context, waypoint.getInitials(), 0, 0, backgroundColor, 0xffffff | (getAlpha(positionX) << 24));
 				matrices.pop();
@@ -311,22 +306,19 @@ public class Compass extends AbstractTextModule {
 	}
 
 	private void renderTextWithBackground(DrawContext context, String text, int x, int y, int backgroundColor, int textColor) {
-		MinecraftClient client = MinecraftClient.getInstance();
-
 		// Calculer la largeur et la hauteur du texte
-		int textWidth = client.textRenderer.getWidth(text);
-		int textHeight = client.textRenderer.fontHeight;
+		int textWidth = CLIENT.textRenderer.getWidth(text);
+		int textHeight = CLIENT.textRenderer.fontHeight;
 
 		// Dessiner le rectangle de fond
 		context.fill(x - 2, y - 1, x + textWidth + 1, y + textHeight - 1, backgroundColor);
 
 		// Dessiner le texte par-dessus le rectangle
-		context.drawText(client.textRenderer, text, x, y, textColor, this.shadow.getValue());
+		context.drawText(CLIENT.textRenderer, text, x, y, textColor, this.shadow.getValue());
 	}
 
 	private void drawJourneyMapWaypoints(DrawContext context, MatrixStack matrices, float yaw, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
-		PlayerEntity player = client.player;
+		PlayerEntity player = CLIENT.player;
 		if (player == null) return;
 
 		float y = this.showDegrees.getValue() ? 10 : 2;
@@ -358,7 +350,7 @@ public class Compass extends AbstractTextModule {
 				Identifier icon = waypoint.getIcon();
 				int iconWidth = waypoint.getIconWidth();
 				int iconHeight = waypoint.getIconHeight();
-				if (icon == null || client.getResourceManager().getResource(icon).isEmpty()) {
+				if (icon == null || CLIENT.getResourceManager().getResource(icon).isEmpty()) {
 					icon = Identifier.of(MOD_ID, "misc/journeymap-default-icon.png");
 					iconWidth = 13;
 					iconHeight = 13;
@@ -389,8 +381,7 @@ public class Compass extends AbstractTextModule {
 	}
 
 	private void renderMobs(DrawContext context, RenderTickCounter tickCounter, float yaw, MatrixStack matrices, List<LivingEntitiesTickable.EntityTexture> entityTextures) {
-		MinecraftClient client = MinecraftClient.getInstance();
-		PlayerEntity player = client.player;
+		PlayerEntity player = CLIENT.player;
 		if (player == null) {
 			return;
 		}
@@ -426,7 +417,7 @@ public class Compass extends AbstractTextModule {
 				context.drawTexture(RenderLayer::getGuiTextured, entity.texture(), 0, 0, 0, 0, textureSize, textureSize, textureSize, textureSize, ColorHelper.withAlpha(getAlpha(positionX), 0xffffff));
 
 
-				Pitch pitch = getEntityPitch(entity.entity(), client);
+				Pitch pitch = getEntityPitch(entity.entity(), CLIENT);
 				if (pitch != Pitch.NONE) {
 					int offset;
 					Identifier arrowIdentifier;
@@ -443,7 +434,7 @@ public class Compass extends AbstractTextModule {
 					int frameHeight = 5;
 					int frameCount = 2;
 
-					int tick = (client.world != null) ? (int) (client.world.getTime() % 14) : 0;
+					int tick = (CLIENT.world != null) ? (int) (CLIENT.world.getTime() % 14) : 0;
 					int frame = tick < 10 ? 0 : 1;
 
 					int v = frame * frameHeight;
@@ -507,7 +498,7 @@ public class Compass extends AbstractTextModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (CLIENT.getLanguageManager().getLanguage().equals("fr_fr")) {
 					buttonWidth = 230;
 				} else {
 					buttonWidth = 175;

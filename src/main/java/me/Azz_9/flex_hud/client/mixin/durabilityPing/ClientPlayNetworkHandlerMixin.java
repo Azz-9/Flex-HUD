@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.mixin.durabilityPing;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.DurabilityPing;
 import me.Azz_9.flex_hud.client.utils.ItemUtils;
@@ -25,15 +27,14 @@ public abstract class ClientPlayNetworkHandlerMixin {
 		if (!ModulesHelper.getInstance().isEnabled.getValue() || !ModulesHelper.getInstance().durabilityPing.isEnabled())
 			return;
 
-		MinecraftClient client = MinecraftClient.getInstance();
 		ItemStack stack = packet.getStack();
-		if (client.world == null || client.player == null || stack == null || stack.isEmpty() || !stack.isDamageable())
+		if (CLIENT.world == null || CLIENT.player == null || stack == null || stack.isEmpty() || !stack.isDamageable())
 			return;
 
-		long tick = client.world.getTime();
+		long tick = CLIENT.world.getTime();
 
 		int dmg = stack.getDamage();
-		int old = client.player.getInventory().getStack(packet.getSlot()).getDamage();
+		int old = CLIENT.player.getInventory().getStack(packet.getSlot()).getDamage();
 
 		if (tick == lastProcessedTick || dmg == old) {
 			return;

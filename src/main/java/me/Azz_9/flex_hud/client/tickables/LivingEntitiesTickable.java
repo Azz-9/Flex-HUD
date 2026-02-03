@@ -19,6 +19,7 @@ import net.minecraft.util.math.Vec3d;
 import java.util.ArrayList;
 import java.util.List;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 
 public class LivingEntitiesTickable implements Tickable {
@@ -38,7 +39,7 @@ public class LivingEntitiesTickable implements Tickable {
 
 	@Override
 	public void tick(MinecraftClient client) {
-		PlayerEntity player = MinecraftClient.getInstance().player;
+		PlayerEntity player = CLIENT.player;
 		if (player == null || client.world == null) return;
 
 		tamedEntitiesTextures.clear();

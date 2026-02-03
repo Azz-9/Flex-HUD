@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
@@ -31,7 +33,7 @@ public class NetherCoordinates extends AbstractTextModule {
 
 	@Override
 	public void init() {
-		setHeight(MinecraftClient.getInstance().textRenderer.fontHeight);
+		setHeight(CLIENT.textRenderer.fontHeight);
 	}
 
 	@Override
@@ -46,8 +48,7 @@ public class NetherCoordinates extends AbstractTextModule {
 
 	@Override
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
-		PlayerEntity player = client.player;
+		PlayerEntity player = CLIENT.player;
 
 		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && (player == null || !player.getWorld().getRegistryKey().equals(World.OVERWORLD) && this.onlyWhenInOverworld.getValue() || player.getWorld().getRegistryKey().equals(World.END))) {
 			return;
@@ -84,7 +85,7 @@ public class NetherCoordinates extends AbstractTextModule {
 
 		drawBackground(context);
 
-		context.drawText(client.textRenderer, text, 0, 0, getColor(), this.shadow.getValue());
+		context.drawText(CLIENT.textRenderer, text, 0, 0, getColor(), this.shadow.getValue());
 
 		matrices.pop();
 	}
@@ -94,7 +95,7 @@ public class NetherCoordinates extends AbstractTextModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (CLIENT.getLanguageManager().getLanguage().equals("fr_fr")) {
 					buttonWidth = 190;
 				} else {
 					buttonWidth = 160;

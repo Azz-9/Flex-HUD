@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.screens;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import me.Azz_9.flex_hud.client.configurableModules.ConfigLoader;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;

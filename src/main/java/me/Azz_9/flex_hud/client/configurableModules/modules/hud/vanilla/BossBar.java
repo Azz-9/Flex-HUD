@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.vanilla;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractMovableModule;
@@ -8,7 +10,6 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfiguratio
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.ClientBossBar;
 import net.minecraft.client.gui.screen.Screen;
@@ -65,12 +66,10 @@ public class BossBar extends AbstractMovableModule {
 
 	public void init() {
 		setWidth(182);
-		setHeight(BOSS_BAR_GAP + MinecraftClient.getInstance().textRenderer.fontHeight);
+		setHeight(BOSS_BAR_GAP + CLIENT.textRenderer.fontHeight);
 	}
 
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
-
 		if (shouldNotRender()) {
 			return;
 		}
@@ -88,9 +87,9 @@ public class BossBar extends AbstractMovableModule {
 			context.drawGuiTexture(RenderLayer::getGuiTextured, PROGRESS_TEXTURES[0], bossBarWidth, bossBarHeight, 0, 0, 0, 9, bossBarWidth, bossBarHeight);
 
 			Text text = Text.of("Boss bar");
-			int textX = (bossBarWidth - client.textRenderer.getWidth(text)) / 2;
+			int textX = (bossBarWidth - CLIENT.textRenderer.getWidth(text)) / 2;
 			int textY = 0;
-			context.drawTextWithShadow(client.textRenderer, text, textX, textY, 0xffffffff);
+			context.drawTextWithShadow(CLIENT.textRenderer, text, textX, textY, 0xffffffff);
 
 			matrices.pop();
 			return;
@@ -109,7 +108,7 @@ public class BossBar extends AbstractMovableModule {
 		int bossBarWidth = getWidth();
 		int bossBarHeight = 5;
 
-		int maxBossBars = (context.getScaledWindowHeight() / 3) / (BOSS_BAR_GAP + client.textRenderer.fontHeight);
+		int maxBossBars = (context.getScaledWindowHeight() / 3) / (BOSS_BAR_GAP + CLIENT.textRenderer.fontHeight);
 
 		int y = 9;
 		int counter = 1;
@@ -120,10 +119,10 @@ public class BossBar extends AbstractMovableModule {
 			this.renderBossBar(context, 0, y, bossBarWidth, bossBarHeight, clientBossBar);
 
 			Text text = clientBossBar.getName();
-			int textX = (bossBarWidth - client.textRenderer.getWidth(text)) / 2;
-			int textY = y - client.textRenderer.fontHeight;
-			context.drawTextWithShadow(client.textRenderer, text, textX, textY, 0xffffffff);
-			y += BOSS_BAR_GAP + client.textRenderer.fontHeight;
+			int textX = (bossBarWidth - CLIENT.textRenderer.getWidth(text)) / 2;
+			int textY = y - CLIENT.textRenderer.fontHeight;
+			context.drawTextWithShadow(CLIENT.textRenderer, text, textX, textY, 0xffffffff);
+			y += BOSS_BAR_GAP + CLIENT.textRenderer.fontHeight;
 			counter += 1;
 		}
 
@@ -148,7 +147,7 @@ public class BossBar extends AbstractMovableModule {
 	}
 
 	private void updateBossBars() {
-		bossBars = ((BossBarAccessor) MinecraftClient.getInstance().inGameHud.getBossBarHud()).getBossBars();
+		bossBars = ((BossBarAccessor) CLIENT.inGameHud.getBossBarHud()).getBossBars();
 	}
 
 	@Override
@@ -177,7 +176,7 @@ public class BossBar extends AbstractMovableModule {
 			@Override
 			protected void init() {
 
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (CLIENT.getLanguageManager().getLanguage().equals("fr_fr")) {
 					buttonWidth = 220;
 				}
 

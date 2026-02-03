@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.screens.moveModulesScreen;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
@@ -71,7 +73,7 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-		if (MinecraftClient.getInstance().world == null) {
+		if (CLIENT.world == null) {
 			super.renderBackground(context, mouseX, mouseY, deltaTicks);
 		}
 
@@ -106,7 +108,7 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 
 	@Override
 	public void renderBackground(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-		if (isCallbackScreen() && MinecraftClient.getInstance().world != null) {
+		if (isCallbackScreen() && CLIENT.world != null) {
 			super.renderBackground(context, mouseX, mouseY, deltaTicks);
 		}
 	}

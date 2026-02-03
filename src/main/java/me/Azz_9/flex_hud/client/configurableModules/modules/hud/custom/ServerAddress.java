@@ -18,6 +18,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 
 public class ServerAddress extends AbstractTextModule {
@@ -46,8 +47,6 @@ public class ServerAddress extends AbstractTextModule {
 
 	@Override
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
-
 		if (shouldNotRender()) {
 			return;
 		}
@@ -59,9 +58,9 @@ public class ServerAddress extends AbstractTextModule {
 			text = "play.hypixel.net";
 
 		} else {
-			if (client.getCurrentServerEntry() != null) {
+			if (CLIENT.getCurrentServerEntry() != null) {
 
-				text = client.getCurrentServerEntry().address;
+				text = CLIENT.getCurrentServerEntry().address;
 
 			} else if (!this.hideWhenOffline.getValue()) {
 
@@ -79,7 +78,7 @@ public class ServerAddress extends AbstractTextModule {
 			int textY = 0;
 			int faviconSize = 14;
 			Identifier icon = null;
-			if (showServerIcon.getValue() && (client.getCurrentServerEntry() != null || Flex_hudClient.isInMoveElementScreen)) {
+			if (showServerIcon.getValue() && (CLIENT.getCurrentServerEntry() != null || Flex_hudClient.isInMoveElementScreen)) {
 				if (Flex_hudClient.isInMoveElementScreen) {
 					icon = Identifier.of(MOD_ID, "misc/hypixel-logo.png");
 				} else {
@@ -90,7 +89,7 @@ public class ServerAddress extends AbstractTextModule {
 				}
 
 				textX = faviconSize + 2;
-				textY = (faviconSize - client.textRenderer.fontHeight) / 2;
+				textY = (faviconSize - CLIENT.textRenderer.fontHeight) / 2;
 				setHeight(faviconSize);
 				setWidth(text);
 				setWidth(getWidth() + textX);
@@ -106,7 +105,7 @@ public class ServerAddress extends AbstractTextModule {
 			if (icon != null) {
 				context.drawTexture(RenderLayer::getGuiTextured, icon, 0, 0, 0, 0, faviconSize, faviconSize, faviconSize, faviconSize);
 			}
-			context.drawText(client.textRenderer, text, textX, textY, getColor(), this.shadow.getValue());
+			context.drawText(CLIENT.textRenderer, text, textX, textY, getColor(), this.shadow.getValue());
 
 			matrices.pop();
 		}
@@ -114,7 +113,7 @@ public class ServerAddress extends AbstractTextModule {
 
 	@Override
 	public boolean shouldNotRender() {
-		return super.shouldNotRender() || (this.hideWhenOffline.getValue() && MinecraftClient.getInstance().getCurrentServerEntry() == null && !Flex_hudClient.isInMoveElementScreen);
+		return super.shouldNotRender() || (this.hideWhenOffline.getValue() && CLIENT.getCurrentServerEntry() == null && !Flex_hudClient.isInMoveElementScreen);
 	}
 
 	@Override
@@ -122,7 +121,7 @@ public class ServerAddress extends AbstractTextModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (CLIENT.getLanguageManager().getLanguage().equals("fr_fr")) {
 					buttonWidth = 225;
 				}
 

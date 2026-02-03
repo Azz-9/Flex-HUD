@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import me.Azz_9.flex_hud.client.configurableModules.modules.Translatable;
 import me.Azz_9.flex_hud.client.screens.TrackableChange;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
@@ -64,7 +66,7 @@ public class ConfigCyclingButtonWidget<T, E extends Enum<E> & Translatable> exte
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER || keyCode == GLFW.GLFW_KEY_SPACE) {
 			this.onClick(0, 0);
-			this.playDownSound(MinecraftClient.getInstance().getSoundManager());
+			this.playDownSound(CLIENT.getSoundManager());
 			return true;
 		}
 		return super.keyPressed(keyCode, scanCode, modifiers);

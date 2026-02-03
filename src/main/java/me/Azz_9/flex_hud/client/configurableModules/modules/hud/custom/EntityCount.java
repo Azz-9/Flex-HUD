@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
@@ -43,7 +45,7 @@ public class EntityCount extends AbstractTextModule implements TickableModule {
 
 	@Override
 	public void init() {
-		setHeight(MinecraftClient.getInstance().textRenderer.fontHeight);
+		setHeight(CLIENT.textRenderer.fontHeight);
 	}
 
 	@Override
@@ -58,8 +60,6 @@ public class EntityCount extends AbstractTextModule implements TickableModule {
 
 	@Override
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
-
 		if (shouldNotRender()) {
 			return;
 		}
@@ -75,7 +75,7 @@ public class EntityCount extends AbstractTextModule implements TickableModule {
 
 		drawBackground(context);
 
-		context.drawText(client.textRenderer, text, 0, 0, getColor(), this.shadow.getValue());
+		context.drawText(CLIENT.textRenderer, text, 0, 0, getColor(), this.shadow.getValue());
 
 		matrices.pop();
 	}
@@ -165,7 +165,7 @@ public class EntityCount extends AbstractTextModule implements TickableModule {
 	}
 
 	public static boolean isInRange(Entity entity) {
-		PlayerEntity player = MinecraftClient.getInstance().player;
+		PlayerEntity player = CLIENT.player;
 		if (player != null) {
 			int radius = ModulesHelper.getInstance().entityCount.range.getValue();
 			return entity.getPos().isInRange(player.getPos(), radius);
@@ -175,14 +175,13 @@ public class EntityCount extends AbstractTextModule implements TickableModule {
 
 	@Override
 	public void tick() {
-		MinecraftClient client = MinecraftClient.getInstance();
-		if (client.world == null || client.player == null) {
+		if (CLIENT.world == null || CLIENT.player == null) {
 			return;
 		}
 
 		EntityCount.entityCount = 0;
-		for (Entity entity : client.world.getEntities()) {
-			if (entity != client.player && isInRange(entity)) {
+		for (Entity entity : CLIENT.world.getEntities()) {
+			if (entity != CLIENT.player && isInRange(entity)) {
 
 				if (onlyMobs.getValue()) {
 					if (!(entity instanceof MobEntity)) continue;
