@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import me.Azz_9.flex_hud.client.screens.AbstractSmoothScrollableList;
 import me.Azz_9.flex_hud.client.screens.TrackableChange;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
@@ -90,13 +92,13 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 		public void setY(int y) {
 			super.setY(y);
 			this.resetButtonWidget.setY(y);
-			textY = (int) (y + (this.resetButtonSize - MinecraftClient.getInstance().textRenderer.fontHeight) / 2.0);
+			textY = (int) (y + (this.resetButtonSize - CLIENT.textRenderer.fontHeight) / 2.0);
 		}
 
 		@Override
 		public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
 			this.resetButtonWidget.render(context, mouseX, mouseY, deltaTicks);
-			context.drawText(MinecraftClient.getInstance().textRenderer, text, textX, textY, textColor, true);
+			context.drawText(CLIENT.textRenderer, text, textX, textY, textColor, true);
 		}
 
 		@Override

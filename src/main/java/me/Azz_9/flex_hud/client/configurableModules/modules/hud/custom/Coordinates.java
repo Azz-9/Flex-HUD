@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
@@ -58,13 +60,11 @@ public class Coordinates extends AbstractTextModule {
 
 	@Override
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
-
-		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && client.player == null) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && CLIENT.player == null) {
 			return;
 		}
 
-		PlayerEntity player = client.player;
+		PlayerEntity player = CLIENT.player;
 
 		List<Renderable> renderables = new ArrayList<>();
 
@@ -109,9 +109,9 @@ public class Coordinates extends AbstractTextModule {
 			setHeight(hudY + 10);
 
 			if (this.showDirection.getValue()) {
-				int widestCoords = Math.max(client.textRenderer.getWidth(xCoords), client.textRenderer.getWidth(yCoords));
+				int widestCoords = Math.max(CLIENT.textRenderer.getWidth(xCoords), CLIENT.textRenderer.getWidth(yCoords));
 				if (this.showY.getValue()) {
-					widestCoords = Math.max(widestCoords, client.textRenderer.getWidth(zCoords));
+					widestCoords = Math.max(widestCoords, CLIENT.textRenderer.getWidth(zCoords));
 				}
 				hudX = 24 + widestCoords;
 				hudY = 0;
@@ -162,7 +162,7 @@ public class Coordinates extends AbstractTextModule {
 
 			renderables.add(new RenderableText(0, 0, Text.of(text.toString()), getColor(), this.shadow.getValue()));
 			updateWidth(text.toString());
-			setHeight(client.textRenderer.fontHeight);
+			setHeight(CLIENT.textRenderer.fontHeight);
 		}
 
 		Matrix3x2fStack matrices = context.getMatrices();
@@ -220,7 +220,7 @@ public class Coordinates extends AbstractTextModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (CLIENT.getLanguageManager().getLanguage().equals("fr_fr")) {
 					buttonWidth = 220;
 				} else {
 					buttonWidth = 185;

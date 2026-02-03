@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.crosshairEditor;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector.ColorSelector;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.CrosshairButtonWidget;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.actions.UndoManager;
@@ -50,14 +52,14 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 		this.crosshairButtonWidget = crosshairButtonWidget;
 		int textureSize = crosshairButtonWidget.getData().length;
 		this.pixels = new Pixel[textureSize][textureSize];
-		int pixelSize = (MinecraftClient.getInstance().getWindow().getScaledHeight() - 100) / textureSize;
+		int pixelSize = (CLIENT.getWindow().getScaledHeight() - 100) / textureSize;
 
 		int padding = 4;
 		this.width = textureSize * pixelSize + padding * 2;
 		this.height = textureSize * pixelSize + padding * 2;
 
-		this.x = (MinecraftClient.getInstance().getWindow().getScaledWidth() - width) / 2;
-		this.y = (MinecraftClient.getInstance().getWindow().getScaledHeight() - height) / 2;
+		this.x = (CLIENT.getWindow().getScaledWidth() - width) / 2;
+		this.y = (CLIENT.getWindow().getScaledHeight() - height) / 2;
 
 		// pixels
 		for (int pixelY = 0; pixelY < textureSize; pixelY++) {
@@ -73,8 +75,8 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 		int colorButtonBlockMargin = 20;
 		int colorButtonSize = 20;
 
-		colorText = new TextWidget(Text.translatable("flex_hud.crosshair_editor.color"), MinecraftClient.getInstance().textRenderer);
-		colorText.setPosition(asideX, y + colorButtonBlockMargin + (colorButtonSize - MinecraftClient.getInstance().textRenderer.fontHeight) / 2);
+		colorText = new TextWidget(Text.translatable("flex_hud.crosshair_editor.color"), CLIENT.textRenderer);
+		colorText.setPosition(asideX, y + colorButtonBlockMargin + (colorButtonSize - CLIENT.textRenderer.fontHeight) / 2);
 
 		this.colorButton = new ColorButton(
 				colorText.getRight() + 2, y + colorButtonBlockMargin,
@@ -100,8 +102,8 @@ public class CrosshairEditor implements Element, Drawable, Widget {
 				asideWidth - 6, listHeight,
 				this.getBottom() - padding - listHeight, asideX, this
 		);
-		this.presetText = new TextWidget(Text.translatable("flex_hud.crosshair_editor.presets"), MinecraftClient.getInstance().textRenderer);
-		this.presetText.setPosition(crosshairPresetsList.getX(), crosshairPresetsList.getY() - MinecraftClient.getInstance().textRenderer.fontHeight - 2);
+		this.presetText = new TextWidget(Text.translatable("flex_hud.crosshair_editor.presets"), CLIENT.textRenderer);
+		this.presetText.setPosition(crosshairPresetsList.getX(), crosshairPresetsList.getY() - CLIENT.textRenderer.fontHeight - 2);
 	}
 
 	@Override

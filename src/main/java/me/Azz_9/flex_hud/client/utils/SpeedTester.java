@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.utils;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
@@ -45,9 +47,7 @@ public class SpeedTester {
 	public static void tick() {
 		if (times.isEmpty()) return;
 
-		MinecraftClient client = MinecraftClient.getInstance();
-
-		boolean keyPressed = InputUtil.isKeyPressed(client.getWindow(), InputUtil.GLFW_KEY_O);
+		boolean keyPressed = InputUtil.isKeyPressed(CLIENT.getWindow(), InputUtil.GLFW_KEY_O);
 
 		if (keyPressed && !wasKeyPressed) {
 			for (String module : times.keySet()) {
@@ -61,10 +61,10 @@ public class SpeedTester {
 						.append(Text.literal(String.format("%.2fµs", average)).formatted(Formatting.AQUA))
 						.append(", ")
 						.append(Text.literal(String.format("%.2fms", average / 1000.0)).formatted(Formatting.RED))
-						.append(String.format(" (%d samples ~%.2fs)", moduleTimes.size(), (float) (moduleTimes.size()) / MinecraftClient.getInstance().getCurrentFps()));
+						.append(String.format(" (%d samples ~%.2fs)", moduleTimes.size(), (float) (moduleTimes.size()) / CLIENT.getCurrentFps()));
 
-				if (client.player != null) {
-					client.player.sendMessage(text, false);
+				if (CLIENT.player != null) {
+					CLIENT.player.sendMessage(text, false);
 				}
 				System.out.println(text.getString());
 			}

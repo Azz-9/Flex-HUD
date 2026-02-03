@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import com.google.common.collect.Ordering;
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
@@ -54,9 +56,7 @@ public class PotionEffect extends AbstractTextModule {
 
 	@Override
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
-
-		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && client.player == null) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && CLIENT.player == null) {
 			return;
 		}
 
@@ -69,7 +69,7 @@ public class PotionEffect extends AbstractTextModule {
 		if (Flex_hudClient.isInMoveElementScreen) {
 			playerEffects = List.of(new StatusEffectInstance(StatusEffects.SPEED, 1800, 1), new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 200));
 		} else {
-			playerEffects = Ordering.natural().sortedCopy(client.player.getStatusEffects());
+			playerEffects = Ordering.natural().sortedCopy(CLIENT.player.getStatusEffects());
 		}
 
 		setWidth(0);
@@ -81,8 +81,8 @@ public class PotionEffect extends AbstractTextModule {
 		int effectGap = 6;
 
 		// height
-		final int horizontalHeight = Math.max(iconSize, client.textRenderer.fontHeight * 2 + textGap);
-		final int verticalHeight = iconSize + textIconGap + client.textRenderer.fontHeight * 2 + textGap;
+		final int horizontalHeight = Math.max(iconSize, CLIENT.textRenderer.fontHeight * 2 + textGap);
+		final int verticalHeight = iconSize + textIconGap + CLIENT.textRenderer.fontHeight * 2 + textGap;
 
 		for (StatusEffectInstance effect : playerEffects) {
 			if (effect == null) continue;
@@ -94,20 +94,20 @@ public class PotionEffect extends AbstractTextModule {
 			Identifier icon = InGameHud.getEffectTexture(effect.getEffectType());
 
 			textWidth = Math.max(
-					client.textRenderer.getWidth(effectString),
-					client.textRenderer.getWidth(durationString)
+					CLIENT.textRenderer.getWidth(effectString),
+					CLIENT.textRenderer.getWidth(durationString)
 			);
 
 			int durationColor = (effect.isInfinite() ? getColor() : ColorHelper.withAlpha(getTimestampAlpha(effect.getDuration()), getColor()));
 
 			switch (iconPlacement.getValue()) {
 				case TOP -> {
-					setHeight(hudY + iconSize + textIconGap + client.textRenderer.fontHeight * 2 + textGap);
+					setHeight(hudY + iconSize + textIconGap + CLIENT.textRenderer.fontHeight * 2 + textGap);
 					setWidth(Math.max(getWidth(), Math.max(textWidth, iconSize)));
 
 					renderables.add(new MultiRenderable(0, textWidth,
 							new RenderableText(0, hudY + iconSize + textIconGap, Text.of(effectString), getColor(), shadow.getValue()),
-							new RenderableText(0, hudY + iconSize + textIconGap + client.textRenderer.fontHeight + textGap, Text.of(durationString), durationColor, shadow.getValue())
+							new RenderableText(0, hudY + iconSize + textIconGap + CLIENT.textRenderer.fontHeight + textGap, Text.of(durationString), durationColor, shadow.getValue())
 					));
 					renderables.add(new MultiRenderable(0, iconSize,
 							new RenderableImage(0, hudY, icon, iconSize, iconSize)
@@ -123,23 +123,23 @@ public class PotionEffect extends AbstractTextModule {
 
 					renderables.add(new MultiRenderable(0, currentWidth,
 							new RenderableText(0, hudY, Text.of(effectString), getColor(), shadow.getValue()),
-							new RenderableText(0, hudY + client.textRenderer.fontHeight + textGap, Text.of(durationString), durationColor, shadow.getValue()),
+							new RenderableText(0, hudY + CLIENT.textRenderer.fontHeight + textGap, Text.of(durationString), durationColor, shadow.getValue()),
 							new RenderableImage(textWidth + textIconGap, hudY, icon, iconSize, iconSize)
 					));
 
 					hudY += horizontalHeight + effectGap;
 				}
 				case BOTTOM -> {
-					setHeight(hudY + iconSize + textIconGap + client.textRenderer.fontHeight * 2 + textGap);
+					setHeight(hudY + iconSize + textIconGap + CLIENT.textRenderer.fontHeight * 2 + textGap);
 					setWidth(Math.max(getWidth(), Math.max(textWidth, iconSize)));
 
 					renderables.add(new MultiRenderable(0, textWidth,
 							new RenderableText(0, hudY, Text.of(effectString), getColor(), shadow.getValue()),
-							new RenderableText(0, hudY + client.textRenderer.fontHeight + textGap, Text.of(durationString), durationColor, shadow.getValue())
+							new RenderableText(0, hudY + CLIENT.textRenderer.fontHeight + textGap, Text.of(durationString), durationColor, shadow.getValue())
 
 					));
 					renderables.add(new MultiRenderable(0, iconSize,
-							new RenderableImage(0, hudY + client.textRenderer.fontHeight * 2 + textGap + textIconGap, icon, iconSize, iconSize)
+							new RenderableImage(0, hudY + CLIENT.textRenderer.fontHeight * 2 + textGap + textIconGap, icon, iconSize, iconSize)
 					));
 
 					hudY += verticalHeight + effectGap;
@@ -153,7 +153,7 @@ public class PotionEffect extends AbstractTextModule {
 					renderables.add(new MultiRenderable(0, currentWidth,
 							new RenderableImage(0, hudY, icon, iconSize, iconSize),
 							new RenderableText(iconSize + textIconGap, hudY, Text.of(effectString), getColor(), shadow.getValue()),
-							new RenderableText(iconSize + textIconGap, hudY + client.textRenderer.fontHeight + textGap, Text.of(durationString), durationColor, shadow.getValue())
+							new RenderableText(iconSize + textIconGap, hudY + CLIENT.textRenderer.fontHeight + textGap, Text.of(durationString), durationColor, shadow.getValue())
 					));
 
 					hudY += horizontalHeight + effectGap;
@@ -190,18 +190,16 @@ public class PotionEffect extends AbstractTextModule {
 	}
 
 	private int getTimestampAlpha(int duration) {
-		MinecraftClient client = MinecraftClient.getInstance();
-
 		// Always opaque if paused or no world (e.g., title screen)
-		if (client.isPaused() || client.world == null) {
+		if (CLIENT.isPaused() || CLIENT.world == null) {
 			return 255;
 		}
 
 		// Smooth fraction of current tick [0..1]; works on Fabric/Yarn
-		float tickDelta = client.getRenderTickCounter().getDynamicDeltaTicks();
+		float tickDelta = CLIENT.getRenderTickCounter().getDynamicDeltaTicks();
 
 		// Add tickDelta to world time for smooth animation
-		float ticks = client.world.getTimeOfDay() + tickDelta;
+		float ticks = CLIENT.world.getTimeOfDay() + tickDelta;
 
 		// 20 ticks ~= 1 second at 20 TPS
 		float cycle = (ticks % 20.0f) / 20.0f;
@@ -231,7 +229,7 @@ public class PotionEffect extends AbstractTextModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (CLIENT.getLanguageManager().getLanguage().equals("fr_fr")) {
 					buttonWidth = 200;
 				} else {
 					buttonWidth = 165;

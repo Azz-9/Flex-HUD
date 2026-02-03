@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import me.Azz_9.flex_hud.client.screens.AbstractCallbackScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector.ColorBindable;
@@ -63,7 +65,7 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 		int configListY = Math.max(this.height / 10, 20);
 		int bottomMargin = 50;
 		this.configList = new ScrollableConfigList(
-				MinecraftClient.getInstance(),
+				CLIENT,
 				buttonWidth + 62, Math.min(300, this.height - configListY - bottomMargin),
 				configListY, (this.width - (buttonWidth + 62)) / 2,
 				buttonHeight + 10, buttonWidth + 30,
@@ -106,7 +108,7 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 
 	@Override
 	public void renderBackground(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-		if (MinecraftClient.getInstance().world == null) {
+		if (CLIENT.world == null) {
 			super.renderBackground(context, mouseX, mouseY, deltaTicks);
 		}
 	}

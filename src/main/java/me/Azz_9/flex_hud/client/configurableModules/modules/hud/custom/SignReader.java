@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractMovableModule;
@@ -111,7 +113,7 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 	private void renderSignText(@NotNull DrawContext context, @NotNull RenderData data) {
 		if (data.texture == null) return;
 
-		TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
+		TextRenderer textRenderer = CLIENT.textRenderer;
 
 		for (int i = 0; i < 4; i++) {
 			if (i >= data.content.length) continue;
@@ -156,9 +158,9 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 	public boolean shouldNotRender() {
 		return super.shouldNotRender() ||
 				!Flex_hudClient.isInMoveElementScreen && (
-						MinecraftClient.getInstance().getCameraEntity() == null ||
-								MinecraftClient.getInstance().world == null ||
-								MinecraftClient.getInstance().player == null
+						CLIENT.getCameraEntity() == null ||
+								CLIENT.world == null ||
+								CLIENT.player == null
 				);
 	}
 
@@ -167,7 +169,7 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (CLIENT.getLanguageManager().getLanguage().equals("fr_fr")) {
 					buttonWidth = 190;
 				}
 
@@ -216,13 +218,12 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 	private @NotNull RenderData getSignRenderData() {
 		RenderData data = new RenderData();
 
-		MinecraftClient client = MinecraftClient.getInstance();
-		if (client.player == null || client.world == null || client.getCameraEntity() == null) {
+		if (CLIENT.player == null || CLIENT.world == null || CLIENT.getCameraEntity() == null) {
 			return data;
 		}
 
-		PlayerEntity player = client.player;
-		World world = client.world;
+		PlayerEntity player = CLIENT.player;
+		World world = CLIENT.world;
 
 		HitResult hitResult = RaycastTickable.getHitResult();
 

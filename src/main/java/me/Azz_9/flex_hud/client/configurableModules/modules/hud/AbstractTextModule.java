@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
@@ -23,25 +25,25 @@ public abstract class AbstractTextModule extends AbstractBackgroundModule {
 	}
 
 	protected void updateWidth(String text) {
-		int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(text);
+		int textWidth = CLIENT.textRenderer.getWidth(text);
 		if (textWidth > getWidth()) {
 			setWidth(textWidth);
 		}
 	}
 
 	protected void updateWidth(String text, int startX) {
-		int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(text);
+		int textWidth = CLIENT.textRenderer.getWidth(text);
 		if (startX + textWidth > getWidth()) {
 			setWidth(startX + textWidth);
 		}
 	}
 
 	protected void setWidth(String text) {
-		setWidth(MinecraftClient.getInstance().textRenderer.getWidth(text));
+		setWidth(CLIENT.textRenderer.getWidth(text));
 	}
 
 	protected void setWidth(String text, int startX) {
-		int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(text);
+		int textWidth = CLIENT.textRenderer.getWidth(text);
 		setWidth(startX + textWidth);
 	}
 
