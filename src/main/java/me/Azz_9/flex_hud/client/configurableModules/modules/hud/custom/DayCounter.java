@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
@@ -29,7 +31,7 @@ public class DayCounter extends AbstractTextModule {
 
 	@Override
 	public void init() {
-		setHeight(MinecraftClient.getInstance().textRenderer.fontHeight);
+		setHeight(CLIENT.textRenderer.fontHeight);
 	}
 
 	@Override
@@ -44,9 +46,7 @@ public class DayCounter extends AbstractTextModule {
 
 	@Override
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
-
-		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && client.world == null) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && CLIENT.world == null) {
 			return;
 		}
 
@@ -54,7 +54,7 @@ public class DayCounter extends AbstractTextModule {
 		if (Flex_hudClient.isInMoveElementScreen) {
 			day = 5;
 		} else {
-			day = client.world.getTimeOfDay() / 24000;
+			day = CLIENT.world.getTimeOfDay() / 24000;
 		}
 		Text text = Text.translatable("flex_hud.day_counter.hud.prefix").append(" " + (int) day);
 
@@ -67,7 +67,7 @@ public class DayCounter extends AbstractTextModule {
 
 		drawBackground(context);
 
-		context.drawText(client.textRenderer, text, 0, 0, getColor(), this.shadow.getValue());
+		context.drawText(CLIENT.textRenderer, text, 0, 0, getColor(), this.shadow.getValue());
 
 		matrices.pop();
 	}
@@ -86,7 +86,7 @@ public class DayCounter extends AbstractTextModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (CLIENT.getLanguageManager().getLanguage().equals("fr_fr")) {
 					buttonWidth = 160;
 				}
 

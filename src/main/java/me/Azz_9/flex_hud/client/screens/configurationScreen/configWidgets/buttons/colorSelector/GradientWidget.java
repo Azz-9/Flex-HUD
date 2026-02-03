@@ -12,6 +12,7 @@ import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 
 public class GradientWidget extends ClickableWidget {
@@ -65,7 +66,7 @@ public class GradientWidget extends ClickableWidget {
 
 	@Override
 	public void onClick(double mouseX, double mouseY) {
-		long window = MinecraftClient.getInstance().getWindow().getHandle();
+		long window = CLIENT.getWindow().getHandle();
 		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);
 		moveCursor(mouseX, mouseY);
 		isDraggingCursor = true;
@@ -94,7 +95,7 @@ public class GradientWidget extends ClickableWidget {
 
 	@Override
 	public void onRelease(double mouseX, double mouseY) {
-		long window = MinecraftClient.getInstance().getWindow().getHandle();
+		long window = CLIENT.getWindow().getHandle();
 		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
 		isDraggingCursor = false;
 	}

@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.utils.cps;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
@@ -17,8 +19,8 @@ public class KeyHandler {
 			return;
 		}
 
-		int attackKeyCode = KeyBindingHelper.getBoundKeyOf(MinecraftClient.getInstance().options.attackKey).getCode();
-		int useKeyCode = KeyBindingHelper.getBoundKeyOf(MinecraftClient.getInstance().options.useKey).getCode();
+		int attackKeyCode = KeyBindingHelper.getBoundKeyOf(CLIENT.options.attackKey).getCode();
+		int useKeyCode = KeyBindingHelper.getBoundKeyOf(CLIENT.options.useKey).getCode();
 
 		if ((button != attackKeyCode && button != useKeyCode) ||
 				(button == attackKeyCode && !ModulesHelper.getInstance().cps.showLeftClick.getValue() && !ModulesHelper.getInstance().keyStrokes.isEnabled()) ||

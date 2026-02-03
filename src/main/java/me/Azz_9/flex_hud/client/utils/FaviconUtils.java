@@ -9,6 +9,7 @@ import net.minecraft.util.Identifier;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 
 public class FaviconUtils {
@@ -21,7 +22,7 @@ public class FaviconUtils {
 			return;
 		}
 
-		TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
+		TextureManager textureManager = CLIENT.getTextureManager();
 		currentServerFavicon = Identifier.of(MOD_ID, "server_icon");
 
 		textureManager.registerTexture(currentServerFavicon, texture);

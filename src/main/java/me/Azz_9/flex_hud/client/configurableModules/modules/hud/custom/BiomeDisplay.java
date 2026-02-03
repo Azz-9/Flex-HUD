@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 
 import static java.util.Map.entry;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 
 public class BiomeDisplay extends AbstractTextModule {
 	private final ConfigBoolean biomeSpecificColor = new ConfigBoolean(true, "flex_hud.biome_display.config.biome_specific_color");
@@ -38,7 +39,7 @@ public class BiomeDisplay extends AbstractTextModule {
 
 	@Override
 	public void init() {
-		setHeight(MinecraftClient.getInstance().textRenderer.fontHeight);
+		setHeight(CLIENT.textRenderer.fontHeight);
 	}
 
 	@Override
@@ -53,9 +54,7 @@ public class BiomeDisplay extends AbstractTextModule {
 
 	@Override
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
-
-		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && client.player == null) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && CLIENT.player == null) {
 			return;
 		}
 
@@ -66,13 +65,13 @@ public class BiomeDisplay extends AbstractTextModule {
 			biomeKey = BiomeKeys.PLAINS;
 			biomeName = "plains";
 		} else {
-			PlayerEntity player = client.player;
+			PlayerEntity player = CLIENT.player;
 
-			if (client.world == null) {
+			if (CLIENT.world == null) {
 				return;
 			}
 
-			biomeKey = client.world.getBiome(player.getBlockPos()).getKey().orElse(null);
+			biomeKey = CLIENT.world.getBiome(player.getBlockPos()).getKey().orElse(null);
 
 			if (biomeKey == null) return;
 
@@ -80,7 +79,7 @@ public class BiomeDisplay extends AbstractTextModule {
 		}
 
 		String prefix = "Biome: ";
-		int prefixWidth = client.textRenderer.getWidth(prefix);
+		int prefixWidth = CLIENT.textRenderer.getWidth(prefix);
 		setWidth(biomeName, prefixWidth);
 
 		int biomeTextColor = (biomeSpecificColor.getValue() ?
@@ -94,8 +93,8 @@ public class BiomeDisplay extends AbstractTextModule {
 
 		drawBackground(context);
 
-		context.drawText(client.textRenderer, prefix, 0, 0, getColor(), shadow.getValue());
-		context.drawText(client.textRenderer, biomeName, prefixWidth, 0, biomeTextColor, shadow.getValue());
+		context.drawText(CLIENT.textRenderer, prefix, 0, 0, getColor(), shadow.getValue());
+		context.drawText(CLIENT.textRenderer, biomeName, prefixWidth, 0, biomeTextColor, shadow.getValue());
 
 		matrices.pop();
 	}

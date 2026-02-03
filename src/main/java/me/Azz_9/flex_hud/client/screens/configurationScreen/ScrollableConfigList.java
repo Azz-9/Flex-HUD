@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import me.Azz_9.flex_hud.client.screens.AbstractSmoothScrollableList;
 import me.Azz_9.flex_hud.client.screens.TrackableChange;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
@@ -67,7 +69,7 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 
 		public AbstractConfigEntry(int resetButtonSize, Text text) {
 			this.resetButtonSize = resetButtonSize;
-			this.textWidget = new TextWidget(text, MinecraftClient.getInstance().textRenderer);
+			this.textWidget = new TextWidget(text, CLIENT.textRenderer);
 		}
 
 		protected void setResetButtonPressAction(ButtonWidget.PressAction pressAction) {
@@ -77,7 +79,7 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 		@Override
 		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickProgress) {
 			this.resetButtonWidget.setPosition(x + entryWidth - resetButtonWidget.getWidth(), y);
-			this.textWidget.setPosition(x + TEXT_MARGIN_LEFT, (int) (y + (entryHeight - MinecraftClient.getInstance().textRenderer.fontHeight) / 2.0));
+			this.textWidget.setPosition(x + TEXT_MARGIN_LEFT, (int) (y + (entryHeight - CLIENT.textRenderer.fontHeight) / 2.0));
 
 			this.resetButtonWidget.render(context, mouseX, mouseY, tickProgress);
 			this.textWidget.render(context, mouseX, mouseY, tickProgress);

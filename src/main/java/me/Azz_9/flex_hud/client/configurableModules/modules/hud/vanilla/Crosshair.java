@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.vanilla;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
@@ -13,7 +15,6 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScree
 import me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.CrosshairEditorEntry;
 import me.Azz_9.flex_hud.client.utils.crosshair.DynamicTexture;
 import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.option.AttackIndicator;
@@ -98,17 +99,15 @@ public class Crosshair extends AbstractModule implements HudElement {
 
 	@Override
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
-
-		if (shouldNotRender() || client.player == null ||
-				!client.options.getPerspective().isFirstPerson() || client.interactionManager == null ||
-				(client.interactionManager.getCurrentGameMode() == GameMode.SPECTATOR && !this.shouldRenderSpectatorCrosshair(client.crosshairTarget)) ||
+		if (shouldNotRender() || CLIENT.player == null ||
+				!CLIENT.options.getPerspective().isFirstPerson() || CLIENT.interactionManager == null ||
+				(CLIENT.interactionManager.getCurrentGameMode() == GameMode.SPECTATOR && !this.shouldRenderSpectatorCrosshair(CLIENT.crosshairTarget)) ||
 				this.shouldNotRenderCrosshair()) {
 			return;
 		}
 
-		int screenWidth = client.getWindow().getScaledWidth();
-		int screenHeight = client.getWindow().getScaledHeight();
+		int screenWidth = CLIENT.getWindow().getScaledWidth();
+		int screenHeight = CLIENT.getWindow().getScaledHeight();
 		double startX = screenWidth / 2.0 - (size / 2.0) * scale.getValue();
 		double startY = screenHeight / 2.0 - (size / 2.0) * scale.getValue();
 
@@ -121,12 +120,12 @@ public class Crosshair extends AbstractModule implements HudElement {
 
 		matrices.pop();
 
-		if (client.options.getAttackIndicator().getValue() == AttackIndicator.CROSSHAIR) {
-			float attackCooldownProgress = client.player.getAttackCooldownProgress(0.0F);
+		if (CLIENT.options.getAttackIndicator().getValue() == AttackIndicator.CROSSHAIR) {
+			float attackCooldownProgress = CLIENT.player.getAttackCooldownProgress(0.0F);
 			boolean renderFullAttackIndicator = false;
-			if (client.targetedEntity instanceof LivingEntity && attackCooldownProgress >= 1.0F) {
-				renderFullAttackIndicator = client.player.getAttackCooldownProgressPerTick() > 5.0F;
-				renderFullAttackIndicator &= client.targetedEntity.isAlive();
+			if (CLIENT.targetedEntity instanceof LivingEntity && attackCooldownProgress >= 1.0F) {
+				renderFullAttackIndicator = CLIENT.player.getAttackCooldownProgressPerTick() > 5.0F;
+				renderFullAttackIndicator &= CLIENT.targetedEntity.isAlive();
 			}
 
 			int y = context.getScaledWindowHeight() / 2 - 7 + 16;
@@ -142,20 +141,17 @@ public class Crosshair extends AbstractModule implements HudElement {
 	}
 
 	public boolean shouldNotRenderCrosshair() {
-		MinecraftClient client = MinecraftClient.getInstance();
-		return client.getDebugHud().shouldShowDebugHud() && client.options.getPerspective() == Perspective.FIRST_PERSON && client.player != null && !client.player.hasReducedDebugInfo() && !(Boolean) client.options.getReducedDebugInfo().getValue();
+		return CLIENT.getDebugHud().shouldShowDebugHud() && CLIENT.options.getPerspective() == Perspective.FIRST_PERSON && CLIENT.player != null && !CLIENT.player.hasReducedDebugInfo() && !(Boolean) CLIENT.options.getReducedDebugInfo().getValue();
 	}
 
 	private boolean shouldRenderSpectatorCrosshair(@Nullable HitResult hitResult) {
-		MinecraftClient client = MinecraftClient.getInstance();
-
-		if (hitResult == null || client.world == null) {
+		if (hitResult == null || CLIENT.world == null) {
 			return false;
 		} else if (hitResult.getType() == HitResult.Type.ENTITY) {
 			return ((EntityHitResult) hitResult).getEntity() instanceof NamedScreenHandlerFactory;
 		} else if (hitResult.getType() == HitResult.Type.BLOCK) {
 			BlockPos blockPos = ((BlockHitResult) hitResult).getBlockPos();
-			World world = client.world;
+			World world = CLIENT.world;
 			return world.getBlockState(blockPos).createScreenHandlerFactory(world, blockPos) != null;
 		} else {
 			return false;
@@ -172,7 +168,7 @@ public class Crosshair extends AbstractModule implements HudElement {
 		return new AbstractCrosshairConfigScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (CLIENT.getLanguageManager().getLanguage().equals("fr_fr")) {
 					buttonWidth = 165;
 				} else {
 					buttonWidth = 155;

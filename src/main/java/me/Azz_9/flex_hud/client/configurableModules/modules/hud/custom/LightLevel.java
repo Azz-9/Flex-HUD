@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
@@ -31,7 +33,7 @@ public class LightLevel extends AbstractTextModule {
 
 	@Override
 	public void init() {
-		setHeight(MinecraftClient.getInstance().textRenderer.fontHeight);
+		setHeight(CLIENT.textRenderer.fontHeight);
 	}
 
 	@Override
@@ -54,7 +56,7 @@ public class LightLevel extends AbstractTextModule {
 		if (Flex_hudClient.isInMoveElementScreen) {
 			lightLevel = 7;
 		} else {
-			lightLevel = MinecraftClient.getInstance().world.getLightLevel(LightType.BLOCK, MinecraftClient.getInstance().player.getBlockPos());
+			lightLevel = CLIENT.world.getLightLevel(LightType.BLOCK, CLIENT.player.getBlockPos());
 		}
 
 		int color;
@@ -83,7 +85,7 @@ public class LightLevel extends AbstractTextModule {
 
 		drawBackground(context);
 
-		context.drawText(MinecraftClient.getInstance().textRenderer, text, 0, 0, color, shadow.getValue());
+		context.drawText(CLIENT.textRenderer, text, 0, 0, color, shadow.getValue());
 
 		matrices.pop();
 	}
@@ -91,7 +93,7 @@ public class LightLevel extends AbstractTextModule {
 	@Override
 	public boolean shouldNotRender() {
 		return super.shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && (
-				MinecraftClient.getInstance().world == null || MinecraftClient.getInstance().player == null
+				CLIENT.world == null || CLIENT.player == null
 		);
 	}
 
@@ -100,7 +102,7 @@ public class LightLevel extends AbstractTextModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (CLIENT.getLanguageManager().getLanguage().equals("fr_fr")) {
 					buttonWidth = 260;
 				} else {
 					buttonWidth = 170;

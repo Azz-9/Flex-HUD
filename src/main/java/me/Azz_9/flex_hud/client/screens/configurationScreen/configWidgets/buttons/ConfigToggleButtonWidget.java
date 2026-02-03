@@ -20,6 +20,7 @@ import org.lwjgl.glfw.GLFW;
 import java.util.List;
 import java.util.function.Function;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 
 public class ConfigToggleButtonWidget extends ToggleButtonWidget implements TrackableChange, DataGetter<Boolean>, ResetAware {
@@ -121,7 +122,7 @@ public class ConfigToggleButtonWidget extends ToggleButtonWidget implements Trac
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
 			onClickAction();
-			this.playDownSound(MinecraftClient.getInstance().getSoundManager());
+			this.playDownSound(CLIENT.getSoundManager());
 		}
 
 		return super.keyPressed(keyCode, scanCode, modifiers);
