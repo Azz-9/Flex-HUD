@@ -23,6 +23,7 @@ import org.lwjgl.glfw.GLFW;
 import java.util.List;
 import java.util.function.Function;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 import static me.Azz_9.flex_hud.client.utils.DrawingUtils.drawBorder;
 
@@ -128,7 +129,7 @@ public class ConfigToggleButtonWidget extends ToggleButtonWidget implements Trac
 	public boolean keyPressed(KeyInput input) {
 		if (input.key() == GLFW.GLFW_KEY_ENTER || input.key() == GLFW.GLFW_KEY_KP_ENTER) {
 			onClickAction();
-			this.playDownSound(MinecraftClient.getInstance().getSoundManager());
+			this.playDownSound(CLIENT.getSoundManager());
 		}
 
 		return super.keyPressed(input);

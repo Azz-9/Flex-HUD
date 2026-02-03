@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.tickables;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -16,17 +18,15 @@ public class ReachTickable implements Tickable {
 	}
 
 	public static void calculateReach(PlayerEntity playerAttacking, Entity entityAttacked) {
-		MinecraftClient client = MinecraftClient.getInstance();
-
 		if (entityAttacked instanceof LivingEntity &&
-				client.crosshairTarget != null && client.crosshairTarget.getType() == HitResult.Type.ENTITY &&
-				client.getCameraEntity() != null) {
+				CLIENT.crosshairTarget != null && CLIENT.crosshairTarget.getType() == HitResult.Type.ENTITY &&
+				CLIENT.getCameraEntity() != null) {
 
-			Vec3d lerpedPos = client.getCameraEntity().getLerpedPos(0);
-			float eyeHeight = client.getCameraEntity().getEyeHeight(playerAttacking.getPose());
+			Vec3d lerpedPos = CLIENT.getCameraEntity().getLerpedPos(0);
+			float eyeHeight = CLIENT.getCameraEntity().getEyeHeight(playerAttacking.getPose());
 			Vec3d cameraPos = new Vec3d(lerpedPos.getX(), lerpedPos.getY() + eyeHeight, lerpedPos.getZ());
 
-			reach = client.crosshairTarget.getPos().distanceTo(cameraPos);
+			reach = CLIENT.crosshairTarget.getPos().distanceTo(cameraPos);
 
 			lastHitTime = System.currentTimeMillis();
 		}

@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
@@ -72,7 +74,7 @@ public class Ping extends AbstractTextModule {
 
 	@Override
 	public void init() {
-		setHeight(MinecraftClient.getInstance().textRenderer.fontHeight);
+		setHeight(CLIENT.textRenderer.fontHeight);
 	}
 
 	@Override
@@ -87,9 +89,8 @@ public class Ping extends AbstractTextModule {
 
 	@Override
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
 
-		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && client.player == null) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && CLIENT.player == null) {
 			return;
 		}
 
@@ -100,7 +101,7 @@ public class Ping extends AbstractTextModule {
 			text = "20 ms";
 
 		} else {
-			if (client.getCurrentServerEntry() != null) {
+			if (CLIENT.getCurrentServerEntry() != null) {
 
 				long ping = pings.isEmpty() ? 0 : sum / pings.size();
 				text = ping + " ms";
@@ -123,7 +124,7 @@ public class Ping extends AbstractTextModule {
 
 			drawBackground(context);
 
-			context.drawText(client.textRenderer, text, 0, 0, getColor(), this.shadow.getValue());
+			context.drawText(CLIENT.textRenderer, text, 0, 0, getColor(), this.shadow.getValue());
 
 			matrices.popMatrix();
 		}
@@ -131,7 +132,7 @@ public class Ping extends AbstractTextModule {
 
 	@Override
 	public boolean shouldNotRender() {
-		return super.shouldNotRender() || (this.hideWhenOffline.getValue() && MinecraftClient.getInstance().getCurrentServerEntry() == null && !Flex_hudClient.isInMoveElementScreen);
+		return super.shouldNotRender() || (this.hideWhenOffline.getValue() && CLIENT.getCurrentServerEntry() == null && !Flex_hudClient.isInMoveElementScreen);
 	}
 
 	@Override
@@ -139,7 +140,7 @@ public class Ping extends AbstractTextModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (CLIENT.getLanguageManager().getLanguage().equals("fr_fr")) {
 					buttonWidth = 225;
 				}
 

@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import me.Azz_9.flex_hud.client.configurableModules.modules.Translatable;
 import me.Azz_9.flex_hud.client.screens.TrackableChange;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
@@ -54,7 +56,7 @@ public class ConfigCyclingButtonWidget<T, E extends Enum<E> & Translatable> exte
 		super.onClick(click, bl);
 
 		// shift click to go backward
-		int offset = MinecraftClient.getInstance().isShiftPressed() ? -1 : 1;
+		int offset = CLIENT.isShiftPressed() ? -1 : 1;
 		int index = (variable.getValue().ordinal() + offset + values.length) % values.length;
 
 		setValue(values[index]);
@@ -64,7 +66,7 @@ public class ConfigCyclingButtonWidget<T, E extends Enum<E> & Translatable> exte
 	public boolean keyPressed(KeyInput input) {
 		if (input.isEnterOrSpace()) {
 			this.onClick(null, false);
-			this.playDownSound(MinecraftClient.getInstance().getSoundManager());
+			this.playDownSound(CLIENT.getSoundManager());
 			return true;
 		}
 		return super.keyPressed(input);

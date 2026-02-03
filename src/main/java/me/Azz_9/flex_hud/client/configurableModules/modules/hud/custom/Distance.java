@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
@@ -38,7 +40,7 @@ public class Distance extends AbstractTextModule implements TickableModule {
 
 	@Override
 	public void init() {
-		setHeight(MinecraftClient.getInstance().textRenderer.fontHeight);
+		setHeight(CLIENT.textRenderer.fontHeight);
 	}
 
 	@Override
@@ -53,7 +55,7 @@ public class Distance extends AbstractTextModule implements TickableModule {
 
 	@Override
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && MinecraftClient.getInstance().getCameraEntity() == null) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && CLIENT.getCameraEntity() == null) {
 			return;
 		}
 
@@ -66,7 +68,7 @@ public class Distance extends AbstractTextModule implements TickableModule {
 
 		drawBackground(context);
 
-		context.drawText(MinecraftClient.getInstance().textRenderer, distanceText, 0, 0, getColor(), shadow.getValue());
+		context.drawText(CLIENT.textRenderer, distanceText, 0, 0, getColor(), shadow.getValue());
 
 		matrices.popMatrix();
 	}
@@ -76,7 +78,7 @@ public class Distance extends AbstractTextModule implements TickableModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (CLIENT.getLanguageManager().getLanguage().equals("fr_fr")) {
 					buttonWidth = 160;
 				}
 
@@ -143,16 +145,15 @@ public class Distance extends AbstractTextModule implements TickableModule {
 			return;
 		}
 
-		MinecraftClient client = MinecraftClient.getInstance();
 		HitResult hitResult = RaycastTickable.getHitResult();
 
-		if (client.getCameraEntity() == null || client.player == null || hitResult == null) return;
+		if (CLIENT.getCameraEntity() == null || CLIENT.player == null || hitResult == null) return;
 
 		if (hitResult.getType() == HitResult.Type.MISS) {
 			distanceText = "[∞]";
 		} else if (hitResult.getType() == HitResult.Type.BLOCK) {
-			Vec3d lerpedPos = client.getCameraEntity().getLerpedPos(0);
-			float eyeHeight = client.getCameraEntity().getEyeHeight(client.player.getPose());
+			Vec3d lerpedPos = CLIENT.getCameraEntity().getLerpedPos(0);
+			float eyeHeight = CLIENT.getCameraEntity().getEyeHeight(CLIENT.player.getPose());
 			Vec3d eyePos = new Vec3d(lerpedPos.getX(), lerpedPos.getY() + eyeHeight, lerpedPos.getZ());
 
 			double distance = hitResult.getPos().distanceTo(eyePos);

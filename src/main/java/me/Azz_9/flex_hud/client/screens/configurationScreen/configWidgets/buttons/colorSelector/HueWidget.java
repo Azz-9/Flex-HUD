@@ -14,6 +14,7 @@ import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 
 public class HueWidget extends ClickableWidget {
@@ -59,7 +60,7 @@ public class HueWidget extends ClickableWidget {
 
 	@Override
 	public void onClick(Click click, boolean bl) {
-		long window = MinecraftClient.getInstance().getWindow().getHandle();
+		long window = CLIENT.getWindow().getHandle();
 		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);
 		moveCursor(click.y());
 		isDraggingCursor = true;
@@ -88,7 +89,7 @@ public class HueWidget extends ClickableWidget {
 
 	@Override
 	public void onRelease(Click click) {
-		long window = MinecraftClient.getInstance().getWindow().getHandle();
+		long window = CLIENT.getWindow().getHandle();
 		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
 		isDraggingCursor = false;
 	}

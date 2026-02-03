@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.screens;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import me.Azz_9.flex_hud.client.configurableModules.ConfigLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -125,7 +127,7 @@ public abstract class AbstractCallbackScreen extends AbstractBackNavigableScreen
 	}
 
 	protected void onCancelButtonClick() {
-		if (!MinecraftClient.getInstance().isShiftPressed() && trackableWidgets.stream().anyMatch(TrackableChange::hasChanged)) {
+		if (!CLIENT.isShiftPressed() && trackableWidgets.stream().anyMatch(TrackableChange::hasChanged)) {
 			setCallbackScreen(true);
 		} else {
 			cancel();

@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import me.Azz_9.flex_hud.client.screens.TrackableChange;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.ScrollableConfigList;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigString;
@@ -33,7 +35,7 @@ public class StringFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 	) {
 		super(resetButtonSize, Text.translatable(variable.getConfigTextTranslationKey()));
 		textFieldWidget = new ConfigTextFieldWidget(
-				MinecraftClient.getInstance().textRenderer,
+				CLIENT.textRenderer,
 				textFieldWidth, textFieldHeight,
 				variable,
 				observers,
