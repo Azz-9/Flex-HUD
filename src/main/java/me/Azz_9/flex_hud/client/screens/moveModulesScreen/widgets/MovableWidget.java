@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.screens.moveModulesScreen.widgets;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractMovableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.DimensionHud;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.MovableModule;
@@ -114,7 +116,7 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 				valueX = handleX + HANDLE_SIZE + HANDLE_SIZE / 2;
 			} else {
 				// text to the left of the handle
-				valueX = handleX + HANDLE_SIZE - MinecraftClient.getInstance().textRenderer.getWidth(text);
+				valueX = handleX + HANDLE_SIZE - CLIENT.textRenderer.getWidth(text);
 			}
 			int valueY = handleY;
 
@@ -123,15 +125,15 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 			matrices.translate(valueX, valueY);
 			matrices.scale(0.75f, 0.75f);
 
-			context.drawText(MinecraftClient.getInstance().textRenderer, text, 0, 0, 0xffffffff, true);
+			context.drawText(CLIENT.textRenderer, text, 0, 0, 0xffffffff, true);
 
 			matrices.popMatrix();
 		}
 	}
 
 	public void updateScaleHandle() {
-		double screenCenterX = MinecraftClient.getInstance().getWindow().getScaledWidth() / 2.0;
-		double screenCenterY = MinecraftClient.getInstance().getWindow().getScaledHeight() / 2.0;
+		double screenCenterX = CLIENT.getWindow().getScaledWidth() / 2.0;
+		double screenCenterY = CLIENT.getWindow().getScaledHeight() / 2.0;
 		double centerX = getX() + getWidth() / 2.0;
 		double centerY = getY() + getHeight() / 2.0;
 
@@ -324,8 +326,8 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 	}
 
 	private void snapElement(double x, double y) {
-		int screenW = MinecraftClient.getInstance().getWindow().getScaledWidth();
-		int screenH = MinecraftClient.getInstance().getWindow().getScaledHeight();
+		int screenW = CLIENT.getWindow().getScaledWidth();
+		int screenH = CLIENT.getWindow().getScaledHeight();
 
 		x = Math.clamp(x, 0, screenW - this.getWidth());
 		y = Math.clamp(y, 0, screenH - this.getHeight());
@@ -449,8 +451,8 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 
 
 	public void moveTo(double x, double y) {
-		x = Math.clamp(x, 0, MinecraftClient.getInstance().getWindow().getScaledWidth() - this.getWidth());
-		y = Math.clamp(y, 0, MinecraftClient.getInstance().getWindow().getScaledHeight() - this.getHeight());
+		x = Math.clamp(x, 0, CLIENT.getWindow().getScaledWidth() - this.getWidth());
+		y = Math.clamp(y, 0, CLIENT.getWindow().getScaledHeight() - this.getHeight());
 
 		HUD_ELEMENT.setX(x);
 		HUD_ELEMENT.setY(y);

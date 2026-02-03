@@ -23,6 +23,7 @@ import org.joml.Matrix3x2fStack;
 import java.util.HashMap;
 import java.util.Map;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 import static me.Azz_9.flex_hud.client.utils.DrawingUtils.drawBorder;
 
 public class KeyStrokes extends AbstractTextModule {
@@ -82,8 +83,6 @@ public class KeyStrokes extends AbstractTextModule {
 
 	@Override
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
-
 		if (shouldNotRender()) {
 			return;
 		}
@@ -94,30 +93,30 @@ public class KeyStrokes extends AbstractTextModule {
 		matrices.scale(getScale());
 
 		// forward key
-		Text forwardText = useArrow.getValue() ? Text.of("▲") : client.options.forwardKey.getBoundKeyLocalizedText();
-		renderMovementKey(context, keySize + gap * 2, gap, keySize, keySize, client.options.forwardKey, forwardText);
+		Text forwardText = useArrow.getValue() ? Text.of("▲") : CLIENT.options.forwardKey.getBoundKeyLocalizedText();
+		renderMovementKey(context, keySize + gap * 2, gap, keySize, keySize, CLIENT.options.forwardKey, forwardText);
 
 		// back key
-		Text backText = useArrow.getValue() ? Text.of("▼") : client.options.backKey.getBoundKeyLocalizedText();
-		renderMovementKey(context, keySize + gap * 2, keySize + gap * 2, keySize, keySize, client.options.backKey, backText);
+		Text backText = useArrow.getValue() ? Text.of("▼") : CLIENT.options.backKey.getBoundKeyLocalizedText();
+		renderMovementKey(context, keySize + gap * 2, keySize + gap * 2, keySize, keySize, CLIENT.options.backKey, backText);
 
 		// right key
-		Text rightText = useArrow.getValue() ? Text.of("▶") : client.options.rightKey.getBoundKeyLocalizedText();
-		renderMovementKey(context, keySize * 2 + gap * 3, keySize + gap * 2, keySize, keySize, client.options.rightKey, rightText);
+		Text rightText = useArrow.getValue() ? Text.of("▶") : CLIENT.options.rightKey.getBoundKeyLocalizedText();
+		renderMovementKey(context, keySize * 2 + gap * 3, keySize + gap * 2, keySize, keySize, CLIENT.options.rightKey, rightText);
 
 		// left key
-		Text leftText = useArrow.getValue() ? Text.of("◀") : client.options.leftKey.getBoundKeyLocalizedText();
-		renderMovementKey(context, gap, keySize + gap * 2, keySize, keySize, client.options.leftKey, leftText);
+		Text leftText = useArrow.getValue() ? Text.of("◀") : CLIENT.options.leftKey.getBoundKeyLocalizedText();
+		renderMovementKey(context, gap, keySize + gap * 2, keySize, keySize, CLIENT.options.leftKey, leftText);
 
 		// jump key
-		renderJumpKey(context, gap, keySize * 2 + gap * 3, keySize * 3 + gap * 2, keySize / 2, client.options.jumpKey);
+		renderJumpKey(context, gap, keySize * 2 + gap * 3, keySize * 3 + gap * 2, keySize / 2, CLIENT.options.jumpKey);
 
 		if (displayCps.getValue()) {
 			// attack key
-			renderMouseKey(context, gap, (int) (keySize * 2.5) + gap * 4, (int) (keySize * 1.5) + gap / 2, keySize, client.options.attackKey, CpsUtils.getLeftCps(), Text.of("LMB"));
+			renderMouseKey(context, gap, (int) (keySize * 2.5) + gap * 4, (int) (keySize * 1.5) + gap / 2, keySize, CLIENT.options.attackKey, CpsUtils.getLeftCps(), Text.of("LMB"));
 
 			// use key
-			renderMouseKey(context, (int) (keySize * 1.5 + gap * 2.5) + 1, (int) (keySize * 2.5) + gap * 4, (int) (keySize * 1.5) + gap / 2, keySize, client.options.useKey, CpsUtils.getRightCps(), Text.of("RMB"));
+			renderMouseKey(context, (int) (keySize * 1.5 + gap * 2.5) + 1, (int) (keySize * 2.5) + gap * 4, (int) (keySize * 1.5) + gap / 2, keySize, CLIENT.options.useKey, CpsUtils.getRightCps(), Text.of("RMB"));
 		}
 
 		matrices.popMatrix();
@@ -168,7 +167,7 @@ public class KeyStrokes extends AbstractTextModule {
 	private void renderMovementKey(DrawContext context, int x, int y, int keyWidth, int keyHeight, KeyBinding keyBinding, Text label) {
 		float fadeFactor = renderKey(context, x, y, keyWidth, keyHeight, keyBinding);
 
-		TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
+		TextRenderer textRenderer = CLIENT.textRenderer;
 
 		Matrix3x2fStack matrices = context.getMatrices();
 		matrices.pushMatrix();
@@ -197,7 +196,7 @@ public class KeyStrokes extends AbstractTextModule {
 	private void renderMouseKey(DrawContext context, int x, int y, int keyWidth, int keyHeight, KeyBinding keyBinding, int cps, Text label) {
 		float fadeFactor = renderKey(context, x, y, keyWidth, keyHeight, keyBinding);
 
-		TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
+		TextRenderer textRenderer = CLIENT.textRenderer;
 		int color = getColor(fadeFactor);
 
 		Matrix3x2fStack matrices = context.getMatrices();
@@ -239,7 +238,7 @@ public class KeyStrokes extends AbstractTextModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (CLIENT.getLanguageManager().getLanguage().equals("fr_fr")) {
 					buttonWidth = 200;
 				} else {
 					buttonWidth = 170;

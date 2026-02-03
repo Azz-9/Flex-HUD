@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.screens;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.*;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.screens.modulesList.ModulesListScreen;
@@ -16,9 +18,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.joml.Matrix3x2fStack;
-
-import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
-import static me.Azz_9.flex_hud.client.Flex_hudClient.openOptionScreenKeyBind;
 
 public class OptionsScreen extends AbstractBackNavigableScreen {
 	private long initTimestamp;
@@ -55,7 +54,7 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 		this.addDrawableChild(enableModButton);
 
 		ButtonWidget modsButton = ButtonWidget.builder(Text.translatable("flex_hud.options_screen.modules"),
-						(btn) -> MinecraftClient.getInstance().setScreen(new ModulesListScreen(this))
+						(btn) -> CLIENT.setScreen(new ModulesListScreen(this))
 				).dimensions((width - centralButtonWidth) / 2, (height - squareButtonSize) / 2, centralButtonWidth, squareButtonSize)
 				.build();
 		this.addDrawableChild(modsButton);
@@ -66,7 +65,7 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 				squareButtonSize, squareButtonSize,
 				Identifier.of(MOD_ID, "widgets/buttons/options_menu_buttons/move.png"),
 				14, 14, (btn) -> {
-			MinecraftClient.getInstance().setScreen(new MoveModulesScreen(this));
+			CLIENT.setScreen(new MoveModulesScreen(this));
 			Flex_hudClient.isInMoveElementScreen = true;
 		});
 		this.addDrawableChild(moveButton);
@@ -117,7 +116,7 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 		//RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F); // Opacité à 100%
 
 		if (!ModulesHelper.getInstance().isEnabled.getValue()) {
-			context.drawCenteredTextWithShadow(MinecraftClient.getInstance().textRenderer, Text.translatable("flex_hud.options_screen.mod_is_disabled_warning").formatted(Formatting.RED, Formatting.ITALIC), this.width / 2, this.height / 2 + 20, 0xffffffff);
+			context.drawCenteredTextWithShadow(CLIENT.textRenderer, Text.translatable("flex_hud.options_screen.mod_is_disabled_warning").formatted(Formatting.RED, Formatting.ITALIC), this.width / 2, this.height / 2 + 20, 0xffffffff);
 		}
 	}
 

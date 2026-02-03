@@ -19,6 +19,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.Identifier;
@@ -32,6 +33,7 @@ public class Flex_hudClient implements ClientModInitializer {
 	private static final boolean DEBUG = Boolean.parseBoolean(System.getenv().getOrDefault("FLEXHUD_DEBUG", "false"));
 
 	public static final String MOD_ID = "flex_hud";
+	public static final MinecraftClient CLIENT = MinecraftClient.getInstance();
 	public static KeyBinding openOptionScreenKeyBind;
 
 	public static boolean isInMoveElementScreen;

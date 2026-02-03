@@ -11,6 +11,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.joml.Matrix3x2fStack;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 
 public class HelpWidget extends ClickableWidget {
@@ -52,7 +53,7 @@ public class HelpWidget extends ClickableWidget {
 
 			alpha = (int) (251 * easedProgress) + 4;
 
-			TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
+			TextRenderer textRenderer = CLIENT.textRenderer;
 
 			int padding = 4;
 			int marginBottom = 6;

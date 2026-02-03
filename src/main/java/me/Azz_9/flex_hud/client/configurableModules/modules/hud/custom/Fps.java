@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
@@ -22,7 +24,7 @@ public class Fps extends AbstractTextModule {
 
 	@Override
 	public void init() {
-		setHeight(MinecraftClient.getInstance().textRenderer.fontHeight);
+		setHeight(CLIENT.textRenderer.fontHeight);
 	}
 
 	@Override
@@ -37,8 +39,6 @@ public class Fps extends AbstractTextModule {
 
 	@Override
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
-
 		if (shouldNotRender()) {
 			return;
 		}
@@ -47,7 +47,7 @@ public class Fps extends AbstractTextModule {
 		if (Flex_hudClient.isInMoveElementScreen) {
 			text = "100 FPS";
 		} else {
-			text = client.getCurrentFps() + " FPS";
+			text = CLIENT.getCurrentFps() + " FPS";
 		}
 
 		setWidth(text);
@@ -59,7 +59,7 @@ public class Fps extends AbstractTextModule {
 
 		drawBackground(context);
 
-		context.drawText(client.textRenderer, text, 0, 0, getColor(), this.shadow.getValue());
+		context.drawText(CLIENT.textRenderer, text, 0, 0, getColor(), this.shadow.getValue());
 
 		matrices.popMatrix();
 	}
@@ -69,7 +69,7 @@ public class Fps extends AbstractTextModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (CLIENT.getLanguageManager().getLanguage().equals("fr_fr")) {
 					buttonWidth = 160;
 				}
 

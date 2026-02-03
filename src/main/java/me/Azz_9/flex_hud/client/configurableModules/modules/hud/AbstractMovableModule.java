@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
@@ -28,7 +30,7 @@ public abstract class AbstractMovableModule extends AbstractModule implements Hu
 
 	@Override
 	public boolean shouldNotRender() {
-		return !ModulesHelper.getInstance().isEnabled.getValue() || !this.enabled.getValue() || (!Flex_hudClient.isInMoveElementScreen && this.hideInF3.getValue() && MinecraftClient.getInstance().getDebugHud().shouldShowDebugHud());
+		return !ModulesHelper.getInstance().isEnabled.getValue() || !this.enabled.getValue() || (!Flex_hudClient.isInMoveElementScreen && this.hideInF3.getValue() && CLIENT.getDebugHud().shouldShowDebugHud());
 	}
 
 	public int getHeight() {

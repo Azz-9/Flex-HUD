@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
@@ -53,8 +55,7 @@ public class PitchDisplay extends AbstractTextModule {
 
 	@Override
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
-		PlayerEntity player = client.player;
+		PlayerEntity player = CLIENT.player;
 
 		String format = "%." + degreesDecimals.getValue() + "f";
 		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && player == null) {
@@ -78,10 +79,10 @@ public class PitchDisplay extends AbstractTextModule {
 		String markerText = "▶";
 
 		setWidth((int) ((showDegrees.getValue()
-				? client.textRenderer.getWidth(pitchStr) * degreesScale + 2
+				? CLIENT.textRenderer.getWidth(pitchStr) * degreesScale + 2
 				: 0) +
 				(showMarker.getValue()
-						? (client.textRenderer.getWidth(markerText) / 2.0 + 5)
+						? (CLIENT.textRenderer.getWidth(markerText) / 2.0 + 5)
 						: 0) + 34));
 
 
@@ -97,22 +98,22 @@ public class PitchDisplay extends AbstractTextModule {
 		float hudX = 0;
 		if (showDegrees.getValue()) {
 			matrices.pushMatrix();
-			matrices.translate(hudX, (getHeight() - client.textRenderer.fontHeight) / 2.0f);
+			matrices.translate(hudX, (getHeight() - CLIENT.textRenderer.fontHeight) / 2.0f);
 			matrices.scale(degreesScale);
-			context.drawText(client.textRenderer, pitchStr, 0, 0, getColor(), shadow.getValue());
+			context.drawText(CLIENT.textRenderer, pitchStr, 0, 0, getColor(), shadow.getValue());
 			matrices.popMatrix();
 
-			hudX += client.textRenderer.getWidth(pitchStr) * degreesScale + 2;
+			hudX += CLIENT.textRenderer.getWidth(pitchStr) * degreesScale + 2;
 		}
 
 		if (this.showMarker.getValue()) {
 			matrices.pushMatrix();
-			matrices.translate(hudX, (getHeight() - client.textRenderer.fontHeight) / 2.0f);
+			matrices.translate(hudX, (getHeight() - CLIENT.textRenderer.fontHeight) / 2.0f);
 			matrices.scale(0.5f, 1.0f);
-			context.drawText(client.textRenderer, markerText, 0, 0, getColor(), this.shadow.getValue());
+			context.drawText(CLIENT.textRenderer, markerText, 0, 0, getColor(), this.shadow.getValue());
 			matrices.popMatrix();
 
-			hudX += client.textRenderer.getWidth(markerText) / 2.0f + 5;
+			hudX += CLIENT.textRenderer.getWidth(markerText) / 2.0f + 5;
 		}
 
 		drawIntermediatePoint(context, matrices, -165, pitch, hudX);
@@ -130,12 +131,11 @@ public class PitchDisplay extends AbstractTextModule {
 
 	@Override
 	public boolean shouldNotRender() {
-		PlayerEntity player = MinecraftClient.getInstance().player;
+		PlayerEntity player = CLIENT.player;
 		return super.shouldNotRender() || player != null && displayWhenElytraIsEquipped.getValue() && !player.getInventory().getStack(38).isOf(Items.ELYTRA);
 	}
 
 	private void drawPitchPoint(DrawContext context, Matrix3x2fStack matrices, int angle, float pitch, float x) {
-		MinecraftClient client = MinecraftClient.getInstance();
 		String label = "|";
 		String angleStr = String.valueOf(angle);
 		angle = -angle;
@@ -148,26 +148,25 @@ public class PitchDisplay extends AbstractTextModule {
 		if (Math.abs(angleDifference) <= 120) {
 			// Calculer la position Y de chaque point cardinal en fonction de l'angle
 			float positionY = ((getHeight() / 2.0f) + (angleDifference * (getHeight() / 180.0f)));
-			float pointWidth = client.textRenderer.getWidth(label) * scaleFactor;
-			float angleHeight = client.textRenderer.fontHeight * angleScale;
+			float pointWidth = CLIENT.textRenderer.getWidth(label) * scaleFactor;
+			float angleHeight = CLIENT.textRenderer.fontHeight * angleScale;
 
 			matrices.pushMatrix();
 			matrices.translate(x + 14, positionY - angleHeight / 2.0f);
 			matrices.scale(angleScale, angleScale);
-			context.drawText(client.textRenderer, angleStr, 0, 0, getColorWithFadeEffect(positionY), shadow.getValue());
+			context.drawText(CLIENT.textRenderer, angleStr, 0, 0, getColorWithFadeEffect(positionY), shadow.getValue());
 			matrices.popMatrix();
 
 			matrices.pushMatrix();
 			matrices.translate(x + 9, positionY - pointWidth / 2.0f);
 			matrices.scale(scaleFactor, scaleFactor);
 			matrices.rotate((float) Math.toRadians(90));
-			context.drawText(client.textRenderer, label, 0, 0, getColorWithFadeEffect(positionY), shadow.getValue());
+			context.drawText(CLIENT.textRenderer, label, 0, 0, getColorWithFadeEffect(positionY), shadow.getValue());
 			matrices.popMatrix();
 		}
 	}
 
 	private void drawIntermediatePoint(DrawContext context, Matrix3x2fStack matrices, int angle, float pitch, float x) {
-		MinecraftClient client = MinecraftClient.getInstance();
 		String label = "|";
 		angle = -angle;
 
@@ -177,13 +176,13 @@ public class PitchDisplay extends AbstractTextModule {
 			float scaleFactor = 0.75f;
 			// Calculer la position Y de chaque point cardinal en fonction de l'angle
 			float positionY = ((getHeight() / 2.0f) + (angleDifference * (getHeight() / 180.0f)));
-			float pointWidth = client.textRenderer.getWidth(label) * scaleFactor;
+			float pointWidth = CLIENT.textRenderer.getWidth(label) * scaleFactor;
 
 			matrices.pushMatrix();
 			matrices.translate(x + 5.6f, positionY - pointWidth / 2.0f);
 			matrices.scale(scaleFactor, scaleFactor);
 			matrices.rotate((float) Math.toRadians(90));
-			context.drawText(client.textRenderer, label, 0, 0, getColorWithFadeEffect(positionY), shadow.getValue());
+			context.drawText(CLIENT.textRenderer, label, 0, 0, getColorWithFadeEffect(positionY), shadow.getValue());
 			matrices.popMatrix();
 		}
 	}
@@ -209,7 +208,7 @@ public class PitchDisplay extends AbstractTextModule {
 
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (CLIENT.getLanguageManager().getLanguage().equals("fr_fr")) {
 					buttonWidth = 250;
 				} else {
 					buttonWidth = 190;
