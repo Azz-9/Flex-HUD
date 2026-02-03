@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.mixin.reach;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.tickables.ReachTickable;
 import net.minecraft.client.MinecraftClient;
@@ -22,7 +24,7 @@ public abstract class ClientPlayerInteractionManagerMixin {
 
 		if (target.isAttackable()) {
 			if (!target.handleAttack(player)) {
-				if (MinecraftClient.getInstance().player != null && player.getUuid().equals(MinecraftClient.getInstance().player.getUuid())) {
+				if (CLIENT.player != null && player.getUuid().equals(CLIENT.player.getUuid())) {
 					ReachTickable.calculateReach(player, target);
 				}
 			}

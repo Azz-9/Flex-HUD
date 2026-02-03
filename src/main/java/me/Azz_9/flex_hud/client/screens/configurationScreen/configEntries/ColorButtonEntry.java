@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import me.Azz_9.flex_hud.client.screens.TrackableChange;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.ScrollableConfigList;
@@ -35,7 +37,7 @@ public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 		super(resetButtonSize, Text.translatable(variable.getConfigTextTranslationKey()));
 		colorButtonWidget = new ConfigColorButtonWidget(colorButtonWidth, colorButtonHeight, variable, observers,
 				(btn) -> {
-					AbstractConfigurationScreen screen = (AbstractConfigurationScreen) MinecraftClient.getInstance().currentScreen;
+					AbstractConfigurationScreen screen = (AbstractConfigurationScreen) CLIENT.currentScreen;
 					if (screen != null) {
 						ColorSelector colorSelector = screen.getColorSelector();
 						if (colorSelector == null || !colorSelector.isFocused()) {
@@ -104,7 +106,7 @@ public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 
 		setActive(!shouldDisable);
 		// fermer le color selector si le color button est désacitvé
-		AbstractConfigurationScreen screen = (AbstractConfigurationScreen) MinecraftClient.getInstance().currentScreen;
+		AbstractConfigurationScreen screen = (AbstractConfigurationScreen) CLIENT.currentScreen;
 		if (screen != null && shouldDisable) {
 			screen.closeColorSelector();
 		}

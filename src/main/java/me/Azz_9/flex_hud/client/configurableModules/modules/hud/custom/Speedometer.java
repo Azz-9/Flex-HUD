@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
@@ -45,7 +47,7 @@ public class Speedometer extends AbstractTextModule implements TickableModule {
 
 	@Override
 	public void init() {
-		setHeight(MinecraftClient.getInstance().textRenderer.fontHeight);
+		setHeight(CLIENT.textRenderer.fontHeight);
 	}
 
 	@Override
@@ -60,8 +62,6 @@ public class Speedometer extends AbstractTextModule implements TickableModule {
 
 	@Override
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
-
 		if (shouldNotRender()) {
 			return;
 		}
@@ -75,7 +75,7 @@ public class Speedometer extends AbstractTextModule implements TickableModule {
 
 		drawBackground(context);
 
-		context.drawText(client.textRenderer, formattedSpeed, 0, 0, getColor(), this.shadow.getValue());
+		context.drawText(CLIENT.textRenderer, formattedSpeed, 0, 0, getColor(), this.shadow.getValue());
 
 		matrices.popMatrix();
 	}
@@ -85,7 +85,7 @@ public class Speedometer extends AbstractTextModule implements TickableModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (CLIENT.getLanguageManager().getLanguage().equals("fr_fr")) {
 					buttonWidth = 250;
 				} else {
 					buttonWidth = 170;
@@ -169,7 +169,7 @@ public class Speedometer extends AbstractTextModule implements TickableModule {
 
 	@Override
 	public void tick() {
-		PlayerEntity player = MinecraftClient.getInstance().player;
+		PlayerEntity player = CLIENT.player;
 
 		String format = "%." + this.digits.getValue() + "f";
 		String speed = String.format(format, Flex_hudClient.isInMoveElementScreen ? 0 : SpeedTickable.getSpeed());

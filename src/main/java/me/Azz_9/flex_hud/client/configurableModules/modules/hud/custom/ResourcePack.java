@@ -22,8 +22,6 @@ public class ResourcePack extends AbstractTextModule {
 
 	@Override
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
-
 		if (shouldNotRender()) {
 			return;
 		}
