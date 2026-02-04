@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.crosshairEditor;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
 import me.Azz_9.flex_hud.client.screens.AbstractSmoothScrollableList;
 import me.Azz_9.flex_hud.client.utils.Cursors;
 import net.minecraft.client.Minecraft;
@@ -18,7 +20,7 @@ public class CrosshairPresetsList extends AbstractSmoothScrollableList<Crosshair
 	private final int PIXEL_SIZE = 2;
 
 	public CrosshairPresetsList(int width, int height, int y, int x, CrosshairEditor crosshairEditor) {
-		super(Minecraft.getInstance(), width, height, y, crosshairEditor.getPixels().length * 2);
+		super(MINECRAFT, width, height, y, crosshairEditor.getPixels().length * 2);
 		this.setX(x);
 		this.crosshairEditor = crosshairEditor;
 		int[][][] textures = new int[][][]{
@@ -326,7 +328,7 @@ public class CrosshairPresetsList extends AbstractSmoothScrollableList<Crosshair
 
 				parent.crosshairEditor.onPresetUpdate(texture);
 
-				AbstractWidget.WithInactiveMessage.playButtonClickSound(Minecraft.getInstance().getSoundManager());
+				AbstractWidget.WithInactiveMessage.playButtonClickSound(MINECRAFT.getSoundManager());
 				return true;
 			}
 			return false;

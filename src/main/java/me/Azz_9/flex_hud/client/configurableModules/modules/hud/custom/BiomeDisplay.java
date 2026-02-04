@@ -22,6 +22,7 @@ import org.joml.Matrix3x2fStack;
 import java.util.Map;
 
 import static java.util.Map.entry;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 
 public class BiomeDisplay extends AbstractTextModule {
 	private final ConfigBoolean biomeSpecificColor = new ConfigBoolean(true, "flex_hud.biome_display.config.biome_specific_color");
@@ -38,7 +39,7 @@ public class BiomeDisplay extends AbstractTextModule {
 
 	@Override
 	public void init() {
-		setHeight(Minecraft.getInstance().font.lineHeight);
+		setHeight(MINECRAFT.font.lineHeight);
 	}
 
 	@Override
@@ -53,9 +54,7 @@ public class BiomeDisplay extends AbstractTextModule {
 
 	@Override
 	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
-		Minecraft minecraft = Minecraft.getInstance();
-
-		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && minecraft.player == null) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && MINECRAFT.player == null) {
 			return;
 		}
 
@@ -66,13 +65,13 @@ public class BiomeDisplay extends AbstractTextModule {
 			biomeKey = Biomes.PLAINS;
 			biomeName = "plains";
 		} else {
-			LocalPlayer player = minecraft.player;
+			LocalPlayer player = MINECRAFT.player;
 
-			if (minecraft.level == null) {
+			if (MINECRAFT.level == null) {
 				return;
 			}
 
-			biomeKey = minecraft.level.getBiome(player.getOnPos()).unwrapKey().orElse(null);
+			biomeKey = MINECRAFT.level.getBiome(player.getOnPos()).unwrapKey().orElse(null);
 
 			if (biomeKey == null) return;
 
@@ -80,7 +79,7 @@ public class BiomeDisplay extends AbstractTextModule {
 		}
 
 		String prefix = "Biome: ";
-		int prefixWidth = minecraft.font.width(prefix);
+		int prefixWidth = MINECRAFT.font.width(prefix);
 		setWidth(biomeName, prefixWidth);
 
 		int biomeTextColor = (biomeSpecificColor.getValue() ?
@@ -94,8 +93,8 @@ public class BiomeDisplay extends AbstractTextModule {
 
 		drawBackground(graphics);
 
-		graphics.drawString(minecraft.font, prefix, 0, 0, getColor(), shadow.getValue());
-		graphics.drawString(minecraft.font, biomeName, prefixWidth, 0, biomeTextColor, shadow.getValue());
+		graphics.drawString(MINECRAFT.font, prefix, 0, 0, getColor(), shadow.getValue());
+		graphics.drawString(MINECRAFT.font, biomeName, prefixWidth, 0, biomeTextColor, shadow.getValue());
 
 		matrices.popMatrix();
 	}

@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.vanilla;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
 import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.platform.DestFactor;
@@ -101,11 +103,9 @@ public class Crosshair extends AbstractModule implements HudElement {
 
 	@Override
 	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
-		Minecraft minecraft = Minecraft.getInstance();
-
-		if (shouldNotRender() || minecraft.player == null ||
-				!minecraft.options.getCameraType().isFirstPerson() || minecraft.gameMode == null ||
-				(minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR && !this.canRenderCrosshairForSpectator(minecraft.hitResult)) ||
+		if (shouldNotRender() || MINECRAFT.player == null ||
+				!MINECRAFT.options.getCameraType().isFirstPerson() || MINECRAFT.gameMode == null ||
+				(MINECRAFT.gameMode.getPlayerMode() == GameType.SPECTATOR && !this.canRenderCrosshairForSpectator(MINECRAFT.hitResult)) ||
 				this.shouldNotRenderCrosshair()) {
 			return;
 		}
@@ -134,14 +134,14 @@ public class Crosshair extends AbstractModule implements HudElement {
 
 		matrices.popMatrix();
 
-		if (minecraft.options.attackIndicator().get() == AttackIndicatorStatus.CROSSHAIR) {
-			float attackCooldownProgress = minecraft.player.getAttackStrengthScale(0.0F);
+		if (MINECRAFT.options.attackIndicator().get() == AttackIndicatorStatus.CROSSHAIR) {
+			float attackCooldownProgress = MINECRAFT.player.getAttackStrengthScale(0.0F);
 			boolean renderMaxAttackIndicator = false;
-			if (minecraft.crosshairPickEntity instanceof LivingEntity && attackCooldownProgress >= 1.0F && minecraft.hitResult != null) {
-				renderMaxAttackIndicator = minecraft.player.getCurrentItemAttackStrengthDelay() > 5.0F;
-				renderMaxAttackIndicator &= minecraft.crosshairPickEntity.isAlive();
-				AttackRange attackRange = minecraft.player.getActiveItem().get(DataComponents.ATTACK_RANGE);
-				renderMaxAttackIndicator &= attackRange == null || attackRange.isInRange(minecraft.player, minecraft.hitResult.getLocation());
+			if (MINECRAFT.crosshairPickEntity instanceof LivingEntity && attackCooldownProgress >= 1.0F && MINECRAFT.hitResult != null) {
+				renderMaxAttackIndicator = MINECRAFT.player.getCurrentItemAttackStrengthDelay() > 5.0F;
+				renderMaxAttackIndicator &= MINECRAFT.crosshairPickEntity.isAlive();
+				AttackRange attackRange = MINECRAFT.player.getActiveItem().get(DataComponents.ATTACK_RANGE);
+				renderMaxAttackIndicator &= attackRange == null || attackRange.isInRange(MINECRAFT.player, MINECRAFT.hitResult.getLocation());
 			}
 
 			int y = graphics.guiHeight() / 2 - 7 + 16;
@@ -157,20 +157,17 @@ public class Crosshair extends AbstractModule implements HudElement {
 	}
 
 	public boolean shouldNotRenderCrosshair() {
-		Minecraft minecraft = Minecraft.getInstance();
-		return minecraft.debugEntries.isOverlayVisible() && minecraft.options.getCameraType() == CameraType.FIRST_PERSON && minecraft.player != null && !minecraft.player.isReducedDebugInfo() && !(Boolean) minecraft.options.reducedDebugInfo().get();
+		return MINECRAFT.debugEntries.isOverlayVisible() && MINECRAFT.options.getCameraType() == CameraType.FIRST_PERSON && MINECRAFT.player != null && !MINECRAFT.player.isReducedDebugInfo() && !(Boolean) MINECRAFT.options.reducedDebugInfo().get();
 	}
 
 	private boolean canRenderCrosshairForSpectator(@Nullable HitResult hitResult) {
-		Minecraft minecraft = Minecraft.getInstance();
-
-		if (hitResult == null || minecraft.level == null) {
+		if (hitResult == null || MINECRAFT.level == null) {
 			return false;
 		} else if (hitResult.getType() == HitResult.Type.ENTITY) {
 			return ((EntityHitResult) hitResult).getEntity() instanceof MenuProvider;
 		} else if (hitResult.getType() == HitResult.Type.BLOCK) {
 			BlockPos pos = ((BlockHitResult) hitResult).getBlockPos();
-			Level level = minecraft.level;
+			Level level = MINECRAFT.level;
 			return level.getBlockState(pos).getMenuProvider(level, pos) != null;
 		} else {
 			return false;
@@ -187,7 +184,7 @@ public class Crosshair extends AbstractModule implements HudElement {
 		return new AbstractCrosshairConfigScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (Minecraft.getInstance().getLanguageManager().getSelected().equals("fr_fr")) {
+				if (MINECRAFT.getLanguageManager().getSelected().equals("fr_fr")) {
 					buttonWidth = 165;
 				} else {
 					buttonWidth = 155;

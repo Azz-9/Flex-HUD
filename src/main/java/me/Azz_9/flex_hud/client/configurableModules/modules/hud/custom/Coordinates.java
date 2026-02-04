@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
@@ -58,13 +60,11 @@ public class Coordinates extends AbstractTextModule {
 
 	@Override
 	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
-		Minecraft minecraft = Minecraft.getInstance();
-
-		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && minecraft.player == null) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && MINECRAFT.player == null) {
 			return;
 		}
 
-		LocalPlayer player = minecraft.player;
+		LocalPlayer player = MINECRAFT.player;
 
 		List<Renderable> renderables = new ArrayList<>();
 
@@ -109,9 +109,9 @@ public class Coordinates extends AbstractTextModule {
 			setHeight(hudY + 10);
 
 			if (this.showDirection.getValue()) {
-				int widestCoords = Math.max(minecraft.font.width(xCoords), minecraft.font.width(yCoords));
+				int widestCoords = Math.max(MINECRAFT.font.width(xCoords), MINECRAFT.font.width(yCoords));
 				if (this.showY.getValue()) {
-					widestCoords = Math.max(widestCoords, minecraft.font.width(zCoords));
+					widestCoords = Math.max(widestCoords, MINECRAFT.font.width(zCoords));
 				}
 				hudX = 24 + widestCoords;
 				hudY = 0;
@@ -162,7 +162,7 @@ public class Coordinates extends AbstractTextModule {
 
 			renderables.add(new RenderableText(0, 0, Component.literal(text.toString()), getColor(), this.shadow.getValue()));
 			updateWidth(text.toString());
-			setHeight(minecraft.font.lineHeight);
+			setHeight(MINECRAFT.font.lineHeight);
 		}
 
 		Matrix3x2fStack matrices = graphics.pose();
@@ -212,7 +212,7 @@ public class Coordinates extends AbstractTextModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (Minecraft.getInstance().getLanguageManager().getSelected().equals("fr_fr")) {
+				if (MINECRAFT.getLanguageManager().getSelected().equals("fr_fr")) {
 					buttonWidth = 220;
 				} else {
 					buttonWidth = 185;

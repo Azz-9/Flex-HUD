@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
@@ -38,7 +40,7 @@ public class Distance extends AbstractTextModule implements TickableModule {
 
 	@Override
 	public void init() {
-		setHeight(Minecraft.getInstance().font.lineHeight);
+		setHeight(MINECRAFT.font.lineHeight);
 	}
 
 	@Override
@@ -53,7 +55,7 @@ public class Distance extends AbstractTextModule implements TickableModule {
 
 	@Override
 	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
-		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && Minecraft.getInstance().getCameraEntity() == null) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && MINECRAFT.getCameraEntity() == null) {
 			return;
 		}
 
@@ -66,7 +68,7 @@ public class Distance extends AbstractTextModule implements TickableModule {
 
 		drawBackground(graphics);
 
-		graphics.drawString(Minecraft.getInstance().font, distanceText, 0, 0, getColor(), shadow.getValue());
+		graphics.drawString(MINECRAFT.font, distanceText, 0, 0, getColor(), shadow.getValue());
 
 		matrices.popMatrix();
 	}
@@ -76,7 +78,7 @@ public class Distance extends AbstractTextModule implements TickableModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (Minecraft.getInstance().getLanguageManager().getSelected().equals("fr_fr")) {
+				if (MINECRAFT.getLanguageManager().getSelected().equals("fr_fr")) {
 					buttonWidth = 160;
 				}
 
@@ -143,16 +145,15 @@ public class Distance extends AbstractTextModule implements TickableModule {
 			return;
 		}
 
-		Minecraft minecraft = Minecraft.getInstance();
 		HitResult hitResult = RaycastTickable.getHitResult();
 
-		if (minecraft.getCameraEntity() == null || minecraft.player == null || hitResult == null) return;
+		if (MINECRAFT.getCameraEntity() == null || MINECRAFT.player == null || hitResult == null) return;
 
 		if (hitResult.getType() == HitResult.Type.MISS) {
 			distanceText = "[∞]";
 		} else if (hitResult.getType() == HitResult.Type.BLOCK) {
-			Vec3 lerpedPos = minecraft.getCameraEntity().getPosition(0);
-			float eyeHeight = minecraft.getCameraEntity().getEyeHeight(minecraft.player.getPose());
+			Vec3 lerpedPos = MINECRAFT.getCameraEntity().getPosition(0);
+			float eyeHeight = MINECRAFT.getCameraEntity().getEyeHeight(MINECRAFT.player.getPose());
 			Vec3 eyePos = new Vec3(lerpedPos.x(), lerpedPos.y() + eyeHeight, lerpedPos.z());
 
 			double distance = hitResult.getLocation().distanceTo(eyePos);

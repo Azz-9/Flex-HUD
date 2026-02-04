@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
@@ -31,7 +33,7 @@ public class LightLevel extends AbstractTextModule {
 
 	@Override
 	public void init() {
-		setHeight(Minecraft.getInstance().font.lineHeight);
+		setHeight(MINECRAFT.font.lineHeight);
 	}
 
 	@Override
@@ -46,9 +48,7 @@ public class LightLevel extends AbstractTextModule {
 
 	@Override
 	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
-		Minecraft minecraft = Minecraft.getInstance();
-
-		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && (minecraft.level == null || minecraft.player == null)) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && (MINECRAFT.level == null || MINECRAFT.player == null)) {
 			return;
 		}
 
@@ -56,7 +56,7 @@ public class LightLevel extends AbstractTextModule {
 		if (Flex_hudClient.isInMoveElementScreen) {
 			lightLevel = 7;
 		} else {
-			lightLevel = minecraft.level.getBrightness(LightLayer.BLOCK, minecraft.player.blockPosition());
+			lightLevel = MINECRAFT.level.getBrightness(LightLayer.BLOCK, MINECRAFT.player.blockPosition());
 		}
 
 		int color;
@@ -85,7 +85,7 @@ public class LightLevel extends AbstractTextModule {
 
 		drawBackground(graphics);
 
-		graphics.drawString(minecraft.font, text, 0, 0, color, shadow.getValue());
+		graphics.drawString(MINECRAFT.font, text, 0, 0, color, shadow.getValue());
 
 		matrices.popMatrix();
 	}
@@ -95,7 +95,7 @@ public class LightLevel extends AbstractTextModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (Minecraft.getInstance().getLanguageManager().getSelected().equals("fr_fr")) {
+				if (MINECRAFT.getLanguageManager().getSelected().equals("fr_fr")) {
 					buttonWidth = 260;
 				} else {
 					buttonWidth = 170;

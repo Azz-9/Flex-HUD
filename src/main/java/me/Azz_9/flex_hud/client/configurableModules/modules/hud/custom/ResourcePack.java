@@ -22,8 +22,6 @@ public class ResourcePack extends AbstractTextModule {
 
 	@Override
 	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
-		Minecraft minecraft = Minecraft.getInstance();
-
 		if (shouldNotRender()) {
 			return;
 		}

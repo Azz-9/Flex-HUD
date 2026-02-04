@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
@@ -54,8 +56,6 @@ public class HeldItem extends AbstractTextModule {
 
 	@Override
 	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
-		Minecraft minecraft = Minecraft.getInstance();
-
 		if (shouldNotRender()) {
 			return;
 		}
@@ -65,14 +65,14 @@ public class HeldItem extends AbstractTextModule {
 		String label = "";
 		ItemStack stack;
 		int textColor;
-		if (Flex_hudClient.isInMoveElementScreen || minecraft.player == null) {
+		if (Flex_hudClient.isInMoveElementScreen || MINECRAFT.player == null) {
 			// placeholder
 			label = "64/256";
 			stack = new ItemStack(Items.DIAMOND_BLOCK);
 			textColor = getColor();
 
 		} else {
-			stack = minecraft.player.getMainHandItem();
+			stack = MINECRAFT.player.getMainHandItem();
 
 			if (stack.isEmpty() || stack.is(Items.AIR)) {
 				return;
@@ -86,7 +86,7 @@ public class HeldItem extends AbstractTextModule {
 				}
 				textColor = ARGB.color(255, stack.getBarColor());
 			} else {
-				label = stack.getCount() + "/" + ItemUtils.getStackCount(stack, minecraft.player.getInventory());
+				label = stack.getCount() + "/" + ItemUtils.getStackCount(stack, MINECRAFT.player.getInventory());
 				textColor = getColor();
 			}
 		}
@@ -105,7 +105,7 @@ public class HeldItem extends AbstractTextModule {
 
 		drawBackground(graphics);
 
-		Font font = minecraft.font;
+		Font font = MINECRAFT.font;
 		if (getAnchorX() == AnchorPosition.END) {
 			graphics.drawString(font, label, 0, 4, getColor(), this.shadow.getValue());
 			graphics.renderItem(stack, font.width(label) + gap, 0);
@@ -122,7 +122,7 @@ public class HeldItem extends AbstractTextModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (Minecraft.getInstance().getLanguageManager().getSelected().equals("fr_fr")) {
+				if (MINECRAFT.getLanguageManager().getSelected().equals("fr_fr")) {
 					buttonWidth = 210;
 				} else {
 					buttonWidth = 170;

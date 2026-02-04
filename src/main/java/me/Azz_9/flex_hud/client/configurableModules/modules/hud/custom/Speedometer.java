@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
@@ -45,7 +47,7 @@ public class Speedometer extends AbstractTextModule implements TickableModule {
 
 	@Override
 	public void init() {
-		setHeight(Minecraft.getInstance().font.lineHeight);
+		setHeight(MINECRAFT.font.lineHeight);
 	}
 
 	@Override
@@ -60,8 +62,6 @@ public class Speedometer extends AbstractTextModule implements TickableModule {
 
 	@Override
 	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
-		Minecraft minecraft = Minecraft.getInstance();
-
 		if (shouldNotRender()) {
 			return;
 		}
@@ -75,7 +75,7 @@ public class Speedometer extends AbstractTextModule implements TickableModule {
 
 		drawBackground(graphics);
 
-		graphics.drawString(minecraft.font, formattedSpeed, 0, 0, getColor(), this.shadow.getValue());
+		graphics.drawString(MINECRAFT.font, formattedSpeed, 0, 0, getColor(), this.shadow.getValue());
 
 		matrices.popMatrix();
 	}
@@ -85,7 +85,7 @@ public class Speedometer extends AbstractTextModule implements TickableModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (Minecraft.getInstance().getLanguageManager().getSelected().equals("fr_fr")) {
+				if (MINECRAFT.getLanguageManager().getSelected().equals("fr_fr")) {
 					buttonWidth = 250;
 				} else {
 					buttonWidth = 170;
@@ -169,7 +169,7 @@ public class Speedometer extends AbstractTextModule implements TickableModule {
 
 	@Override
 	public void tick() {
-		LocalPlayer player = Minecraft.getInstance().player;
+		LocalPlayer player = MINECRAFT.player;
 
 		String format = "%." + this.digits.getValue() + "f";
 		String speed = String.format(format, Flex_hudClient.isInMoveElementScreen ? 0 : SpeedTickable.getSpeed());

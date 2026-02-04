@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.notHud;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
@@ -34,7 +36,7 @@ public class TntCountdown extends AbstractModule implements TickableModule {
 
 	@Override
 	public void tick() {
-		LocalPlayer player = Minecraft.getInstance().player;
+		LocalPlayer player = MINECRAFT.player;
 
 		if (player == null) {
 			return;
@@ -63,7 +65,7 @@ public class TntCountdown extends AbstractModule implements TickableModule {
 		return new AbstractCrosshairConfigScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (Minecraft.getInstance().getLanguageManager().getSelected().equals("fr_fr")) {
+				if (MINECRAFT.getLanguageManager().getSelected().equals("fr_fr")) {
 					buttonWidth = 200;
 				}
 

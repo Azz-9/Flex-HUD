@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.notHud;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.Translatable;
@@ -67,7 +69,7 @@ public class DurabilityPing extends AbstractModule {
 
 		long currentTime = System.currentTimeMillis();
 
-		LocalPlayer player = Minecraft.getInstance().player;
+		LocalPlayer player = MINECRAFT.player;
 
 		// 1 minute has passed since the last ping
 		if (player != null && (!lastPingTime.containsKey(stack.getItem().getDescriptionId()) || currentTime - lastPingTime.get(stack.getItem().getDescriptionId()) > 60000)) {
@@ -80,7 +82,7 @@ public class DurabilityPing extends AbstractModule {
 				player.displayClientMessage(message, true);
 			}
 			if (pingType.getValue() != PingType.MESSAGE) {
-				Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.ANVIL_LAND, 2.0f));
+				MINECRAFT.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.ANVIL_LAND, 2.0f));
 			}
 		}
 	}
@@ -90,7 +92,7 @@ public class DurabilityPing extends AbstractModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (Minecraft.getInstance().getLanguageManager().getSelected().equals("fr_fr")) {
+				if (MINECRAFT.getLanguageManager().getSelected().equals("fr_fr")) {
 					buttonWidth = 250;
 				} else {
 					buttonWidth = 180;

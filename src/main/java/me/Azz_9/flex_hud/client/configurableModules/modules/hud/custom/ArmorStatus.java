@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.Translatable;
@@ -108,14 +110,13 @@ public class ArmorStatus extends AbstractTextModule {
 
 	@Override
 	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
-		Minecraft minecraft = Minecraft.getInstance();
-		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && minecraft.player == null) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && MINECRAFT.player == null) {
 			return;
 		}
 
 		ItemStack[] items;
 		if (!Flex_hudClient.isInMoveElementScreen) {
-			LocalPlayer player = minecraft.player;
+			LocalPlayer player = MINECRAFT.player;
 
 			items = new ItemStack[]{
 					player.getInventory().getItem(39),
@@ -241,12 +242,12 @@ public class ArmorStatus extends AbstractTextModule {
 				case PERCENTAGE -> {
 					text = Math.round(ItemUtils.getDurabilityPercentage(stack)) + "%";
 					color = ARGB.color(255, stack.getBarColor());
-					drawingWidth += Minecraft.getInstance().font.width(text) + 1;
+					drawingWidth += MINECRAFT.font.width(text) + 1;
 				}
 				case VALUE -> {
 					text = String.valueOf(ItemUtils.getDurabilityValue(stack));
 					color = ARGB.color(255, stack.getBarColor());
-					drawingWidth += Minecraft.getInstance().font.width(text) + 1;
+					drawingWidth += MINECRAFT.font.width(text) + 1;
 				}
 				default -> {
 					text = "";
@@ -255,19 +256,19 @@ public class ArmorStatus extends AbstractTextModule {
 			}
 
 		} else {
-			if (Flex_hudClient.isInMoveElementScreen || Minecraft.getInstance().player == null) {
+			if (Flex_hudClient.isInMoveElementScreen || MINECRAFT.player == null) {
 				text = String.valueOf(stack.getMaxStackSize());
 			} else {
-				text = String.valueOf(ItemUtils.getStackCount(stack, Minecraft.getInstance().player.getInventory()));
+				text = String.valueOf(ItemUtils.getStackCount(stack, MINECRAFT.player.getInventory()));
 			}
 			color = getColor();
-			drawingWidth += Minecraft.getInstance().font.width(text) + 1;
+			drawingWidth += MINECRAFT.font.width(text) + 1;
 		}
 
-		if (displayMode.getValue() == DisplayMode.VERTICAL && invertedLayout || moveEachPiecesIndependently.getValue() && getRoundedX(index) + (drawingWidth * getScale(index)) / 2.0 > Minecraft.getInstance().getWindow().getWidth() / 2.0) {
+		if (displayMode.getValue() == DisplayMode.VERTICAL && invertedLayout || moveEachPiecesIndependently.getValue() && getRoundedX(index) + (drawingWidth * getScale(index)) / 2.0 > MINECRAFT.getWindow().getWidth() / 2.0) {
 			getDimensionHudList().get(moveEachPiecesIndependently.getValue() ? index : 0).addMultiRenderable(new MultiRenderable(x, x + drawingWidth,
 					new RenderableText(x, y + 4, Component.literal(text), color, shadow.getValue()),
-					new RenderableItem(x + Minecraft.getInstance().font.width(text) + 1, y, 16, stack, showDurabilityBar.getValue())
+					new RenderableItem(x + MINECRAFT.font.width(text) + 1, y, 16, stack, showDurabilityBar.getValue())
 			));
 		} else {
 			getDimensionHudList().get(moveEachPiecesIndependently.getValue() ? index : 0).addMultiRenderable(new MultiRenderable(x, x + drawingWidth,
@@ -287,17 +288,17 @@ public class ArmorStatus extends AbstractTextModule {
 				int drawingWidth = 16;
 				String text;
 
-				if (Flex_hudClient.isInMoveElementScreen || Minecraft.getInstance().player == null) {
+				if (Flex_hudClient.isInMoveElementScreen || MINECRAFT.player == null) {
 					text = String.valueOf(new ItemStack(arrow).getMaxStackSize());
 				} else {
-					text = String.valueOf(ItemUtils.getItemCount(arrow, Minecraft.getInstance().player.getInventory()));
+					text = String.valueOf(ItemUtils.getItemCount(arrow, MINECRAFT.player.getInventory()));
 				}
-				drawingWidth += Minecraft.getInstance().font.width(text) + 1;
+				drawingWidth += MINECRAFT.font.width(text) + 1;
 
-				if (displayMode.getValue() == DisplayMode.VERTICAL && invertedLayout || moveEachPiecesIndependently.getValue() && getRoundedX(6 + i) + (drawingWidth * getScale(6 + i)) / 2.0 > Minecraft.getInstance().getWindow().getWidth() / 2.0) {
+				if (displayMode.getValue() == DisplayMode.VERTICAL && invertedLayout || moveEachPiecesIndependently.getValue() && getRoundedX(6 + i) + (drawingWidth * getScale(6 + i)) / 2.0 > MINECRAFT.getWindow().getWidth() / 2.0) {
 					getDimensionHudList().get(moveEachPiecesIndependently.getValue() ? 6 + i : 0).addMultiRenderable(new MultiRenderable(x, x + drawingWidth,
 							new RenderableText(x, y + 4, Component.literal(text), getColor(), shadow.getValue()),
-							new RenderableItem(x + Minecraft.getInstance().font.width(text) + 1, y, 16, arrow, showDurabilityBar.getValue())
+							new RenderableItem(x + MINECRAFT.font.width(text) + 1, y, 16, arrow, showDurabilityBar.getValue())
 					));
 				} else {
 					getDimensionHudList().get(moveEachPiecesIndependently.getValue() ? 6 + i : 0).addMultiRenderable(new MultiRenderable(x, x + drawingWidth,
@@ -323,7 +324,7 @@ public class ArmorStatus extends AbstractTextModule {
 		} else {
 			ItemStack arrowStack = new ItemStack(Items.ARROW);
 
-			LocalPlayer player = Minecraft.getInstance().player;
+			LocalPlayer player = MINECRAFT.player;
 			int totalCount;
 			if (Flex_hudClient.isInMoveElementScreen || player == null) {
 				totalCount = arrowStack.getMaxStackSize();
@@ -335,7 +336,7 @@ public class ArmorStatus extends AbstractTextModule {
 
 			String text = String.valueOf(totalCount);
 
-			int textWidth = Minecraft.getInstance().font.width(text);
+			int textWidth = MINECRAFT.font.width(text);
 			int drawingWidth = 17 + textWidth;
 			if (!moveEachPiecesIndependently.getValue()) {
 				if (displayMode.getValue() == DisplayMode.VERTICAL) {
@@ -349,7 +350,7 @@ public class ArmorStatus extends AbstractTextModule {
 				setHeight(6, 16);
 			}
 
-			if (displayMode.getValue() == DisplayMode.VERTICAL && invertedLayout || moveEachPiecesIndependently.getValue() && getRoundedX(6) + (drawingWidth * getScale(6)) / 2.0 > Minecraft.getInstance().getWindow().getWidth() / 2.0) {
+			if (displayMode.getValue() == DisplayMode.VERTICAL && invertedLayout || moveEachPiecesIndependently.getValue() && getRoundedX(6) + (drawingWidth * getScale(6)) / 2.0 > MINECRAFT.getWindow().getWidth() / 2.0) {
 				getDimensionHudList().get(moveEachPiecesIndependently.getValue() ? 6 : 0).addMultiRenderable(new MultiRenderable(x, x + drawingWidth,
 						new RenderableText(x, y + 4, Component.literal(text), getColor(), shadow.getValue()),
 						new RenderableItem(x + textWidth + 1, y, 16, arrowStack, showDurabilityBar.getValue())

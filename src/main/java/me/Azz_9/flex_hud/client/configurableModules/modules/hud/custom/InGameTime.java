@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
@@ -49,7 +51,7 @@ public class InGameTime extends AbstractTextModule implements TickableModule {
 
 	@Override
 	public void init() {
-		setHeight(Minecraft.getInstance().font.lineHeight);
+		setHeight(MINECRAFT.font.lineHeight);
 	}
 
 	@Override
@@ -77,7 +79,7 @@ public class InGameTime extends AbstractTextModule implements TickableModule {
 
 		drawBackground(graphics);
 
-		graphics.drawString(Minecraft.getInstance().font, formattedTime, 0, 0, getColor(), shadow.getValue());
+		graphics.drawString(MINECRAFT.font, formattedTime, 0, 0, getColor(), shadow.getValue());
 
 		matrices.popMatrix();
 	}
@@ -180,13 +182,13 @@ public class InGameTime extends AbstractTextModule implements TickableModule {
 
 	@Override
 	public void tick() {
-		if (Minecraft.getInstance().level == null && !Flex_hudClient.isInMoveElementScreen) return;
+		if (MINECRAFT.level == null && !Flex_hudClient.isInMoveElementScreen) return;
 
 		int timeOfDay;
 		if (Flex_hudClient.isInMoveElementScreen) {
 			timeOfDay = 12000;
 		} else {
-			timeOfDay = (int) (Minecraft.getInstance().level.getOverworldClockTime() % 24000 + 6000) % 24000;
+			timeOfDay = (int) (MINECRAFT.level.getOverworldClockTime() % 24000 + 6000) % 24000;
 		}
 
 		int totalSeconds = (int) Math.round(timeOfDay * 3.6);

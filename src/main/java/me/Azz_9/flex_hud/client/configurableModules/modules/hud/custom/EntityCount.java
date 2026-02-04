@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
@@ -43,7 +45,7 @@ public class EntityCount extends AbstractTextModule implements TickableModule {
 
 	@Override
 	public void init() {
-		setHeight(Minecraft.getInstance().font.lineHeight);
+		setHeight(MINECRAFT.font.lineHeight);
 	}
 
 	@Override
@@ -58,8 +60,6 @@ public class EntityCount extends AbstractTextModule implements TickableModule {
 
 	@Override
 	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
-		Minecraft minecraft = Minecraft.getInstance();
-
 		if (shouldNotRender()) {
 			return;
 		}
@@ -75,7 +75,7 @@ public class EntityCount extends AbstractTextModule implements TickableModule {
 
 		drawBackground(graphics);
 
-		graphics.drawString(minecraft.font, text, 0, 0, getColor(), this.shadow.getValue());
+		graphics.drawString(MINECRAFT.font, text, 0, 0, getColor(), this.shadow.getValue());
 
 		matrices.popMatrix();
 	}
@@ -165,7 +165,7 @@ public class EntityCount extends AbstractTextModule implements TickableModule {
 	}
 
 	public static boolean isInRange(Entity entity) {
-		LocalPlayer player = Minecraft.getInstance().player;
+		LocalPlayer player = MINECRAFT.player;
 		if (player != null) {
 			int radius = ModulesHelper.getInstance().entityCount.range.getValue();
 			return entity.position().closerThan(player.position(), radius);
@@ -175,14 +175,13 @@ public class EntityCount extends AbstractTextModule implements TickableModule {
 
 	@Override
 	public void tick() {
-		Minecraft minecraft = Minecraft.getInstance();
-		if (minecraft.level == null || minecraft.player == null) {
+		if (MINECRAFT.level == null || MINECRAFT.player == null) {
 			return;
 		}
 
 		EntityCount.entityCount = 0;
-		for (Entity entity : minecraft.level.entitiesForRendering()) {
-			if (entity != minecraft.player && isInRange(entity)) {
+		for (Entity entity : MINECRAFT.level.entitiesForRendering()) {
+			if (entity != MINECRAFT.player && isInRange(entity)) {
 
 				if (onlyMobs.getValue()) {
 					if (!(entity instanceof Mob)) continue;

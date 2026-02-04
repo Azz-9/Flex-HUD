@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
@@ -53,8 +55,7 @@ public class PitchDisplay extends AbstractTextModule {
 
 	@Override
 	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
-		Minecraft minecraft = Minecraft.getInstance();
-		LocalPlayer player = minecraft.player;
+		LocalPlayer player = MINECRAFT.player;
 
 		String format = "%." + degreesDecimals.getValue() + "f";
 		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && player == null) {
@@ -78,10 +79,10 @@ public class PitchDisplay extends AbstractTextModule {
 		String markerText = "▶";
 
 		setWidth((int) ((showDegrees.getValue()
-				? minecraft.font.width(pitchStr) * degreesScale + 2
+				? MINECRAFT.font.width(pitchStr) * degreesScale + 2
 				: 0) +
 				(showMarker.getValue()
-						? (minecraft.font.width(markerText) / 2.0 + 5)
+						? (MINECRAFT.font.width(markerText) / 2.0 + 5)
 						: 0) + 34));
 
 
@@ -97,22 +98,22 @@ public class PitchDisplay extends AbstractTextModule {
 		float hudX = 0;
 		if (showDegrees.getValue()) {
 			matrices.pushMatrix();
-			matrices.translate(hudX, (getHeight() - minecraft.font.lineHeight) / 2.0f);
+			matrices.translate(hudX, (getHeight() - MINECRAFT.font.lineHeight) / 2.0f);
 			matrices.scale(degreesScale);
-			graphics.drawString(minecraft.font, pitchStr, 0, 0, getColor(), shadow.getValue());
+			graphics.drawString(MINECRAFT.font, pitchStr, 0, 0, getColor(), shadow.getValue());
 			matrices.popMatrix();
 
-			hudX += minecraft.font.width(pitchStr) * degreesScale + 2;
+			hudX += MINECRAFT.font.width(pitchStr) * degreesScale + 2;
 		}
 
 		if (this.showMarker.getValue()) {
 			matrices.pushMatrix();
-			matrices.translate(hudX, (getHeight() - minecraft.font.lineHeight) / 2.0f);
+			matrices.translate(hudX, (getHeight() - MINECRAFT.font.lineHeight) / 2.0f);
 			matrices.scale(0.5f, 1.0f);
-			graphics.drawString(minecraft.font, markerText, 0, 0, getColor(), this.shadow.getValue());
+			graphics.drawString(MINECRAFT.font, markerText, 0, 0, getColor(), this.shadow.getValue());
 			matrices.popMatrix();
 
-			hudX += minecraft.font.width(markerText) / 2.0f + 5;
+			hudX += MINECRAFT.font.width(markerText) / 2.0f + 5;
 		}
 
 		drawIntermediatePoint(graphics, matrices, -165, pitch, hudX);
@@ -130,12 +131,11 @@ public class PitchDisplay extends AbstractTextModule {
 
 	@Override
 	public boolean shouldNotRender() {
-		LocalPlayer player = Minecraft.getInstance().player;
+		LocalPlayer player = MINECRAFT.player;
 		return super.shouldNotRender() || player != null && displayWhenElytraIsEquipped.getValue() && !player.getInventory().getItem(38).is(Items.ELYTRA);
 	}
 
 	private void drawPitchPoint(GuiGraphics graphics, Matrix3x2fStack matrices, int angle, float pitch, float x) {
-		Minecraft minecraft = Minecraft.getInstance();
 		String label = "|";
 		String angleStr = String.valueOf(angle);
 		angle = -angle;
@@ -148,26 +148,25 @@ public class PitchDisplay extends AbstractTextModule {
 		if (Math.abs(angleDifference) <= 120) {
 			// Calculer la position Y de chaque point cardinal en fonction de l'angle
 			float positionY = ((getHeight() / 2.0f) + (angleDifference * (getHeight() / 180.0f)));
-			float pointWidth = minecraft.font.width(label) * scaleFactor;
-			float angleHeight = minecraft.font.lineHeight * angleScale;
+			float pointWidth = MINECRAFT.font.width(label) * scaleFactor;
+			float angleHeight = MINECRAFT.font.lineHeight * angleScale;
 
 			matrices.pushMatrix();
 			matrices.translate(x + 14, positionY - angleHeight / 2.0f);
 			matrices.scale(angleScale, angleScale);
-			graphics.drawString(minecraft.font, angleStr, 0, 0, getColorWithFadeEffect(positionY), shadow.getValue());
+			graphics.drawString(MINECRAFT.font, angleStr, 0, 0, getColorWithFadeEffect(positionY), shadow.getValue());
 			matrices.popMatrix();
 
 			matrices.pushMatrix();
 			matrices.translate(x + 9, positionY - pointWidth / 2.0f);
 			matrices.scale(scaleFactor, scaleFactor);
 			matrices.rotate((float) Math.toRadians(90));
-			graphics.drawString(minecraft.font, label, 0, 0, getColorWithFadeEffect(positionY), shadow.getValue());
+			graphics.drawString(MINECRAFT.font, label, 0, 0, getColorWithFadeEffect(positionY), shadow.getValue());
 			matrices.popMatrix();
 		}
 	}
 
 	private void drawIntermediatePoint(GuiGraphics graphics, Matrix3x2fStack matrices, int angle, float pitch, float x) {
-		Minecraft minecraft = Minecraft.getInstance();
 		String label = "|";
 		angle = -angle;
 
@@ -177,13 +176,13 @@ public class PitchDisplay extends AbstractTextModule {
 			float scaleFactor = 0.75f;
 			// Calculer la position Y de chaque point cardinal en fonction de l'angle
 			float positionY = ((getHeight() / 2.0f) + (angleDifference * (getHeight() / 180.0f)));
-			float pointWidth = minecraft.font.width(label) * scaleFactor;
+			float pointWidth = MINECRAFT.font.width(label) * scaleFactor;
 
 			matrices.pushMatrix();
 			matrices.translate(x + 5.6f, positionY - pointWidth / 2.0f);
 			matrices.scale(scaleFactor, scaleFactor);
 			matrices.rotate((float) Math.toRadians(90));
-			graphics.drawString(minecraft.font, label, 0, 0, getColorWithFadeEffect(positionY), shadow.getValue());
+			graphics.drawString(MINECRAFT.font, label, 0, 0, getColorWithFadeEffect(positionY), shadow.getValue());
 			matrices.popMatrix();
 		}
 	}
@@ -209,7 +208,7 @@ public class PitchDisplay extends AbstractTextModule {
 
 			@Override
 			protected void init() {
-				if (Minecraft.getInstance().getLanguageManager().getSelected().equals("fr_fr")) {
+				if (MINECRAFT.getLanguageManager().getSelected().equals("fr_fr")) {
 					buttonWidth = 250;
 				} else {
 					buttonWidth = 190;

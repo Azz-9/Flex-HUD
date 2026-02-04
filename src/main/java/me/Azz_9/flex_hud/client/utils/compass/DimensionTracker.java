@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.utils.compass;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
@@ -9,11 +11,9 @@ public class DimensionTracker {
 	public static boolean shouldInit = false;
 
 	public static void check() {
-		Minecraft minecraft = Minecraft.getInstance();
+		if (MINECRAFT.level == null) return;
 
-		if (minecraft.level == null) return;
-
-		ResourceKey<Level> newDimension = minecraft.level.dimension();
+		ResourceKey<Level> newDimension = MINECRAFT.level.dimension();
 
 		if (currentDimension == null || !currentDimension.equals(newDimension)) {
 			shouldInit = true;

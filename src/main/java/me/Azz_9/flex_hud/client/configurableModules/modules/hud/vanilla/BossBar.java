@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.vanilla;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractMovableModule;
@@ -66,12 +68,10 @@ public class BossBar extends AbstractMovableModule {
 
 	public void init() {
 		setWidth(182);
-		setHeight(BOSS_BAR_GAP + Minecraft.getInstance().font.lineHeight);
+		setHeight(BOSS_BAR_GAP + MINECRAFT.font.lineHeight);
 	}
 
 	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
-		Minecraft minecraft = Minecraft.getInstance();
-
 		if (shouldNotRender()) {
 			return;
 		}
@@ -89,9 +89,9 @@ public class BossBar extends AbstractMovableModule {
 			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PROGRESS_TEXTURES[0], bossBarWidth, bossBarHeight, 0, 0, 0, 9, bossBarWidth, bossBarHeight);
 
 			Component text = Component.literal("Boss bar");
-			int textX = (bossBarWidth - minecraft.font.width(text)) / 2;
+			int textX = (bossBarWidth - MINECRAFT.font.width(text)) / 2;
 			int textY = 0;
-			graphics.drawString(minecraft.font, text, textX, textY, 0xffffffff);
+			graphics.drawString(MINECRAFT.font, text, textX, textY, 0xffffffff);
 
 			matrices.popMatrix();
 			return;
@@ -110,7 +110,7 @@ public class BossBar extends AbstractMovableModule {
 		int bossBarWidth = getWidth();
 		int bossBarHeight = 5;
 
-		int maxBossBars = (graphics.guiHeight() / 3) / (BOSS_BAR_GAP + minecraft.font.lineHeight);
+		int maxBossBars = (graphics.guiHeight() / 3) / (BOSS_BAR_GAP + MINECRAFT.font.lineHeight);
 
 		int y = 9;
 		int counter = 1;
@@ -121,10 +121,10 @@ public class BossBar extends AbstractMovableModule {
 			this.renderBossBar(graphics, 0, y, bossBarWidth, bossBarHeight, clientBossBar);
 
 			Component text = clientBossBar.getName();
-			int textX = (bossBarWidth - minecraft.font.width(text)) / 2;
-			int textY = y - minecraft.font.lineHeight;
-			graphics.drawString(minecraft.font, text, textX, textY, 0xffffffff);
-			y += BOSS_BAR_GAP + minecraft.font.lineHeight;
+			int textX = (bossBarWidth - MINECRAFT.font.width(text)) / 2;
+			int textY = y - MINECRAFT.font.lineHeight;
+			graphics.drawString(MINECRAFT.font, text, textX, textY, 0xffffffff);
+			y += BOSS_BAR_GAP + MINECRAFT.font.lineHeight;
 			counter += 1;
 		}
 
@@ -149,7 +149,7 @@ public class BossBar extends AbstractMovableModule {
 	}
 
 	private void updateBossBars() {
-		events = ((BossBarAccessor) Minecraft.getInstance().gui.getBossOverlay()).getBossBars();
+		events = ((BossBarAccessor) MINECRAFT.gui.getBossOverlay()).getBossBars();
 	}
 
 	@Override
@@ -178,7 +178,7 @@ public class BossBar extends AbstractMovableModule {
 			@Override
 			protected void init() {
 
-				if (Minecraft.getInstance().getLanguageManager().getSelected().equals("fr_fr")) {
+				if (MINECRAFT.getLanguageManager().getSelected().equals("fr_fr")) {
 					buttonWidth = 220;
 				}
 

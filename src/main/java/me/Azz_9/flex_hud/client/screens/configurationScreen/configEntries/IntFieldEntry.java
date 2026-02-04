@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 
 public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
@@ -41,7 +42,7 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 	) {
 		super(resetButtonSize, Component.translatable(Objects.requireNonNull(variable.getConfigTextTranslationKey())));
 		intFieldWidget = new ConfigIntFieldWidget(
-				Minecraft.getInstance().font,
+				MINECRAFT.font,
 				intFieldWidth, intFieldHeight,
 				variable,
 				observers,

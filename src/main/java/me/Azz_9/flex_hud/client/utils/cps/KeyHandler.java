@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.utils.cps;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.Minecraft;
@@ -17,8 +19,8 @@ public class KeyHandler {
 			return;
 		}
 
-		int keyAttackValue = KeyMappingHelper.getBoundKeyOf(Minecraft.getInstance().options.keyAttack).getValue();
-		int keyUseValue = KeyMappingHelper.getBoundKeyOf(Minecraft.getInstance().options.keyUse).getValue();
+		int keyAttackValue = KeyMappingHelper.getBoundKeyOf(MINECRAFT.options.keyAttack).getValue();
+		int keyUseValue = KeyMappingHelper.getBoundKeyOf(MINECRAFT.options.keyUse).getValue();
 
 		if ((button != keyAttackValue && button != keyUseValue) ||
 				(button == keyAttackValue && !ModulesHelper.getInstance().cps.showLeftClick.getValue() && !ModulesHelper.getInstance().keyStrokes.isEnabled()) ||

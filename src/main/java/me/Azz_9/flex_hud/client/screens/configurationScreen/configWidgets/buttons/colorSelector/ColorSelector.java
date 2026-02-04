@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
 import me.Azz_9.flex_hud.client.utils.Cursors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -38,7 +40,7 @@ public class ColorSelector extends ColorUpdatable implements GuiEventListener, R
 
 		this.gradientWidget = new GradientWidget(gradientWidth, gradientHeight, this);
 		this.hueWidget = new HueWidget(hueBarWidth, hueBarHeight, this);
-		this.colorFieldWidget = new ColorFieldWidget(Minecraft.getInstance().font, hexaFieldWidth, hexaFieldHeight, this);
+		this.colorFieldWidget = new ColorFieldWidget(MINECRAFT.font, hexaFieldWidth, hexaFieldHeight, this);
 
 		this.gradientWidget.updateColor(colorBindable.getColor());
 		this.hueWidget.updateHue(colorBindable.getColor());

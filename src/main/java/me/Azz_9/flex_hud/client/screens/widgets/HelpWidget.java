@@ -14,6 +14,7 @@ import net.minecraft.resources.Identifier;
 import org.joml.Matrix3x2fStack;
 import org.jspecify.annotations.NonNull;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 
 public class HelpWidget extends AbstractWidget.WithInactiveMessage {
@@ -59,7 +60,7 @@ public class HelpWidget extends AbstractWidget.WithInactiveMessage {
 
 			alpha = (int) (251 * easedProgress) + 4;
 
-			Font font = Minecraft.getInstance().font;
+			Font font = MINECRAFT.font;
 
 			int padding = 4;
 			int marginBottom = 6;

@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.screens;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.*;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.screens.modulesList.ModulesListScreen;
@@ -19,9 +21,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import org.joml.Matrix3x2fStack;
 import org.jspecify.annotations.NonNull;
-
-import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
-import static me.Azz_9.flex_hud.client.Flex_hudClient.openOptionScreenKeyBind;
 
 public class OptionsScreen extends AbstractBackNavigableScreen {
 	private long initTimestamp;
@@ -58,7 +57,7 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 		this.addRenderableWidget(enableModButton);
 
 		Button modsButton = Button.builder(Component.translatable("flex_hud.options_screen.modules"),
-						(btn) -> Minecraft.getInstance().setScreen(new ModulesListScreen(this))
+						(btn) -> MINECRAFT.setScreen(new ModulesListScreen(this))
 				).bounds((width - centralButtonWidth) / 2, (height - squareButtonSize) / 2, centralButtonWidth, squareButtonSize)
 				.build();
 		this.addRenderableWidget(modsButton);
@@ -69,7 +68,7 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 				squareButtonSize, squareButtonSize,
 				Identifier.fromNamespaceAndPath(MOD_ID, "widgets/buttons/options_menu_buttons/move.png"),
 				14, 14, (btn) -> {
-			Minecraft.getInstance().setScreen(new MoveModulesScreen(this));
+			MINECRAFT.setScreen(new MoveModulesScreen(this));
 			Flex_hudClient.isInMoveElementScreen = true;
 		});
 		this.addRenderableWidget(moveButton);
@@ -120,7 +119,7 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 		//RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F); // Opacité à 100%
 
 		if (!ModulesHelper.getInstance().isEnabled.getValue()) {
-			graphics.drawCenteredString(Minecraft.getInstance().font, Component.translatable("flex_hud.options_screen.mod_is_disabled_warning").withStyle(ChatFormatting.RED, ChatFormatting.ITALIC), this.width / 2, this.height / 2 + 20, 0xffffffff);
+			graphics.drawCenteredString(MINECRAFT.font, Component.translatable("flex_hud.options_screen.mod_is_disabled_warning").withStyle(ChatFormatting.RED, ChatFormatting.ITALIC), this.width / 2, this.height / 2 + 20, 0xffffffff);
 		}
 	}
 

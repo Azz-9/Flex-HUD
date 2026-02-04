@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.slider;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
 import me.Azz_9.flex_hud.client.screens.TrackableChange;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
@@ -98,7 +100,7 @@ public class ConfigIntSliderWidget<T> extends AbstractSliderButton implements Tr
 
 	@Override
 	protected void applyValue() {
-		if (Minecraft.getInstance().hasShiftDown() && STEP != null) {
+		if (MINECRAFT.hasShiftDown() && STEP != null) {
 			// Snap to the nearest multiple of STEP
 			int rawValue = getRelativeValue();
 			int snappedValue = Math.round((float) rawValue / STEP) * STEP;

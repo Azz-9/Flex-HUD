@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -13,7 +15,7 @@ public class RenderableText extends Renderable {
 	private final boolean shadow;
 
 	public RenderableText(int x, int y, @NotNull Component text, int textColor, boolean shadow) {
-		super(x, y, Minecraft.getInstance().font.width(text.getString()));
+		super(x, y, MINECRAFT.font.width(text.getString()));
 		this.text = text;
 		this.textColor = textColor;
 		this.shadow = shadow;
@@ -22,7 +24,7 @@ public class RenderableText extends Renderable {
 	@Override
 	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
 		if (!text.getString().isBlank()) {
-			graphics.drawString(Minecraft.getInstance().font, text, x, y, textColor, shadow);
+			graphics.drawString(MINECRAFT.font, text, x, y, textColor, shadow);
 		}
 	}
 }

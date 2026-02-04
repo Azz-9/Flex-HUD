@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.mixin.reach;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.tickables.ReachTickable;
 import net.minecraft.client.Minecraft;
@@ -22,7 +24,7 @@ public abstract class MultiPlayerGameModeMixin {
 
 		if (target.isAttackable()) {
 			if (!target.skipAttackInteraction(player)) {
-				if (Minecraft.getInstance().player != null && player.getUUID().equals(Minecraft.getInstance().player.getUUID())) {
+				if (MINECRAFT.player != null && player.getUUID().equals(MINECRAFT.player.getUUID())) {
 					ReachTickable.calculateReach(player, target);
 				}
 			}

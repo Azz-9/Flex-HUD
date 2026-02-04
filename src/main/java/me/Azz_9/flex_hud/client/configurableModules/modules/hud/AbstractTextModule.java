@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
@@ -23,25 +25,25 @@ public abstract class AbstractTextModule extends AbstractBackgroundModule {
 	}
 
 	protected void updateWidth(String text) {
-		int textWidth = Minecraft.getInstance().font.width(text);
+		int textWidth = MINECRAFT.font.width(text);
 		if (textWidth > getWidth()) {
 			setWidth(textWidth);
 		}
 	}
 
 	protected void updateWidth(String text, int startX) {
-		int textWidth = Minecraft.getInstance().font.width(text);
+		int textWidth = MINECRAFT.font.width(text);
 		if (startX + textWidth > getWidth()) {
 			setWidth(startX + textWidth);
 		}
 	}
 
 	protected void setWidth(String text) {
-		setWidth(Minecraft.getInstance().font.width(text));
+		setWidth(MINECRAFT.font.width(text));
 	}
 
 	protected void setWidth(String text, int startX) {
-		int textWidth = Minecraft.getInstance().font.width(text);
+		int textWidth = MINECRAFT.font.width(text);
 		setWidth(startX + textWidth);
 	}
 

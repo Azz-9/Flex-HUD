@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
@@ -40,7 +42,7 @@ public class FullInventoryIndicator extends AbstractTextModule implements Tickab
 
 	@Override
 	public void init() {
-		setHeight(Minecraft.getInstance().font.lineHeight);
+		setHeight(MINECRAFT.font.lineHeight);
 	}
 
 	@Override
@@ -55,7 +57,7 @@ public class FullInventoryIndicator extends AbstractTextModule implements Tickab
 
 	@Override
 	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
-		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && Minecraft.getInstance().player == null) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && MINECRAFT.player == null) {
 			return;
 		}
 
@@ -70,7 +72,7 @@ public class FullInventoryIndicator extends AbstractTextModule implements Tickab
 
 			drawBackground(graphics);
 
-			graphics.drawString(Minecraft.getInstance().font, Component.translatable("flex_hud.full_inventory_indicator.label"), 0, 0, getColor(), shadow.getValue());
+			graphics.drawString(MINECRAFT.font, Component.translatable("flex_hud.full_inventory_indicator.label"), 0, 0, getColor(), shadow.getValue());
 
 			matrices.popMatrix();
 		}
@@ -81,7 +83,7 @@ public class FullInventoryIndicator extends AbstractTextModule implements Tickab
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (Minecraft.getInstance().getLanguageManager().getSelected().equals("fr_fr")) {
+				if (MINECRAFT.getLanguageManager().getSelected().equals("fr_fr")) {
 					buttonWidth = 220;
 				} else {
 					buttonWidth = 175;
@@ -144,12 +146,12 @@ public class FullInventoryIndicator extends AbstractTextModule implements Tickab
 
 	@Override
 	public void tick() {
-		if (Minecraft.getInstance().player == null) {
+		if (MINECRAFT.player == null) {
 			return;
 		}
 
 		for (int i = 0; i < 36; i++) {
-			ItemStack stack = Minecraft.getInstance().player.getInventory().getItem(i);
+			ItemStack stack = MINECRAFT.player.getInventory().getItem(i);
 			if (stack.is(Items.AIR)) {
 				isInventoryFull = false;
 				return;
@@ -157,7 +159,7 @@ public class FullInventoryIndicator extends AbstractTextModule implements Tickab
 		}
 
 		if (!isInventoryFull && playSound.getValue()) {
-			Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.ARMOR_EQUIP_LEATHER.value(), 1.0f, 2.0f));
+			MINECRAFT.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.ARMOR_EQUIP_LEATHER.value(), 1.0f, 2.0f));
 		}
 
 		isInventoryFull = true;

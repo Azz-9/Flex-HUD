@@ -19,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2fStack;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 
 public class WeatherDisplay extends AbstractBackgroundModule {
@@ -48,13 +49,11 @@ public class WeatherDisplay extends AbstractBackgroundModule {
 
 	@Override
 	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
-		Minecraft minecraft = Minecraft.getInstance();
-
 		if (shouldNotRender()) {
 			return;
 		}
 
-		if (minecraft.level != null && minecraft.level.dimensionType().hasSkyLight() && !minecraft.level.dimensionType().hasCeiling() || Flex_hudClient.isInMoveElementScreen) {
+		if (MINECRAFT.level != null && MINECRAFT.level.dimensionType().hasSkyLight() && !MINECRAFT.level.dimensionType().hasCeiling() || Flex_hudClient.isInMoveElementScreen) {
 
 			Matrix3x2fStack matrices = graphics.pose();
 			matrices.pushMatrix();
@@ -63,7 +62,7 @@ public class WeatherDisplay extends AbstractBackgroundModule {
 
 			drawBackground(graphics);
 
-			String path = getWeatherIconPath(minecraft);
+			String path = getWeatherIconPath();
 
 			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, Identifier.fromNamespaceAndPath(MOD_ID, path), 0, 0, 0, 0, 16, 16, 16, 16);
 
@@ -80,20 +79,20 @@ public class WeatherDisplay extends AbstractBackgroundModule {
 		}
 	}
 
-	private static @NotNull String getWeatherIconPath(@NotNull Minecraft client) {
+	private static @NotNull String getWeatherIconPath() {
 		String path;
-		if (Flex_hudClient.isInMoveElementScreen || client.level == null) {
+		if (Flex_hudClient.isInMoveElementScreen || MINECRAFT.level == null) {
 			path = "weather_icons/day_clear.png";
 		} else {
-			int timeOfDay = (int) (client.level.getOverworldClockTime() % 24000L);
+			int timeOfDay = (int) (MINECRAFT.level.getOverworldClockTime() % 24000L);
 			if (timeOfDay >= 12600 && timeOfDay <= 23400) {
 				path = "weather_icons/night_";
 			} else {
 				path = "weather_icons/day_";
 			}
-			if (client.level.isThundering()) {
+			if (MINECRAFT.level.isThundering()) {
 				path += "thunder.png";
-			} else if (client.level.isRaining()) {
+			} else if (MINECRAFT.level.isRaining()) {
 				path += "rainy.png";
 			} else {
 				path += "clear.png";
@@ -107,7 +106,7 @@ public class WeatherDisplay extends AbstractBackgroundModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (Minecraft.getInstance().getLanguageManager().getSelected().equals("fr_fr")) {
+				if (MINECRAFT.getLanguageManager().getSelected().equals("fr_fr")) {
 					buttonWidth = 160;
 				}
 

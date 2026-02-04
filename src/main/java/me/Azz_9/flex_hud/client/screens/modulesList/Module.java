@@ -10,6 +10,7 @@ import net.minecraft.resources.Identifier;
 
 import java.util.function.Supplier;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 
 public class Module {
@@ -30,7 +31,7 @@ public class Module {
 			this.configScreen = configScreen;
 			this.button = Button.builder(Component.literal(name), (btn) -> {
 						configScreen.setParentScrollAmount(parent.getModulesListWidget().scrollAmount());
-						Minecraft.getInstance().setScreen(configScreen);
+						MINECRAFT.setScreen(configScreen);
 					})
 					.size(buttonWidth, buttonHeight)
 					.build();

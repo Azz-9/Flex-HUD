@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
 import me.Azz_9.flex_hud.client.screens.TrackableChange;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.ScrollableConfigList;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigIntGrid;
@@ -33,7 +35,7 @@ public class CrosshairEditorEntry extends ScrollableConfigList.AbstractConfigEnt
 				variable,
 				observers,
 				(btn) -> {
-					if (Minecraft.getInstance().screen instanceof AbstractCrosshairConfigScreen crosshairConfigScreen) {
+					if (MINECRAFT.screen instanceof AbstractCrosshairConfigScreen crosshairConfigScreen) {
 						CrosshairEditor crosshairEditor = crosshairConfigScreen.getCrosshairEditor();
 						if (crosshairEditor == null || !crosshairEditor.isFocused()) {
 							crosshairConfigScreen.openEditor(this.crosshairButtonWidget);
@@ -92,7 +94,7 @@ public class CrosshairEditorEntry extends ScrollableConfigList.AbstractConfigEnt
 
 		setActive(!shouldDisable);
 		// fermer l'éditeur si le button est désacitvé
-		AbstractCrosshairConfigScreen screen = (AbstractCrosshairConfigScreen) Minecraft.getInstance().screen;
+		AbstractCrosshairConfigScreen screen = (AbstractCrosshairConfigScreen) MINECRAFT.screen;
 		if (screen != null && shouldDisable) {
 			screen.closeEditor();
 		}

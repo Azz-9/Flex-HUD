@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 
 public class ConfigToggleButtonWidget extends Button implements TrackableChange, DataGetter<Boolean>, ResetAware {
@@ -136,7 +137,7 @@ public class ConfigToggleButtonWidget extends Button implements TrackableChange,
 	public boolean keyPressed(KeyEvent input) {
 		if (input.key() == GLFW.GLFW_KEY_ENTER || input.key() == GLFW.GLFW_KEY_KP_ENTER) {
 			onClickAction();
-			this.playDownSound(Minecraft.getInstance().getSoundManager());
+			this.playDownSound(MINECRAFT.getSoundManager());
 		}
 
 		return super.keyPressed(input);

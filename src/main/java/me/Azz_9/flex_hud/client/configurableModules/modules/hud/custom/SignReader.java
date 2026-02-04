@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractMovableModule;
@@ -112,7 +114,7 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 	private void renderSignText(@NotNull GuiGraphics graphics, @NotNull RenderData data) {
 		if (data.texture == null) return;
 
-		Font font = Minecraft.getInstance().font;
+		Font font = MINECRAFT.font;
 
 		for (int i = 0; i < 4; i++) {
 			if (i >= data.content.length) continue;
@@ -157,9 +159,9 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 	public boolean shouldNotRender() {
 		return super.shouldNotRender() ||
 				!Flex_hudClient.isInMoveElementScreen && (
-						Minecraft.getInstance().getCameraEntity() == null ||
-								Minecraft.getInstance().level == null ||
-								Minecraft.getInstance().player == null
+						MINECRAFT.getCameraEntity() == null ||
+								MINECRAFT.level == null ||
+								MINECRAFT.player == null
 				);
 	}
 
@@ -168,7 +170,7 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (Minecraft.getInstance().getLanguageManager().getSelected().equals("fr_fr")) {
+				if (MINECRAFT.getLanguageManager().getSelected().equals("fr_fr")) {
 					buttonWidth = 190;
 				}
 
@@ -217,13 +219,12 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 	private @NotNull RenderData getSignRenderData() {
 		RenderData data = new RenderData();
 
-		Minecraft minecraft = Minecraft.getInstance();
-		if (minecraft.player == null || minecraft.level == null || minecraft.getCameraEntity() == null) {
+		if (MINECRAFT.player == null || MINECRAFT.level == null || MINECRAFT.getCameraEntity() == null) {
 			return data;
 		}
 
-		LocalPlayer player = minecraft.player;
-		Level world = minecraft.level;
+		LocalPlayer player = MINECRAFT.player;
+		Level world = MINECRAFT.level;
 
 		HitResult hitResult = RaycastTickable.getHitResult();
 

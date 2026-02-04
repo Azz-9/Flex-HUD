@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.screens.moveModulesScreen.widgets;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractMovableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.DimensionHud;
 import com.mojang.blaze3d.platform.cursor.CursorType;
@@ -132,7 +134,7 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 				valueX = handleX + HANDLE_SIZE + HANDLE_SIZE / 2;
 			} else {
 				// text to the left of the handle
-				valueX = handleX + HANDLE_SIZE - Minecraft.getInstance().font.width(text);
+				valueX = handleX + HANDLE_SIZE - MINECRAFT.font.width(text);
 			}
 			int valueY = handleY;
 
@@ -141,15 +143,15 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 			matrices.translate(valueX, valueY);
 			matrices.scale(0.75f, 0.75f);
 
-			graphics.drawString(Minecraft.getInstance().font, text, 0, 0, 0xffffffff, true);
+			graphics.drawString(MINECRAFT.font, text, 0, 0, 0xffffffff, true);
 
 			matrices.popMatrix();
 		}
 	}
 
 	public void updateScaleHandle() {
-		double screenCenterX = Minecraft.getInstance().getWindow().getGuiScaledWidth() / 2.0;
-		double screenCenterY = Minecraft.getInstance().getWindow().getGuiScaledHeight() / 2.0;
+		double screenCenterX = MINECRAFT.getWindow().getGuiScaledWidth() / 2.0;
+		double screenCenterY = MINECRAFT.getWindow().getGuiScaledHeight() / 2.0;
 		double centerX = getX() + getWidth() / 2.0;
 		double centerY = getY() + getHeight() / 2.0;
 
@@ -270,7 +272,7 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 					/ Math.sqrt(dx * dx + dy * dy));
 
 			// Arrondi à STEP près si Maj est enfoncé
-			if (Minecraft.getInstance().hasShiftDown()) {
+			if (MINECRAFT.hasShiftDown()) {
 				newScale = Math.round(newScale / STEP) * STEP;
 				shouldDrawScaleValue = true;
 			}
@@ -342,8 +344,8 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 	}
 
 	private void snapElement(double x, double y) {
-		int screenW = Minecraft.getInstance().getWindow().getGuiScaledWidth();
-		int screenH = Minecraft.getInstance().getWindow().getGuiScaledHeight();
+		int screenW = MINECRAFT.getWindow().getGuiScaledWidth();
+		int screenH = MINECRAFT.getWindow().getGuiScaledHeight();
 
 		x = Math.clamp(x, 0, screenW - this.getWidth());
 		y = Math.clamp(y, 0, screenH - this.getHeight());
@@ -368,7 +370,7 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 		double thisW = this.HUD_ELEMENT.getScaledWidth();
 		double thisH = this.HUD_ELEMENT.getScaledHeight();
 
-		if (!Minecraft.getInstance().hasShiftDown()) {
+		if (!MINECRAFT.hasShiftDown()) {
 			// ---- Center snapping (screen center) ----
 			double dxCenter = Math.abs((x + thisW / 2.0) - centerX);
 			if (dxCenter < CENTERED_LINES_SNAP_DISTANCE) {
@@ -407,7 +409,7 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 				}
 			}
 
-			if (!Minecraft.getInstance().hasControlDown()) {
+			if (!MINECRAFT.hasControlDown()) {
 				for (MovableWidget widget : PARENT.getMovableWidgets()) {
 					if (widget.HUD_ELEMENT != this.HUD_ELEMENT) {
 						double otherX = widget.getX();
@@ -467,8 +469,8 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 
 
 	public void moveTo(double x, double y) {
-		x = Math.clamp(x, 0, Minecraft.getInstance().getWindow().getGuiScaledWidth() - this.getWidth());
-		y = Math.clamp(y, 0, Minecraft.getInstance().getWindow().getGuiScaledHeight() - this.getHeight());
+		x = Math.clamp(x, 0, MINECRAFT.getWindow().getGuiScaledWidth() - this.getWidth());
+		y = Math.clamp(y, 0, MINECRAFT.getWindow().getGuiScaledHeight() - this.getHeight());
 
 		HUD_ELEMENT.setX(x);
 		HUD_ELEMENT.setY(y);

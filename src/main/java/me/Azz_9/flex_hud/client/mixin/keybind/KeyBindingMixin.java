@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.mixin.keybind;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
 import com.mojang.blaze3d.platform.InputConstants;
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.screens.OptionsScreen;
@@ -18,7 +20,7 @@ public abstract class KeyBindingMixin {
 	private static void onKeyPressed(InputConstants.Key key, CallbackInfo ci) {
 		// open option screen
 		if (Flex_hudClient.openOptionScreenKeyBind.isDown()) {
-			Minecraft.getInstance().setScreen(new OptionsScreen());
+			MINECRAFT.setScreen(new OptionsScreen());
 		}
 	}
 }
