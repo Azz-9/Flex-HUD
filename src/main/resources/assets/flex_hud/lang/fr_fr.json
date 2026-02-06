@@ -265,6 +265,12 @@
 	"flex_hud.entity_count.config.only_items": "Uniquement les objets",
 	"flex_hud.entity_count.config.range": "Rayon",
 
+	"flex_hud.toggle_sprint": "Toggle sprint",
+	"flex_hud.toggle_sprint.config.enable": "Afficher toggle sprint statut",
+
+	"flex_hud.toggle_sneak": "Toggle sneak",
+	"flex_hud.toggle_sneak.config.enable": "Afficher toggle sneak statut",
+
 	"flex_hud.coordinates.hud.direction.south": "Sud",
 	"flex_hud.coordinates.hud.direction.south_west": "Sud-Ouest",
 	"flex_hud.coordinates.hud.direction.west": "Ouest",
