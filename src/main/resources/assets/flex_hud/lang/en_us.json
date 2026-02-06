@@ -263,6 +263,12 @@
 	"flex_hud.entity_count.config.only_items": "Only items",
 	"flex_hud.entity_count.config.range": "Range",
 
+	"flex_hud.toggle_sprint": "Toggle sprint",
+	"flex_hud.toggle_sprint.config.enable": "Show toggle sprint status",
+
+	"flex_hud.toggle_sneak": "Toggle sneak",
+	"flex_hud.toggle_sneak.config.enable": "Show toggle sneak status",
+
 	"flex_hud.coordinates.hud.direction.south": "South",
 	"flex_hud.coordinates.hud.direction.south_west": "South-West",
 	"flex_hud.coordinates.hud.direction.west": "West",
