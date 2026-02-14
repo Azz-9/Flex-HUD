@@ -11,11 +11,11 @@ import me.Azz_9.flex_hud.client.screens.AbstractCallbackScreen;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.actions.UndoManager;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.widgets.MovableWidget;
 import me.Azz_9.flex_hud.client.screens.widgets.HelpWidget;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
+
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
