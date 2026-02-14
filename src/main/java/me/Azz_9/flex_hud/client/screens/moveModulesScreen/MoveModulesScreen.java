@@ -12,13 +12,13 @@ import me.Azz_9.flex_hud.client.screens.moveModulesScreen.actions.UndoManager;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.widgets.MovableWidget;
 import me.Azz_9.flex_hud.client.screens.widgets.HelpWidget;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import org.jspecify.annotations.NonNull;
+
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
