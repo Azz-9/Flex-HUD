@@ -93,6 +93,12 @@ public class ToggleSneak extends AbstractTextModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
+				if (CLIENT.getLanguageManager().getLanguage().equals("fr_fr")) {
+					buttonWidth = 180;
+				} else {
+					buttonWidth = 160;
+				}
+
 				super.init();
 
 				this.addAllEntries(
