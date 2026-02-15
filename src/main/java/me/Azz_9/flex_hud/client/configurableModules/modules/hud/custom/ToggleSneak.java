@@ -16,7 +16,7 @@ import org.joml.Matrix3x2fStack;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
-import me.Azz_9.flex_hud.client.mixin.toggleSprintSneak.KeyBindingAccessor;
+import me.Azz_9.flex_hud.client.mixin.toggleSprintSneak.KeyMappingAccessor;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
@@ -76,7 +76,7 @@ public class ToggleSneak extends AbstractTextModule {
 			boolean sneakToggled = MINECRAFT.options.toggleCrouch().get();
 
 			if (sneakToggled) {
-				if (InputConstants.isKeyDown(MINECRAFT.getWindow(), ((KeyBindingAccessor) MINECRAFT.options.keyShift).getBoundKey().getValue())) {
+				if (InputConstants.isKeyDown(MINECRAFT.getWindow(), ((KeyMappingAccessor) MINECRAFT.options.keyShift).getKey().getValue())) {
 					statusMessage = "Sneaking (Held)";
 				} else if (sneakKeyPressed) {
 					statusMessage = "Sneaking (Toggled)";

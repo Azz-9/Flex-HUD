@@ -8,8 +8,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(KeyMapping.class)
-public interface KeyBindingAccessor {
+public interface KeyMappingAccessor {
 
-	@Accessor("boundKey")
-	InputConstants.Key getBoundKey();
+	@Accessor("key")
+	InputConstants.Key getKey();
 }

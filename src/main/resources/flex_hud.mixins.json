@@ -22,7 +22,9 @@
 		"ping.ClientPlayNetworkHandlerMixin",
 		"potionEffect.PotionEffectMixin",
 		"reach.MultiPlayerGameModeMixin",
-		"toggleSprintSneak.KeyBindingAccessor"
+		"scoreboard.GuiAccessor",
+		"scoreboard.GuiMixin",
+		"toggleSprintSneak.KeyMappingAccessor"
 	],
 	"injectors": {
 		"defaultRequire": 1

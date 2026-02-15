@@ -16,7 +16,7 @@ import org.joml.Matrix3x2fStack;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
-import me.Azz_9.flex_hud.client.mixin.toggleSprintSneak.KeyBindingAccessor;
+import me.Azz_9.flex_hud.client.mixin.toggleSprintSneak.KeyMappingAccessor;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
@@ -76,7 +76,7 @@ public class ToggleSprint extends AbstractTextModule {
 			boolean sprintToggled = MINECRAFT.options.toggleSprint().get();
 
 			if (sprintToggled) {
-				if (InputConstants.isKeyDown(MINECRAFT.getWindow(), ((KeyBindingAccessor) MINECRAFT.options.keySprint).getBoundKey().getValue())) {
+				if (InputConstants.isKeyDown(MINECRAFT.getWindow(), ((KeyMappingAccessor) MINECRAFT.options.keySprint).getKey().getValue())) {
 					statusMessage = "Sprinting (Held)";
 				} else if (sprintKeyPressed) {
 					statusMessage = "Sprinting (Toggled)";
