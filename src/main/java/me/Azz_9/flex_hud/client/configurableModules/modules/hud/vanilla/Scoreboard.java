@@ -182,7 +182,9 @@ public class Scoreboard extends AbstractMovableModule {
 			@Override
 			protected void init() {
 				if (MINECRAFT.getLanguageManager().getSelected().equals("fr_fr")) {
-					buttonWidth = 220;
+					buttonWidth = 195;
+				} else {
+					buttonWidth = 170;
 				}
 
 				super.init();
