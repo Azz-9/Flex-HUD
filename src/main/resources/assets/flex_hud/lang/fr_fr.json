@@ -270,6 +270,11 @@
 	"flex_hud.toggle_sneak": "Toggle sneak",
 	"flex_hud.toggle_sneak.config.enable": "Afficher toggle sneak statut",
 
+	"flex_hud.scoreboard": "Scoreboard",
+	"flex_hud.scoreboard.config.enable": "Activer le scoreboard customisé",
+	"flex_hud.scoreboard.config.show_scoreboard": "Afficher le scoreboard",
+	"flex_hud.scoreboard.config.show_score": "Afficher le score",
+
 	"flex_hud.coordinates.hud.direction.south": "Sud",
 	"flex_hud.coordinates.hud.direction.south_west": "Sud-Ouest",
 	"flex_hud.coordinates.hud.direction.west": "Ouest",

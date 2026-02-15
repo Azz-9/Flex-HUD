@@ -21,6 +21,8 @@
 		"ping.ClientPlayNetworkHandlerMixin",
 		"potionEffect.PotionEffectMixin",
 		"reach.ClientPlayerInteractionManagerMixin",
+		"scoreboard.InGameHudAccessor",
+		"scoreboard.InGameHudMixin",
 		"toggleSprintSneak.KeyBindingAccessor"
 	],
 	"injectors": {
