@@ -2,14 +2,7 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 
-import me.Azz_9.flex_hud.client.Flex_hudClient;
-import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractMovableModule;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
-import me.Azz_9.flex_hud.client.tickables.RaycastTickable;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -32,9 +25,17 @@ import net.minecraft.world.level.block.entity.SignText;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2fStack;
+
+import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractMovableModule;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
+import me.Azz_9.flex_hud.client.tickables.RaycastTickable;
 
 public class SignReader extends AbstractMovableModule implements TickableModule {
 
@@ -204,7 +205,7 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 
 	private @NotNull RenderData getPlaceholderRenderData() {
 		RenderData data = new RenderData();
-		data.texture = Sheets.getSignMaterial(WoodType.OAK).texture().withPrefix("textures/").withSuffix(".png");
+		data.texture = Sheets.getSignSprite(WoodType.OAK).texture().withPrefix("textures/").withSuffix(".png");
 		data.content = new Component[]{
 				Component.literal(""),
 				Component.translatable("flex_hud.sign_reader.placeholder_content"),
@@ -273,8 +274,8 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 		data.glowColor = AbstractSignRenderer.getDarkColor(signText);
 		data.isGlowing = signText.hasGlowingText();
 		data.texture = (data.isHangingSign
-				? Sheets.getHangingSignMaterial(woodType)
-				: Sheets.getSignMaterial(woodType)).texture();
+				? Sheets.getHangingSignSprite(woodType)
+				: Sheets.getSignSprite(woodType)).texture();
 
 		return data;
 	}

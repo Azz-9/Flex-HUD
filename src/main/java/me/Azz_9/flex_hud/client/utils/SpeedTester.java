@@ -2,6 +2,7 @@ package me.Azz_9.flex_hud.client.utils;
 
 
 import com.mojang.blaze3d.platform.InputConstants;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -65,7 +66,7 @@ public class SpeedTester {
 						.append(String.format(" (%d samples ~%.2fs)", moduleTimes.size(), (float) (moduleTimes.size()) / Minecraft.getInstance().getFps()));
 
 				if (minecraft.player != null) {
-					minecraft.player.displayClientMessage(text, false);
+					minecraft.player.sendSystemMessage(text);
 				}
 				System.out.println(text.getString());
 			}
