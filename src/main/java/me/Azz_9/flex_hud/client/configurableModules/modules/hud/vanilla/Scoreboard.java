@@ -180,7 +180,9 @@ public class Scoreboard extends AbstractMovableModule {
 			@Override
 			protected void init() {
 				if (CLIENT.getLanguageManager().getLanguage().equals("fr_fr")) {
-					buttonWidth = 220;
+					buttonWidth = 195;
+				} else {
+					buttonWidth = 170;
 				}
 
 				super.init();
