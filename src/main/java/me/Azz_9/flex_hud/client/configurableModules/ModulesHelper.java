@@ -10,6 +10,7 @@ import me.Azz_9.flex_hud.client.configurableModules.modules.hud.HudElement;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom.*;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.vanilla.BossBar;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.vanilla.Crosshair;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.vanilla.Scoreboard;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.DurabilityPing;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.TimeChanger;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.TntCountdown;
@@ -51,6 +52,7 @@ public class ModulesHelper {
 	public EntityCount entityCount = new EntityCount(0, -65, AbstractMovableModule.AnchorPosition.CENTER, AbstractMovableModule.AnchorPosition.END);
 	public ToggleSprint toggleSprint = new ToggleSprint(-60, 12, AbstractMovableModule.AnchorPosition.END, AbstractMovableModule.AnchorPosition.START);
 	public ToggleSneak toggleSneak = new ToggleSneak(-60, 22, AbstractMovableModule.AnchorPosition.END, AbstractMovableModule.AnchorPosition.START);
+	public Scoreboard scoreboard = new Scoreboard(0, 0, AbstractMovableModule.AnchorPosition.END, AbstractMovableModule.AnchorPosition.CENTER);
 	//others
 	public WeatherChanger weatherChanger = new WeatherChanger();
 	public TimeChanger timeChanger = new TimeChanger();
@@ -109,6 +111,7 @@ public class ModulesHelper {
 				getInstance().entityCount,
 				getInstance().toggleSprint,
 				getInstance().toggleSneak,
+				getInstance().scoreboard,
 				getInstance().weatherChanger,
 				getInstance().timeChanger,
 				getInstance().crosshair,
