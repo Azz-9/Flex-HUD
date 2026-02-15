@@ -43,6 +43,7 @@ public class Scoreboard extends AbstractMovableModule {
 		this.enabled.setConfigTextTranslationKey("flex_hud.scoreboard.config.enable");
 
 		ConfigRegistry.register(getID(), "showScoreboard", showScoreboard);
+		ConfigRegistry.register(getID(), "showScore", showScore);
 
 		net.minecraft.scoreboard.Scoreboard scoreboard = new net.minecraft.scoreboard.Scoreboard();
 		PLACEHOLDER_SCOREBOARD_OBJECTIVE = new ScoreboardObjective(
