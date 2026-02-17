@@ -314,7 +314,7 @@
 
 	"flex_hud.shrieker_warning_level.hud.prefix": "Warning level",
 
-	"flex_hud.durability_ping.message": "durability low!",
+	"flex_hud.durability_ping.message": "%s durability low!",
 
 	"flex_hud.sign_reader.placeholder_content": "text",
 
