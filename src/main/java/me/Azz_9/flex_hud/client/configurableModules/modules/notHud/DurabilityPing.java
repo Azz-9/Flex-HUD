@@ -79,7 +79,7 @@ public class DurabilityPing extends AbstractModule {
 
 			// play sound, display message or both based on the selected option in the config menu
 			if (pingType.getValue() != PingType.SOUND) {
-				Component message = Component.literal(stack.getItemName().getString().toLowerCase() + " ").append(Component.translatable("flex_hud.durability_ping.message")).withStyle(ChatFormatting.RED); // TODO améliorer le message en fr parce que la bon
+				Component message = Component.translatable("flex_hud.durability_ping.message", stack.getItemName().getString().toLowerCase()).withStyle(ChatFormatting.RED);
 				player.sendOverlayMessage(message);
 			}
 			if (pingType.getValue() != PingType.MESSAGE) {
