@@ -40,7 +40,7 @@ public class Scoreboard extends AbstractMovableModule {
 	private final ConfigInteger backgroundColor = new ConfigInteger(0x000000, "flex_hud.global.config.background_color");
 	private final ConfigBoolean shadow = new ConfigBoolean(false, "flex_hud.global.config.text_shadow");
 
-	private final Objective PLACEHOLDER_OBJECTIVE;
+	private Objective placeholderObjective;
 	private static final int PADDING = 2;
 
 	public Scoreboard(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
@@ -54,9 +54,12 @@ public class Scoreboard extends AbstractMovableModule {
 		ConfigRegistry.register(getID(), "drawBackground", drawBackground);
 		ConfigRegistry.register(getID(), "backgroundColor", backgroundColor);
 		ConfigRegistry.register(getID(), "shadow", shadow);
+	}
 
+	@Override
+	public void init() {
 		net.minecraft.world.scores.Scoreboard scoreboard = new net.minecraft.world.scores.Scoreboard();
-		PLACEHOLDER_OBJECTIVE = new Objective(
+		placeholderObjective = new Objective(
 				scoreboard,
 				"health",
 				ObjectiveCriteria.HEALTH,
@@ -65,9 +68,9 @@ public class Scoreboard extends AbstractMovableModule {
 				false,
 				null
 		);
-		scoreboard.getOrCreatePlayerScore(() -> "Player1", PLACEHOLDER_OBJECTIVE);
-		scoreboard.getOrCreatePlayerScore(() -> "Player2", PLACEHOLDER_OBJECTIVE);
-		scoreboard.getOrCreatePlayerScore(() -> "Player3", PLACEHOLDER_OBJECTIVE);
+		scoreboard.getOrCreatePlayerScore(() -> "Player1", placeholderObjective);
+		scoreboard.getOrCreatePlayerScore(() -> "Player2", placeholderObjective);
+		scoreboard.getOrCreatePlayerScore(() -> "Player3", placeholderObjective);
 	}
 
 	@Override
@@ -88,7 +91,7 @@ public class Scoreboard extends AbstractMovableModule {
 
 		Objective objective = null;
 		if (Flex_hudClient.isInMoveElementScreen) {
-			objective = PLACEHOLDER_OBJECTIVE;
+			objective = placeholderObjective;
 		} else {
 			net.minecraft.world.scores.Scoreboard scoreboard = MINECRAFT.level.getScoreboard();
 			PlayerTeam playerTeam = scoreboard.getPlayersTeam(MINECRAFT.player.getScoreboardName());
