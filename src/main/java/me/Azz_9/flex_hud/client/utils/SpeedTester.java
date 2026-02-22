@@ -1,6 +1,8 @@
 package me.Azz_9.flex_hud.client.utils;
 
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
 import com.mojang.blaze3d.platform.InputConstants;
 
 import net.minecraft.ChatFormatting;
@@ -46,10 +48,8 @@ public class SpeedTester {
 	// Called every tick — prints average render time when pressing O
 	public static void tick() {
 		if (times.isEmpty()) return;
-
-		Minecraft minecraft = Minecraft.getInstance();
-
-		boolean keyPressed = InputConstants.isKeyDown(minecraft.getWindow(), InputConstants.KEY_O);
+		
+		boolean keyPressed = InputConstants.isKeyDown(MINECRAFT.getWindow(), InputConstants.KEY_O);
 
 		if (keyPressed && !wasKeyPressed) {
 			for (String module : times.keySet()) {
@@ -65,12 +65,12 @@ public class SpeedTester {
 						.append(Component.literal(String.format("%.2fms", average / 1000.0)).withStyle(ChatFormatting.RED))
 						.append(String.format(" (%d samples ~%.2fs)", moduleTimes.size(), (float) (moduleTimes.size()) / Minecraft.getInstance().getFps()));
 
-				if (minecraft.player != null) {
-					minecraft.player.sendSystemMessage(text);
+				if (MINECRAFT.player != null) {
+					MINECRAFT.player.sendSystemMessage(text);
 				}
-				System.out.println(text.getString());
+				FlexHudLogger.debug(text.getString());
 			}
-			System.out.println();
+			FlexHudLogger.debug("");
 			wasKeyPressed = true;
 		} else if (!keyPressed) {
 			wasKeyPressed = false;
