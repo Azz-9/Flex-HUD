@@ -65,6 +65,11 @@ public class Scoreboard extends AbstractMovableModule {
 				false,
 				null
 		);
+	}
+
+	@Override
+	public void init() {
+		net.minecraft.scoreboard.Scoreboard scoreboard = PLACEHOLDER_SCOREBOARD_OBJECTIVE.getScoreboard();
 		scoreboard.getOrCreateScore(() -> "Player1", PLACEHOLDER_SCOREBOARD_OBJECTIVE);
 		scoreboard.getOrCreateScore(() -> "Player2", PLACEHOLDER_SCOREBOARD_OBJECTIVE);
 		scoreboard.getOrCreateScore(() -> "Player3", PLACEHOLDER_SCOREBOARD_OBJECTIVE);
