@@ -129,9 +129,15 @@ public class ModulesHelper {
 
 	// Méthode pour obtenir l'instance de la configuration
 	public static ModulesHelper getInstance() {
+		return getInstance(true);
+	}
+
+	public static ModulesHelper getInstance(boolean loadConfig) {
 		if (INSTANCE == null) {
 			INSTANCE = new ModulesHelper();
-			ConfigLoader.loadConfig();
+			if (loadConfig) {
+				ConfigLoader.loadConfig();
+			}
 			INSTANCE.init();
 		}
 		return INSTANCE;
