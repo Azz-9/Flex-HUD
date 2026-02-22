@@ -65,6 +65,11 @@ public class Scoreboard extends AbstractMovableModule {
 				false,
 				null
 		);
+	}
+
+	@Override
+	public void init() {
+		net.minecraft.scoreboard.Scoreboard scoreboard = PLACEHOLDER_SCOREBOARD_OBJECTIVE.getScoreboard();
 		scoreboard.getOrCreateScore(() -> "Player1", PLACEHOLDER_SCOREBOARD_OBJECTIVE);
 		scoreboard.getOrCreateScore(() -> "Player2", PLACEHOLDER_SCOREBOARD_OBJECTIVE);
 		scoreboard.getOrCreateScore(() -> "Player3", PLACEHOLDER_SCOREBOARD_OBJECTIVE);
@@ -146,8 +151,8 @@ public class Scoreboard extends AbstractMovableModule {
 		}
 
 		int contentHeight = sidebarEntrys.length * CLIENT.textRenderer.fontHeight;
-		int contentBackground = ColorHelper.withAlpha(0.3f, backgroundColor.getValue());
-		int titleBackground = ColorHelper.withAlpha(0.4f, backgroundColor.getValue());
+		int contentBackground = ColorHelper.withAlpha(77, backgroundColor.getValue());
+		int titleBackground = ColorHelper.withAlpha(102, backgroundColor.getValue());
 		int height = 1 + CLIENT.textRenderer.fontHeight + contentHeight;
 
 		setWidth(width + PADDING * 2);
