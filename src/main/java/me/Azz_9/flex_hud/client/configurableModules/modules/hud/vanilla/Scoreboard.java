@@ -12,6 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.numbers.NumberFormat;
 import net.minecraft.network.chat.numbers.StyledFormat;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.CommonColors;
 import net.minecraft.world.scores.DisplaySlot;
 import net.minecraft.world.scores.Objective;
@@ -26,15 +27,21 @@ import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractMovableModule;
 import me.Azz_9.flex_hud.client.mixin.scoreboard.GuiAccessor;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 
 public class Scoreboard extends AbstractMovableModule {
 
 	public final ConfigBoolean showScoreboard = new ConfigBoolean(true, "flex_hud.scoreboard.config.show_scoreboard");
 	private final ConfigBoolean showScore = new ConfigBoolean(true, "flex_hud.scoreboard.config.show_score");
+	private final ConfigBoolean drawBackground = new ConfigBoolean(true, "flex_hud.global.config.show_background");
+	private final ConfigInteger backgroundColor = new ConfigInteger(0x000000, "flex_hud.global.config.background_color");
+	private final ConfigBoolean shadow = new ConfigBoolean(false, "flex_hud.global.config.text_shadow");
 
 	private final Objective PLACEHOLDER_OBJECTIVE;
+	private static final int PADDING = 2;
 
 	public Scoreboard(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
@@ -44,6 +51,9 @@ public class Scoreboard extends AbstractMovableModule {
 
 		ConfigRegistry.register(getID(), "showScoreboard", showScoreboard);
 		ConfigRegistry.register(getID(), "showScore", showScore);
+		ConfigRegistry.register(getID(), "drawBackground", drawBackground);
+		ConfigRegistry.register(getID(), "backgroundColor", backgroundColor);
+		ConfigRegistry.register(getID(), "shadow", shadow);
 
 		net.minecraft.world.scores.Scoreboard scoreboard = new net.minecraft.world.scores.Scoreboard();
 		PLACEHOLDER_OBJECTIVE = new Objective(
@@ -139,11 +149,11 @@ public class Scoreboard extends AbstractMovableModule {
 		}
 
 		int contentHeight = entriesToDisplay.length * MINECRAFT.font.lineHeight;
-		int contentBackground = MINECRAFT.options.getBackgroundColor(0.3F);
-		int titleBackground = MINECRAFT.options.getBackgroundColor(0.4F);
+		int contentBackground = ARGB.color(0.3f, backgroundColor.getValue());
+		int titleBackground = ARGB.color(0.4f, backgroundColor.getValue());
 		int height = 1 + MINECRAFT.font.lineHeight + contentHeight;
 
-		setWidth(width);
+		setWidth(width + PADDING * 2);
 		setHeight(height);
 
 		Matrix3x2fStack matrices = graphics.pose();
@@ -151,16 +161,18 @@ public class Scoreboard extends AbstractMovableModule {
 		matrices.translate(getRoundedX(), getRoundedY());
 		matrices.scale(getScale());
 
-		graphics.fill(0, 0, getWidth(), MINECRAFT.font.lineHeight, titleBackground);
-		graphics.fill(0, MINECRAFT.font.lineHeight, getWidth(), getHeight(), contentBackground);
-		graphics.drawString(MINECRAFT.font, text, (getWidth() - textWidth) / 2, 1, CommonColors.WHITE, false);
+		if (drawBackground.getValue()) {
+			graphics.fill(0, 0, getWidth(), MINECRAFT.font.lineHeight, titleBackground);
+			graphics.fill(0, MINECRAFT.font.lineHeight, getWidth(), getHeight(), contentBackground);
+		}
+		graphics.drawString(MINECRAFT.font, text, (getWidth() - textWidth) / 2, 1, CommonColors.WHITE, shadow.getValue());
 
 		for (int i = 0; i < entriesToDisplay.length; i++) {
 			DisplayEntry displayEntry = entriesToDisplay[i];
 			int y = getHeight() - (entriesToDisplay.length - i) * MINECRAFT.font.lineHeight;
-			graphics.drawString(MINECRAFT.font, displayEntry.name, 0, y, CommonColors.WHITE, false);
+			graphics.drawString(MINECRAFT.font, displayEntry.name, PADDING, y, CommonColors.WHITE, shadow.getValue());
 			if (showScore.getValue()) {
-				graphics.drawString(MINECRAFT.font, displayEntry.score, getWidth() - displayEntry.scoreWidth, y, CommonColors.WHITE, false);
+				graphics.drawString(MINECRAFT.font, displayEntry.score, getWidth() - displayEntry.scoreWidth - PADDING, y, CommonColors.WHITE, shadow.getValue());
 			}
 		}
 
@@ -201,6 +213,24 @@ public class Scoreboard extends AbstractMovableModule {
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(showScoreboard)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(shadow)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(drawBackground)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build()
+				);
+				this.addAllEntries(
+						new ColorButtonEntry.Builder()
+								.setColorButtonWidth(buttonWidth)
+								.setVariable(backgroundColor)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
