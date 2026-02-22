@@ -40,7 +40,7 @@ public class Scoreboard extends AbstractMovableModule {
 	private final ConfigInteger backgroundColor = new ConfigInteger(0x000000, "flex_hud.global.config.background_color");
 	private final ConfigBoolean shadow = new ConfigBoolean(false, "flex_hud.global.config.text_shadow");
 
-	private final ScoreboardObjective PLACEHOLDER_SCOREBOARD_OBJECTIVE;
+	private ScoreboardObjective placeholderScoreboardObjective;
 	private static final int PADDING = 2;
 
 	public Scoreboard(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
@@ -54,9 +54,12 @@ public class Scoreboard extends AbstractMovableModule {
 		ConfigRegistry.register(getID(), "drawBackground", drawBackground);
 		ConfigRegistry.register(getID(), "backgroundColor", backgroundColor);
 		ConfigRegistry.register(getID(), "shadow", shadow);
+	}
 
+	@Override
+	public void init() {
 		net.minecraft.scoreboard.Scoreboard scoreboard = new net.minecraft.scoreboard.Scoreboard();
-		PLACEHOLDER_SCOREBOARD_OBJECTIVE = new ScoreboardObjective(
+		placeholderScoreboardObjective = new ScoreboardObjective(
 				scoreboard,
 				"health",
 				ScoreboardCriterion.HEALTH,
@@ -65,14 +68,9 @@ public class Scoreboard extends AbstractMovableModule {
 				false,
 				null
 		);
-	}
-
-	@Override
-	public void init() {
-		net.minecraft.scoreboard.Scoreboard scoreboard = PLACEHOLDER_SCOREBOARD_OBJECTIVE.getScoreboard();
-		scoreboard.getOrCreateScore(() -> "Player1", PLACEHOLDER_SCOREBOARD_OBJECTIVE);
-		scoreboard.getOrCreateScore(() -> "Player2", PLACEHOLDER_SCOREBOARD_OBJECTIVE);
-		scoreboard.getOrCreateScore(() -> "Player3", PLACEHOLDER_SCOREBOARD_OBJECTIVE);
+		scoreboard.getOrCreateScore(() -> "Player1", placeholderScoreboardObjective);
+		scoreboard.getOrCreateScore(() -> "Player2", placeholderScoreboardObjective);
+		scoreboard.getOrCreateScore(() -> "Player3", placeholderScoreboardObjective);
 	}
 
 	@Override
@@ -93,7 +91,7 @@ public class Scoreboard extends AbstractMovableModule {
 
 		ScoreboardObjective scoreboardObjective = null;
 		if (Flex_hudClient.isInMoveElementScreen) {
-			scoreboardObjective = PLACEHOLDER_SCOREBOARD_OBJECTIVE;
+			scoreboardObjective = placeholderScoreboardObjective;
 		} else {
 			net.minecraft.scoreboard.Scoreboard scoreboard = CLIENT.world.getScoreboard();
 			Team team = scoreboard.getScoreHolderTeam(CLIENT.player.getNameForScoreboard());
