@@ -2,7 +2,6 @@ package me.Azz_9.flex_hud.client.utils;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -66,9 +65,9 @@ public class SpeedTester {
 				if (CLIENT.player != null) {
 					CLIENT.player.sendMessage(text, false);
 				}
-				System.out.println(text.getString());
+				FlexHudLogger.debug(text.getString());
 			}
-			System.out.println();
+			FlexHudLogger.debug("");
 			wasKeyPressed = true;
 		} else if (!keyPressed) {
 			wasKeyPressed = false;

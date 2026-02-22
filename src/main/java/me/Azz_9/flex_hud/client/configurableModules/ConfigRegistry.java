@@ -1,10 +1,10 @@
 package me.Azz_9.flex_hud.client.configurableModules;
 
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.AbstractConfigObject;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.AbstractConfigObject;
 
 public class ConfigRegistry {
 	private static final Map<String, Map<String, AbstractConfigObject<?>>> MODULES = new HashMap<>();
@@ -23,5 +23,9 @@ public class ConfigRegistry {
 
 	public static Set<String> getModuleNames() {
 		return MODULES.keySet();
+	}
+
+	public static boolean isRegistered(String moduleName, String key) {
+		return MODULES.get(moduleName).containsKey(key);
 	}
 }
