@@ -39,7 +39,7 @@ public class InventoryDisplay extends AbstractMovableModule {
 	private final ConfigInteger backgroundOpacity = new ConfigInteger(255, "flex_hud.inventory_display.config.background_opacity", 0, 255);
 
 	public InventoryDisplay(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		super("inventory_display", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.inventory_display.config.enable");
 
 		ConfigRegistry.register(getID(), "backgroundOpacity", backgroundOpacity);
@@ -52,12 +52,6 @@ public class InventoryDisplay extends AbstractMovableModule {
 	public Text getName() {
 		return Text.translatable("flex_hud.inventory_display");
 	}
-
-	@Override
-	public String getID() {
-		return "inventory_display";
-	}
-
 
 	@Override
 	public void render(DrawContext context, RenderTickCounter tickCounter) {

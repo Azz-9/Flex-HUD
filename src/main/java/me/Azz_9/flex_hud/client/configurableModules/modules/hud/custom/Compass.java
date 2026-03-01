@@ -61,7 +61,7 @@ public class Compass extends AbstractTextModule {
 	private List<JourneyMapWaypoint> journeyMapWaypoints = new ArrayList<>();
 
 	public Compass(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		super("compass", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.compass.config.enable");
 
 		ConfigRegistry.register(getID(), "showMarker", showMarker);
@@ -96,11 +96,6 @@ public class Compass extends AbstractTextModule {
 				case LARGE -> setHeight(getHeight() + 4);
 			}
 		});
-	}
-
-	@Override
-	public String getID() {
-		return "compass";
 	}
 
 	@Override
