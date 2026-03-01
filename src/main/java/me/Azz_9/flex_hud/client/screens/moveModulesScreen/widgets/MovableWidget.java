@@ -21,7 +21,7 @@ import java.util.Set;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractMovableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.DimensionHud;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.MovableModule;
-import me.Azz_9.flex_hud.client.mixin.CursorAccessor;
+import me.Azz_9.flex_hud.client.mixin.drawContext.GuiGraphicsExtractorAccessor;
 import me.Azz_9.flex_hud.client.screens.TrackableChange;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.MoveModulesScreen;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.actions.MoveAction;
@@ -97,7 +97,7 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 	@Override
 	protected void extractWidgetRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
 		this.isHovered = (mouseX >= getX() && mouseY >= getY() && mouseX <= getRight() && mouseY <= getBottom()) || isScaleHandleHovered(mouseX, mouseY);
-		if (((CursorAccessor) graphics).getCursor() == CursorType.DEFAULT) {
+		if (((GuiGraphicsExtractorAccessor) graphics).getCursor() == CursorType.DEFAULT) {
 			if (this.isScaleHandleHovered(mouseX, mouseY) || isDraggingScalehandle) {
 				graphics.requestCursor(
 						switch (handlePosition) {

@@ -36,7 +36,7 @@ public class Speedometer extends AbstractTextModule implements TickableModule {
 	private String formattedSpeed = "";
 
 	public Speedometer(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		super("speedometer", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.speedometer.config.enable");
 
 		ConfigRegistry.register(getID(), "digits", digits);
@@ -47,11 +47,6 @@ public class Speedometer extends AbstractTextModule implements TickableModule {
 	@Override
 	public void init() {
 		setHeight(MINECRAFT.font.lineHeight);
-	}
-
-	@Override
-	public String getID() {
-		return "speedometer";
 	}
 
 	@Override
