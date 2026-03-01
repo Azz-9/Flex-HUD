@@ -2,84 +2,37 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.ping.ServerboundPingRequestPacket;
-import net.minecraft.util.Util;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2fStack;
-
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.concurrent.*;
 
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
-import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
+import me.Azz_9.flex_hud.client.utils.PingUtils;
 
 public class Ping extends AbstractTextModule {
 	private final ConfigBoolean hideWhenOffline = new ConfigBoolean(true, "flex_hud.ping.config.hide_when_offline");
 
-	private final static @NotNull ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor();
-	private final static int PERIOD = 1000; // ms
-	private static @Nullable ScheduledFuture<?> pingFuture;
-	public static @Nullable PacketSender packetSender;
-	private final static Deque<Long> pings = new ArrayDeque<>();
-	private final static int maxSize = 20;
-	private static long sum = 0;
-
 	public Ping(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		super("ping", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.ping.config.enable");
 
 		ConfigRegistry.register(getID(), "hideWhenOffline", hideWhenOffline);
 	}
 
-	public static void startPinging() {
-		pingFuture = SCHEDULED_EXECUTOR_SERVICE.scheduleAtFixedRate(() -> {
-			if (ModulesHelper.getInstance().ping.isEnabled() && packetSender != null) {
-				packetSender.sendPacket(new ServerboundPingRequestPacket(Util.getMillis()));
-			}
-		}, 0, PERIOD, TimeUnit.MILLISECONDS);
-	}
-
-	public static void stopPinging() {
-		if (pingFuture != null && pingFuture.state().equals(Future.State.RUNNING)) {
-			pingFuture.cancel(true);
-		}
-		packetSender = null;
-		pings.clear();
-		sum = 0;
-	}
-
-	public static void addPingValue(long ping) {
-		pings.addLast(ping);
-		sum += ping;
-
-		if (pings.size() > maxSize) {
-			sum -= pings.removeFirst();
-		}
-	}
-
 	@Override
 	public void init() {
 		setHeight(MINECRAFT.font.lineHeight);
-	}
-
-	@Override
-	public String getID() {
-		return "ping";
 	}
 
 	@Override
@@ -102,8 +55,7 @@ public class Ping extends AbstractTextModule {
 		} else {
 			if (MINECRAFT.getCurrentServer() != null) {
 
-				long ping = pings.isEmpty() ? 0 : sum / pings.size();
-				text = ping + " ms";
+				text = PingUtils.getPing() + " ms";
 
 			} else if (!this.hideWhenOffline.getValue()) {
 

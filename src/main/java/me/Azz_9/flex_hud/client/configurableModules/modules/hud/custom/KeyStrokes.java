@@ -50,7 +50,7 @@ public class KeyStrokes extends AbstractTextModule {
 	}
 
 	public KeyStrokes(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		super("key_strokes", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.key_strokes.config.enable");
 		this.drawBackground.setDefaultValue(true);
 		this.drawBackground.setValue(true);
@@ -74,11 +74,6 @@ public class KeyStrokes extends AbstractTextModule {
 	@Override
 	public Component getName() {
 		return Component.translatable("flex_hud.key_strokes");
-	}
-
-	@Override
-	public String getID() {
-		return "key_strokes";
 	}
 
 	@Override

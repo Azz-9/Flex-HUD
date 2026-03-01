@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
+import net.minecraft.util.Ease;
 
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
@@ -28,7 +29,6 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.Conf
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
 import me.Azz_9.flex_hud.client.utils.Cursors;
-import me.Azz_9.flex_hud.client.utils.EaseUtils;
 
 public class ConfigToggleButtonWidget extends Button implements TrackableChange, DataGetter<Boolean>, ResetAware {
 	private final ConfigBoolean variable;
@@ -111,7 +111,7 @@ public class ConfigToggleButtonWidget extends Button implements TrackableChange,
 			int elapsed = (int) (System.currentTimeMillis() - transitionStartTime);
 			if (elapsed <= TRANSITION_DURATION) {
 				float progress = (float) elapsed / TRANSITION_DURATION;
-				float eased = EaseUtils.getEaseOutQuad(progress);
+				float eased = Ease.outQuad(progress);
 				if (transitioningOut) eased = 1 - eased;
 				alpha = (int) (0xFF * eased);
 			} else {

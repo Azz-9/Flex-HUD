@@ -26,7 +26,7 @@ public class Cps extends AbstractTextModule {
 	public final ConfigBoolean showSuffix = new ConfigBoolean(true, "flex_hud.cps.config.show_suffix");
 
 	public Cps(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		super("cps", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.cps.config.enable");
 
 		ConfigRegistry.register(getID(), "showLeftClick", showLeftClick);
@@ -37,11 +37,6 @@ public class Cps extends AbstractTextModule {
 	@Override
 	public void init() {
 		setHeight(MINECRAFT.font.lineHeight);
-	}
-
-	@Override
-	public String getID() {
-		return "cps";
 	}
 
 	@Override
