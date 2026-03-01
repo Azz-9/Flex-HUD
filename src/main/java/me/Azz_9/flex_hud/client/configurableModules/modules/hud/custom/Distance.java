@@ -32,7 +32,7 @@ public class Distance extends AbstractTextModule implements TickableModule {
 	private String distanceText = "";
 
 	public Distance(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		super("distance", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.distance.config.enable");
 
 		ConfigRegistry.register(getID(), "digits", digits);
@@ -46,11 +46,6 @@ public class Distance extends AbstractTextModule implements TickableModule {
 	@Override
 	public Text getName() {
 		return Text.translatable("flex_hud.distance");
-	}
-
-	@Override
-	public String getID() {
-		return "distance";
 	}
 
 	@Override

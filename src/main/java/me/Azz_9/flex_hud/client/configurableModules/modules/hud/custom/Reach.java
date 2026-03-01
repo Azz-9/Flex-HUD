@@ -28,7 +28,7 @@ public class Reach extends AbstractTextModule implements TickableModule {
 	private Text text = Text.empty();
 
 	public Reach(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		super("reach", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.reach.config.enable");
 
 		ConfigRegistry.register(getID(), "digits", digits);
@@ -37,11 +37,6 @@ public class Reach extends AbstractTextModule implements TickableModule {
 	@Override
 	public void init() {
 		setHeight(CLIENT.textRenderer.fontHeight);
-	}
-
-	@Override
-	public String getID() {
-		return "reach";
 	}
 
 	@Override

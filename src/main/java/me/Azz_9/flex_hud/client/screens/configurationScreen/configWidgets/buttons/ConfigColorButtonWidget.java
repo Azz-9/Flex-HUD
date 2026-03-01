@@ -1,13 +1,8 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons;
 
-import me.Azz_9.flex_hud.client.screens.TrackableChange;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector.ColorBindable;
-import me.Azz_9.flex_hud.client.utils.Cursors;
-import me.Azz_9.flex_hud.client.utils.EaseUtils;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+import static me.Azz_9.flex_hud.client.utils.DrawingUtils.drawBorder;
+
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
@@ -18,6 +13,7 @@ import net.minecraft.client.input.KeyInput;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
+
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
@@ -25,8 +21,14 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
-import static me.Azz_9.flex_hud.client.utils.DrawingUtils.drawBorder;
+import me.Azz_9.flex_hud.client.screens.TrackableChange;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector.ColorBindable;
+import me.Azz_9.flex_hud.client.utils.Cursors;
+import me.Azz_9.flex_hud.client.utils.EaseUtils;
 
 public class ConfigColorButtonWidget extends ClickableWidget implements TrackableChange, DataGetter<Integer>, ResetAware, ColorBindable {
 	private ConfigInteger variable;
