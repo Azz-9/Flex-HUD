@@ -36,7 +36,7 @@ public class EntityCount extends AbstractTextModule implements TickableModule {
 	public static int entityCount = 0;
 
 	public EntityCount(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		super("entity_count", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.entity_count.config.enable");
 
 		ConfigRegistry.register(getID(), "onlyMobs", onlyMobs);
@@ -53,11 +53,6 @@ public class EntityCount extends AbstractTextModule implements TickableModule {
 	@Override
 	public Text getName() {
 		return Text.translatable("flex_hud.entity_count");
-	}
-
-	@Override
-	public String getID() {
-		return "entity_count";
 	}
 
 	@Override

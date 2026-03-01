@@ -69,6 +69,7 @@ public class Crosshair extends AbstractModule implements HudElement {
 	public final ConfigBoolean disableBlending = new ConfigBoolean(false, "flex_hud.crosshair.config.disable_blending");
 
 	public Crosshair() {
+		super("crosshair");
 		this.enabled.setConfigTextTranslationKey("flex_hud.crosshair.config.enable");
 
 		ConfigRegistry.register(getID(), "scale", scale);
@@ -80,11 +81,6 @@ public class Crosshair extends AbstractModule implements HudElement {
 	public void init() {
 		this.crosshairTexture = new DynamicTexture("crosshair_texture", size, size);
 		this.crosshairTexture.updatePixels(this.pixels.getValue());
-	}
-
-	@Override
-	public String getID() {
-		return "crosshair";
 	}
 
 	@Override

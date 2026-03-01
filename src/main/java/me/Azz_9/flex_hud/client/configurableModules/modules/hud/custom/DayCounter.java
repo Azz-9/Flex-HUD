@@ -24,18 +24,13 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.Toggle
 public class DayCounter extends AbstractTextModule {
 
 	public DayCounter(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		super("day_counter", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.day_counter.config.enable");
 	}
 
 	@Override
 	public void init() {
 		setHeight(CLIENT.textRenderer.fontHeight);
-	}
-
-	@Override
-	public String getID() {
-		return "day_counter";
 	}
 
 	@Override

@@ -38,7 +38,7 @@ public class PotionEffect extends AbstractTextModule {
 	private final ConfigEnum<IconPlacement> iconPlacement = new ConfigEnum<>(IconPlacement.class, IconPlacement.RIGHT, "flex_hud.potion_effect.config.icon_placement");
 
 	public PotionEffect(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		super("potion_effect", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.potion_effect.config.enable");
 
 		ConfigRegistry.register(getID(), "alignment", alignment);
@@ -48,11 +48,6 @@ public class PotionEffect extends AbstractTextModule {
 	@Override
 	public Text getName() {
 		return Text.translatable("flex_hud.potion_effect");
-	}
-
-	@Override
-	public String getID() {
-		return "potion_effect";
 	}
 
 	@Override

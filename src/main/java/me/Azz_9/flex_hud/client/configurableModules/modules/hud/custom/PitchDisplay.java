@@ -33,7 +33,7 @@ public class PitchDisplay extends AbstractTextModule {
 	private final ConfigInteger degreesDecimals = new ConfigInteger(0, "flex_hud.pitch_display.config.degrees_decimals", 0, 14);
 
 	public PitchDisplay(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		super("pitch_display", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.pitch_display.config.enable");
 
 		ConfigRegistry.register(getID(), "displayWhenElytraIsEquipped", displayWhenElytraIsEquipped);
@@ -47,11 +47,6 @@ public class PitchDisplay extends AbstractTextModule {
 	@Override
 	public Text getName() {
 		return Text.translatable("flex_hud.pitch_display");
-	}
-
-	@Override
-	public String getID() {
-		return "pitch_display";
 	}
 
 	@Override

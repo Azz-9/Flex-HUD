@@ -9,12 +9,15 @@
 		"weatherChanger.ClientWorldMixin"
 	],
 	"client": [
+		"MinecraftClientMixin",
 		"bossBar.BossBarAccessor",
 		"bossBar.BossBarHudMixin",
 		"compass.GameRendererAccessor",
 		"cps.KeyboardMixin",
 		"crosshair.CrosshairMixin",
+		"customModules.InGameHudMixin",
 		"drawContext.DrawContextAccessor",
+		"drawContext.ScissorStackAccessor",
 		"durabilityPing.ClientPlayNetworkHandlerMixin",
 		"keybind.KeyBindingMixin",
 		"ping.ClientPlayNetworkHandlerMixin",
