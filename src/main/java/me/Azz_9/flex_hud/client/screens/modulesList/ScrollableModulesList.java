@@ -1,7 +1,5 @@
 package me.Azz_9.flex_hud.client.screens.modulesList;
 
-import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
-import me.Azz_9.flex_hud.client.screens.AbstractSmoothScrollableList;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
@@ -11,6 +9,9 @@ import net.minecraft.client.gui.widget.ElementListWidget;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
+import me.Azz_9.flex_hud.client.screens.AbstractSmoothScrollableList;
 
 public class ScrollableModulesList extends AbstractSmoothScrollableList<ScrollableModulesList.Entry> {
 
@@ -144,9 +145,9 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 
 				context.drawTexture(RenderPipelines.GUI_TEXTURED, this.rowModules.get(i).icon, iconX, getY(), 0, 0,
 						scrollableModulesList.iconWidthHeight, scrollableModulesList.iconWidthHeight, scrollableModulesList.iconWidthHeight, scrollableModulesList.iconWidthHeight);
-				this.rowModules.get(i).button.setX(buttonX);
-				this.rowModules.get(i).button.setY(getY() + scrollableModulesList.iconWidthHeight + scrollableModulesList.padding / 2);
-				this.rowModules.get(i).button.render(context, mouseX, mouseY, deltaTicks);
+				this.rowModules.get(i).setButtonX(buttonX);
+				this.rowModules.get(i).setButtonY(getY() + scrollableModulesList.iconWidthHeight + scrollableModulesList.padding / 2);
+				this.rowModules.get(i).renderButton(context, mouseX, mouseY, deltaTicks);
 			}
 		}
 
@@ -156,7 +157,7 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 			List<ClickableWidget> clickableWidgets = new ArrayList<>();
 			for (Module module : rowModules) {
 				if (module != null) {
-					clickableWidgets.add(module.button);
+					clickableWidgets.addAll(module.buttons());
 				}
 			}
 			return clickableWidgets;

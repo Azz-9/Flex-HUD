@@ -1,10 +1,13 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud;
 
+import net.minecraft.client.gui.DrawContext;
+
+import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
+
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
-import net.minecraft.client.gui.DrawContext;
-import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractBackgroundModule extends AbstractMovableModule {
 	protected transient final int BACKGROUND_PADDING = 2;
@@ -12,8 +15,8 @@ public abstract class AbstractBackgroundModule extends AbstractMovableModule {
 	public ConfigBoolean drawBackground = new ConfigBoolean(false, "flex_hud.global.config.show_background");
 	public ConfigInteger backgroundColor = new ConfigInteger(0x313131, "flex_hud.global.config.background_color");
 
-	public AbstractBackgroundModule(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+	public AbstractBackgroundModule(@NonNull String id, double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
+		super(id, defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 
 		ConfigRegistry.register(getID(), "drawBackground", drawBackground);
 		ConfigRegistry.register(getID(), "backgroundColor", backgroundColor);

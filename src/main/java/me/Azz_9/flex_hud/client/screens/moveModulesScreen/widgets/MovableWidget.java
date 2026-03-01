@@ -19,7 +19,7 @@ import java.util.Set;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractMovableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.DimensionHud;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.MovableModule;
-import me.Azz_9.flex_hud.client.mixin.CursorAccessor;
+import me.Azz_9.flex_hud.client.mixin.drawContext.DrawContextAccessor;
 import me.Azz_9.flex_hud.client.screens.TrackableChange;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.MoveModulesScreen;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.actions.MoveAction;
@@ -95,7 +95,7 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 	@Override
 	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
 		this.hovered = (mouseX >= getX() && mouseY >= getY() && mouseX <= getRight() && mouseY <= getBottom()) || isScaleHandleHovered(mouseX, mouseY);
-		if (((CursorAccessor) context).getCursor() == Cursor.DEFAULT) {
+		if (((DrawContextAccessor) context).getCursor() == Cursor.DEFAULT) {
 			if (this.isScaleHandleHovered(mouseX, mouseY) || isDraggingScalehandle) {
 				context.setCursor(
 						switch (handlePosition) {

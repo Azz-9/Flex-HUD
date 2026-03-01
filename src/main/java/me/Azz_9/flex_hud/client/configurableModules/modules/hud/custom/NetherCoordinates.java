@@ -2,6 +2,7 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 
+import net.fabricmc.loader.impl.util.StringUtil;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
@@ -25,7 +26,7 @@ public class NetherCoordinates extends AbstractTextModule {
 	private final ConfigBoolean onlyWhenInOverworld = new ConfigBoolean(false, "flex_hud.nether_coordinates.config.only_show_in_overworld");
 
 	public NetherCoordinates(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		super("nether_coordinates", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.nether_coordinates.config.enable");
 
 		ConfigRegistry.register(getID(), "onlyWhenInOverworld", onlyWhenInOverworld);
@@ -42,15 +43,10 @@ public class NetherCoordinates extends AbstractTextModule {
 	}
 
 	@Override
-	public String getID() {
-		return "nether_coordinates";
-	}
-
-	@Override
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
 		PlayerEntity player = CLIENT.player;
 
-		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && (player == null || !player.getEntityWorld().getRegistryKey().equals(World.OVERWORLD) && this.onlyWhenInOverworld.getValue() || player.getEntityWorld().getRegistryKey().equals(World.END))) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && (player == null || !player.getEntityWorld().getRegistryKey().equals(World.OVERWORLD) && this.onlyWhenInOverworld.getValue() || !player.getEntityWorld().getRegistryKey().equals(World.OVERWORLD) && !player.getEntityWorld().getRegistryKey().equals(World.NETHER))) {
 			return;
 		}
 
@@ -66,11 +62,16 @@ public class NetherCoordinates extends AbstractTextModule {
 				z = (int) Math.floor(player.getZ() / 8);
 
 				dimension = "Nether";
-			} else {
+			} else if (player.getEntityWorld().getRegistryKey().equals(World.NETHER)) {
 				x = (int) Math.floor(player.getX() * 8);
 				z = (int) Math.floor(player.getZ() * 8);
 
 				dimension = "Overworld";
+			} else {
+				x = (int) Math.floor(player.getX());
+				z = (int) Math.floor(player.getZ());
+
+				dimension = StringUtil.capitalize(player.getEntityWorld().getRegistryKey().getValue().getPath());
 			}
 		}
 

@@ -3,6 +3,7 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud;
 import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +24,8 @@ public abstract class AbstractMovableModule extends AbstractModule implements Hu
 	protected final @NotNull ConfigEnum<AnchorMode> anchorModeX = new ConfigEnum<>(AbstractMovableModule.AnchorMode.class, AbstractMovableModule.AnchorMode.AUTO, "flex_hud.global.config.anchor_mode_x");
 	protected final @NotNull ConfigEnum<AnchorMode> anchorModeY = new ConfigEnum<>(AbstractMovableModule.AnchorMode.class, AbstractMovableModule.AnchorMode.AUTO, "flex_hud.global.config.anchor_mode_y");
 
-	public AbstractMovableModule(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super();
+	public AbstractMovableModule(@NonNull String id, double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
+		super(id);
 		dimensionHudList.add(new DimensionHud(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY));
 
 		DimensionHud.register(getID(), dimensionHudList);

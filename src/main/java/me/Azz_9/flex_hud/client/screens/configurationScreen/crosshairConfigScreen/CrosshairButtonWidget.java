@@ -1,12 +1,7 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen;
 
-import me.Azz_9.flex_hud.client.screens.TrackableChange;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigIntGrid;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
-import me.Azz_9.flex_hud.client.utils.Cursors;
-import me.Azz_9.flex_hud.client.utils.EaseUtils;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
@@ -15,13 +10,20 @@ import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
+import net.minecraft.util.math.Easing;
+
 import org.joml.Matrix3x2fStack;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+import me.Azz_9.flex_hud.client.screens.TrackableChange;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigIntGrid;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
+import me.Azz_9.flex_hud.client.utils.Cursors;
 
 public class CrosshairButtonWidget<T> extends ClickableWidget implements TrackableChange, DataGetter<int[][]>, ResetAware {
 	private ConfigIntGrid variable;
@@ -98,7 +100,7 @@ public class CrosshairButtonWidget<T> extends ClickableWidget implements Trackab
 			int elapsed = (int) (System.currentTimeMillis() - transitionStartTime);
 			if (elapsed <= TRANSITION_DURATION) {
 				float progress = (float) elapsed / TRANSITION_DURATION;
-				float eased = EaseUtils.getEaseOutQuad(progress);
+				float eased = Easing.outQuad(progress);
 				if (transitioningOut) eased = 1 - eased;
 				alpha = (int) (0xFF * eased);
 			} else {

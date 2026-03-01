@@ -39,7 +39,7 @@ public class InGameTime extends AbstractTextModule implements TickableModule {
 	private String formattedTime = "";
 
 	public InGameTime(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		super("in_game_time", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.in_game_time.config.enable");
 
 		// get the time format depending on the locale
@@ -57,11 +57,6 @@ public class InGameTime extends AbstractTextModule implements TickableModule {
 	@Override
 	public Text getName() {
 		return Text.translatable("flex_hud.in_game_time");
-	}
-
-	@Override
-	public String getID() {
-		return "in_game_time";
 	}
 
 	@Override

@@ -28,16 +28,11 @@ public class ServerAddress extends AbstractTextModule {
 	private final ConfigBoolean showServerIcon = new ConfigBoolean(true, "flex_hud.server_address.config.show_server_icon");
 
 	public ServerAddress(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		super("server_address", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.server_address.config.enable");
 
 		ConfigRegistry.register(getID(), "hideWhenOffline", hideWhenOffline);
 		ConfigRegistry.register(getID(), "showServerIcon", showServerIcon);
-	}
-
-	@Override
-	public String getID() {
-		return "server_address";
 	}
 
 	@Override

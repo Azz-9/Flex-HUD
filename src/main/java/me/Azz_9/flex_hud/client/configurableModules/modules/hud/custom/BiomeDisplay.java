@@ -33,7 +33,7 @@ public class BiomeDisplay extends AbstractTextModule {
 	public static final Map<RegistryKey<Biome>, Integer> BIOME_COLORS = getBiomeColors();
 
 	public BiomeDisplay(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		super("biome_display", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.biome_display.config.enable");
 
 		ConfigRegistry.register(getID(), "biomeSpecificColor", biomeSpecificColor);
@@ -47,11 +47,6 @@ public class BiomeDisplay extends AbstractTextModule {
 	@Override
 	public Text getName() {
 		return Text.translatable("flex_hud.biome_display");
-	}
-
-	@Override
-	public String getID() {
-		return "biome_display";
 	}
 
 	@Override

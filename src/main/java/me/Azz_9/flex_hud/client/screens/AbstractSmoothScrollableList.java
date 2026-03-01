@@ -7,6 +7,8 @@ import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.util.math.MathHelper;
 
 public abstract class AbstractSmoothScrollableList<E extends ElementListWidget.Entry<E>> extends ElementListWidget<E> {
+
+	private static final double SCROLL_SNAP_DISTANCE = 0.5;
 	private double targetScroll = 0; // Target scroll amount (set by mouse wheel)
 	private double currentScroll = 0; // Interpolated scroll amount (used for rendering)
 	private final double SCROLL_SPEED = 25.0; // Pixels per notch
@@ -27,7 +29,7 @@ public abstract class AbstractSmoothScrollableList<E extends ElementListWidget.E
 
 		// Update the target scroll position
 		targetScroll -= verticalAmount * SCROLL_SPEED;
-		targetScroll = MathHelper.clamp(targetScroll, 0.0F, this.getMaxScrollY() + 1);
+		targetScroll = MathHelper.clamp(targetScroll, 0.0F, this.getMaxScrollY());
 		return true;
 	}
 
@@ -45,6 +47,10 @@ public abstract class AbstractSmoothScrollableList<E extends ElementListWidget.E
 		double alpha = 1.0 - Math.exp(-SCROLL_SPEED * deltaSeconds);
 
 		currentScroll += (targetScroll - currentScroll) * alpha;
+		if (Math.abs(targetScroll - currentScroll) < SCROLL_SNAP_DISTANCE) {
+			currentScroll = targetScroll;
+		}
+		currentScroll = MathHelper.clamp(currentScroll, 0.0, getMaxScrollY());
 
 		super.setScrollY(currentScroll);
 		super.renderList(context, mouseX, mouseY, delta);

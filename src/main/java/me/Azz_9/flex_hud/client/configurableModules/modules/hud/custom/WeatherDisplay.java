@@ -27,7 +27,7 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.Toggle
 public class WeatherDisplay extends AbstractBackgroundModule {
 
 	public WeatherDisplay(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		super("weather_display", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.weather_display.config.enable");
 	}
 
@@ -40,11 +40,6 @@ public class WeatherDisplay extends AbstractBackgroundModule {
 	@Override
 	public Text getName() {
 		return Text.translatable("flex_hud.weather_display");
-	}
-
-	@Override
-	public String getID() {
-		return "weather_display";
 	}
 
 	@Override
