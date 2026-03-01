@@ -147,9 +147,9 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 
 				graphics.blit(RenderPipelines.GUI_TEXTURED, this.rowModules.get(i).icon, iconX, getY(), 0, 0,
 						scrollableModulesList.iconWidthHeight, scrollableModulesList.iconWidthHeight, scrollableModulesList.iconWidthHeight, scrollableModulesList.iconWidthHeight);
-				this.rowModules.get(i).button.setX(buttonX);
-				this.rowModules.get(i).button.setY(getY() + scrollableModulesList.iconWidthHeight + scrollableModulesList.padding / 2);
-				this.rowModules.get(i).button.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+				this.rowModules.get(i).setButtonX(buttonX);
+				this.rowModules.get(i).setButtonY(getY() + scrollableModulesList.iconWidthHeight + scrollableModulesList.padding / 2);
+				this.rowModules.get(i).renderButton(graphics, mouseX, mouseY, deltaTicks);
 			}
 		}
 
@@ -158,7 +158,7 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 			List<AbstractWidget.WithInactiveMessage> clickableWidgets = new ArrayList<>();
 			for (Module module : rowModules) {
 				if (module != null) {
-					clickableWidgets.add(module.button);
+					clickableWidgets.addAll(module.buttons());
 				}
 			}
 			return clickableWidgets;

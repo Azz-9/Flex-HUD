@@ -1,0 +1,171 @@
+package me.Azz_9.flex_hud.client.customModules;
+
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+
+import org.joml.Matrix3x2fStack;
+import org.jspecify.annotations.NonNull;
+
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
+import me.Azz_9.flex_hud.client.customModules.template.CompiledCustomText;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
+
+public class CustomModule extends AbstractTextModule {
+
+	private CompiledCustomText compiledText = CompiledCustomText.compile("");
+	private @NonNull String text;
+
+	private @NonNull String name;
+
+	private CustomModule(@NonNull String name, @NonNull String text) {
+		super(CustomModuleRegistry.nameToId(name), 0, 0, AnchorPosition.START, AnchorPosition.START);
+		this.name = name;
+		this.text = text;
+	}
+
+	public static CustomModule fromText(@NonNull String id, @NonNull String text) {
+		CustomModule module = new CustomModule(id, text);
+
+		module.compiledText = CompiledCustomText.compile(text);
+
+		module.init();
+		return module;
+	}
+
+	@Override
+	public void init() {
+		setHeight(MINECRAFT.font.lineHeight);
+	}
+
+	@Override
+	public void render(GuiGraphicsExtractor graphics, DeltaTracker tickCounter) {
+		if (shouldNotRender()) {
+			return;
+		}
+
+		CompiledCustomText.RenderData renderData = compiledText.getRenderData();
+		setWidth(renderData.width());
+
+		Matrix3x2fStack matrices = graphics.pose();
+		matrices.pushMatrix();
+		matrices.translate(getRoundedX(), getRoundedY());
+		matrices.scale(getScale());
+
+		drawBackground(graphics);
+
+		graphics.text(
+				MINECRAFT.font,
+				renderData.text(),
+				0, 0,
+				renderData.hasOwnColors() ? 0xffffffff : getColor(),
+				shadow.getValue()
+		);
+
+		matrices.popMatrix();
+	}
+
+	@Override
+	public Component getName() {
+		return Component.literal(name);
+	}
+
+	public void update(@NonNull String name, @NonNull String text) {
+		String newId = CustomModuleRegistry.nameToId(name);
+		if (!getID().equals(newId)) {
+			ConfigRegistry.renameModule(getID(), newId);
+			setId(newId);
+		}
+
+		this.name = name;
+		this.text = text;
+		this.compiledText = CompiledCustomText.compile(text);
+		init();
+	}
+
+	public @NonNull String getText() {
+		return text;
+	}
+
+	public void recompile() {
+		this.compiledText = CompiledCustomText.compile(text);
+	}
+
+	@Override
+	public AbstractConfigurationScreen getConfigScreen(Screen parent) {
+		return new AbstractConfigurationScreen(getName(), parent) {
+			@Override
+			protected void init() {
+				if (MINECRAFT.getLanguageManager().getSelected().equals("fr_fr")) {
+					buttonWidth = 160;
+				}
+
+				super.init();
+
+				this.addAllEntries(
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(enabled)
+								.build()
+				);
+				this.addAllEntries(
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(shadow)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(chromaColor)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build()
+				);
+				this.addAllEntries(
+						new ColorButtonEntry.Builder()
+								.setColorButtonWidth(buttonWidth)
+								.setVariable(color)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), true)
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(drawBackground)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build()
+				);
+				this.addAllEntries(
+						new ColorButtonEntry.Builder()
+								.setColorButtonWidth(buttonWidth)
+								.setVariable(backgroundColor)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), false)
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(hideInF3)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeX)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeX(anchorModeX.getValue()))
+								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeY)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeY(anchorModeY.getValue()))
+								.build()
+				);
+			}
+		};
+	}
+}

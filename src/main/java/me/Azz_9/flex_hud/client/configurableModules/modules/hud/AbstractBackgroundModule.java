@@ -14,8 +14,8 @@ public abstract class AbstractBackgroundModule extends AbstractMovableModule {
 	public ConfigBoolean drawBackground = new ConfigBoolean(false, "flex_hud.global.config.show_background");
 	public ConfigInteger backgroundColor = new ConfigInteger(0x313131, "flex_hud.global.config.background_color");
 
-	public AbstractBackgroundModule(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+	public AbstractBackgroundModule(@NotNull String id, double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
+		super(id, defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 
 		ConfigRegistry.register(getID(), "drawBackground", drawBackground);
 		ConfigRegistry.register(getID(), "backgroundColor", backgroundColor);

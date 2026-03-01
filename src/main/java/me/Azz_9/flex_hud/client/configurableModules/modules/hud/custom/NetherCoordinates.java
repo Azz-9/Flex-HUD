@@ -2,6 +2,7 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 
+import net.fabricmc.loader.impl.util.StringUtil;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
@@ -25,7 +26,7 @@ public class NetherCoordinates extends AbstractTextModule {
 	private final ConfigBoolean onlyWhenInOverworld = new ConfigBoolean(false, "flex_hud.nether_coordinates.config.only_show_in_overworld");
 
 	public NetherCoordinates(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		super("nether_coordinates", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.nether_coordinates.config.enable");
 
 		ConfigRegistry.register(getID(), "onlyWhenInOverworld", onlyWhenInOverworld);
@@ -42,15 +43,10 @@ public class NetherCoordinates extends AbstractTextModule {
 	}
 
 	@Override
-	public String getID() {
-		return "nether_coordinates";
-	}
-
-	@Override
 	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 		LocalPlayer player = MINECRAFT.player;
 
-		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && (player == null || !player.level().dimension().equals(Level.OVERWORLD) && this.onlyWhenInOverworld.getValue() || player.level().dimension().equals(Level.END))) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && (player == null || !player.level().dimension().equals(Level.OVERWORLD) && this.onlyWhenInOverworld.getValue() || !player.level().dimension().equals(Level.OVERWORLD) && !player.level().dimension().equals(Level.NETHER))) {
 			return;
 		}
 
@@ -66,11 +62,16 @@ public class NetherCoordinates extends AbstractTextModule {
 				z = (int) Math.floor(player.getZ() / 8);
 
 				dimension = "Nether";
-			} else {
+			} else if (player.level().dimension().equals(Level.NETHER)) {
 				x = (int) Math.floor(player.getX() * 8);
 				z = (int) Math.floor(player.getZ() * 8);
 
 				dimension = "Overworld";
+			} else {
+				x = (int) Math.floor(player.getX());
+				z = (int) Math.floor(player.getZ());
+
+				dimension = StringUtil.capitalize(player.level().dimension().identifier().getPath());
 			}
 		}
 
