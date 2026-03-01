@@ -16,7 +16,7 @@ public class FilteredEditBox extends EditBox {
 		super(font, width, height, narration);
 	}
 
-	protected void setFilter(final Predicate<String> filter) {
+	public void setFilter(final Predicate<String> filter) {
 		this.filter = filter;
 	}
 

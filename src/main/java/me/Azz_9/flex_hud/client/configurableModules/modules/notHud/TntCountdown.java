@@ -19,17 +19,13 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScree
 
 public class TntCountdown extends AbstractModule implements TickableModule {
 	public TntCountdown() {
+		super("tnt_countdown");
 		this.enabled.setConfigTextTranslationKey("flex_hud.tnt_countdown.config.enable");
 	}
 
 	@Override
 	public Component getName() {
 		return Component.translatable("flex_hud.tnt_countdown");
-	}
-
-	@Override
-	public String getID() {
-		return "tnt_countdown";
 	}
 
 	@Override

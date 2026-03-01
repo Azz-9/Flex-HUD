@@ -1,9 +1,12 @@
 package me.Azz_9.flex_hud.client.mixin.drawContext;
 
+import com.mojang.blaze3d.platform.cursor.CursorType;
+
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.item.ItemStack;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(GuiGraphicsExtractor.class)
@@ -14,4 +17,10 @@ public interface GuiGraphicsExtractorAccessor {
 
 	@Invoker("itemCooldown")
 	void flex_hud$renderItemCooldown(ItemStack stack, int x, int y);
+
+	@Accessor("deferredTooltip")
+	void setDeferredTooltip(Runnable deferredTooltip);
+
+	@Accessor("pendingCursor")
+	CursorType getCursor();
 }

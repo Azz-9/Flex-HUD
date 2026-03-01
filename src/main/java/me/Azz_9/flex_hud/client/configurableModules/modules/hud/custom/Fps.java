@@ -20,18 +20,13 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.Toggle
 public class Fps extends AbstractTextModule {
 
 	public Fps(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		super("fps", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.fps.config.enable");
 	}
 
 	@Override
 	public void init() {
 		setHeight(MINECRAFT.font.lineHeight);
-	}
-
-	@Override
-	public String getID() {
-		return "fps";
 	}
 
 	@Override
