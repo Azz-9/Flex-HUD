@@ -35,7 +35,7 @@ public class Clock extends AbstractTextModule implements TickableModule {
 	private static String formattedTime = "";
 
 	public Clock(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		super("clock", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.clock.config.enable");
 
 		// get the time format depending on the locale
@@ -48,11 +48,6 @@ public class Clock extends AbstractTextModule implements TickableModule {
 	@Override
 	public void init() {
 		setHeight(MINECRAFT.font.lineHeight);
-	}
-
-	@Override
-	public String getID() {
-		return "clock";
 	}
 
 	@Override
