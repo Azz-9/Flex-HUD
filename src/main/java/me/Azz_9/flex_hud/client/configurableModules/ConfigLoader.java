@@ -17,23 +17,63 @@ import me.Azz_9.flex_hud.client.utils.FlexHudLogger;
 
 public class ConfigLoader {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-	private final static File CONFIG_FILE = FabricLoader.getInstance().getConfigDir().resolve(MOD_ID + ".json").toFile();
+	private final static File CONFIG_FILE = FabricLoader.getInstance().getConfigDir().resolve(MOD_ID).resolve(MOD_ID + ".json").toFile();
+	private final static File OLD_CONFIG_FILE = FabricLoader.getInstance().getConfigDir().resolve(MOD_ID + ".json").toFile();
 
 	public static void loadConfig() {
-		if (!CONFIG_FILE.exists()) {
-			FlexHudLogger.info("Config file does not exist, loading default config");
-			saveConfig(); // create defaults if missing
+
+		if (CONFIG_FILE.exists()) {
+			FlexHudLogger.info("Loading config from new location...");
+			loadFromFile(CONFIG_FILE);
 			return;
 		}
 
-		try (Reader reader = Files.newBufferedReader(CONFIG_FILE.toPath())) {
+		if (OLD_CONFIG_FILE.exists()) {
+			FlexHudLogger.info("Old config location detected, migrating...");
+
+			try (Reader reader = Files.newBufferedReader(OLD_CONFIG_FILE.toPath())) {
+
+				JsonObject root = JsonParser.parseReader(reader).getAsJsonObject();
+
+				// vérifier ancien format
+				if (containsOldFormat(root)) {
+					FlexHudLogger.info("Detected old config format, converting...");
+					root = convertOldFormat(root);
+					FlexHudLogger.info("Old format converted!");
+				}
+
+				// sauvegarde au nouvel emplacement
+				saveJsonToNewLocation(root);
+
+				// suppression ancien fichier
+				Files.deleteIfExists(OLD_CONFIG_FILE.toPath());
+				FlexHudLogger.info("Old config file deleted after migration.");
+
+				// appliquer config
+				applyConfig(root);
+
+				return;
+
+			} catch (Exception e) {
+				FlexHudLogger.error("Failed to migrate old config: {}", e.getMessage());
+				e.printStackTrace();
+			}
+		}
+
+		FlexHudLogger.info("No config found, creating default config...");
+		saveConfig();
+	}
+
+	private static void loadFromFile(File file) {
+		try (Reader reader = Files.newBufferedReader(file.toPath())) {
+
 			JsonObject root = JsonParser.parseReader(reader).getAsJsonObject();
 
 			// detect old format
 			if (containsOldFormat(root)) {
 				FlexHudLogger.info("Detected old config format, migrating...");
 				root = convertOldFormat(root);
-				saveConverted(root);
+				saveJsonToNewLocation(root);
 				FlexHudLogger.info("Old format converted!");
 			}
 
@@ -41,6 +81,24 @@ public class ConfigLoader {
 
 		} catch (Exception e) {
 			FlexHudLogger.error("Failed to load config: {}, using default", e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
+	private static void saveJsonToNewLocation(JsonObject root) {
+
+		try {
+			// s'assurer que le dossier existe
+			Files.createDirectories(CONFIG_FILE.getParentFile().toPath());
+
+			try (Writer writer = Files.newBufferedWriter(CONFIG_FILE.toPath())) {
+				GSON.toJson(root, writer);
+			}
+
+			FlexHudLogger.info("Config successfully saved to new location!");
+
+		} catch (Exception e) {
+			FlexHudLogger.error("Failed to save migrated config: {}", e.getMessage());
 			e.printStackTrace();
 		}
 	}
@@ -62,8 +120,13 @@ public class ConfigLoader {
 			root.add(moduleName, moduleJson);
 		}
 
-		try (Writer writer = Files.newBufferedWriter(CONFIG_FILE.toPath())) {
-			GSON.toJson(root, writer);
+		try {
+			Files.createDirectories(CONFIG_FILE.getParentFile().toPath());
+
+			try (Writer writer = Files.newBufferedWriter(CONFIG_FILE.toPath())) {
+				GSON.toJson(root, writer);
+			}
+
 			FlexHudLogger.info("Config saved!");
 		} catch (Exception e) {
 			FlexHudLogger.error("Failed to save config: {}", e.getMessage());

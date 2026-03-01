@@ -3,10 +3,16 @@
 	"flex_hud.controls.open_menu": "Ouvrir le menu",
 
 	"flex_hud.configuration_screen": "Configuration des modules",
+	"flex_hud.configuration_screen.create_module": "Créer un module",
 	"flex_hud.configuration_screen.searchbar_placeholder": "Rechercher...",
 	"flex_hud.configuration_screen.columns": "Colonnes",
 	"flex_hud.configuration_screen.done": "Terminé",
-	"flex_hud.configuration_screen.module_compatibility_warning": "Ce module ne fonctionne pas correctement avec  ",
+	"flex_hud.configuration_screen.module_compatibility_warning": "Ce module ne fonctionne pas correctement avec ",
+	"flex_hud.configuration_screen.edit_module": "Edit module",
+	"flex_hud.configuration_screen.delete_module": "Delete module",
+
+	"flex_hud.create_module_screen.module_name": "Nom du module",
+	"flex_hud.create_module_screen.searchbar_placeholder": "Rechercher...",
 
 	"flex_hud.move_modules_screen": "Déplacer les modules",
 
@@ -68,6 +74,7 @@
 	"flex_hud.enum.potion_effect.icon_placement.bottom": "En dessous",
 	"flex_hud.enum.potion_effect.icon_placement.left": "À Gauche",
 
+	"flex_hud.global.config.enabled": "Activé",
 	"flex_hud.global.config.quit_and_discard": "Quitter & annuler les modifications",
 	"flex_hud.global.config.callback.message_title": "Modifications non sauvgardées",
 	"flex_hud.global.config.callback.message_content": "Êtes-vous sûr de vouloir annuler vos modifications ? Vos changements de disposition ne seront pas enregistrés!",

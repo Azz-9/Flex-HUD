@@ -44,7 +44,7 @@ public class Scoreboard extends AbstractMovableModule {
 	private static final int PADDING = 2;
 
 	public Scoreboard(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		super("scoreboard", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setValue(false);
 		this.enabled.setDefaultValue(false);
 		this.enabled.setConfigTextTranslationKey("flex_hud.scoreboard.config.enable");
@@ -76,11 +76,6 @@ public class Scoreboard extends AbstractMovableModule {
 	@Override
 	public Text getName() {
 		return Text.translatable("flex_hud.scoreboard");
-	}
-
-	@Override
-	public String getID() {
-		return "scoreboard";
 	}
 
 	@Override

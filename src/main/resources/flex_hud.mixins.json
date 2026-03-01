@@ -9,7 +9,6 @@
 		"weatherChanger.ClientWorldMixin"
 	],
 	"client": [
-		"CursorAccessor",
 		"bossBar.BossBarAccessor",
 		"bossBar.BossBarHudMixin",
 		"compass.InGameHudMixin",

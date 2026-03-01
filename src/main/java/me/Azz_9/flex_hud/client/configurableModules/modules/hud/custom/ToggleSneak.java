@@ -23,7 +23,7 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.Toggle
 public class ToggleSneak extends AbstractTextModule {
 
 	public ToggleSneak(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		super("toggle_sneak", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setValue(false);
 		this.enabled.setDefaultValue(false);
 		this.enabled.setConfigTextTranslationKey("flex_hud.toggle_sneak.config.enable");
@@ -37,11 +37,6 @@ public class ToggleSneak extends AbstractTextModule {
 	@Override
 	public Text getName() {
 		return Text.translatable("flex_hud.toggle_sneak");
-	}
-
-	@Override
-	public String getID() {
-		return "toggle_sneak";
 	}
 
 	@Override

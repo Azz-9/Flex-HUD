@@ -3,10 +3,16 @@
 	"flex_hud.controls.open_menu": "Open menu",
 
 	"flex_hud.configuration_screen": "Modules configuration",
+	"flex_hud.configuration_screen.create_module": "Create a module",
 	"flex_hud.configuration_screen.searchbar_placeholder": "Search...",
 	"flex_hud.configuration_screen.columns": "Columns",
 	"flex_hud.configuration_screen.done": "Done",
 	"flex_hud.configuration_screen.module_compatibility_warning": "This module doesn't work properly with ",
+	"flex_hud.configuration_screen.edit_module": "Modifier ce module",
+	"flex_hud.configuration_screen.delete_module": "Supprimer ce module",
+
+	"flex_hud.create_module_screen.module_name": "Module name",
+	"flex_hud.create_module_screen.searchbar_placeholder": "Search...",
 
 	"flex_hud.move_modules_screen": "Move modules",
 
@@ -68,6 +74,7 @@
 	"flex_hud.enum.potion_effect.icon_placement.bottom": "Bottom",
 	"flex_hud.enum.potion_effect.icon_placement.left": "Left",
 
+	"flex_hud.global.config.enabled": "Enabled",
 	"flex_hud.global.config.quit_and_discard": "Quit & discard changes",
 	"flex_hud.global.config.callback.message_title": "Changes not saved",
 	"flex_hud.global.config.callback.message_content": "Are you sure you want to cancel your changes? Your changes will not be saved!",

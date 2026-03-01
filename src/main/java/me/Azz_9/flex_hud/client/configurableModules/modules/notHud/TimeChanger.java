@@ -2,6 +2,11 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.notHud;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.text.Text;
+
+import java.time.LocalTime;
+
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
@@ -9,28 +14,19 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.IntSli
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.text.Text;
-
-import java.time.LocalTime;
 
 public class TimeChanger extends AbstractModule {
 	public final ConfigInteger selectedTime = new ConfigInteger(6000, "flex_hud.time_changer.config.selected_time", 0, 24000);
 	public final ConfigBoolean useRealTime = new ConfigBoolean(false, "flex_hud.time_changer.config.use_real_time");
 
 	public TimeChanger() {
+		super("time_changer");
 		this.enabled.setConfigTextTranslationKey("flex_hud.time_changer.config.enable");
 		this.enabled.setDefaultValue(false);
 		this.enabled.setValue(false);
 
 		ConfigRegistry.register(getID(), "selectedTime", selectedTime);
 		ConfigRegistry.register(getID(), "useRealTime", useRealTime);
-	}
-
-	@Override
-	public String getID() {
-		return "time_changer";
 	}
 
 	@Override

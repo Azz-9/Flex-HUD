@@ -1,10 +1,27 @@
 package me.Azz_9.flex_hud.client;
 
+import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.util.InputUtil;
+import net.minecraft.util.Identifier;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.HudElement;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom.Ping;
+import me.Azz_9.flex_hud.client.customModules.CustomModule;
+import me.Azz_9.flex_hud.client.customModules.Variables;
 import me.Azz_9.flex_hud.client.tickables.TickRegistry;
 import me.Azz_9.flex_hud.client.utils.FaviconUtils;
 import me.Azz_9.flex_hud.client.utils.FlexHudLogger;
@@ -13,19 +30,6 @@ import me.Azz_9.flex_hud.compat.CompatManager;
 import me.Azz_9.flex_hud.compat.waypointsCollectors.Collector;
 import me.Azz_9.flex_hud.compat.waypointsCollectors.JourneyMapWaypointCollector;
 import me.Azz_9.flex_hud.compat.waypointsCollectors.XaeroWaypointCollector;
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.util.Identifier;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Flex_hudClient implements ClientModInitializer {
 
@@ -80,6 +84,20 @@ public class Flex_hudClient implements ClientModInitializer {
 						Flex_hudClient.isDebug() ? hudElement::renderWithSpeedTest : hudElement::render
 				);
 			}
+
+			HudElementRegistry.attachElementBefore(
+					VanillaHudElements.CHAT,
+					Identifier.of(MOD_ID, "custom_modules"),
+					(context, tickDelta) -> {
+						for (CustomModule module : ModulesHelper.getCustomModules()) {
+							if (Flex_hudClient.isDebug()) {
+								module.renderWithSpeedTest(context, tickDelta);
+							} else {
+								module.render(context, tickDelta);
+							}
+						}
+					}
+			);
 		});
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
@@ -97,6 +115,8 @@ public class Flex_hudClient implements ClientModInitializer {
 		});
 
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+			Variables.init();
+
 			if (!client.isIntegratedServerRunning()) {
 				Ping.packetSender = sender;
 				Ping.startPinging();

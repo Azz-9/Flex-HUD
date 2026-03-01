@@ -62,7 +62,7 @@ public class ArmorStatus extends AbstractTextModule {
 	private static final int EFFECTS = 8;
 
 	public ArmorStatus(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		super("armor_status", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.armor_status.config.enable");
 
 		int nbItems = 9; // armor pieces (4), hands (2), arrows types (3) = 9
@@ -107,11 +107,6 @@ public class ArmorStatus extends AbstractTextModule {
 		moveEachPiecesIndependently.setOnChange(value -> {
 			if (!value) getDimensionHudList().getFirst().setDisplayed(true);
 		});
-	}
-
-	@Override
-	public String getID() {
-		return "armor_status";
 	}
 
 	@Override

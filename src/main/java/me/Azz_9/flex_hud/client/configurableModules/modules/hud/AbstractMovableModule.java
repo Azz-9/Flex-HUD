@@ -2,16 +2,17 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 
+import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
-import net.minecraft.client.MinecraftClient;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public abstract class AbstractMovableModule extends AbstractModule implements HudElement {
 
@@ -19,8 +20,8 @@ public abstract class AbstractMovableModule extends AbstractModule implements Hu
 
 	public ConfigBoolean hideInF3 = new ConfigBoolean(true, "flex_hud.global.config.hide_in_f3");
 
-	public AbstractMovableModule(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super();
+	public AbstractMovableModule(@NonNull String id, double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
+		super(id);
 		dimensionHudList.add(new DimensionHud(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY));
 
 		DimensionHud.register(getID(), dimensionHudList);

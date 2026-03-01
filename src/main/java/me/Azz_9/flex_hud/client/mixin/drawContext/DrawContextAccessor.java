@@ -1,8 +1,11 @@
 package me.Azz_9.flex_hud.client.mixin.drawContext;
 
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.cursor.Cursor;
 import net.minecraft.item.ItemStack;
+
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(DrawContext.class)
@@ -13,4 +16,10 @@ public interface DrawContextAccessor {
 
 	@Invoker("drawCooldownProgress")
 	void flex_hud$drawCooldownProgress(ItemStack stack, int x, int y);
+
+	@Accessor("cursor")
+	Cursor getCursor();
+
+	@Accessor("tooltipDrawer")
+	void setTooltipDrawer(Runnable tooltipDrawer);
 }

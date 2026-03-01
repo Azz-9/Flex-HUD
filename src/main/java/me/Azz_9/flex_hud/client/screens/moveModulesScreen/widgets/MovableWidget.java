@@ -2,16 +2,6 @@ package me.Azz_9.flex_hud.client.screens.moveModulesScreen.widgets;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractMovableModule;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.DimensionHud;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.MovableModule;
-import me.Azz_9.flex_hud.client.mixin.CursorAccessor;
-import me.Azz_9.flex_hud.client.screens.TrackableChange;
-import me.Azz_9.flex_hud.client.screens.moveModulesScreen.MoveModulesScreen;
-import me.Azz_9.flex_hud.client.screens.moveModulesScreen.actions.MoveAction;
-import me.Azz_9.flex_hud.client.screens.moveModulesScreen.actions.ScaleAction;
-import me.Azz_9.flex_hud.client.utils.Cursors;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.cursor.Cursor;
@@ -19,11 +9,22 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.input.KeyInput;
 import net.minecraft.text.Text;
+
 import org.joml.Matrix3x2fStack;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractMovableModule;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.DimensionHud;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.MovableModule;
+import me.Azz_9.flex_hud.client.mixin.drawContext.DrawContextAccessor;
+import me.Azz_9.flex_hud.client.screens.TrackableChange;
+import me.Azz_9.flex_hud.client.screens.moveModulesScreen.MoveModulesScreen;
+import me.Azz_9.flex_hud.client.screens.moveModulesScreen.actions.MoveAction;
+import me.Azz_9.flex_hud.client.screens.moveModulesScreen.actions.ScaleAction;
+import me.Azz_9.flex_hud.client.utils.Cursors;
 
 public class MovableWidget extends ClickableWidget implements TrackableChange {
 	private final MoveModulesScreen PARENT;
@@ -89,7 +90,7 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 
 	@Override
 	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-		if (((CursorAccessor) context).getCursor() == Cursor.DEFAULT) {
+		if (((DrawContextAccessor) context).getCursor() == Cursor.DEFAULT) {
 			if (this.isScaleHandleHovered(mouseX, mouseY) || isDraggingScalehandle) {
 				context.setCursor(
 						switch (handlePosition) {

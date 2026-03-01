@@ -15,6 +15,7 @@ import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.DurabilityPin
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.TimeChanger;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.TntCountdown;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.WeatherChanger;
+import me.Azz_9.flex_hud.client.customModules.CustomModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 
@@ -69,6 +70,7 @@ public class ModulesHelper {
 	private List<AbstractMovableModule> movableModules;
 	private List<Configurable> configurables;
 	private List<TickableModule> tickableModules;
+	private List<CustomModule> customModules;
 
 	public ModulesHelper() {
 		ConfigRegistry.register("global", "enabled", isEnabled);
@@ -80,8 +82,9 @@ public class ModulesHelper {
 		movableModules = new ArrayList<>();
 		configurables = new ArrayList<>();
 		tickableModules = new ArrayList<>();
+		customModules = new ArrayList<>();
 
-		modules = List.of(
+		modules = new ArrayList<>(List.of(
 				getInstance().armorStatus,
 				getInstance().cps,
 				getInstance().clock,
@@ -117,7 +120,7 @@ public class ModulesHelper {
 				getInstance().crosshair,
 				getInstance().durabilityPing,
 				getInstance().tntCountdown
-		);
+		));
 
 		for (AbstractModule module : modules) {
 			if (module instanceof HudElement hudElement) hudElements.add(hudElement);
@@ -125,6 +128,22 @@ public class ModulesHelper {
 			if (module instanceof Configurable configurable) configurables.add(configurable);
 			if (module instanceof TickableModule tickableModule) tickableModules.add(tickableModule);
 		}
+	}
+
+	public static void addCustomModule(CustomModule module) {
+		getInstance().customModules.add(module);
+		getInstance().modules.add(module);
+		getInstance().hudElements.add(module);
+		getInstance().movableModules.add(module);
+		getInstance().configurables.add(module);
+	}
+
+	public static void removeCustomModule(CustomModule module) {
+		getInstance().customModules.remove(module);
+		getInstance().modules.remove(module);
+		getInstance().hudElements.remove(module);
+		getInstance().movableModules.remove(module);
+		getInstance().configurables.remove(module);
 	}
 
 	// Méthode pour obtenir l'instance de la configuration
@@ -161,5 +180,9 @@ public class ModulesHelper {
 
 	public static List<TickableModule> getTickables() {
 		return getInstance().tickableModules;
+	}
+
+	public static List<CustomModule> getCustomModules() {
+		return getInstance().customModules;
 	}
 }
