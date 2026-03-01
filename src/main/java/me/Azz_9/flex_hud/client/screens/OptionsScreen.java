@@ -12,6 +12,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Ease;
 
 import org.joml.Matrix3x2fStack;
 import org.jspecify.annotations.NonNull;
@@ -21,7 +22,6 @@ import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.screens.modulesList.ModulesListScreen;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.MoveModulesScreen;
 import me.Azz_9.flex_hud.client.screens.widgets.buttons.IconButton;
-import me.Azz_9.flex_hud.client.utils.EaseUtils;
 
 public class OptionsScreen extends AbstractBackNavigableScreen {
 	private long initTimestamp;
@@ -89,7 +89,7 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 	public void extractRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
 		final int ANIMATION_DURATION = 500;
 		float progress = Math.min((float) (System.currentTimeMillis() - initTimestamp) / ANIMATION_DURATION, 1.0f);
-		float easedProgress = EaseUtils.getEaseOutQuad(progress);
+		float easedProgress = Ease.outQuad(progress);
 
 		final Identifier modIcon = Identifier.fromNamespaceAndPath(MOD_ID, "logo-without-bg.png");
 

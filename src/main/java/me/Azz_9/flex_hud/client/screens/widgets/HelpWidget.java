@@ -11,12 +11,12 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Ease;
 
 import org.joml.Matrix3x2fStack;
 import org.jspecify.annotations.NonNull;
 
 import me.Azz_9.flex_hud.client.utils.Cursors;
-import me.Azz_9.flex_hud.client.utils.EaseUtils;
 
 public class HelpWidget extends AbstractWidget.WithInactiveMessage {
 	private final Identifier texture = Identifier.fromNamespaceAndPath(MOD_ID, "widgets/buttons/help/help.png");
@@ -50,10 +50,10 @@ public class HelpWidget extends AbstractWidget.WithInactiveMessage {
 			float easedProgress = 1.0f;
 			if (displayHelp && !isFadingOut && elapsedTime < TRANSITION_DURATION) {
 				// Ease-Out
-				easedProgress = EaseUtils.getEaseOutQuad(elapsedTime / (float) TRANSITION_DURATION);
+				easedProgress = Ease.outQuad(elapsedTime / (float) TRANSITION_DURATION);
 			} else if (isFadingOut) {
 				// Ease-Out reversed
-				easedProgress = -EaseUtils.getEaseOutQuad(Math.min(1.0f, elapsedTime / (float) TRANSITION_DURATION)) + 1;
+				easedProgress = -Ease.outQuad(Math.min(1.0f, elapsedTime / (float) TRANSITION_DURATION)) + 1;
 				if (easedProgress <= 0.0f) {
 					isFadingOut = false;
 				}

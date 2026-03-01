@@ -80,16 +80,12 @@ public class Crosshair extends AbstractModule implements HudElement {
 	public final ConfigBoolean disableBlending = new ConfigBoolean(false, "flex_hud.crosshair.config.disable_blending");
 
 	public Crosshair() {
+		super("crosshair");
 		this.enabled.setConfigTextTranslationKey("flex_hud.crosshair.config.enable");
 
 		ConfigRegistry.register(getID(), "scale", scale);
 		ConfigRegistry.register(getID(), "pixels", pixels);
 		ConfigRegistry.register(getID(), "disableBlending", disableBlending);
-	}
-
-	@Override
-	public String getID() {
-		return "crosshair";
 	}
 
 	@Override

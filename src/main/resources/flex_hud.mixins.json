@@ -9,13 +9,13 @@
 		"weatherChanger.ClientWorldMixin"
 	],
 	"client": [
-		"CursorAccessor",
 		"bossBar.BossBarAccessor",
 		"bossBar.BossHealthOverlayMixin",
 		"compass.GuiMixin",
 		"compass.LocatorBarRendererMixin",
 		"cps.KeyboardHandlerMixin",
 		"crosshair.CrosshairMixin",
+		"customModules.GuiMixin",
 		"drawContext.GuiGraphicsExtractorAccessor",
 		"durabilityPing.ClientPlayNetworkHandlerMixin",
 		"keybind.KeyBindingMixin",

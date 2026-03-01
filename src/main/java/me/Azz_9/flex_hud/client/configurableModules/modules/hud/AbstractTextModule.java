@@ -2,13 +2,14 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 
+import net.minecraft.util.ARGB;
+
+import org.jetbrains.annotations.NotNull;
+
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 import me.Azz_9.flex_hud.client.tickables.ChromaColorTickable;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.ARGB;
-import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractTextModule extends AbstractBackgroundModule {
 
@@ -16,8 +17,8 @@ public abstract class AbstractTextModule extends AbstractBackgroundModule {
 	public ConfigBoolean chromaColor = new ConfigBoolean(false, "flex_hud.global.config.chroma_text_color");
 	public ConfigInteger color = new ConfigInteger(0xffffff, "flex_hud.global.config.text_color");
 
-	public AbstractTextModule(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+	public AbstractTextModule(@NotNull String id, double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
+		super(id, defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 
 		ConfigRegistry.register(getID(), "shadow", shadow);
 		ConfigRegistry.register(getID(), "chroma_color", chromaColor);

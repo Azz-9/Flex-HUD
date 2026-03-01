@@ -44,18 +44,13 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 	private RenderData renderData = new RenderData();
 
 	public SignReader(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		super("sign_reader", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.sign_reader.config.enable");
 	}
 
 	@Override
 	public Component getName() {
 		return Component.translatable("flex_hud.sign_reader");
-	}
-
-	@Override
-	public String getID() {
-		return "sign_reader";
 	}
 
 	@Override
