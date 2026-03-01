@@ -1,0 +1,54 @@
+package me.Azz_9.flex_hud.client.customModules;
+
+import net.minecraft.text.Text;
+
+import java.util.Objects;
+import java.util.function.Supplier;
+
+public final class Variable<T> {
+	private final Text name;
+	private final Text description;
+	private final String key;
+	private final Supplier<T> supplier;
+	private T value;
+	private long version;
+
+	public Variable(Text name, Text description, String key, Supplier<T> supplier) {
+		this.name = Objects.requireNonNull(name, "name");
+		this.description = Objects.requireNonNull(description, "description");
+		this.key = Objects.requireNonNull(key, "key");
+		this.supplier = Objects.requireNonNull(supplier, "supplier");
+	}
+
+	public Text getName() {
+		return name;
+	}
+
+	public Text getDescription() {
+		return description;
+	}
+
+	public String getKey() {
+		return key;
+	}
+
+	public boolean updateValue() {
+		T newValue = supplier.get();
+		if (!Objects.equals(value, newValue)) {
+			value = newValue;
+			version++;
+			return true;
+		}
+
+		value = newValue;
+		return false;
+	}
+
+	public T getValue() {
+		return value;
+	}
+
+	public long getVersion() {
+		return version;
+	}
+}

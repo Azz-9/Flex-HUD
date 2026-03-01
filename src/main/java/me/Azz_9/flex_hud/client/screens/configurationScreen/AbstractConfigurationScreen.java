@@ -82,6 +82,9 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+		if (CLIENT.world == null) {
+			this.renderPanoramaBackground(context, deltaTicks);
+		}
 		if (renderCallback(context, mouseX, mouseY, deltaTicks)) {
 			return;
 		}

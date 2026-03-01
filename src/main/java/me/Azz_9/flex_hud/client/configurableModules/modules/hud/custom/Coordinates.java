@@ -39,7 +39,7 @@ public class Coordinates extends AbstractTextModule {
 	private final ConfigEnum<DisplayMode> displayMode = new ConfigEnum<>(DisplayMode.class, DisplayMode.VERTICAL, "flex_hud.coordinates.config.orientation");
 
 	public Coordinates(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		super("coordinates", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.coordinates.config.enable");
 
 		ConfigRegistry.register(getID(), "showY", showY);
@@ -47,11 +47,6 @@ public class Coordinates extends AbstractTextModule {
 		ConfigRegistry.register(getID(), "showDirection", showDirection);
 		ConfigRegistry.register(getID(), "directionAbreviation", directionAbreviation);
 		ConfigRegistry.register(getID(), "displayMode", displayMode);
-	}
-
-	@Override
-	public String getID() {
-		return "coordinates";
 	}
 
 	@Override

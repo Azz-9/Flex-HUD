@@ -1,32 +1,40 @@
 package me.Azz_9.flex_hud.client;
 
-import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
-import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
-import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.HudElement;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom.Ping;
-import me.Azz_9.flex_hud.client.tickables.TickRegistry;
-import me.Azz_9.flex_hud.client.utils.FaviconUtils;
-import me.Azz_9.flex_hud.client.utils.FlexHudLogger;
-import me.Azz_9.flex_hud.client.utils.SpeedTester;
-import me.Azz_9.flex_hud.compat.CompatManager;
-import me.Azz_9.flex_hud.compat.waypointsCollectors.Collector;
-import me.Azz_9.flex_hud.compat.waypointsCollectors.JourneyMapWaypointCollector;
-import me.Azz_9.flex_hud.compat.waypointsCollectors.XaeroWaypointCollector;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.Identifier;
+
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import me.Azz_9.flex_hud.client.configurableModules.ConfigLoader;
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
+import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
+import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.HudElement;
+import me.Azz_9.flex_hud.client.customModules.CustomModule;
+import me.Azz_9.flex_hud.client.customModules.CustomModulesPersistence;
+import me.Azz_9.flex_hud.client.customModules.Variables;
+import me.Azz_9.flex_hud.client.customModules.modifiers.Modifiers;
+import me.Azz_9.flex_hud.client.tickables.TickRegistry;
+import me.Azz_9.flex_hud.client.utils.FaviconUtils;
+import me.Azz_9.flex_hud.client.utils.FlexHudLogger;
+import me.Azz_9.flex_hud.client.utils.PingUtils;
+import me.Azz_9.flex_hud.client.utils.SpeedTester;
+import me.Azz_9.flex_hud.compat.CompatManager;
+import me.Azz_9.flex_hud.compat.waypointsCollectors.Collector;
+import me.Azz_9.flex_hud.compat.waypointsCollectors.JourneyMapWaypointCollector;
+import me.Azz_9.flex_hud.compat.waypointsCollectors.XaeroWaypointCollector;
 
 public class Flex_hudClient implements ClientModInitializer {
 
@@ -67,6 +75,8 @@ public class Flex_hudClient implements ClientModInitializer {
 		waypointCollectors.forEach(Collector::initCompassList);
 
 		HudLayerRegistrationCallback.EVENT.register(layeredDrawer -> {
+			Modifiers.init();
+
 			if (layersRegistered) return;
 			layersRegistered = true;
 
@@ -79,11 +89,33 @@ public class Flex_hudClient implements ClientModInitializer {
 				Identifier layer = hudElement.getLayer();
 				layeredDrawer.attachLayerBefore(layer, id, Flex_hudClient.isDebug() ? hudElement::renderWithSpeedTest : hudElement::render);
 			}
+
+			layeredDrawer.attachLayerBefore(
+					IdentifiedLayer.CHAT,
+					Identifier.of(MOD_ID, "custom_modules"),
+					(context, tickCounter) -> {
+						for (CustomModule module : ModulesHelper.getCustomModules()) {
+							if (Flex_hudClient.isDebug()) {
+								module.renderWithSpeedTest(context, tickCounter);
+							} else {
+								module.render(context, tickCounter);
+							}
+						}
+					}
+			);
+
+			CustomModulesPersistence.loadConfig();
+			if (!ModulesHelper.getCustomModules().isEmpty()) {
+				ConfigLoader.loadConfig();
+				ConfigLoader.saveConfig();
+			}
 		});
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			if (ModulesHelper.getInstance().isEnabled.getValue()) {
 				SpeedTester.tick();
+
+				Variables.tick();
 
 				TickRegistry.tickAll(client);
 
@@ -95,10 +127,13 @@ public class Flex_hudClient implements ClientModInitializer {
 			}
 		});
 
+
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+			Variables.onJoinWorld();
+
 			if (!client.isIntegratedServerRunning()) {
-				Ping.packetSender = sender;
-				Ping.startPinging();
+				PingUtils.packetSender = sender;
+				PingUtils.startPinging();
 			}
 
 			if (client.getCurrentServerEntry() != null) { // joined a multiplayer server
@@ -109,8 +144,8 @@ public class Flex_hudClient implements ClientModInitializer {
 		});
 
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
-			Ping.stopPinging();
-			Ping.packetSender = null;
+			PingUtils.stopPinging();
+			PingUtils.packetSender = null;
 			waypointCollectors.forEach(Collector::onLeaveWorld);
 		});
 

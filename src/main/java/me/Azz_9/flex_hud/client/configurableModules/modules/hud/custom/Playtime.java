@@ -23,7 +23,7 @@ public class Playtime extends AbstractTextModule {
 	public final ConfigBoolean showPrefix = new ConfigBoolean(true, "flex_hud.playtime.config.show_prefix");
 
 	public Playtime(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		super("playtime", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.playtime.config.enable");
 
 		ConfigRegistry.register(getID(), "showPrefix", showPrefix);
@@ -32,11 +32,6 @@ public class Playtime extends AbstractTextModule {
 	@Override
 	public void init() {
 		setHeight(CLIENT.textRenderer.fontHeight);
-	}
-
-	@Override
-	public String getID() {
-		return "playtime";
 	}
 
 	@Override

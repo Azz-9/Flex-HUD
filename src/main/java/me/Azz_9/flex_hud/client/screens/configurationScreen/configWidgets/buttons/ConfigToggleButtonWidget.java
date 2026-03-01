@@ -1,12 +1,8 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons;
 
-import me.Azz_9.flex_hud.client.screens.TrackableChange;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
-import me.Azz_9.flex_hud.client.utils.EaseUtils;
-import net.minecraft.client.MinecraftClient;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.tooltip.Tooltip;
@@ -14,14 +10,19 @@ import net.minecraft.client.gui.widget.ToggleButtonWidget;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
+
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 import java.util.function.Function;
 
-import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
-import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+import me.Azz_9.flex_hud.client.screens.TrackableChange;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
+import me.Azz_9.flex_hud.client.utils.EaseUtils;
 
 public class ConfigToggleButtonWidget extends ToggleButtonWidget implements TrackableChange, DataGetter<Boolean>, ResetAware {
 	private final ConfigBoolean variable;

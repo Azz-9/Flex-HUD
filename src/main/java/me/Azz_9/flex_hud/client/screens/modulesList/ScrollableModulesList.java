@@ -1,7 +1,5 @@
 package me.Azz_9.flex_hud.client.screens.modulesList;
 
-import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
-import me.Azz_9.flex_hud.client.screens.AbstractSmoothScrollableList;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ClickableWidget;
@@ -11,6 +9,9 @@ import net.minecraft.client.render.RenderLayer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
+import me.Azz_9.flex_hud.client.screens.AbstractSmoothScrollableList;
 
 public class ScrollableModulesList extends AbstractSmoothScrollableList<ScrollableModulesList.Entry> {
 
@@ -106,6 +107,11 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 		return this.entries;
 	}
 
+	@Override
+	public void clearEntries() {
+		super.clearEntries();
+	}
+
 	public void setColumns(int columns) {
 		this.columns = columns;
 		ModulesHelper.getInstance().numberOfColumns.setValue(columns);
@@ -138,9 +144,9 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 
 				drawContext.drawTexture(RenderLayer::getGuiTextured, this.rowModules.get(i).icon, iconX, y, 0, 0,
 						scrollableModulesList.iconWidthHeight, scrollableModulesList.iconWidthHeight, scrollableModulesList.iconWidthHeight, scrollableModulesList.iconWidthHeight);
-				this.rowModules.get(i).button.setX(buttonX);
-				this.rowModules.get(i).button.setY(y + scrollableModulesList.iconWidthHeight + scrollableModulesList.padding / 2);
-				this.rowModules.get(i).button.render(drawContext, mouseX, mouseY, tickDelta);
+				this.rowModules.get(i).setButtonX(buttonX);
+				this.rowModules.get(i).setButtonY(y + scrollableModulesList.iconWidthHeight + scrollableModulesList.padding / 2);
+				this.rowModules.get(i).renderButton(drawContext, mouseX, mouseY, tickDelta);
 			}
 		}
 
@@ -149,7 +155,7 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 			List<ClickableWidget> clickableWidgets = new ArrayList<>();
 			for (Module module : rowModules) {
 				if (module != null) {
-					clickableWidgets.add(module.button);
+					clickableWidgets.addAll(module.buttons());
 				}
 			}
 			return clickableWidgets;

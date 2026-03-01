@@ -1,11 +1,7 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen;
 
-import me.Azz_9.flex_hud.client.screens.TrackableChange;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigIntGrid;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
-import me.Azz_9.flex_hud.client.utils.EaseUtils;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
@@ -19,7 +15,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+import me.Azz_9.flex_hud.client.screens.TrackableChange;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigIntGrid;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
+import me.Azz_9.flex_hud.client.utils.EaseUtils;
 
 public class CrosshairButtonWidget<T> extends ClickableWidget implements TrackableChange, DataGetter<int[][]>, ResetAware {
 	private ConfigIntGrid variable;

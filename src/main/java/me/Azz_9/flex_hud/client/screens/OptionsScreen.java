@@ -2,13 +2,6 @@ package me.Azz_9.flex_hud.client.screens;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.*;
 
-import me.Azz_9.flex_hud.client.Flex_hudClient;
-import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
-import me.Azz_9.flex_hud.client.screens.modulesList.ModulesListScreen;
-import me.Azz_9.flex_hud.client.screens.moveModulesScreen.MoveModulesScreen;
-import me.Azz_9.flex_hud.client.screens.widgets.buttons.IconButton;
-import me.Azz_9.flex_hud.client.utils.EaseUtils;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
@@ -18,6 +11,13 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+
+import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
+import me.Azz_9.flex_hud.client.screens.modulesList.ModulesListScreen;
+import me.Azz_9.flex_hud.client.screens.moveModulesScreen.MoveModulesScreen;
+import me.Azz_9.flex_hud.client.screens.widgets.buttons.IconButton;
+import me.Azz_9.flex_hud.client.utils.EaseUtils;
 
 public class OptionsScreen extends AbstractBackNavigableScreen {
 	private long initTimestamp;

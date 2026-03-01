@@ -25,7 +25,7 @@ public class LightLevel extends AbstractTextModule {
 	private final ConfigBoolean colorDependsOnLightLevel = new ConfigBoolean(true, "flex_hud.light_level.color_depends_on_light_level");
 
 	public LightLevel(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		super("light_level", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.light_level.config.enable");
 
 		ConfigRegistry.register(getID(), "colorDependsOnLightLevel", colorDependsOnLightLevel);
@@ -39,11 +39,6 @@ public class LightLevel extends AbstractTextModule {
 	@Override
 	public Text getName() {
 		return Text.translatable("flex_hud.light_level");
-	}
-
-	@Override
-	public String getID() {
-		return "light_level";
 	}
 
 	@Override

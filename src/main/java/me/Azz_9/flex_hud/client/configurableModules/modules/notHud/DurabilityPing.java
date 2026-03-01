@@ -37,17 +37,13 @@ public class DurabilityPing extends AbstractModule {
 	public final ConfigBoolean checkElytraOnly = new ConfigBoolean(false, "flex_hud.durability_ping.config.check_elytra_only");
 
 	public DurabilityPing() {
+		super("durability_ping");
 		this.enabled.setConfigTextTranslationKey("flex_hud.durability_ping.config.enable");
 
 		ConfigRegistry.register(getID(), "threshold", threshold);
 		ConfigRegistry.register(getID(), "pingType", pingType);
 		ConfigRegistry.register(getID(), "checkArmorPieces", checkArmorPieces);
 		ConfigRegistry.register(getID(), "checkElytraOnly", checkElytraOnly);
-	}
-
-	@Override
-	public String getID() {
-		return "durability_ping";
 	}
 
 	@Override

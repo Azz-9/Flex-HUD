@@ -16,7 +16,7 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.Toggle
 public class ResourcePack extends AbstractTextModule {
 
 	public ResourcePack(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		super("ressource_pack", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.ressource_pack.config.enable");
 	}
 
@@ -30,11 +30,6 @@ public class ResourcePack extends AbstractTextModule {
 	@Override
 	public Text getName() {
 		return Text.translatable("flex_hud.ressource_pack");
-	}
-
-	@Override
-	public String getID() {
-		return "ressource_pack";
 	}
 
 	@Override
