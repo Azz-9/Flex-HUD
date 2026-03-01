@@ -4,10 +4,13 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
+import net.minecraft.util.Mth;
 
-import org.jspecify.annotations.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractSmoothScrollableList<E extends ContainerObjectSelectionList.Entry<E>> extends ContainerObjectSelectionList<E> {
+
+	private static final double SCROLL_SNAP_DISTANCE = 0.5;
 	private double targetScroll = 0; // Target scroll amount (set by mouse wheel)
 	private double currentScroll = 0; // Interpolated scroll amount (used for rendering)
 	private final double SCROLL_SPEED = 25.0; // Pixels per notch
@@ -28,12 +31,12 @@ public abstract class AbstractSmoothScrollableList<E extends ContainerObjectSele
 
 		// Update the target scroll position
 		targetScroll -= verticalAmount * SCROLL_SPEED;
-		targetScroll = Math.clamp(targetScroll, 0.0F, this.maxScrollAmount() + 1);
+		targetScroll = Mth.clamp(targetScroll, 0.0F, this.maxScrollAmount() + 1);
 		return true;
 	}
 
 	@Override
-	protected void extractListItems(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+	protected void extractListItems(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
 		if (externalSmoothDetected) {
 			super.extractListItems(graphics, mouseX, mouseY, delta);
 			return;
@@ -46,6 +49,10 @@ public abstract class AbstractSmoothScrollableList<E extends ContainerObjectSele
 		double alpha = 1.0 - Math.exp(-SCROLL_SPEED * deltaSeconds);
 
 		currentScroll += (targetScroll - currentScroll) * alpha;
+		if (Math.abs(targetScroll - currentScroll) < SCROLL_SNAP_DISTANCE) {
+			currentScroll = targetScroll;
+		}
+		currentScroll = Mth.clamp(currentScroll, 0.0, this.maxScrollAmount());
 
 		super.setScrollAmount(currentScroll);
 		super.extractListItems(graphics, mouseX, mouseY, delta);
