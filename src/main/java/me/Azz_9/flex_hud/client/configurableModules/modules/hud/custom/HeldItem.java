@@ -32,7 +32,7 @@ public class HeldItem extends AbstractTextModule {
 	private final int ITEM_SIZE = 16;
 
 	public HeldItem(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		super("held_item", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.held_item.config.enable");
 
 		ConfigRegistry.register(getID(), "durabilityType", durabilityType);
@@ -46,11 +46,6 @@ public class HeldItem extends AbstractTextModule {
 	@Override
 	public Component getName() {
 		return Component.translatable("flex_hud.held_item");
-	}
-
-	@Override
-	public String getID() {
-		return "held_item";
 	}
 
 

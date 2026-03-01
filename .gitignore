@@ -6,4 +6,4 @@ build/
 gradlew
 gradlew.bat
 run/
-logs
+logs/
