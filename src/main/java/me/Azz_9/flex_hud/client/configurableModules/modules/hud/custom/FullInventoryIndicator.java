@@ -31,7 +31,7 @@ public class FullInventoryIndicator extends AbstractTextModule implements Tickab
 	private boolean isInventoryFull = false;
 
 	public FullInventoryIndicator(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		super("full_inventory_indicator", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.full_inventory_indicator.config.enable");
 
 		this.color.setValue(0xff0000);
@@ -48,11 +48,6 @@ public class FullInventoryIndicator extends AbstractTextModule implements Tickab
 	@Override
 	public Component getName() {
 		return Component.translatable("flex_hud.full_inventory_indicator");
-	}
-
-	@Override
-	public String getID() {
-		return "full_inventory_indicator";
 	}
 
 	@Override
