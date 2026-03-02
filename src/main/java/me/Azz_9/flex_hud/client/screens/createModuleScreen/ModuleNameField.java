@@ -17,6 +17,7 @@ public class ModuleNameField extends TextFieldWidget implements TrackableChange 
 	public ModuleNameField(int x, int y, int width, int height, @Nullable String initialContent) {
 		super(CLIENT.textRenderer, x, y, width, height, Text.empty());
 		this.INITIAL_CONTENT = initialContent;
+		setText(initialContent);
 	}
 
 
@@ -27,7 +28,7 @@ public class ModuleNameField extends TextFieldWidget implements TrackableChange 
 
 	@Override
 	public boolean isValid() {
-		return !getText().isEmpty() && CustomModuleRegistry.isRegistered(getText());
+		return !getText().isBlank() && !isAlreadyRegistered();
 	}
 
 	@Override
@@ -35,5 +36,9 @@ public class ModuleNameField extends TextFieldWidget implements TrackableChange 
 		if (INITIAL_CONTENT != null) {
 			setText(INITIAL_CONTENT);
 		}
+	}
+
+	public boolean isAlreadyRegistered() {
+		return CustomModuleRegistry.isRegistered(CustomModuleRegistry.nameToId(getText().strip()));
 	}
 }

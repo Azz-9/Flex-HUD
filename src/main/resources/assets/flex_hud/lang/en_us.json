@@ -12,6 +12,10 @@
 	"flex_hud.configuration_screen.delete_module": "Supprimer ce module",
 
 	"flex_hud.create_module_screen.module_name": "Module name",
+	"flex_hud.create_module_screen.module_content": "Module content",
+	"flex_hud.create_module_screen.module_name.name_already_used": "This name is already used by another custom module",
+	"flex_hud.create_module_screen.module_name.blank_name": "Cannot use a blank name",
+	"flex_hud.create_module_screen.preview": "Preview",
 	"flex_hud.create_module_screen.searchbar_placeholder": "Search...",
 
 	"flex_hud.move_modules_screen": "Move modules",

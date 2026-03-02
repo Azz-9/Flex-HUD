@@ -17,6 +17,7 @@ public class ModuleContentField extends TextFieldWidget implements TrackableChan
 	public ModuleContentField(int x, int y, int width, int height, @Nullable String initialContent) {
 		super(CLIENT.textRenderer, x, y, width, height, Text.empty());
 		this.INITIAL_CONTENT = initialContent;
+		setText(initialContent);
 	}
 
 	@Override

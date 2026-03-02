@@ -12,8 +12,6 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
@@ -22,15 +20,14 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.Toggle
 
 public class CustomModule extends AbstractTextModule {
 
-	private static final Pattern VARIABLE_PATTERN = Pattern.compile("\\{([a-zA-Z0-9_.]+)}");
 
-	private final List<Token> tokens = new ArrayList<>();
-	private @NonNull String text;
+	private List<Token> tokens = new ArrayList<>();
+	private final @NonNull String text;
 
 	private @NonNull String name;
 
 	private CustomModule(@NonNull String name, @NonNull String text) {
-		super("cutsom_module-" + name.toLowerCase().replace(' ', '_'), 0, 0, AnchorPosition.START, AnchorPosition.START);
+		super(CustomModuleRegistry.nameToId(name), 0, 0, AnchorPosition.START, AnchorPosition.START);
 		this.name = name;
 		this.text = text;
 
@@ -41,41 +38,7 @@ public class CustomModule extends AbstractTextModule {
 	public static CustomModule fromText(@NonNull String id, @NonNull String text) {
 		CustomModule module = new CustomModule(id, text);
 
-		if (text.isEmpty()) {
-			return module;
-		}
-
-		Matcher matcher = VARIABLE_PATTERN.matcher(text);
-
-		int lastEnd = 0;
-
-		while (matcher.find()) {
-
-			if (matcher.start() > lastEnd) {
-				String before = text.substring(lastEnd, matcher.start());
-				if (!before.isEmpty()) {
-					module.tokens.add(new TextToken(before));
-				}
-			}
-
-			String key = matcher.group(1);
-			Variable<?> variable = Variables.get(key);
-
-			if (variable != null) {
-				module.tokens.add(new VariableToken(variable));
-			} else {
-				module.tokens.add(new TextToken(matcher.group()));
-			}
-
-			lastEnd = matcher.end();
-		}
-
-		if (lastEnd < text.length()) {
-			String remaining = text.substring(lastEnd);
-			if (!remaining.isEmpty()) {
-				module.tokens.add(new TextToken(remaining));
-			}
-		}
+		module.tokens = TokenParser.parseText(text);
 
 		module.init();
 		return module;

@@ -12,6 +12,10 @@
 	"flex_hud.configuration_screen.delete_module": "Delete module",
 
 	"flex_hud.create_module_screen.module_name": "Nom du module",
+	"flex_hud.create_module_screen.module_content": "Contenu du module",
+	"flex_hud.create_module_screen.module_name.name_already_used": "Ce nom est déjà utilisé par un autre module personnalisé.",
+	"flex_hud.create_module_screen.module_name.blank_name": "Impossible de donner un nom vide à un module",
+	"flex_hud.create_module_screen.preview": "Aperçu",
 	"flex_hud.create_module_screen.searchbar_placeholder": "Rechercher...",
 
 	"flex_hud.move_modules_screen": "Déplacer les modules",

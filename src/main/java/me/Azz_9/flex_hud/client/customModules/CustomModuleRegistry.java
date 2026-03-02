@@ -27,4 +27,8 @@ public class CustomModuleRegistry {
 	public static boolean isRegistered(@NonNull String id) {
 		return registered.contains(id);
 	}
+
+	public static String nameToId(@NonNull String name) {
+		return "cutsom_module-" + name.toLowerCase().replace(' ', '_');
+	}
 }
