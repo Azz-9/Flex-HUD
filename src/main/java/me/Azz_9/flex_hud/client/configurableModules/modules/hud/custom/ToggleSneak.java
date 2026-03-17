@@ -5,7 +5,7 @@ import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 import com.mojang.blaze3d.platform.InputConstants;
 
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
@@ -46,7 +46,7 @@ public class ToggleSneak extends AbstractTextModule {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 		if (shouldNotRender() || MINECRAFT.player == null && !Flex_hudClient.isInMoveElementScreen) {
 			return;
 		}
@@ -62,7 +62,7 @@ public class ToggleSneak extends AbstractTextModule {
 
 		drawBackground(graphics);
 
-		graphics.drawString(MINECRAFT.font, statusMessage, 0, 0, getColor(), this.shadow.getValue());
+		graphics.text(MINECRAFT.font, statusMessage, 0, 0, getColor(), this.shadow.getValue());
 
 		matrices.popMatrix();
 	}

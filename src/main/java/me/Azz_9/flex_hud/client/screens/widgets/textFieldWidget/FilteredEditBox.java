@@ -3,6 +3,7 @@ package me.Azz_9.flex_hud.client.screens.widgets.textFieldWidget;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
+
 import org.jspecify.annotations.NonNull;
 
 import java.util.function.Predicate;
@@ -21,7 +22,7 @@ public class FilteredEditBox extends EditBox {
 
 	@Override
 	public void setValue(@NonNull String value) {
-		if (filter.test(value)) {
+		if (filter != null && filter.test(value)) {
 			super.setValue(value);
 		}
 	}

@@ -2,6 +2,18 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+
+import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix3x2fStack;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
@@ -10,17 +22,6 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfiguratio
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
-import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
-import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
 public class FullInventoryIndicator extends AbstractTextModule implements TickableModule {
 
@@ -56,7 +57,7 @@ public class FullInventoryIndicator extends AbstractTextModule implements Tickab
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && MINECRAFT.player == null) {
 			return;
 		}
@@ -72,7 +73,7 @@ public class FullInventoryIndicator extends AbstractTextModule implements Tickab
 
 			drawBackground(graphics);
 
-			graphics.drawString(MINECRAFT.font, Component.translatable("flex_hud.full_inventory_indicator.label"), 0, 0, getColor(), shadow.getValue());
+			graphics.text(MINECRAFT.font, Component.translatable("flex_hud.full_inventory_indicator.label"), 0, 0, getColor(), shadow.getValue());
 
 			matrices.popMatrix();
 		}

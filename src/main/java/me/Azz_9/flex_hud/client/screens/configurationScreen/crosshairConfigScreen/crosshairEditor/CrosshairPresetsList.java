@@ -2,18 +2,19 @@ package me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScre
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 
-import me.Azz_9.flex_hud.client.screens.AbstractSmoothScrollableList;
-import me.Azz_9.flex_hud.client.utils.Cursors;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.input.MouseButtonEvent;
+
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+
+import me.Azz_9.flex_hud.client.screens.AbstractSmoothScrollableList;
+import me.Azz_9.flex_hud.client.utils.Cursors;
 
 public class CrosshairPresetsList extends AbstractSmoothScrollableList<CrosshairPresetsList.CrosshairEntry> {
 	private final CrosshairEditor crosshairEditor;
@@ -296,7 +297,7 @@ public class CrosshairPresetsList extends AbstractSmoothScrollableList<Crosshair
 		}
 
 		@Override
-		public void renderContent(@NonNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+		public void extractContent(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
 			if (this.isMouseOver(mouseX, mouseY)) {
 				graphics.requestCursor(Cursors.POINTING_HAND);
 				graphics.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), 0x10000000);

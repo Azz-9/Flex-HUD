@@ -6,7 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.numbers.NumberFormat;
@@ -84,7 +84,7 @@ public class Scoreboard extends AbstractMovableModule {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && (MINECRAFT.level == null || MINECRAFT.player == null)) {
 			return;
 		}
@@ -111,7 +111,7 @@ public class Scoreboard extends AbstractMovableModule {
 		}
 	}
 
-	private void renderScoreboardSidebar(GuiGraphics graphics, Objective objective) {
+	private void renderScoreboardSidebar(GuiGraphicsExtractor graphics, Objective objective) {
 		net.minecraft.world.scores.Scoreboard scoreboard = objective.getScoreboard();
 		NumberFormat objectiveScoreFormat = objective.numberFormatOrDefault(StyledFormat.SIDEBAR_DEFAULT);
 
@@ -168,14 +168,14 @@ public class Scoreboard extends AbstractMovableModule {
 			graphics.fill(0, 0, getWidth(), MINECRAFT.font.lineHeight, titleBackground);
 			graphics.fill(0, MINECRAFT.font.lineHeight, getWidth(), getHeight(), contentBackground);
 		}
-		graphics.drawString(MINECRAFT.font, text, (getWidth() - textWidth) / 2, 1, CommonColors.WHITE, shadow.getValue());
+		graphics.text(MINECRAFT.font, text, (getWidth() - textWidth) / 2, 1, CommonColors.WHITE, shadow.getValue());
 
 		for (int i = 0; i < entriesToDisplay.length; i++) {
 			DisplayEntry displayEntry = entriesToDisplay[i];
 			int y = getHeight() - (entriesToDisplay.length - i) * MINECRAFT.font.lineHeight;
-			graphics.drawString(MINECRAFT.font, displayEntry.name, PADDING, y, CommonColors.WHITE, shadow.getValue());
+			graphics.text(MINECRAFT.font, displayEntry.name, PADDING, y, CommonColors.WHITE, shadow.getValue());
 			if (showScore.getValue()) {
-				graphics.drawString(MINECRAFT.font, displayEntry.score, getWidth() - displayEntry.scoreWidth - PADDING, y, CommonColors.WHITE, shadow.getValue());
+				graphics.text(MINECRAFT.font, displayEntry.score, getWidth() - displayEntry.scoreWidth - PADDING, y, CommonColors.WHITE, shadow.getValue());
 			}
 		}
 

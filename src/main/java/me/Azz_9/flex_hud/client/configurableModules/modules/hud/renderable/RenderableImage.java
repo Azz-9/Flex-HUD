@@ -1,9 +1,10 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable;
 
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
+
 import org.jetbrains.annotations.NotNull;
 
 public class RenderableImage extends Renderable {
@@ -19,7 +20,7 @@ public class RenderableImage extends Renderable {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, image, x, y, width, height);
 	}
 }

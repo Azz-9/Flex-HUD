@@ -1,22 +1,23 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector;
 
-import me.Azz_9.flex_hud.client.utils.Cursors;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+
 import org.joml.Matrix3x2fStack;
 import org.jspecify.annotations.NonNull;
 import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
 
-import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
-import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+import me.Azz_9.flex_hud.client.utils.Cursors;
 
 public class HueWidget extends AbstractWidget.WithInactiveMessage {
 	private float selectedHue;
@@ -32,7 +33,7 @@ public class HueWidget extends AbstractWidget.WithInactiveMessage {
 	}
 
 	@Override
-	protected void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
+	protected void extractWidgetRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (this.isActive() && this.isHovered()) {
 			graphics.requestCursor(Cursors.POINTING_HAND);
 		}
@@ -46,13 +47,14 @@ public class HueWidget extends AbstractWidget.WithInactiveMessage {
 		// Draw the cursor
 		int cursorWidth = getWidth();
 		int cursorHeight = cursorWidth / 4;
-		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, Identifier.fromNamespaceAndPath(MOD_ID, "widgets/color_selector/hue_cursor.png"),
+		graphics.blit(RenderPipelines.GUI_TEXTURED, Identifier.fromNamespaceAndPath(MOD_ID, "widgets/color_selector/hue_cursor.png"),
 				0, -2, 0, 0, cursorWidth, cursorHeight, cursorWidth, cursorHeight);
 
 		matrices.popMatrix();
 	}
 
-	private void drawHueBar(GuiGraphics graphics) {
+	private void drawHueBar(GuiGraphicsExtractor graphics) {
+		// TODO remplacer par un render state custom
 		for (int i = 0; i < getHeight(); i++) {
 			int color = Color.HSBtoRGB(i / (float) getHeight(), 1.0f, 1.0f);
 			graphics.fill(getX(), getY() + i, getX() + getWidth(), getY() + i + 1, color);

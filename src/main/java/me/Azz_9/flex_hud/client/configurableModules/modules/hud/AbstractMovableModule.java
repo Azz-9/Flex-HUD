@@ -2,16 +2,16 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
-import net.minecraft.client.Minecraft;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public abstract class AbstractMovableModule extends AbstractModule implements HudElement {
 

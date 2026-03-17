@@ -2,6 +2,20 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Component;
+
+import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix3x2fStack;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
@@ -16,19 +30,6 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.Toggle
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
-import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Coordinates extends AbstractTextModule {
 	private final ConfigBoolean showY = new ConfigBoolean(true, "flex_hud.coordinates.config.show_y");
@@ -59,7 +60,7 @@ public class Coordinates extends AbstractTextModule {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && MINECRAFT.player == null) {
 			return;
 		}

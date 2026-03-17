@@ -4,7 +4,7 @@ import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -60,7 +60,7 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 		if (shouldNotRender()) {
 			return;
 		}
@@ -72,7 +72,7 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 		}
 	}
 
-	private void renderSign(@NotNull GuiGraphics graphics, @NotNull RenderData data) {
+	private void renderSign(@NotNull GuiGraphicsExtractor graphics, @NotNull RenderData data) {
 		if (data.texture == null) return;
 
 		float textureScale; // used to make the texture bigger by default
@@ -112,7 +112,7 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 		matrices.popMatrix();
 	}
 
-	private void renderSignText(@NotNull GuiGraphics graphics, @NotNull RenderData data) {
+	private void renderSignText(@NotNull GuiGraphicsExtractor graphics, @NotNull RenderData data) {
 		if (data.texture == null) return;
 
 		Font font = MINECRAFT.font;
@@ -138,12 +138,12 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 				for (int dx = -1; dx <= 1; dx++) {
 					for (int dy = -1; dy <= 1; dy++) {
 						if (dx == 0 && dy == 0) continue;
-						graphics.drawString(font, glowLine, x + dx, y + dy, data.glowColor, false);
+						graphics.text(font, glowLine, x + dx, y + dy, data.glowColor, false);
 					}
 				}
 			}
 
-			graphics.drawString(font, line, x, y, data.textColor, false);
+			graphics.text(font, line, x, y, data.textColor, false);
 		}
 	}
 

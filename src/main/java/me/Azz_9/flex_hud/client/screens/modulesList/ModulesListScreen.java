@@ -1,21 +1,24 @@
 package me.Azz_9.flex_hud.client.screens.modulesList;
 
 import com.google.common.collect.ImmutableList;
-import me.Azz_9.flex_hud.client.configurableModules.ConfigLoader;
-import me.Azz_9.flex_hud.client.configurableModules.Configurable;
-import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
-import me.Azz_9.flex_hud.client.screens.AbstractBackNavigableScreen;
-import me.Azz_9.flex_hud.client.screens.widgets.textFieldWidget.PlaceholderTextFieldWidget;
-import net.minecraft.client.gui.GuiGraphics;
+
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
+
+import me.Azz_9.flex_hud.client.configurableModules.ConfigLoader;
+import me.Azz_9.flex_hud.client.configurableModules.Configurable;
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
+import me.Azz_9.flex_hud.client.screens.AbstractBackNavigableScreen;
+import me.Azz_9.flex_hud.client.screens.widgets.textFieldWidget.PlaceholderTextFieldWidget;
 
 public class ModulesListScreen extends AbstractBackNavigableScreen {
 
@@ -70,12 +73,12 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 	}
 
 	@Override
-	public void render(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-		super.render(graphics, mouseX, mouseY, delta);
+	public void extractRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+		super.extractRenderState(graphics, mouseX, mouseY, delta);
 
-		graphics.drawCenteredString(font, title, this.width / 2, 7, 0xffffffff);
+		graphics.centeredText(font, title, this.width / 2, 7, 0xffffffff);
 
-		this.modulesListWidget.render(graphics, mouseX, mouseY, delta);
+		this.modulesListWidget.extractRenderState(graphics, mouseX, mouseY, delta);
 	}
 
 	@Override

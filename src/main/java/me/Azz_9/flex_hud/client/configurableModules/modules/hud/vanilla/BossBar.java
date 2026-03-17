@@ -2,17 +2,9 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.vanilla;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 
-import me.Azz_9.flex_hud.client.Flex_hudClient;
-import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractMovableModule;
-import me.Azz_9.flex_hud.client.mixin.bossBar.BossBarAccessor;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -20,12 +12,21 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
+
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractMovableModule;
+import me.Azz_9.flex_hud.client.mixin.bossBar.BossBarAccessor;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 
 public class BossBar extends AbstractMovableModule {
 	private static final Identifier[] BACKGROUND_TEXTURES = new Identifier[]{
@@ -71,7 +72,7 @@ public class BossBar extends AbstractMovableModule {
 		setHeight(BOSS_BAR_GAP + MINECRAFT.font.lineHeight);
 	}
 
-	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 		if (shouldNotRender()) {
 			return;
 		}
@@ -91,7 +92,7 @@ public class BossBar extends AbstractMovableModule {
 			Component text = Component.literal("Boss bar");
 			int textX = (bossBarWidth - MINECRAFT.font.width(text)) / 2;
 			int textY = 0;
-			graphics.drawString(MINECRAFT.font, text, textX, textY, 0xffffffff);
+			graphics.text(MINECRAFT.font, text, textX, textY, 0xffffffff);
 
 			matrices.popMatrix();
 			return;
@@ -123,7 +124,7 @@ public class BossBar extends AbstractMovableModule {
 			Component text = clientBossBar.getName();
 			int textX = (bossBarWidth - MINECRAFT.font.width(text)) / 2;
 			int textY = y - MINECRAFT.font.lineHeight;
-			graphics.drawString(MINECRAFT.font, text, textX, textY, 0xffffffff);
+			graphics.text(MINECRAFT.font, text, textX, textY, 0xffffffff);
 			y += BOSS_BAR_GAP + MINECRAFT.font.lineHeight;
 			counter += 1;
 		}
@@ -131,7 +132,7 @@ public class BossBar extends AbstractMovableModule {
 		matrices.popMatrix();
 	}
 
-	private void renderBossBar(GuiGraphics graphics, int x, int y, int width, int height, BossEvent event) {
+	private void renderBossBar(GuiGraphicsExtractor graphics, int x, int y, int width, int height, BossEvent event) {
 		this.renderBossBar(graphics, x, y, event, width, height, width, BACKGROUND_TEXTURES, NOTCHED_BACKGROUND_TEXTURES);
 		int progressWidth = Mth.lerpDiscrete(event.getProgress(), 0, width);
 		if (progressWidth > 0) {
@@ -140,7 +141,7 @@ public class BossBar extends AbstractMovableModule {
 
 	}
 
-	private void renderBossBar(GuiGraphics graphics, int x, int y, BossEvent event, int width, int height, int progressWidth, Identifier[] textures, Identifier[] notchedTextures) {
+	private void renderBossBar(GuiGraphicsExtractor graphics, int x, int y, BossEvent event, int width, int height, int progressWidth, Identifier[] textures, Identifier[] notchedTextures) {
 		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, textures[event.getColor().ordinal()], width, height, 0, 0, x, y, progressWidth, height);
 		if (event.getOverlay() != BossEvent.BossBarOverlay.PROGRESS) {
 			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, notchedTextures[event.getOverlay().ordinal() - 1], width, height, 0, 0, x, y, progressWidth, height);

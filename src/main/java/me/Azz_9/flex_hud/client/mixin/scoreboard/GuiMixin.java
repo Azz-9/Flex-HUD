@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.client.mixin.scoreboard;
 
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -14,8 +14,8 @@ import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 @Mixin(Gui.class)
 public abstract class GuiMixin {
 
-	@Inject(method = "renderScoreboardSidebar", at = @At("HEAD"), cancellable = true)
-	private void renderScoreboardSidebar(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+	@Inject(method = "extractScoreboardSidebar", at = @At("HEAD"), cancellable = true)
+	private void extractScoreboardSidebar(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
 		if (ModulesHelper.getInstance().isEnabled.getValue() && ModulesHelper.getInstance().scoreboard.enabled.getValue()) {
 			ci.cancel();
 		}

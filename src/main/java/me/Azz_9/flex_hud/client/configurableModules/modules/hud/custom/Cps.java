@@ -2,6 +2,14 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+
+import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix3x2fStack;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
@@ -10,13 +18,6 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorB
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.utils.cps.CpsUtils;
-import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
 public class Cps extends AbstractTextModule {
 	public final ConfigBoolean showLeftClick = new ConfigBoolean(true, "flex_hud.cps.config.show_left_click");
@@ -50,7 +51,7 @@ public class Cps extends AbstractTextModule {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 		if (shouldNotRender()) {
 			return;
 		}
@@ -83,7 +84,7 @@ public class Cps extends AbstractTextModule {
 
 		drawBackground(graphics);
 
-		graphics.drawString(MINECRAFT.font, text, 0, 0, getColor(), this.shadow.getValue());
+		graphics.text(MINECRAFT.font, text, 0, 0, getColor(), this.shadow.getValue());
 
 		matrices.popMatrix();
 	}

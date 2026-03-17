@@ -3,26 +3,16 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.vanilla;
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 
 import com.mojang.blaze3d.pipeline.BlendFunction;
+import com.mojang.blaze3d.pipeline.ColorTargetState;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.platform.DestFactor;
 import com.mojang.blaze3d.platform.SourceFactor;
-import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
-import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
-import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.HudElement;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigFloat;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigIntGrid;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.AbstractCrosshairConfigScreen;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.CrosshairEditorEntry;
+
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.AttackIndicatorStatus;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.BlockPos;
@@ -37,14 +27,27 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
+
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2fStack;
+
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
+import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.HudElement;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigFloat;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigIntGrid;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.AbstractCrosshairConfigScreen;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.CrosshairEditorEntry;
 
 public class Crosshair extends AbstractModule implements HudElement {
 
 	private static final RenderPipeline CROSSHAIR_PIPELINE = RenderPipelines.register(RenderPipeline.builder(RenderPipelines.GUI_SNIPPET)
 			.withLocation("pipeline/crosshair_no_tex")
-			.withBlend(new BlendFunction(SourceFactor.ONE_MINUS_DST_COLOR, DestFactor.ONE_MINUS_SRC_COLOR, SourceFactor.ONE, DestFactor.ZERO))
+			.withColorTargetState(new ColorTargetState(new BlendFunction(SourceFactor.ONE_MINUS_DST_COLOR, DestFactor.ONE_MINUS_SRC_COLOR, SourceFactor.ONE, DestFactor.ZERO)))
 			.build()
 	);
 
@@ -102,7 +105,7 @@ public class Crosshair extends AbstractModule implements HudElement {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 		if (shouldNotRender() || MINECRAFT.player == null ||
 				!MINECRAFT.options.getCameraType().isFirstPerson() || MINECRAFT.gameMode == null ||
 				(MINECRAFT.gameMode.getPlayerMode() == GameType.SPECTATOR && !this.canRenderCrosshairForSpectator(MINECRAFT.hitResult)) ||

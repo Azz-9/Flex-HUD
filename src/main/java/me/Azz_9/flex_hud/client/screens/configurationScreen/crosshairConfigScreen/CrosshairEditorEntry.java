@@ -2,21 +2,22 @@ package me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScre
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 
-import me.Azz_9.flex_hud.client.screens.TrackableChange;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.ScrollableConfigList;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigIntGrid;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.crosshairEditor.CrosshairEditor;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.network.chat.Component;
+
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import me.Azz_9.flex_hud.client.screens.TrackableChange;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.ScrollableConfigList;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigIntGrid;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.crosshairEditor.CrosshairEditor;
 
 public class CrosshairEditorEntry extends ScrollableConfigList.AbstractConfigEntry {
 	private CrosshairButtonWidget<?> crosshairButtonWidget;
@@ -64,10 +65,10 @@ public class CrosshairEditorEntry extends ScrollableConfigList.AbstractConfigEnt
 	}
 
 	@Override
-	public void renderContent(@NonNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
-		super.renderContent(graphics, mouseX, mouseY, hovered, deltaTicks);
+	public void extractContent(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+		super.extractContent(graphics, mouseX, mouseY, hovered, deltaTicks);
 
-		crosshairButtonWidget.render(graphics, mouseX, mouseY, deltaTicks);
+		crosshairButtonWidget.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
 	}
 
 	@Override

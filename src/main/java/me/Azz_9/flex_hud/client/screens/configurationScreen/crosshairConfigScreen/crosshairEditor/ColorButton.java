@@ -1,14 +1,16 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.crosshairEditor;
 
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector.ColorBindable;
-import me.Azz_9.flex_hud.client.utils.Cursors;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
+
 import org.jspecify.annotations.NonNull;
+
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector.ColorBindable;
+import me.Azz_9.flex_hud.client.utils.Cursors;
 
 public class ColorButton extends AbstractWidget.WithInactiveMessage implements ColorBindable, DataGetter<Integer> {
 	private int color;
@@ -21,12 +23,12 @@ public class ColorButton extends AbstractWidget.WithInactiveMessage implements C
 	}
 
 	@Override
-	protected void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
+	protected void extractWidgetRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (this.isHovered()) {
 			graphics.requestCursor(Cursors.POINTING_HAND);
-			graphics.renderOutline(getX(), getY(), getWidth(), getHeight(), 0xffd0d0d0);
+			graphics.outline(getX(), getY(), getWidth(), getHeight(), 0xffd0d0d0);
 		} else {
-			graphics.renderOutline(getX(), getY(), getWidth(), getHeight(), 0xff404040);
+			graphics.outline(getX(), getY(), getWidth(), getHeight(), 0xff404040);
 		}
 
 		graphics.fill(getX() + 1, getY() + 1, getRight() - 1, getBottom() - 1, color);

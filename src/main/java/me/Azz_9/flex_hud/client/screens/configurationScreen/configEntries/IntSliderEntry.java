@@ -1,21 +1,23 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries;
 
-import me.Azz_9.flex_hud.client.screens.TrackableChange;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.ScrollableConfigList;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.slider.ConfigIntSliderWidget;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.network.chat.Component;
+
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+
+import me.Azz_9.flex_hud.client.screens.TrackableChange;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.ScrollableConfigList;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.slider.ConfigIntSliderWidget;
 
 public class IntSliderEntry extends ScrollableConfigList.AbstractConfigEntry {
 	private final ConfigIntSliderWidget<?> sliderWidget;
@@ -51,10 +53,10 @@ public class IntSliderEntry extends ScrollableConfigList.AbstractConfigEntry {
 	}
 
 	@Override
-	public void renderContent(@NonNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
-		super.renderContent(graphics, mouseX, mouseY, hovered, deltaTicks);
+	public void extractContent(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+		super.extractContent(graphics, mouseX, mouseY, hovered, deltaTicks);
 
-		sliderWidget.render(graphics, mouseX, mouseY, deltaTicks);
+		sliderWidget.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
 	}
 
 	@Override

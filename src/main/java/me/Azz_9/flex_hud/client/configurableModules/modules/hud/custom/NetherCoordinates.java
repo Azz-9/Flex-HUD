@@ -2,6 +2,16 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.Level;
+
+import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix3x2fStack;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
@@ -9,15 +19,6 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfiguratio
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
-import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
 public class NetherCoordinates extends AbstractTextModule {
 	private final ConfigBoolean onlyWhenInOverworld = new ConfigBoolean(false, "flex_hud.nether_coordinates.config.only_show_in_overworld");
@@ -47,7 +48,7 @@ public class NetherCoordinates extends AbstractTextModule {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 		LocalPlayer player = MINECRAFT.player;
 
 		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && (player == null || !player.level().dimension().equals(Level.OVERWORLD) && this.onlyWhenInOverworld.getValue() || player.level().dimension().equals(Level.END))) {
@@ -85,7 +86,7 @@ public class NetherCoordinates extends AbstractTextModule {
 
 		drawBackground(graphics);
 
-		graphics.drawString(MINECRAFT.font, text, 0, 0, getColor(), this.shadow.getValue());
+		graphics.text(MINECRAFT.font, text, 0, 0, getColor(), this.shadow.getValue());
 
 		matrices.popMatrix();
 	}

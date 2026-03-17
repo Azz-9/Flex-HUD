@@ -2,19 +2,12 @@ package me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 
-import me.Azz_9.flex_hud.client.screens.TrackableChange;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.ScrollableConfigList;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.ConfigColorButtonWidget;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector.ColorSelector;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.network.chat.Component;
+
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
@@ -22,6 +15,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+
+import me.Azz_9.flex_hud.client.screens.TrackableChange;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.ScrollableConfigList;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.ConfigColorButtonWidget;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector.ColorSelector;
 
 public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 	private ConfigColorButtonWidget colorButtonWidget;
@@ -67,10 +68,10 @@ public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 	}
 
 	@Override
-	public void renderContent(@NonNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
-		super.renderContent(graphics, mouseX, mouseY, hovered, deltaTicks);
+	public void extractContent(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+		super.extractContent(graphics, mouseX, mouseY, hovered, deltaTicks);
 
-		colorButtonWidget.render(graphics, mouseX, mouseY, deltaTicks);
+		colorButtonWidget.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
 	}
 
 	@Override

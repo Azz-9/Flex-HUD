@@ -1,11 +1,12 @@
 package me.Azz_9.flex_hud.client.screens.widgets.buttons;
 
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+
 import org.jspecify.annotations.NonNull;
 
 public class IconButton extends Button {
@@ -22,12 +23,12 @@ public class IconButton extends Button {
 	}
 
 	@Override
-	protected void renderContents(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
-		super.renderDefaultSprite(graphics);
+	protected void extractContents(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+		super.extractDefaultSprite(graphics);
 
 		int iconX = this.getX() + (this.width - textureWidth) / 2;
 		int iconY = this.getY() + (this.height - textureHeight) / 2;
-		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, texture, iconX, iconY, 0, 0, textureWidth, textureHeight, textureWidth, textureHeight);
+		graphics.blit(RenderPipelines.GUI_TEXTURED, texture, iconX, iconY, 0, 0, textureWidth, textureHeight, textureWidth, textureHeight);
 	}
 
 	public void setTexture(Identifier texture) {

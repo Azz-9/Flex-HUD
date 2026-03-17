@@ -2,24 +2,25 @@ package me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.butto
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.Component;
+
+import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+
+import java.util.List;
+import java.util.function.Function;
+
 import me.Azz_9.flex_hud.client.configurableModules.modules.Translatable;
 import me.Azz_9.flex_hud.client.screens.TrackableChange;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
-
-import java.util.List;
-import java.util.function.Function;
 
 public class ConfigCyclingButtonWidget<T, E extends Enum<E> & Translatable> extends Button implements TrackableChange, DataGetter<E>, ResetAware {
 	private final E INITIAL_STATE;
@@ -44,9 +45,9 @@ public class ConfigCyclingButtonWidget<T, E extends Enum<E> & Translatable> exte
 	}
 
 	@Override
-	protected void renderContents(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
-		super.renderDefaultSprite(graphics);
-		super.renderDefaultLabel(graphics.textRenderer());
+	protected void extractContents(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+		super.extractDefaultSprite(graphics);
+		super.extractDefaultLabel(graphics.textRenderer());
 
 		if (!this.active) {
 			graphics.fill(getX(), getY(), getRight(), getBottom(), 0xcf4e4e4e);

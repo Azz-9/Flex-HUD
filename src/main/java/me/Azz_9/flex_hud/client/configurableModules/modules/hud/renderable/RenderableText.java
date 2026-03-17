@@ -3,9 +3,9 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable;
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
+
 import org.jetbrains.annotations.NotNull;
 
 public class RenderableText extends Renderable {
@@ -22,9 +22,9 @@ public class RenderableText extends Renderable {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 		if (!text.getString().isBlank()) {
-			graphics.drawString(MINECRAFT.font, text, x, y, textColor, shadow);
+			graphics.text(MINECRAFT.font, text, x, y, textColor, shadow);
 		}
 	}
 }

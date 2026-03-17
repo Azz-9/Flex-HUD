@@ -2,6 +2,16 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+
+import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix3x2fStack;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
@@ -12,15 +22,6 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.IntFie
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 import me.Azz_9.flex_hud.client.tickables.RaycastTickable;
-import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
 public class Distance extends AbstractTextModule implements TickableModule {
 
@@ -54,7 +55,7 @@ public class Distance extends AbstractTextModule implements TickableModule {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && MINECRAFT.getCameraEntity() == null) {
 			return;
 		}
@@ -68,7 +69,7 @@ public class Distance extends AbstractTextModule implements TickableModule {
 
 		drawBackground(graphics);
 
-		graphics.drawString(MINECRAFT.font, distanceText, 0, 0, getColor(), shadow.getValue());
+		graphics.text(MINECRAFT.font, distanceText, 0, 0, getColor(), shadow.getValue());
 
 		matrices.popMatrix();
 	}

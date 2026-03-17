@@ -1,16 +1,18 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen;
 
-import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.crosshairEditor.CrosshairEditor;
-import me.Azz_9.flex_hud.client.screens.widgets.HelpWidget;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
+
 import org.jspecify.annotations.NonNull;
 import org.lwjgl.glfw.GLFW;
+
+import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.crosshairEditor.CrosshairEditor;
+import me.Azz_9.flex_hud.client.screens.widgets.HelpWidget;
 
 public abstract class AbstractCrosshairConfigScreen extends AbstractConfigurationScreen {
 	private CrosshairEditor crosshairEditor = null;
@@ -35,12 +37,12 @@ public abstract class AbstractCrosshairConfigScreen extends AbstractConfiguratio
 	}
 
 	@Override
-	public void render(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
-		super.render(graphics, mouseX, mouseY, deltaTicks);
+	public void extractRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+		super.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
 
 		if (crosshairEditor != null && crosshairEditor.isFocused()) {
-			crosshairEditor.render(graphics, mouseX, mouseY, deltaTicks);
-			helpWidget.render(graphics, mouseX, mouseY, deltaTicks);
+			crosshairEditor.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+			helpWidget.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
 		}
 	}
 

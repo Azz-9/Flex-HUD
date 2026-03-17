@@ -2,18 +2,19 @@ package me.Azz_9.flex_hud.client.screens;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 
-import me.Azz_9.flex_hud.client.configurableModules.ConfigLoader;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
+
 import org.jspecify.annotations.NonNull;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import me.Azz_9.flex_hud.client.configurableModules.ConfigLoader;
 
 public abstract class AbstractCallbackScreen extends AbstractBackNavigableScreen {
 	private final Component MESSAGE_TITLE;
@@ -86,19 +87,19 @@ public abstract class AbstractCallbackScreen extends AbstractBackNavigableScreen
 		this.addRenderableWidget(saveButton);
 	}
 
-	protected final boolean renderCallback(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	protected final boolean renderCallback(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		if (!callbackScreen) {
-			cancelButton.render(context, mouseX, mouseY, delta);
-			saveButton.render(context, mouseX, mouseY, delta);
+			cancelButton.extractRenderState(context, mouseX, mouseY, delta);
+			saveButton.extractRenderState(context, mouseX, mouseY, delta);
 
 			return false;
 		} else {
-			callbackDiscardButton.render(context, mouseX, mouseY, delta);
-			callbackCancelButton.render(context, mouseX, mouseY, delta);
+			callbackDiscardButton.extractRenderState(context, mouseX, mouseY, delta);
+			callbackCancelButton.extractRenderState(context, mouseX, mouseY, delta);
 
 			int textColor = 0xffffffff;
-			context.drawCenteredString(font, MESSAGE_TITLE, this.width / 2, this.height / 2 - 42, textColor);
-			context.drawCenteredString(font, MESSAGE_CONTENT, this.width / 2, this.height / 2 - 30, textColor);
+			context.centeredText(font, MESSAGE_TITLE, this.width / 2, this.height / 2 - 42, textColor);
+			context.centeredText(font, MESSAGE_CONTENT, this.width / 2, this.height / 2 - 30, textColor);
 
 			return true;
 		}

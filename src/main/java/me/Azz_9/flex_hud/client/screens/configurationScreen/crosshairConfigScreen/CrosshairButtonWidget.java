@@ -1,13 +1,8 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen;
 
-import me.Azz_9.flex_hud.client.screens.TrackableChange;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigIntGrid;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
-import me.Azz_9.flex_hud.client.utils.Cursors;
-import me.Azz_9.flex_hud.client.utils.EaseUtils;
-import net.minecraft.client.gui.GuiGraphics;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -15,6 +10,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
+
 import org.joml.Matrix3x2fStack;
 import org.jspecify.annotations.NonNull;
 
@@ -22,7 +18,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+import me.Azz_9.flex_hud.client.screens.TrackableChange;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigIntGrid;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
+import me.Azz_9.flex_hud.client.utils.Cursors;
+import me.Azz_9.flex_hud.client.utils.EaseUtils;
 
 public class CrosshairButtonWidget<T> extends AbstractWidget.WithInactiveMessage implements TrackableChange, DataGetter<int[][]>, ResetAware {
 	private ConfigIntGrid variable;
@@ -45,16 +47,16 @@ public class CrosshairButtonWidget<T> extends AbstractWidget.WithInactiveMessage
 	}
 
 	@Override
-	protected void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
+	protected void extractWidgetRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (this.active) {
 			if (this.isHovered()) graphics.requestCursor(Cursors.POINTING_HAND);
 
 			drawSelectedTexture(graphics);
 
 			if (this.isHoveredOrFocused()) {
-				graphics.renderOutline(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+				graphics.outline(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
 			}
-			graphics.renderOutline(getRight() - getHeight(), getY(), getHeight(), getHeight(), (this.isHovered() ? 0xffd0d0d0 : 0xff404040));
+			graphics.outline(getRight() - getHeight(), getY(), getHeight(), getHeight(), (this.isHovered() ? 0xffd0d0d0 : 0xff404040));
 		} else {
 			if (this.isHovered()) graphics.requestCursor(Cursors.NOT_ALLOWED);
 		}
@@ -77,7 +79,7 @@ public class CrosshairButtonWidget<T> extends AbstractWidget.WithInactiveMessage
 		}
 	}
 
-	private void drawSelectedTexture(GuiGraphics graphics) {
+	private void drawSelectedTexture(GuiGraphicsExtractor graphics) {
 		boolean currentlyHovered = this.isHovered();
 
 		// Handle transition triggers
@@ -113,7 +115,7 @@ public class CrosshairButtonWidget<T> extends AbstractWidget.WithInactiveMessage
 
 		if (alpha > 0) {
 			Identifier selectedTexture = Identifier.fromNamespaceAndPath(MOD_ID, "widgets/buttons/selected.png");
-			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selectedTexture, this.getX(), this.getY(), 0, 0, this.width - this.height, this.height, 120, 20, ARGB.color(alpha, 0xFFFFFF));
+			graphics.blit(RenderPipelines.GUI_TEXTURED, selectedTexture, this.getX(), this.getY(), 0, 0, this.width - this.height, this.height, 120, 20, ARGB.color(alpha, 0xFFFFFF));
 		}
 	}
 

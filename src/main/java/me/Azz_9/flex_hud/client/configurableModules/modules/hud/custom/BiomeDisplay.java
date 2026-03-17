@@ -1,5 +1,22 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static java.util.Map.entry;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Biomes;
+
+import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix3x2fStack;
+
+import java.util.Map;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
@@ -7,22 +24,6 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfiguratio
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
-import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.biome.Biomes;
-import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
-
-import java.util.Map;
-
-import static java.util.Map.entry;
-import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 
 public class BiomeDisplay extends AbstractTextModule {
 	private final ConfigBoolean biomeSpecificColor = new ConfigBoolean(true, "flex_hud.biome_display.config.biome_specific_color");
@@ -53,7 +54,7 @@ public class BiomeDisplay extends AbstractTextModule {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && MINECRAFT.player == null) {
 			return;
 		}
@@ -93,8 +94,8 @@ public class BiomeDisplay extends AbstractTextModule {
 
 		drawBackground(graphics);
 
-		graphics.drawString(MINECRAFT.font, prefix, 0, 0, getColor(), shadow.getValue());
-		graphics.drawString(MINECRAFT.font, biomeName, prefixWidth, 0, biomeTextColor, shadow.getValue());
+		graphics.text(MINECRAFT.font, prefix, 0, 0, getColor(), shadow.getValue());
+		graphics.text(MINECRAFT.font, biomeName, prefixWidth, 0, biomeTextColor, shadow.getValue());
 
 		matrices.popMatrix();
 	}

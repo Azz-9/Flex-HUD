@@ -2,9 +2,24 @@ package me.Azz_9.flex_hud.client.screens.moveModulesScreen.widgets;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 
+import com.mojang.blaze3d.platform.cursor.CursorType;
+
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.Component;
+
+import org.joml.Matrix3x2fStack;
+import org.jspecify.annotations.NonNull;
+import org.lwjgl.glfw.GLFW;
+
+import java.util.HashSet;
+import java.util.Set;
+
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractMovableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.DimensionHud;
-import com.mojang.blaze3d.platform.cursor.CursorType;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.MovableModule;
 import me.Azz_9.flex_hud.client.mixin.CursorAccessor;
 import me.Azz_9.flex_hud.client.screens.TrackableChange;
@@ -12,19 +27,6 @@ import me.Azz_9.flex_hud.client.screens.moveModulesScreen.MoveModulesScreen;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.actions.MoveAction;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.actions.ScaleAction;
 import me.Azz_9.flex_hud.client.utils.Cursors;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.network.chat.Component;
-import org.joml.Matrix3x2fStack;
-import org.jspecify.annotations.NonNull;
-import org.lwjgl.glfw.GLFW;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class MovableWidget extends AbstractWidget.WithInactiveMessage implements TrackableChange {
 	private final MoveModulesScreen PARENT;
@@ -82,14 +84,14 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 	}
 
 	// i don't want to use the render method that already exists in ClickableWidget because it sets the value of hovered, and here, i'm setting this in the method mouseMove
-	public void draw(GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
+	public void draw(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (this.visible) {
-			this.renderWidget(graphics, mouseX, mouseY, deltaTicks);
+			this.extractWidgetRenderState(graphics, mouseX, mouseY, deltaTicks);
 		}
 	}
 
 	@Override
-	protected void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
+	protected void extractWidgetRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (((CursorAccessor) graphics).getCursor() == CursorType.DEFAULT) {
 			if (this.isScaleHandleHovered(mouseX, mouseY) || isDraggingScalehandle) {
 				graphics.requestCursor(
@@ -111,19 +113,19 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 			color = 0x7fa8a8ac;
 		}
 
-		graphics.renderOutline(getX(), getY(), getWidth(), getHeight(), color);
+		graphics.outline(getX(), getY(), getWidth(), getHeight(), color);
 
 		if (shouldDrawHorizontalSnapLine) {
-			graphics.hLine(0, graphics.guiWidth(), snapLineY, 0x7fff0000);
+			graphics.horizontalLine(0, graphics.guiWidth(), snapLineY, 0x7fff0000);
 		}
 		if (shouldDrawVerticalSnapLine) {
-			graphics.vLine(snapLineX, 0, graphics.guiHeight(), 0x7fff0000);
+			graphics.verticalLine(snapLineX, 0, graphics.guiHeight(), 0x7fff0000);
 		}
 
 		renderScaleHandler(graphics);
 	}
 
-	public void renderScaleHandler(GuiGraphics graphics) {
+	public void renderScaleHandler(GuiGraphicsExtractor graphics) {
 		graphics.fill(handleX, handleY, handleX + HANDLE_SIZE, handleY + HANDLE_SIZE, 0xffF8F8FC);
 
 		if (shouldDrawScaleValue) {
@@ -143,7 +145,7 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 			matrices.translate(valueX, valueY);
 			matrices.scale(0.75f, 0.75f);
 
-			graphics.drawString(MINECRAFT.font, text, 0, 0, 0xffffffff, true);
+			graphics.text(MINECRAFT.font, text, 0, 0, 0xffffffff, true);
 
 			matrices.popMatrix();
 		}

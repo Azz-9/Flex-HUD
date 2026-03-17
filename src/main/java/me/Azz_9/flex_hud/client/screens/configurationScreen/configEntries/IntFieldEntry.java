@@ -1,19 +1,16 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries;
 
-import me.Azz_9.flex_hud.client.screens.TrackableChange;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.ScrollableConfigList;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.fields.ConfigIntFieldWidget;
-import me.Azz_9.flex_hud.client.screens.widgets.buttons.TexturedButtonWidget;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
@@ -21,8 +18,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
-import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+import me.Azz_9.flex_hud.client.screens.TrackableChange;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.ScrollableConfigList;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.fields.ConfigIntFieldWidget;
+import me.Azz_9.flex_hud.client.screens.widgets.buttons.TexturedButtonWidget;
 
 public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 	private final ConfigIntFieldWidget intFieldWidget;
@@ -83,18 +84,18 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 	}
 
 	@Override
-	public void renderContent(@NonNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
-		super.renderContent(graphics, mouseX, mouseY, hovered, deltaTicks);
+	public void extractContent(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+		super.extractContent(graphics, mouseX, mouseY, hovered, deltaTicks);
 
-		increaseButton.render(graphics, mouseX, mouseY, deltaTicks);
+		increaseButton.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
 		if (!increaseButton.active) {
 			graphics.fill(increaseButton.getX(), increaseButton.getY(), increaseButton.getRight(), increaseButton.getBottom(), 0xcf4e4e4e);
 		}
-		decreaseButton.render(graphics, mouseX, mouseY, deltaTicks);
+		decreaseButton.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
 		if (!decreaseButton.active) {
 			graphics.fill(decreaseButton.getX(), decreaseButton.getY(), decreaseButton.getRight(), decreaseButton.getBottom(), 0xcf4e4e4e);
 		}
-		intFieldWidget.render(graphics, mouseX, mouseY, deltaTicks);
+		intFieldWidget.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
 	}
 
 	@Override

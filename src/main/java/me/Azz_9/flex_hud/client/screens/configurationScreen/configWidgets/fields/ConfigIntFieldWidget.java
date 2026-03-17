@@ -1,5 +1,19 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.fields;
 
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.ARGB;
+
+import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
+
 import me.Azz_9.flex_hud.client.screens.TrackableChange;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
@@ -7,18 +21,6 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGe
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
 import me.Azz_9.flex_hud.client.screens.widgets.buttons.TexturedButtonWidget;
 import me.Azz_9.flex_hud.client.screens.widgets.textFieldWidget.FilteredEditBox;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.network.chat.Component;
-import net.minecraft.util.ARGB;
-import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Function;
 
 public class ConfigIntFieldWidget extends FilteredEditBox implements TrackableChange, DataGetter<Integer>, ResetAware {
 
@@ -83,13 +85,13 @@ public class ConfigIntFieldWidget extends FilteredEditBox implements TrackableCh
 	}
 
 	@Override
-	public void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
+	public void extractWidgetRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (this.active) {
 			if (this.isHoveredOrFocused()) {
-				graphics.renderOutline(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+				graphics.outline(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
 			}
 		}
-		super.renderWidget(graphics, mouseX, mouseY, deltaTicks);
+		super.extractWidgetRenderState(graphics, mouseX, mouseY, deltaTicks);
 		if (!this.active) {
 			graphics.fill(getX(), getY(), getRight(), getBottom(), 0xcf4e4e4e);
 		}

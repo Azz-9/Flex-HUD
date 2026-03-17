@@ -2,23 +2,25 @@ package me.Azz_9.flex_hud.client.screens.configurationScreen;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 
-import me.Azz_9.flex_hud.client.screens.AbstractSmoothScrollableList;
-import me.Azz_9.flex_hud.client.screens.TrackableChange;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.ConfigResetButtonWidget;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.network.chat.Component;
+
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+
+import me.Azz_9.flex_hud.client.screens.AbstractSmoothScrollableList;
+import me.Azz_9.flex_hud.client.screens.TrackableChange;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.ConfigResetButtonWidget;
 
 public class ScrollableConfigList extends AbstractSmoothScrollableList<ScrollableConfigList.AbstractConfigEntry> {
 	private final int itemWidth;
@@ -97,9 +99,9 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 		}
 
 		@Override
-		public void renderContent(@NonNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
-			this.resetButtonWidget.render(graphics, mouseX, mouseY, deltaTicks);
-			graphics.drawString(MINECRAFT.font, text, textX, textY, textColor, true);
+		public void extractContent(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+			this.resetButtonWidget.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+			graphics.text(MINECRAFT.font, text, textX, textY, textColor, true);
 		}
 
 		@Override

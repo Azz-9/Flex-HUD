@@ -1,17 +1,19 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud;
 
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable.MultiRenderable;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigDouble;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigFloat;
 import me.Azz_9.flex_hud.client.utils.BoolBinding;
-import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.GuiGraphics;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class DimensionHud implements MovableModule {
 	private final ConfigDouble offsetX, offsetY;
@@ -124,7 +126,7 @@ public class DimensionHud implements MovableModule {
 		this.multiRenderables.add(multiRenderable);
 	}
 
-	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 		if (isDisplayed()) {
 			for (MultiRenderable multiRenderable : multiRenderables) {
 				multiRenderable.render(graphics, deltaTracker);

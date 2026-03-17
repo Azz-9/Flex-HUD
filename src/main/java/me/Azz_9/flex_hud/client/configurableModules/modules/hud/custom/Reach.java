@@ -2,6 +2,14 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+
+import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix3x2fStack;
+
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
@@ -11,13 +19,6 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.IntFie
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 import me.Azz_9.flex_hud.client.tickables.ReachTickable;
-import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
 public class Reach extends AbstractTextModule implements TickableModule {
 	public final ConfigInteger digits = new ConfigInteger(2, "flex_hud.reach.config.number_of_digits", 0, 16);
@@ -50,7 +51,7 @@ public class Reach extends AbstractTextModule implements TickableModule {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 		if (shouldNotRender()) {
 			return;
 		}
@@ -64,7 +65,7 @@ public class Reach extends AbstractTextModule implements TickableModule {
 
 		drawBackground(graphics);
 
-		graphics.drawString(MINECRAFT.font, text, 0, 0, getColor(), this.shadow.getValue());
+		graphics.text(MINECRAFT.font, text, 0, 0, getColor(), this.shadow.getValue());
 
 		matrices.popMatrix();
 	}

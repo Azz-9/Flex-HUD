@@ -2,6 +2,19 @@ package me.Azz_9.flex_hud.client.screens.moveModulesScreen;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.Component;
+
+import org.jspecify.annotations.NonNull;
+import org.lwjgl.glfw.GLFW;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
@@ -11,18 +24,6 @@ import me.Azz_9.flex_hud.client.screens.AbstractCallbackScreen;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.actions.UndoManager;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.widgets.MovableWidget;
 import me.Azz_9.flex_hud.client.screens.widgets.HelpWidget;
-import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.network.chat.Component;
-import org.jspecify.annotations.NonNull;
-
-import org.lwjgl.glfw.GLFW;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MoveModulesScreen extends AbstractCallbackScreen {
 	private HelpWidget helpWidget;
@@ -75,9 +76,9 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 	}
 
 	@Override
-	public void render(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
+	public void extractRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (MINECRAFT.level == null) {
-			super.renderBackground(graphics, mouseX, mouseY, deltaTicks);
+			super.extractBackground(graphics, mouseX, mouseY, deltaTicks);
 		}
 
 		if (renderCallback(graphics, mouseX, mouseY, deltaTicks)) {
@@ -102,7 +103,7 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 
 		movableWidgets.forEach(widget -> widget.draw(graphics, mouseX, mouseY, deltaTicks));
 
-		helpWidget.render(graphics, mouseX, mouseY, deltaTicks);
+		helpWidget.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
 	}
 
 	public List<MovableWidget> getMovableWidgets() {
@@ -110,9 +111,9 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 	}
 
 	@Override
-	public void renderBackground(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
+	public void extractBackground(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (isCallbackScreen() && MINECRAFT.level != null) {
-			super.renderBackground(graphics, mouseX, mouseY, deltaTicks);
+			super.extractBackground(graphics, mouseX, mouseY, deltaTicks);
 		}
 	}
 

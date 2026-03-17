@@ -2,22 +2,23 @@ package me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.slide
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.AbstractSliderButton;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.network.chat.Component;
+
+import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+
+import java.util.List;
+import java.util.function.Function;
+
 import me.Azz_9.flex_hud.client.screens.TrackableChange;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
 import me.Azz_9.flex_hud.client.utils.Cursors;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.AbstractSliderButton;
-import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
-
-import java.util.List;
-import java.util.function.Function;
 
 public class ConfigIntSliderWidget<T> extends AbstractSliderButton implements TrackableChange, DataGetter<Integer>, ResetAware {
 	private final Integer STEP;
@@ -39,16 +40,16 @@ public class ConfigIntSliderWidget<T> extends AbstractSliderButton implements Tr
 	}
 
 	@Override
-	public void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
+	public void extractWidgetRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (this.active) {
 			if (this.isHovered()) graphics.requestCursor(Cursors.POINTING_HAND);
 
 			if (this.isHoveredOrFocused()) {
-				graphics.renderOutline(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+				graphics.outline(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
 			}
 		}
 
-		super.renderWidget(graphics, mouseX, mouseY, deltaTicks);
+		super.extractWidgetRenderState(graphics, mouseX, mouseY, deltaTicks);
 
 		if (!this.active) {
 			if (this.isHovered()) graphics.requestCursor(Cursors.NOT_ALLOWED);

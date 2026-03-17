@@ -2,12 +2,7 @@ package me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScre
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector.ColorSelector;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.CrosshairButtonWidget;
-import me.Azz_9.flex_hud.client.screens.moveModulesScreen.actions.UndoManager;
-import me.Azz_9.flex_hud.client.utils.Cursors;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Renderable;
@@ -19,11 +14,17 @@ import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
+
 import org.jspecify.annotations.NonNull;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Arrays;
 import java.util.function.Consumer;
+
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector.ColorSelector;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.CrosshairButtonWidget;
+import me.Azz_9.flex_hud.client.screens.moveModulesScreen.actions.UndoManager;
+import me.Azz_9.flex_hud.client.utils.Cursors;
 
 public class CrosshairEditor implements GuiEventListener, Renderable, LayoutElement {
 	private final Pixel[][] pixels;
@@ -112,7 +113,7 @@ public class CrosshairEditor implements GuiEventListener, Renderable, LayoutElem
 	}
 
 	@Override
-	public void render(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
+	public void extractRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (this.isMouseOver(mouseX, mouseY)) {
 			graphics.requestCursor(Cursors.DEFAULT);
 		}
@@ -121,20 +122,20 @@ public class CrosshairEditor implements GuiEventListener, Renderable, LayoutElem
 
 		for (int y = 0; y < pixels.length; y++) {
 			for (int x = 0; x < pixels[y].length; x++) {
-				pixels[y][x].render(graphics, mouseX, mouseY, deltaTicks);
+				pixels[y][x].extractRenderState(graphics, mouseX, mouseY, deltaTicks);
 			}
 		}
 
-		colorText.render(graphics, mouseX, mouseY, deltaTicks);
-		colorButton.render(graphics, mouseX, mouseY, deltaTicks);
+		colorText.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+		colorButton.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
 
-		clearButton.render(graphics, mouseX, mouseY, deltaTicks);
+		clearButton.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
 
-		presetText.render(graphics, mouseX, mouseY, deltaTicks);
-		crosshairPresetsList.render(graphics, mouseX, mouseY, deltaTicks);
+		presetText.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+		crosshairPresetsList.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
 
 		if (colorSelector.isFocused()) {
-			colorSelector.render(graphics, mouseX, mouseY, deltaTicks);
+			colorSelector.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
 		}
 	}
 

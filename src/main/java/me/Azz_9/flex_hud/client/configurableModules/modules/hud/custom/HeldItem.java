@@ -2,6 +2,18 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.ARGB;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+
+import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix3x2fStack;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
@@ -11,17 +23,6 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.Cyclin
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
 import me.Azz_9.flex_hud.client.utils.ItemUtils;
-import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
-import net.minecraft.util.ARGB;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
 public class HeldItem extends AbstractTextModule {
 
@@ -55,7 +56,7 @@ public class HeldItem extends AbstractTextModule {
 
 
 	@Override
-	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 		if (shouldNotRender()) {
 			return;
 		}
@@ -107,11 +108,11 @@ public class HeldItem extends AbstractTextModule {
 
 		Font font = MINECRAFT.font;
 		if (getAnchorX() == AnchorPosition.END) {
-			graphics.drawString(font, label, 0, 4, getColor(), this.shadow.getValue());
-			graphics.renderItem(stack, font.width(label) + gap, 0);
+			graphics.text(font, label, 0, 4, getColor(), this.shadow.getValue());
+			graphics.item(stack, font.width(label) + gap, 0);
 		} else {
-			graphics.renderItem(stack, 0, 0);
-			graphics.drawString(font, label, ITEM_SIZE + gap, 4, textColor, this.shadow.getValue());
+			graphics.item(stack, 0, 0);
+			graphics.text(font, label, ITEM_SIZE + gap, 4, textColor, this.shadow.getValue());
 		}
 
 		matrices.popMatrix();

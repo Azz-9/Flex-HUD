@@ -2,15 +2,8 @@ package me.Azz_9.flex_hud.client.screens;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.*;
 
-import me.Azz_9.flex_hud.client.Flex_hudClient;
-import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
-import me.Azz_9.flex_hud.client.screens.modulesList.ModulesListScreen;
-import me.Azz_9.flex_hud.client.screens.moveModulesScreen.MoveModulesScreen;
-import me.Azz_9.flex_hud.client.screens.widgets.buttons.IconButton;
-import me.Azz_9.flex_hud.client.utils.EaseUtils;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
@@ -19,8 +12,16 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+
 import org.joml.Matrix3x2fStack;
 import org.jspecify.annotations.NonNull;
+
+import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
+import me.Azz_9.flex_hud.client.screens.modulesList.ModulesListScreen;
+import me.Azz_9.flex_hud.client.screens.moveModulesScreen.MoveModulesScreen;
+import me.Azz_9.flex_hud.client.screens.widgets.buttons.IconButton;
+import me.Azz_9.flex_hud.client.utils.EaseUtils;
 
 public class OptionsScreen extends AbstractBackNavigableScreen {
 	private long initTimestamp;
@@ -85,7 +86,7 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 	}
 
 	@Override
-	public void render(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+	public void extractRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
 		final int ANIMATION_DURATION = 500;
 		float progress = Math.min((float) (System.currentTimeMillis() - initTimestamp) / ANIMATION_DURATION, 1.0f);
 		float easedProgress = EaseUtils.getEaseOutQuad(progress);
@@ -105,21 +106,21 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 		//TODO trouver comment remplacer ça
 		//RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, easedProgress);
 
-		super.render(graphics, mouseX, mouseY, delta);
+		super.extractRenderState(graphics, mouseX, mouseY, delta);
 
 		Matrix3x2fStack matrices = graphics.pose();
 		matrices.pushMatrix();
 		matrices.translate((float) x, (float) y);
 
 		// Draw the icon
-		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, modIcon, 0, 0, 0, 0, iconWidth, iconHeight, iconWidth, iconHeight);
+		graphics.blit(RenderPipelines.GUI_TEXTURED, modIcon, 0, 0, 0, 0, iconWidth, iconHeight, iconWidth, iconHeight);
 
 		matrices.popMatrix();
 
 		//RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F); // Opacité à 100%
 
 		if (!ModulesHelper.getInstance().isEnabled.getValue()) {
-			graphics.drawCenteredString(MINECRAFT.font, Component.translatable("flex_hud.options_screen.mod_is_disabled_warning").withStyle(ChatFormatting.RED, ChatFormatting.ITALIC), this.width / 2, this.height / 2 + 20, 0xffffffff);
+			graphics.centeredText(MINECRAFT.font, Component.translatable("flex_hud.options_screen.mod_is_disabled_warning").withStyle(ChatFormatting.RED, ChatFormatting.ITALIC), this.width / 2, this.height / 2 + 20, 0xffffffff);
 		}
 	}
 

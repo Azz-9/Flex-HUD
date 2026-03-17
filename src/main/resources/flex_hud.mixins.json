@@ -16,7 +16,7 @@
 		"compass.LocatorBarRendererMixin",
 		"cps.KeyboardHandlerMixin",
 		"crosshair.CrosshairMixin",
-		"drawContext.GuiGraphicsAccessor",
+		"drawContext.GuiGraphicsExtractorAccessor",
 		"durabilityPing.ClientPlayNetworkHandlerMixin",
 		"keybind.KeyBindingMixin",
 		"ping.ClientPlayNetworkHandlerMixin",

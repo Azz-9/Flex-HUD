@@ -2,8 +2,9 @@ package me.Azz_9.flex_hud.client.screens;
 
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
+
 import org.jspecify.annotations.NonNull;
 
 public abstract class AbstractSmoothScrollableList<E extends ContainerObjectSelectionList.Entry<E>> extends ContainerObjectSelectionList<E> {
@@ -32,9 +33,9 @@ public abstract class AbstractSmoothScrollableList<E extends ContainerObjectSele
 	}
 
 	@Override
-	protected void renderListItems(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+	protected void extractListItems(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
 		if (externalSmoothDetected) {
-			super.renderListItems(graphics, mouseX, mouseY, delta);
+			super.extractListItems(graphics, mouseX, mouseY, delta);
 			return;
 		}
 
@@ -47,7 +48,7 @@ public abstract class AbstractSmoothScrollableList<E extends ContainerObjectSele
 		currentScroll += (targetScroll - currentScroll) * alpha;
 
 		super.setScrollAmount(currentScroll);
-		super.render(graphics, mouseX, mouseY, delta);
+		super.extractListItems(graphics, mouseX, mouseY, delta);
 	}
 
 	@Override

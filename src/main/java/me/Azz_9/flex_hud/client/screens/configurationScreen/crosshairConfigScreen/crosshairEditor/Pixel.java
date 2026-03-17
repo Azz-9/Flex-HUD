@@ -1,12 +1,14 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.crosshairEditor;
 
-import me.Azz_9.flex_hud.client.utils.Cursors;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
+
 import org.jspecify.annotations.NonNull;
+
+import me.Azz_9.flex_hud.client.utils.Cursors;
 
 public class Pixel extends AbstractWidget.WithInactiveMessage {
 	private CrosshairEditor crosshairEditor;
@@ -24,7 +26,7 @@ public class Pixel extends AbstractWidget.WithInactiveMessage {
 	}
 
 	@Override
-	protected void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
+	protected void extractWidgetRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (this.isHovered()) {
 			graphics.requestCursor(Cursors.POINTING_HAND);
 		}
@@ -37,9 +39,9 @@ public class Pixel extends AbstractWidget.WithInactiveMessage {
 
 
 		if (this.isHovered()) {
-			graphics.renderOutline(getX(), getY(), getWidth(), getHeight(), 0xffdf1515);
+			graphics.outline(getX(), getY(), getWidth(), getHeight(), 0xffdf1515);
 		} else {
-			graphics.renderOutline(getX(), getY(), getWidth(), getHeight(), 0xffdfdfdf);
+			graphics.outline(getX(), getY(), getWidth(), getHeight(), 0xffdfdfdf);
 		}
 	}
 

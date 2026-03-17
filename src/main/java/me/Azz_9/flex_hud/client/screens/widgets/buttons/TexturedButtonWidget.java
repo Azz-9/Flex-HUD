@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.client.screens.widgets.buttons;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.WidgetSprites;
@@ -35,8 +35,8 @@ public class TexturedButtonWidget extends ImageButton {
 	}
 
 	@Override
-	public void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
+	public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
 		Identifier identifier = this.sprites.get(this.isActive(), this.isHovered() && this.active);
-		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, identifier, this.getX(), this.getY(), 0, 0, this.width, this.height, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+		graphics.blit(RenderPipelines.GUI_TEXTURED, identifier, this.getX(), this.getY(), 0, 0, this.width, this.height, TEXTURE_WIDTH, TEXTURE_HEIGHT);
 	}
 }

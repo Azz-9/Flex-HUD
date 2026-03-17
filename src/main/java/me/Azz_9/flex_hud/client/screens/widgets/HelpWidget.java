@@ -1,21 +1,22 @@
 package me.Azz_9.flex_hud.client.screens.widgets;
 
-import me.Azz_9.flex_hud.client.utils.Cursors;
-import me.Azz_9.flex_hud.client.utils.EaseUtils;
-import net.minecraft.client.Minecraft;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+
 import org.joml.Matrix3x2fStack;
 import org.jspecify.annotations.NonNull;
 
-import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
-import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+import me.Azz_9.flex_hud.client.utils.Cursors;
+import me.Azz_9.flex_hud.client.utils.EaseUtils;
 
 public class HelpWidget extends AbstractWidget.WithInactiveMessage {
 	private final Identifier texture = Identifier.fromNamespaceAndPath(MOD_ID, "widgets/buttons/help/help.png");
@@ -36,12 +37,12 @@ public class HelpWidget extends AbstractWidget.WithInactiveMessage {
 	}
 
 	@Override
-	protected void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+	protected void extractWidgetRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
 		if (this.isHovered() && this.isActive()) {
 			graphics.requestCursor(Cursors.POINTING_HAND);
 		}
 
-		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, texture, getX(), getY(), 0, 0, getWidth(), getHeight(), 20, 20);
+		graphics.blit(RenderPipelines.GUI_TEXTURED, texture, getX(), getY(), 0, 0, getWidth(), getHeight(), 20, 20);
 
 		if (displayHelp || isFadingOut) {
 
@@ -84,13 +85,13 @@ public class HelpWidget extends AbstractWidget.WithInactiveMessage {
 
 			int textY = popupY + padding;
 			for (Component helpLine : helpLines) {
-				graphics.drawWordWrap(font, helpLine, popupX + padding, textY, textWidth, (alpha << 24) | TEXT_COLOR, false);
+				graphics.textWithWordWrap(font, helpLine, popupX + padding, textY, textWidth, (alpha << 24) | TEXT_COLOR, false);
 				textY += font.wordWrapHeight(helpLine, textWidth) + lineSpacing;
 			}
 		}
 	}
 
-	private void renderArrow(GuiGraphics graphics, int marginBottom) {
+	private void renderArrow(GuiGraphicsExtractor graphics, int marginBottom) {
 		int arrowSize = 6;
 
 		graphics.enableScissor(getX(), getY() - marginBottom, getRight(), getY() - marginBottom + arrowSize);

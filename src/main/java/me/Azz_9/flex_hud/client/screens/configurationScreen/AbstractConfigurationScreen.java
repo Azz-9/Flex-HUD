@@ -2,21 +2,22 @@ package me.Azz_9.flex_hud.client.screens.configurationScreen;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 
-import me.Azz_9.flex_hud.client.screens.AbstractCallbackScreen;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector.ColorBindable;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector.ColorSelector;
-import me.Azz_9.flex_hud.client.screens.modulesList.ModulesListScreen;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
+
+import me.Azz_9.flex_hud.client.screens.AbstractCallbackScreen;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector.ColorBindable;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector.ColorSelector;
+import me.Azz_9.flex_hud.client.screens.modulesList.ModulesListScreen;
 
 public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen implements Observer, ColorSelectorGetter {
 
@@ -84,7 +85,7 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 	}
 
 	@Override
-	public void render(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
+	public void extractRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (renderCallback(graphics, mouseX, mouseY, deltaTicks)) {
 			return;
 		}
@@ -93,14 +94,14 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 		int backgroundColor = 0x80000000;
 		int padding = 2;
 		graphics.fill(this.width / 2 - font.width(title) / 2 - padding, 7 - padding, this.width / 2 + font.width(title) / 2 + padding, 7 + font.lineHeight, backgroundColor);
-		graphics.drawCenteredString(font, title, this.width / 2, 7, textColor);
+		graphics.centeredText(font, title, this.width / 2, 7, textColor);
 
-		configList.render(graphics, mouseX, mouseY, deltaTicks);
+		configList.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
 
 		if (colorSelector != null && colorSelector.isFocused()) {
 			colorSelector.updatePosition(configList.getY());
 			if (colorSelector.getY() >= configList.getY()) {
-				colorSelector.render(graphics, mouseX, mouseY, deltaTicks);
+				colorSelector.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
 			} else {
 				colorSelector.setFocused(false);
 			}
@@ -108,9 +109,9 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 	}
 
 	@Override
-	public void renderBackground(@NonNull GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
+	public void extractBackground(@NonNull GuiGraphicsExtractor context, int mouseX, int mouseY, float deltaTicks) {
 		if (MINECRAFT.level == null) {
-			super.renderBackground(context, mouseX, mouseY, deltaTicks);
+			super.extractBackground(context, mouseX, mouseY, deltaTicks);
 		}
 	}
 

@@ -1,15 +1,16 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons;
 
-import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
-import me.Azz_9.flex_hud.client.screens.widgets.buttons.TexturedButtonWidget;
-import net.minecraft.client.gui.GuiGraphics;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.resources.Identifier;
 
-import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
+import me.Azz_9.flex_hud.client.screens.widgets.buttons.TexturedButtonWidget;
 
 public class ConfigResetButtonWidget extends TexturedButtonWidget implements Observer {
 	public ConfigResetButtonWidget(int x, int y, int width, int height, Button.OnPress onPress, int textureWidth, int textureHeight) {
@@ -32,14 +33,14 @@ public class ConfigResetButtonWidget extends TexturedButtonWidget implements Obs
 	}
 
 	@Override
-	public void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-		super.renderContents(graphics, mouseX, mouseY, delta);
+	public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+		super.extractContents(graphics, mouseX, mouseY, delta);
 
 		if (!this.active) {
 			graphics.fill(getX(), getY(), getRight(), getBottom(), 0xcf4e4e4e);
 		} else {
 			if (this.isHoveredOrFocused()) {
-				graphics.renderOutline(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+				graphics.outline(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
 			}
 		}
 	}
