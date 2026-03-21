@@ -1,4 +1,6 @@
-package me.Azz_9.flex_hud.client.customModules;
+package me.Azz_9.flex_hud.client.customModules.token;
+
+import me.Azz_9.flex_hud.client.customModules.Variable;
 
 record VariableToken(Variable<?> variable) implements Token {
 

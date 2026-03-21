@@ -104,6 +104,8 @@ public class Flex_hudClient implements ClientModInitializer {
 			if (ModulesHelper.getInstance().isEnabled.getValue()) {
 				SpeedTester.tick();
 
+				Variables.tick();
+
 				TickRegistry.tickAll(client);
 
 				for (TickableModule tickableModule : ModulesHelper.getTickables()) {
@@ -113,6 +115,7 @@ public class Flex_hudClient implements ClientModInitializer {
 				}
 			}
 		});
+
 
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
 			Variables.init();

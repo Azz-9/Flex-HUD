@@ -11,6 +11,7 @@ public class Variable<T> {
 	private final String key;
 	private final Supplier<T> supplier;
 	private final Function<T, String> formatter;
+	private T value;
 
 	public Variable(Text name, Text description, String key, Supplier<T> supplier, Function<T, String> formatter) {
 		this.name = name;
@@ -29,7 +30,8 @@ public class Variable<T> {
 	}
 
 	public String resolve() {
-		return formatter.apply(supplier.get());
+		if (value == null) updateValue();
+		return formatter.apply(value);
 	}
 
 	public Text getName() {
@@ -42,5 +44,9 @@ public class Variable<T> {
 
 	public String getKey() {
 		return key;
+	}
+
+	public void updateValue() {
+		value = supplier.get();
 	}
 }

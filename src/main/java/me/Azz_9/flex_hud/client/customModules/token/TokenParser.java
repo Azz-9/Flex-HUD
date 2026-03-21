@@ -1,4 +1,4 @@
-package me.Azz_9.flex_hud.client.customModules;
+package me.Azz_9.flex_hud.client.customModules.token;
 
 import org.jspecify.annotations.NonNull;
 
@@ -7,11 +7,14 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import me.Azz_9.flex_hud.client.customModules.Variable;
+import me.Azz_9.flex_hud.client.customModules.Variables;
+
 public class TokenParser {
 
 	private static final Pattern VARIABLE_PATTERN = Pattern.compile("\\{([a-zA-Z0-9_.]+)}");
 
-	static List<Token> parseText(@NonNull String text) {
+	public static List<Token> parseText(@NonNull String text) {
 		List<Token> tokens = new ArrayList<>();
 
 		Matcher matcher = VARIABLE_PATTERN.matcher(text);

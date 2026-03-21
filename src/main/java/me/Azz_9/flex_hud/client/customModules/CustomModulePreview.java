@@ -7,6 +7,9 @@ import net.minecraft.client.gui.DrawContext;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.Azz_9.flex_hud.client.customModules.token.Token;
+import me.Azz_9.flex_hud.client.customModules.token.TokenParser;
+
 public class CustomModulePreview {
 
 	private static List<Token> tokens = new ArrayList<>();

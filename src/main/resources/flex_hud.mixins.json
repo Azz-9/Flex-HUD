@@ -15,6 +15,7 @@
 		"compass.LocatorBarMixin",
 		"cps.KeyboardMixin",
 		"crosshair.CrosshairMixin",
+		"customModules.InGameHudMixin",
 		"drawContext.DrawContextAccessor",
 		"durabilityPing.ClientPlayNetworkHandlerMixin",
 		"keybind.KeyBindingMixin",

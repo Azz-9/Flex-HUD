@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
+import me.Azz_9.flex_hud.client.customModules.token.Token;
+import me.Azz_9.flex_hud.client.customModules.token.TokenParser;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
@@ -57,8 +59,11 @@ public class CustomModule extends AbstractTextModule {
 
 		setWidth(0);
 
+		List<String> tokenStrings = new ArrayList<>();
 		for (Token token : tokens) {
-			setWidth(token.getString(), getWidth());
+			String tokenString = token.getString();
+			tokenStrings.add(tokenString);
+			setWidth(tokenString, getWidth());
 		}
 
 		Matrix3x2fStack matrices = context.getMatrices();
@@ -69,16 +74,16 @@ public class CustomModule extends AbstractTextModule {
 		drawBackground(context);
 
 		int hudX = 0;
-		for (Token token : tokens) {
+		for (String tokenString : tokenStrings) {
 			context.drawText(
 					CLIENT.textRenderer,
-					token.getString(),
+					tokenString,
 					hudX, 0,
 					getColor(),
 					shadow.getValue()
 			);
 
-			hudX += CLIENT.textRenderer.getWidth(token.getString());
+			hudX += CLIENT.textRenderer.getWidth(tokenString);
 		}
 
 		matrices.popMatrix();
