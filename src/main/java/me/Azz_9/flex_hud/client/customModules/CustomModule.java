@@ -95,7 +95,7 @@ public class CustomModule extends AbstractTextModule {
 	}
 
 	public void setName(@NonNull String name) {
-		setId("custom_module-" + name.toLowerCase().replace(' ', '_'));
+		setId(CustomModuleRegistry.nameToId(name));
 		this.name = name;
 	}
 

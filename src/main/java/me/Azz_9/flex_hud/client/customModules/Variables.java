@@ -58,11 +58,6 @@ public class Variables {
 		return variable;
 	}
 
-	public static String resolveVariable(String key) {
-		Variable<?> var = VARIABLES.get(key);
-		return var != null ? var.resolve() : "";
-	}
-
 	public static void tick() {
 		for (Variable<?> tickUpdateVariable : TICK_UPDATE_VARIABLES) {
 			tickUpdateVariable.updateValue();
