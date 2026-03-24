@@ -154,6 +154,7 @@ public class CreateModuleScreen extends AbstractCallbackScreen {
 			CustomModulePreview.load(text);
 			updateSaveButton();
 		});
+		CustomModulePreview.load(initialText);
 
 		registerTrackableWidget(moduleContentField);
 

@@ -1,17 +1,16 @@
 package me.Azz_9.flex_hud.client.customModules.token;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Function;
 
 import me.Azz_9.flex_hud.client.customModules.Variable;
+import me.Azz_9.flex_hud.client.customModules.modifiers.Modifiers;
 
-record VariableToken<T>(Variable<T> variable,
-						List<String> modifiers,
+record VariableToken<T>(Variable<T> variable, List<Modifiers.ResolvedModifier<?, ?>> modifiers,
 						Function<T, String> formatter) implements Token {
 
-	public VariableToken(Variable<T> variable, List<String> modifiers) {
-		this(variable, modifiers, Objects::toString);
+	VariableToken(Variable<T> variable, List<Modifiers.ResolvedModifier<?, ?>> modifiers) {
+		this(variable, modifiers, Modifiers.formatterFromModifiers(modifiers));
 	}
 
 	@Override

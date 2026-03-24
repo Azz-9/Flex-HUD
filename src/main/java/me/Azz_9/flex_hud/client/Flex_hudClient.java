@@ -22,6 +22,7 @@ import me.Azz_9.flex_hud.client.configurableModules.modules.hud.HudElement;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom.Ping;
 import me.Azz_9.flex_hud.client.customModules.CustomModule;
 import me.Azz_9.flex_hud.client.customModules.Variables;
+import me.Azz_9.flex_hud.client.customModules.modifiers.Modifiers;
 import me.Azz_9.flex_hud.client.tickables.TickRegistry;
 import me.Azz_9.flex_hud.client.utils.FaviconUtils;
 import me.Azz_9.flex_hud.client.utils.FlexHudLogger;
@@ -70,6 +71,8 @@ public class Flex_hudClient implements ClientModInitializer {
 		waypointCollectors.forEach(Collector::initCompassList);
 
 		ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
+			Modifiers.init();
+
 			if (layersRegistered) return;
 			layersRegistered = true;
 

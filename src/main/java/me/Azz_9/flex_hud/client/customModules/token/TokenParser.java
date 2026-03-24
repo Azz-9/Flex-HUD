@@ -5,16 +5,18 @@ import org.jspecify.annotations.NonNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import me.Azz_9.flex_hud.client.customModules.Variable;
 import me.Azz_9.flex_hud.client.customModules.Variables;
+import me.Azz_9.flex_hud.client.customModules.modifiers.Modifiers;
 
 public class TokenParser {
 
-	private static final Pattern VARIABLE_PATTERN = Pattern.compile("\\{([a-zA-Z0-9_.]+)}");
-	private static final String DELIMITER = ":";
+	public static final Pattern VARIABLE_PATTERN = Pattern.compile("\\{([a-zA-Z0-9_.:]+)}");
+	public static final String DELIMITER = ":";
 
 	public static List<Token> parseText(@NonNull String text) {
 		List<Token> tokens = new ArrayList<>();
@@ -38,9 +40,10 @@ public class TokenParser {
 			Variable<?> variable = Variables.get(variableKey);
 
 			if (variable != null) {
-				List<String> modifiers = Arrays.stream(parts)
+				List<Modifiers.ResolvedModifier<?, ?>> modifiers = Arrays.stream(parts)
 						.skip(1)
-						.map(String::trim)
+						.<Modifiers.ResolvedModifier<?, ?>>map(Modifiers::get)
+						.filter(Objects::nonNull)
 						.toList();
 
 				tokens.add(new VariableToken<>(variable, modifiers));

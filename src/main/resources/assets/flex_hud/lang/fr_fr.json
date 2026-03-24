@@ -333,5 +333,32 @@
 
 	"flex_hud.entity_count.text.entities": "Compteur d'entités: %d (rayon %d)",
 	"flex_hud.entity_count.text.mobs": "Compteur de mobs: %d (radius %d)",
-	"flex_hud.entity_count.text.items": "Compteur d'objets: %d (radius %d)"
+	"flex_hud.entity_count.text.items": "Compteur d'objets: %d (radius %d)",
+
+	"flex_hud.custom_modules.variable.name.player.yaw": "Yaw",
+	"flex_hud.custom_modules.variable.description.player.yaw": "Rotation horizontale du joueur (en degrés).",
+
+	"flex_hud.custom_modules.variable.name.player.pitch": "Pitch",
+	"flex_hud.custom_modules.variable.description.player.pitch": "Rotation verticale du joueur (en degrés).",
+
+	"flex_hud.custom_modules.variable.name.player.x": "X",
+	"flex_hud.custom_modules.variable.description.player.x": "Coordonnée X du joueur dans la dimension actuelle.",
+
+	"flex_hud.custom_modules.variable.name.player.y": "Y",
+	"flex_hud.custom_modules.variable.description.player.y": "Coordonnée Y du joueur (hauteur).",
+
+	"flex_hud.custom_modules.variable.name.player.z": "Z",
+	"flex_hud.custom_modules.variable.description.player.z": "Coordonnée Z du joueur dans la dimension actuelle.",
+
+	"flex_hud.custom_modules.variable.name.nether.player.x": "X Nether",
+	"flex_hud.custom_modules.variable.description.nether.player.x": "Coordonnée X équivalente dans le Nether (Overworld ÷ 8).",
+
+	"flex_hud.custom_modules.variable.name.nether.player.z": "Z Nether",
+	"flex_hud.custom_modules.variable.description.nether.player.z": "Coordonnée Z équivalente dans le Nether (Overworld ÷ 8).",
+
+	"flex_hud.custom_modules.variable.name.biome": "Biome",
+	"flex_hud.custom_modules.variable.description.biome": "Biome actuel dans lequel se trouve le joueur.",
+
+	"flex_hud.custom_modules.variable.name.fps": "FPS",
+	"flex_hud.custom_modules.variable.description.fps": "Nombre d'images par seconde."
 }
