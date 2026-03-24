@@ -29,6 +29,14 @@ repositories {
 		name "Xaero's Maven"
 		url "https://chocolateminecraft.com/maven"
 	}
+	maven {
+		name = "JourneyMap Maven"
+		url = 'https://maven.blamejared.com'
+	}
+	maven {
+		name = "Nucleoid"
+		url = "https://maven.nucleoid.xyz/"
+	}
 }
 
 dependencies {
@@ -40,7 +48,7 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
-	/*if (includeModMenu) {
+	if (includeModMenu) {
 		implementation("com.terraformersmc:modmenu:${project.modmenu_version}")
 	} else {
 		compileOnly("com.terraformersmc:modmenu:${project.modmenu_version}")
@@ -49,10 +57,12 @@ dependencies {
 	if (includeXaero) {
 		implementation "xaero.minimap:xaerominimap-fabric-${project.minecraft_version}:${project.xaero_minimap_version}"
 	} else {
-		compileOnly "xaero.minimap:xaerominimap-fabric-${project.minecraft_version}:${project.xaero_minimap_version}"
+		//compileOnly "xaero.minimap:xaerominimap-fabric-${project.minecraft_version}:${project.xaero_minimap_version}"
+		compileOnly "xaero.minimap:xaerominimap-fabric-1.21.11:${project.xaero_minimap_version}"
 	}
 
-	compileOnly files("libs/journeymap-fabric-${project.minecraft_version}-${project.journeymap_version}.jar")*/
+	//implementation files("libs/journeymap-fabric-${project.minecraft_version}-${project.journeymap_version}.jar")
+	compileOnly "info.journeymap:journeymap-api-fabric:${project.journeymap_api_version}"
 
 	testImplementation platform("org.junit:junit-bom:5.10.2")
 	testImplementation "org.junit.jupiter:junit-jupiter"

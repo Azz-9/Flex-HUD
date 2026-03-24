@@ -1,7 +1,8 @@
-/*package me.Azz_9.flex_hud.compat;
+package me.Azz_9.flex_hud.compat;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
+
 import me.Azz_9.flex_hud.client.screens.OptionsScreen;
 
 public class ModMenuCompat implements ModMenuApi {
@@ -9,4 +10,4 @@ public class ModMenuCompat implements ModMenuApi {
 	public ConfigScreenFactory<?> getModConfigScreenFactory() {
 		return OptionsScreen::new;
 	}
-}*/
+}

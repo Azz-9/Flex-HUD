@@ -20,6 +20,12 @@
 	"entrypoints": {
 		"client": [
 			"me.Azz_9.flex_hud.client.Flex_hudClient"
+		],
+		"modmenu": [
+			"me.Azz_9.flex_hud.compat.ModMenuCompat"
+		],
+		"journeymap": [
+			"me.Azz_9.flex_hud.compat.waypointsCollectors.JourneyMapIntegration"
 		]
 	},
 
