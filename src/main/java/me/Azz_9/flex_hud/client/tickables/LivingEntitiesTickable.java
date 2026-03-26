@@ -1,7 +1,8 @@
 package me.Azz_9.flex_hud.client.tickables;
 
-import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom.Compass;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
@@ -19,8 +20,8 @@ import net.minecraft.util.math.Vec3d;
 import java.util.ArrayList;
 import java.util.List;
 
-import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
-import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom.Compass;
 
 public class LivingEntitiesTickable implements Tickable {
 	private static final List<EntityTexture> tamedEntitiesTextures = new ArrayList<>();
@@ -40,13 +41,13 @@ public class LivingEntitiesTickable implements Tickable {
 	@Override
 	public void tick(MinecraftClient client) {
 		PlayerEntity player = CLIENT.player;
-		if (player == null || client.world == null) return;
+		if (player == null || CLIENT.world == null) return;
 
 		tamedEntitiesTextures.clear();
 		mobEntitiesTextures.clear();
 		petsEntitiesTextures.clear();
 
-		for (Entity entity : client.world.getEntities()) {
+		for (Entity entity : CLIENT.world.getEntities()) {
 			if (entity instanceof MobEntity mobEntity) {
 
 
@@ -66,52 +67,10 @@ public class LivingEntitiesTickable implements Tickable {
 					continue;
 				}
 
-				Identifier id = null;
-				switch (mobEntity) {
-					case EnderDragonEntity enderDragonEntity ->
-							id = Identifier.of(MOD_ID, "living_entities/minecraft/enderdragon/dragon.png");
-					case SnowGolemEntity snowGolemEntity -> {
-						if (snowGolemEntity.hasPumpkin()) {
-							id = Identifier.of(MOD_ID, "living_entities/minecraft/snow_golem.png");
-						} else {
-							id = Identifier.of(MOD_ID, "living_entities/minecraft/snow_golem_pumpkinless.png");
-						}
-					}
-					case TraderLlamaEntity traderLlamaEntity -> {
-						switch (traderLlamaEntity.getVariant()) {
-							case GRAY -> id = Identifier.of(MOD_ID, "living_entities/minecraft/llama/trader/gray.png");
-							case BROWN ->
-									id = Identifier.of(MOD_ID, "living_entities/minecraft/llama/trader/brown.png");
-							case CREAMY ->
-									id = Identifier.of(MOD_ID, "living_entities/minecraft/llama/trader/creamy.png");
-							case WHITE ->
-									id = Identifier.of(MOD_ID, "living_entities/minecraft/llama/trader/white.png");
-						}
-					}
-					default -> {
-
-
-						EntityRenderer<? super LivingEntity, ?> renderer = client.getEntityRenderDispatcher().getRenderer(mobEntity);
-
-						if (renderer instanceof LivingEntityRenderer<?, ?, ?> livingRenderer) {
-
-							try {
-								@SuppressWarnings("unchecked")
-								LivingEntityRenderer<LivingEntity, LivingEntityRenderState, ?> casted = (LivingEntityRenderer<LivingEntity, LivingEntityRenderState, ?>) livingRenderer;
-
-								LivingEntityRenderState state = casted.getAndUpdateRenderState(mobEntity, 0);
-
-								Identifier minecraft_id = casted.getTexture(state);
-								id = Identifier.of(MOD_ID, "living_entities/" + minecraft_id.getNamespace() + minecraft_id.getPath().replace("textures/entity", ""));
-
-							} catch (Exception ignored) {
-							}
-						}
-					}
-				}
+				Identifier id = getMobHeadTexture(mobEntity);
 
 				// if the texture is not found, skip this entity
-				if (id == null || client.getResourceManager().getResource(id).isEmpty()) {
+				if (id == null || CLIENT.getResourceManager().getResource(id).isEmpty()) {
 					continue;
 				}
 
@@ -133,6 +92,45 @@ public class LivingEntitiesTickable implements Tickable {
 				}
 			}
 		}
+	}
+
+	private Identifier getMobHeadTexture(MobEntity mobEntity) {
+		Identifier id = null;
+		switch (mobEntity) {
+			case EnderDragonEntity enderDragonEntity ->
+					id = Identifier.of(MOD_ID, "living_entities/minecraft/enderdragon/dragon.png");
+			case SnowGolemEntity snowGolemEntity -> {
+				String path = "living_entities/minecraft/snow_golem";
+				if (!snowGolemEntity.hasPumpkin())
+					path += "_pumpkinless";
+
+				id = Identifier.of(MOD_ID, path + ".png");
+			}
+			case TraderLlamaEntity traderLlamaEntity -> {
+				String path = "living_entities/minecraft/llama/trader/llama_" + traderLlamaEntity.getVariant().asString() + ".png";
+				id = Identifier.of(MOD_ID, path);
+			}
+			default -> {
+				EntityRenderer<? super LivingEntity, ?> renderer = CLIENT.getEntityRenderDispatcher().getRenderer(mobEntity);
+
+				if (renderer instanceof LivingEntityRenderer<?, ?, ?> livingRenderer) {
+
+					try {
+						@SuppressWarnings("unchecked")
+						LivingEntityRenderer<LivingEntity, LivingEntityRenderState, ?> casted = (LivingEntityRenderer<LivingEntity, LivingEntityRenderState, ?>) livingRenderer;
+
+						LivingEntityRenderState state = casted.getAndUpdateRenderState(mobEntity, 0);
+
+						Identifier minecraft_id = casted.getTexture(state);
+						id = Identifier.of(MOD_ID, "living_entities/" + minecraft_id.getNamespace() + minecraft_id.getPath().replace("textures/entity", ""));
+
+					} catch (Exception ignored) {
+					}
+				}
+			}
+		}
+
+		return id;
 	}
 
 	public static List<EntityTexture> getTamedEntities() {
