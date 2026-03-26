@@ -220,7 +220,7 @@ public class Compass extends AbstractTextModule {
 		if (Math.abs(angleDifference) <= 120) {
 			float scaleFactor = 1.25f;
 			// Calculer la position X de chaque point cardinal en fonction de l'angle
-			float positionX = ((getWidth() / 2.0f) + (angleDifference * (getWidth() / 180.0f)));
+			float positionX = calculatePositionX(angleDifference);
 			float pointWidth = MINECRAFT.font.width(label) * scaleFactor;
 
 			// Afficher le label des directions avec couleur et taille de texte ajustée
@@ -237,7 +237,7 @@ public class Compass extends AbstractTextModule {
 
 		if (Math.abs(angleDifference) <= 120) {
 			// Calculer la position X de chaque point cardinal en fonction de l'angle
-			float positionX = ((getWidth() / 2.0f) + (angleDifference * (getWidth() / 180.0f)));
+			float positionX = calculatePositionX(angleDifference);
 
 			matrices.pushMatrix();
 			matrices.translate(positionX - (MINECRAFT.font.width("|") / 2.0f), y);
@@ -270,6 +270,10 @@ public class Compass extends AbstractTextModule {
 		return (float) -angleDegrees;
 	}
 
+	private float calculatePositionX(float angleDifference) {
+		return ((getWidth() / 2.0f) + (angleDifference * (getWidth() / 180.0f)));
+	}
+
 	private void drawXaerosMapWaypoints(GuiGraphicsExtractor graphics, Matrix3x2fStack matrices, float yaw, DeltaTracker deltaTracker) {
 		LocalPlayer player = MINECRAFT.player;
 		if (player == null) return;
@@ -298,7 +302,7 @@ public class Compass extends AbstractTextModule {
 
 			float angleDifference = (angle - yaw + 540) % 360 - 180;
 			if (Math.abs(angleDifference) <= 120) {
-				float positionX = ((getWidth() / 2.0f) + (angleDifference * (getWidth() / 180.0f)));
+				float positionX = calculatePositionX(angleDifference);
 
 				int color = waypoint.getColor();
 				int backgroundColor = ((getAlpha(positionX) / 2) << 24) | (color & 0x00ffffff);
@@ -352,7 +356,7 @@ public class Compass extends AbstractTextModule {
 
 			float angleDifference = (angle - yaw + 540) % 360 - 180;
 			if (Math.abs(angleDifference) <= 120) {
-				float positionX = ((getWidth() / 2.0f) + (angleDifference * (getWidth() / 180.0f)));
+				float positionX = calculatePositionX(angleDifference);
 
 				Identifier icon = waypoint.getIcon();
 				int iconWidth = waypoint.getIconWidth();
@@ -422,7 +426,7 @@ public class Compass extends AbstractTextModule {
 
 				if (Math.abs(angleDifference) <= 120) {
 					// Calculer la position X de chaque point cardinal en fonction de l'angle
-					double positionX = ((getWidth() / 2.0f) + (angleDifference * (graphics.guiWidth() / 180.0f)));
+					double positionX = calculatePositionX((float) angleDifference);
 
 					Waypoint.Icon config = waypoint.icon();
 					WaypointStyle style = MINECRAFT.getWaypointStyles().get(config.style);
@@ -493,7 +497,7 @@ public class Compass extends AbstractTextModule {
 			float angleDifference = (angle - yaw + 540) % 360 - 180;
 
 			if (Math.abs(angleDifference) <= 120) {
-				float positionX = ((getWidth() / 2.0f) + (angleDifference * (graphics.guiWidth() / 180.0f)));
+				float positionX = calculatePositionX(angleDifference);
 
 				matrices.pushMatrix();
 				matrices.translate(positionX - (textureSize * scale) / 2.0f, y);

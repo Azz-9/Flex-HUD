@@ -1,7 +1,8 @@
 package me.Azz_9.flex_hud.client.tickables;
 
-import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom.Compass;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -21,11 +22,13 @@ import net.minecraft.world.entity.animal.wolf.Wolf;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.phys.Vec3;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
-import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom.Compass;
 
 public class LivingEntitiesTickable implements Tickable {
 	private static final List<EntityTexture> tamedEntitiesTextures = new ArrayList<>();
@@ -45,13 +48,13 @@ public class LivingEntitiesTickable implements Tickable {
 	@Override
 	public void tick(Minecraft minecraft) {
 		LocalPlayer player = MINECRAFT.player;
-		if (player == null || minecraft.level == null) return;
+		if (player == null || MINECRAFT.level == null) return;
 
 		tamedEntitiesTextures.clear();
 		mobEntitiesTextures.clear();
 		petsEntitiesTextures.clear();
 
-		for (Entity entity : minecraft.level.entitiesForRendering()) {
+		for (Entity entity : MINECRAFT.level.entitiesForRendering()) {
 			if (entity instanceof Mob mob) {
 
 
@@ -71,53 +74,10 @@ public class LivingEntitiesTickable implements Tickable {
 					continue;
 				}
 
-				Identifier id = null;
-				switch (mob) {
-					case EnderDragon enderDragonEntity ->
-							id = Identifier.fromNamespaceAndPath(MOD_ID, "living_entities/minecraft/enderdragon/dragon.png");
-					case SnowGolem snowGolemEntity -> {
-						if (snowGolemEntity.hasPumpkin()) {
-							id = Identifier.fromNamespaceAndPath(MOD_ID, "living_entities/minecraft/snow_golem.png");
-						} else {
-							id = Identifier.fromNamespaceAndPath(MOD_ID, "living_entities/minecraft/snow_golem_pumpkinless.png");
-						}
-					}
-					case TraderLlama traderLlamaEntity -> {
-						switch (traderLlamaEntity.getVariant()) {
-							case GRAY ->
-									id = Identifier.fromNamespaceAndPath(MOD_ID, "living_entities/minecraft/llama/trader/gray.png");
-							case BROWN ->
-									id = Identifier.fromNamespaceAndPath(MOD_ID, "living_entities/minecraft/llama/trader/brown.png");
-							case CREAMY ->
-									id = Identifier.fromNamespaceAndPath(MOD_ID, "living_entities/minecraft/llama/trader/creamy.png");
-							case WHITE ->
-									id = Identifier.fromNamespaceAndPath(MOD_ID, "living_entities/minecraft/llama/trader/white.png");
-						}
-					}
-					default -> {
-
-
-						EntityRenderer<? super LivingEntity, ?> renderer = minecraft.getEntityRenderDispatcher().getRenderer(mob);
-
-						if (renderer instanceof LivingEntityRenderer<?, ?, ?> livingRenderer) {
-
-							try {
-								@SuppressWarnings("unchecked")
-								LivingEntityRenderer<LivingEntity, LivingEntityRenderState, ?> casted = (LivingEntityRenderer<LivingEntity, LivingEntityRenderState, ?>) livingRenderer;
-
-								LivingEntityRenderState state = casted.createRenderState(mob, 0);
-
-								Identifier minecraft_id = casted.getTextureLocation(state);
-								id = Identifier.fromNamespaceAndPath(MOD_ID, "living_entities/" + minecraft_id.getNamespace() + minecraft_id.getPath().replace("textures/entity", ""));
-
-							} catch (Exception ignored) {
-							}
-						}
-					}
-				}
+				Identifier id = getMobHeadTexture(mob);
 
 				// if the texture is not found, skip this entity
-				if (id == null || minecraft.getResourceManager().getResource(id).isEmpty()) {
+				if (id == null || MINECRAFT.getResourceManager().getResource(id).isEmpty()) {
 					continue;
 				}
 
@@ -139,6 +99,52 @@ public class LivingEntitiesTickable implements Tickable {
 				}
 			}
 		}
+	}
+
+	@Nullable
+	private Identifier getMobHeadTexture(Mob mob) {
+		Identifier id = null;
+		switch (mob) {
+			case EnderDragon enderDragonEntity ->
+					id = Identifier.fromNamespaceAndPath(MOD_ID, "living_entities/minecraft/enderdragon/dragon.png");
+			case SnowGolem snowGolemEntity -> {
+				String path = "living_entities/minecraft/snow_golem/snow_golem";
+				if (!snowGolemEntity.hasPumpkin())
+					path += "_pumpkinless";
+
+				id = Identifier.fromNamespaceAndPath(MOD_ID, path + ".png");
+			}
+			case TraderLlama traderLlamaEntity -> {
+				String path = "living_entities/minecraft/llama/trader/llama_" + traderLlamaEntity.getVariant().getSerializedName();
+
+				if (traderLlamaEntity.isBaby())
+					path += "_baby";
+
+				id = Identifier.fromNamespaceAndPath(MOD_ID, path + ".png");
+			}
+			default -> {
+
+
+				EntityRenderer<? super LivingEntity, ?> renderer = MINECRAFT.getEntityRenderDispatcher().getRenderer(mob);
+
+				if (renderer instanceof LivingEntityRenderer<?, ?, ?> livingRenderer) {
+
+					try {
+						@SuppressWarnings("unchecked")
+						LivingEntityRenderer<LivingEntity, LivingEntityRenderState, ?> casted = (LivingEntityRenderer<LivingEntity, LivingEntityRenderState, ?>) livingRenderer;
+
+						LivingEntityRenderState state = casted.createRenderState(mob, 0);
+
+						Identifier minecraft_id = casted.getTextureLocation(state);
+						id = Identifier.fromNamespaceAndPath(MOD_ID, "living_entities/" + minecraft_id.getNamespace() + minecraft_id.getPath().replace("textures/entity", ""));
+
+					} catch (Exception ignored) {
+					}
+				}
+			}
+		}
+
+		return id;
 	}
 
 	public static List<EntityTexture> getTamedEntities() {
