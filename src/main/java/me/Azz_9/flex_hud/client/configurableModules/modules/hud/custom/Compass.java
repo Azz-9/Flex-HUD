@@ -1,19 +1,8 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
-import me.Azz_9.flex_hud.client.Flex_hudClient;
-import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
-import me.Azz_9.flex_hud.client.configurableModules.modules.Translatable;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.IntFieldEntry;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
-import me.Azz_9.flex_hud.client.tickables.LivingEntitiesTickable;
-import me.Azz_9.flex_hud.compat.CompatManager;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
@@ -31,14 +20,27 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.waypoint.EntityTickProgress;
 import net.minecraft.world.waypoint.TrackedWaypoint;
 import net.minecraft.world.waypoint.Waypoint;
+
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
-import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
+import me.Azz_9.flex_hud.client.configurableModules.modules.Translatable;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.IntFieldEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
+import me.Azz_9.flex_hud.client.tickables.LivingEntitiesTickable;
+import me.Azz_9.flex_hud.compat.CompatManager;
 
 public class Compass extends AbstractTextModule {
 	private final ConfigBoolean showMarker = new ConfigBoolean(true, "flex_hud.compass.config.show_marker");
@@ -219,7 +221,7 @@ public class Compass extends AbstractTextModule {
 		if (Math.abs(angleDifference) <= 120) {
 			float scaleFactor = 1.25f;
 			// Calculer la position X de chaque point cardinal en fonction de l'angle
-			float positionX = ((getWidth() / 2.0f) + (angleDifference * (getWidth() / 180.0f)));
+			float positionX = calculatePositionX(angleDifference);
 			float pointWidth = CLIENT.textRenderer.getWidth(label) * scaleFactor;
 
 			// Afficher le label des directions avec couleur et taille de texte ajustée
@@ -236,7 +238,7 @@ public class Compass extends AbstractTextModule {
 
 		if (Math.abs(angleDifference) <= 120) {
 			// Calculer la position X de chaque point cardinal en fonction de l'angle
-			float positionX = ((getWidth() / 2.0f) + (angleDifference * (getWidth() / 180.0f)));
+			float positionX = calculatePositionX(angleDifference);
 
 			matrices.pushMatrix();
 			matrices.translate(positionX - (CLIENT.textRenderer.getWidth("|") / 2.0f), y);
@@ -269,6 +271,10 @@ public class Compass extends AbstractTextModule {
 		return (float) -angleDegrees;
 	}
 
+	private float calculatePositionX(float angleDifference) {
+		return ((getWidth() / 2.0f) + (angleDifference * (getWidth() / 180.0f)));
+	}
+
 	private void drawXaerosMapWaypoints(DrawContext context, Matrix3x2fStack matrices, float yaw, RenderTickCounter tickCounter) {
 		PlayerEntity player = CLIENT.player;
 		if (player == null) return;
@@ -297,7 +303,7 @@ public class Compass extends AbstractTextModule {
 
 			float angleDifference = (angle - yaw + 540) % 360 - 180;
 			if (Math.abs(angleDifference) <= 120) {
-				float positionX = ((getWidth() / 2.0f) + (angleDifference * (getWidth() / 180.0f)));
+				float positionX = calculatePositionX(angleDifference);
 
 				int color = waypoint.getColor();
 				int backgroundColor = ((getAlpha(positionX) / 2) << 24) | (color & 0x00ffffff);
@@ -351,7 +357,7 @@ public class Compass extends AbstractTextModule {
 
 			float angleDifference = (angle - yaw + 540) % 360 - 180;
 			if (Math.abs(angleDifference) <= 120) {
-				float positionX = ((getWidth() / 2.0f) + (angleDifference * (getWidth() / 180.0f)));
+				float positionX = calculatePositionX(angleDifference);
 
 				Identifier icon = waypoint.getIcon();
 				int iconWidth = waypoint.getIconWidth();
@@ -421,7 +427,7 @@ public class Compass extends AbstractTextModule {
 
 				if (Math.abs(angleDifference) <= 120) {
 					// Calculer la position X de chaque point cardinal en fonction de l'angle
-					double positionX = ((getWidth() / 2.0f) + (angleDifference * (getWidth() / 180.0f)));
+					double positionX = calculatePositionX((float) angleDifference);
 
 					Waypoint.Config config = waypoint.getConfig();
 					WaypointStyleAsset waypointStyleAsset = CLIENT.getWaypointStyleAssetManager().get(config.style);
@@ -492,7 +498,7 @@ public class Compass extends AbstractTextModule {
 			float angleDifference = (angle - yaw + 540) % 360 - 180;
 
 			if (Math.abs(angleDifference) <= 120) {
-				float positionX = ((getWidth() / 2.0f) + (angleDifference * (getWidth() / 180.0f)));
+				float positionX = calculatePositionX(angleDifference);
 
 				matrices.pushMatrix();
 				matrices.translate(positionX - (textureSize * scale) / 2.0f, y);
