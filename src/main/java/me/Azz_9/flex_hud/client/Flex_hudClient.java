@@ -72,6 +72,7 @@ public class Flex_hudClient implements ClientModInitializer {
 
 		ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
 			Modifiers.init();
+			Variables.init();
 
 			if (layersRegistered) return;
 			layersRegistered = true;
@@ -121,7 +122,7 @@ public class Flex_hudClient implements ClientModInitializer {
 
 
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
-			Variables.init();
+			Variables.onJoinWorld();
 
 			if (!client.isIntegratedServerRunning()) {
 				Ping.packetSender = sender;

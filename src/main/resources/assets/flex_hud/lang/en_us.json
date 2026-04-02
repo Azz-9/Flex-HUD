@@ -335,6 +335,12 @@
 	"flex_hud.entity_count.text.mobs": "Mobs count: %d (radius %d)",
 	"flex_hud.entity_count.text.items": "Items count: %d (radius %d)",
 
+	"flex_hud.custom_modules.variable.name.player.gamemode": "Gamemode",
+	"flex_hud.custom_modules.variable.description.player.gamemode": "",
+
+	"flex_hud.custom_modules.variable.name.player.name": "Name",
+	"flex_hud.custom_modules.variable.description.player.name": "",
+
 	"flex_hud.custom_modules.variable.name.player.yaw": "Yaw",
 	"flex_hud.custom_modules.variable.description.player.yaw": "Horizontal rotation of the player (in degrees).",
 
@@ -356,9 +362,63 @@
 	"flex_hud.custom_modules.variable.name.nether.player.z": "Nether Z",
 	"flex_hud.custom_modules.variable.description.nether.player.z": "Equivalent Z coordinate in the Nether (Overworld ÷ 8).",
 
-	"flex_hud.custom_modules.variable.name.biome": "Biome",
-	"flex_hud.custom_modules.variable.description.biome": "Current biome the player is in.",
+	"flex_hud.custom_modules.variable.name.player.chunk.x": "Chunk X",
+	"flex_hud.custom_modules.variable.description.player.chunk.x": "",
 
-	"flex_hud.custom_modules.variable.name.fps": "FPS",
-	"flex_hud.custom_modules.variable.description.fps": "Current frames per second."
+	"flex_hud.custom_modules.variable.name.player.chunk.z": "Chunk z",
+	"flex_hud.custom_modules.variable.description.player.chunk.z": "",
+
+	"flex_hud.custom_modules.variable.name.player.direction": "Direction",
+	"flex_hud.custom_modules.variable.description.player.direction": "",
+
+	"flex_hud.custom_modules.variable.name.player.direction_abbr": "Direction abbreviation",
+	"flex_hud.custom_modules.variable.description.player.direction_abbr": "",
+
+	"flex_hud.custom_modules.variable.name.player.direction.x": "Direction X",
+	"flex_hud.custom_modules.variable.description.player.direction.x": "",
+
+	"flex_hud.custom_modules.variable.name.player.direction.z": "Direction Z",
+	"flex_hud.custom_modules.variable.description.player.direction.z": "",
+
+	"flex_hud.custom_modules.variable.name.player.speed": "Speed",
+	"flex_hud.custom_modules.variable.description.player.speed": "",
+
+	"flex_hud.custom_modules.variable.name.player.health": "Health",
+	"flex_hud.custom_modules.variable.description.player.health": "",
+
+	"flex_hud.custom_modules.variable.name.player.health_max": "Max health",
+	"flex_hud.custom_modules.variable.description.player.health_max": "",
+
+	"flex_hud.custom_modules.variable.name.player.health_percent": "Health percent",
+	"flex_hud.custom_modules.variable.description.player.health_percent": "",
+
+	"flex_hud.custom_modules.variable.name.player.absorption": "Absorption",
+	"flex_hud.custom_modules.variable.description.player.absorption": "",
+
+	"flex_hud.custom_modules.variable.name.player.absorption_max": "Max absorption",
+	"flex_hud.custom_modules.variable.description.player.absorption_max": "",
+
+	"flex_hud.custom_modules.variable.name.player.absorption_percent": "Absorption percent",
+	"flex_hud.custom_modules.variable.description.player.absorption_percent": "",
+
+	"flex_hud.custom_modules.variable.name.player.food": "Food",
+	"flex_hud.custom_modules.variable.description.player.food": "",
+
+	"flex_hud.custom_modules.variable.name.player.saturation": "Saturation",
+	"flex_hud.custom_modules.variable.description.player.saturation": "",
+
+	"flex_hud.custom_modules.variable.name.player.armor": "Armor",
+	"flex_hud.custom_modules.variable.description.player.armor": "",
+
+	"flex_hud.custom_modules.variable.name.world.biome": "Biome",
+	"flex_hud.custom_modules.variable.description.world.biome": "Current biome the player is in.",
+
+	"flex_hud.custom_modules.variable.name.client.fps": "FPS",
+	"flex_hud.custom_modules.variable.description.client.fps": "Current frames per second.",
+
+	"flex_hud.custom_modules.variable.name.client.version": "Version",
+	"flex_hud.custom_modules.variable.description.client.version": "",
+
+	"flex_hud.custom_modules.variable.name.client.render_distance": "Render distance",
+	"flex_hud.custom_modules.variable.description.client.render_distance": ""
 }
