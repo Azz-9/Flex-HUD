@@ -10,12 +10,8 @@ import net.minecraft.text.Text;
 import org.joml.Matrix3x2fStack;
 import org.jspecify.annotations.NonNull;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
-import me.Azz_9.flex_hud.client.customModules.token.Token;
-import me.Azz_9.flex_hud.client.customModules.token.TokenParser;
+import me.Azz_9.flex_hud.client.customModules.template.CompiledCustomText;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
@@ -23,7 +19,7 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.Toggle
 public class CustomModule extends AbstractTextModule {
 
 
-	private List<Token> tokens = new ArrayList<>();
+	private CompiledCustomText compiledText = CompiledCustomText.compile("");
 	private final @NonNull String text;
 
 	private @NonNull String name;
@@ -40,7 +36,7 @@ public class CustomModule extends AbstractTextModule {
 	public static CustomModule fromText(@NonNull String id, @NonNull String text) {
 		CustomModule module = new CustomModule(id, text);
 
-		module.tokens = TokenParser.parseText(text);
+		module.compiledText = CompiledCustomText.compile(text);
 
 		module.init();
 		return module;
@@ -57,14 +53,8 @@ public class CustomModule extends AbstractTextModule {
 			return;
 		}
 
-		setWidth(0);
-
-		List<String> tokenStrings = new ArrayList<>();
-		for (Token token : tokens) {
-			String tokenString = token.getString();
-			tokenStrings.add(tokenString);
-			setWidth(tokenString, getWidth());
-		}
+		CompiledCustomText.RenderData renderData = compiledText.getRenderData();
+		setWidth(renderData.width());
 
 		Matrix3x2fStack matrices = context.getMatrices();
 		matrices.pushMatrix();
@@ -73,18 +63,13 @@ public class CustomModule extends AbstractTextModule {
 
 		drawBackground(context);
 
-		int hudX = 0;
-		for (String tokenString : tokenStrings) {
-			context.drawText(
-					CLIENT.textRenderer,
-					tokenString,
-					hudX, 0,
-					getColor(),
-					shadow.getValue()
-			);
-
-			hudX += CLIENT.textRenderer.getWidth(tokenString);
-		}
+		context.drawText(
+				CLIENT.textRenderer,
+				renderData.text(),
+				0, 0,
+				renderData.hasOwnColors() ? 0xffffffff : getColor(),
+				shadow.getValue()
+		);
 
 		matrices.popMatrix();
 	}

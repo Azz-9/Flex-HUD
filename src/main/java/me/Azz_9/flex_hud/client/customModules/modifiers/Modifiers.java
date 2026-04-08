@@ -30,16 +30,16 @@ public class Modifiers {
 		register(BigDecimal.class, BigDecimal.class, Pattern.compile("floor\\.(\\d{1,2})"), (val, matcher) -> val.setScale(Integer.parseInt(matcher.group(1)), RoundingMode.FLOOR));
 		register(BigDecimal.class, BigDecimal.class, Pattern.compile("ceil\\.(\\d{1,2})"), (val, matcher) -> val.setScale(Integer.parseInt(matcher.group(1)), RoundingMode.CEILING));
 		register(BigDecimal.class, BigDecimal.class, "negate", BigDecimal::negate);
-		register(BigDecimal.class, BigDecimal.class, Pattern.compile("clamp\\.(\\d)\\.(\\d)"), (val, matcher) -> val.min(new BigDecimal(matcher.group(1))).max(new BigDecimal(matcher.group(2))));
-		register(BigDecimal.class, BigDecimal.class, Pattern.compile("min\\.(\\d)"), (val, matcher) -> val.min(new BigDecimal(matcher.group(1))));
-		register(BigDecimal.class, BigDecimal.class, Pattern.compile("max\\.(\\d)"), (val, matcher) -> val.max(new BigDecimal(matcher.group(1))));
-		register(BigDecimal.class, BigDecimal.class, Pattern.compile("add\\.(\\d)"), (val, matcher) -> val.add(new BigDecimal(matcher.group(1))));
-		register(BigDecimal.class, BigDecimal.class, Pattern.compile("sub\\.(\\d)"), (val, matcher) -> val.subtract(new BigDecimal(matcher.group(1))));
-		register(BigDecimal.class, BigDecimal.class, Pattern.compile("mul\\.(\\d)"), (val, matcher) -> val.multiply(new BigDecimal(matcher.group(1))));
+		register(BigDecimal.class, BigDecimal.class, Pattern.compile("clamp\\.(\\d+)\\.(\\d+)"), (val, matcher) -> val.min(new BigDecimal(matcher.group(1))).max(new BigDecimal(matcher.group(2))));
+		register(BigDecimal.class, BigDecimal.class, Pattern.compile("min\\.(\\d+)"), (val, matcher) -> val.min(new BigDecimal(matcher.group(1))));
+		register(BigDecimal.class, BigDecimal.class, Pattern.compile("max\\.(\\d+)"), (val, matcher) -> val.max(new BigDecimal(matcher.group(1))));
+		register(BigDecimal.class, BigDecimal.class, Pattern.compile("add\\.(\\d+)"), (val, matcher) -> val.add(new BigDecimal(matcher.group(1))));
+		register(BigDecimal.class, BigDecimal.class, Pattern.compile("sub\\.(\\d+)"), (val, matcher) -> val.subtract(new BigDecimal(matcher.group(1))));
+		register(BigDecimal.class, BigDecimal.class, Pattern.compile("mul\\.(\\d+)"), (val, matcher) -> val.multiply(new BigDecimal(matcher.group(1))));
 		register(BigDecimal.class, BigDecimal.class, Pattern.compile("div\\.([1-9][0-9]*)"), (val, matcher) -> val.divide(new BigDecimal(matcher.group(1)), RoundingMode.HALF_UP));
-		register(BigDecimal.class, BigDecimal.class, Pattern.compile("mod\\.(\\d)"), (val, matcher) -> val.remainder(new BigDecimal(matcher.group(1))));
-		register(BigDecimal.class, BigDecimal.class, Pattern.compile("pow\\.(\\d)"), (val, matcher) -> val.pow(Integer.parseInt(matcher.group(1))));
-		register(BigDecimal.class, BigDecimal.class, Pattern.compile("sqrt\\.(\\d)"), (val, matcher) -> val.sqrt(new MathContext(15)));
+		register(BigDecimal.class, BigDecimal.class, Pattern.compile("mod\\.(\\d+)"), (val, matcher) -> val.remainder(new BigDecimal(matcher.group(1))));
+		register(BigDecimal.class, BigDecimal.class, Pattern.compile("pow\\.(\\d+)"), (val, matcher) -> val.pow(Integer.parseInt(matcher.group(1))));
+		register(BigDecimal.class, BigDecimal.class, "sqrt", (val) -> val.sqrt(new MathContext(15)));
 		register(BigDecimal.class, Integer.class, "sign", BigDecimal::signum);
 
 		// BigDecomal -> String
@@ -56,17 +56,17 @@ public class Modifiers {
 		register(String.class, String.class, "upper", String::toUpperCase);
 		register(String.class, String.class, "lower", String::toLowerCase);
 		register(String.class, String.class, "title", (val) -> val.isEmpty() ? val : Character.toUpperCase(val.charAt(0)) + val.substring(1));
-		register(String.class, String.class, Pattern.compile("pad_left\\.(\\d)\\.(.)"), (val, matcher) -> StringUtils.leftPad(val, Integer.parseInt(matcher.group(1)), matcher.group(2)));
-		register(String.class, String.class, Pattern.compile("pad_right\\.(\\d)\\.(.)"), (val, matcher) -> StringUtils.rightPad(val, Integer.parseInt(matcher.group(1)), matcher.group(2)));
-		register(String.class, String.class, Pattern.compile("pad_center\\.(\\d)\\.(.)"), (val, matcher) -> StringUtils.center(val, Integer.parseInt(matcher.group(1)), matcher.group(2)));
-		register(String.class, String.class, Pattern.compile("truncate\\.(\\d)"), (val, matcher) -> StringHelper.truncate(val, Integer.parseInt(matcher.group(1)), true));
+		register(String.class, String.class, Pattern.compile("pad_left\\.(\\d{1,2})\\.(.)"), (val, matcher) -> StringUtils.leftPad(val, Integer.parseInt(matcher.group(1)), matcher.group(2)));
+		register(String.class, String.class, Pattern.compile("pad_right\\.(\\d{1,2})\\.(.)"), (val, matcher) -> StringUtils.rightPad(val, Integer.parseInt(matcher.group(1)), matcher.group(2)));
+		register(String.class, String.class, Pattern.compile("pad_center\\.(\\d{1,2})\\.(.)"), (val, matcher) -> StringUtils.center(val, Integer.parseInt(matcher.group(1)), matcher.group(2)));
+		register(String.class, String.class, Pattern.compile("truncate\\.(\\d{1,2})"), (val, matcher) -> StringHelper.truncate(val, Integer.parseInt(matcher.group(1)), true));
 		register(String.class, String.class, Pattern.compile("replace\\.(.)\\.(.)"), (val, matcher) -> val.replace(matcher.group(1), matcher.group(2)));
 
 		// conditional
 		register(String.class, String.class, Pattern.compile("if_empty\\.(.+)"), (val, matcher) -> val == null || val.isEmpty() ? matcher.group(1) : val);
-		register(BigDecimal.class, String.class, Pattern.compile("if_gt\\.(\\d)\\.(.+)"), (val, matcher) -> val.compareTo(new BigDecimal(matcher.group(1))) > 0 ? matcher.group(2) : val.toString());
-		register(BigDecimal.class, String.class, Pattern.compile("if_lt\\.(\\d)\\.(.+)"), (val, matcher) -> val.compareTo(new BigDecimal(matcher.group(1))) < 0 ? matcher.group(2) : val.toString());
-		register(BigDecimal.class, String.class, Pattern.compile("if_eq\\.(\\d)\\.(.+)"), (val, matcher) -> val.compareTo(new BigDecimal(matcher.group(1))) == 0 ? matcher.group(2) : val.toString());
+		register(BigDecimal.class, String.class, Pattern.compile("if_gt\\.(\\d+)\\.(.+)"), (val, matcher) -> val.compareTo(new BigDecimal(matcher.group(1))) > 0 ? matcher.group(2) : val.toString());
+		register(BigDecimal.class, String.class, Pattern.compile("if_lt\\.(\\d+)\\.(.+)"), (val, matcher) -> val.compareTo(new BigDecimal(matcher.group(1))) < 0 ? matcher.group(2) : val.toString());
+		register(BigDecimal.class, String.class, Pattern.compile("if_eq\\.(\\d+)\\.(.+)"), (val, matcher) -> val.compareTo(new BigDecimal(matcher.group(1))) == 0 ? matcher.group(2) : val.toString());
 	}
 
 	private static <I, R> void register(Class<I> inputType, Class<R> outputType, Pattern regex, BiFunction<I, Matcher, R> modifierFunction) {
@@ -102,8 +102,19 @@ public class Modifiers {
 		return null;
 	}
 
-	public static <T> Function<T, String> formatterFromModifiers(List<ResolvedModifier<?, ?>> modifiers) {
-		List<ResolvedModifier<?, ?>> resolvedModifiers = List.copyOf(modifiers);
+	public static @Nullable CompiledFormatter compileFormatter(@Nullable Class<?> inputType, List<ResolvedModifier<?, ?>> modifiers) {
+		if (modifiers.isEmpty()) {
+			return value -> String.valueOf(value);
+		}
+
+		if (inputType == null) {
+			return null;
+		}
+
+		List<ResolvedModifier<?, ?>> orderedModifiers = orderForInputType(inputType, List.copyOf(modifiers));
+		if (orderedModifiers == null) {
+			return null;
+		}
 
 		return value -> {
 			Object current = value;
@@ -111,7 +122,6 @@ public class Modifiers {
 				return "null";
 			}
 
-			List<ResolvedModifier<?, ?>> orderedModifiers = orderForInputType(current.getClass(), resolvedModifiers);
 			for (ResolvedModifier<?, ?> resolvedModifier : orderedModifiers) {
 				current = applyResolvedModifier(current, resolvedModifier);
 			}
@@ -120,7 +130,20 @@ public class Modifiers {
 		};
 	}
 
-	private static List<ResolvedModifier<?, ?>> orderForInputType(Class<?> inputType, List<ResolvedModifier<?, ?>> modifiers) {
+	public static <T> Function<T, String> formatterFromModifiers(List<ResolvedModifier<?, ?>> modifiers) {
+		List<ResolvedModifier<?, ?>> resolvedModifiers = List.copyOf(modifiers);
+
+		return value -> {
+			CompiledFormatter formatter = compileFormatter(value != null ? value.getClass() : null, resolvedModifiers);
+			if (formatter == null) {
+				return String.valueOf(value);
+			}
+
+			return formatter.format(value);
+		};
+	}
+
+	private static @Nullable List<ResolvedModifier<?, ?>> orderForInputType(Class<?> inputType, List<ResolvedModifier<?, ?>> modifiers) {
 		if (modifiers.size() <= 1) {
 			return modifiers;
 		}
@@ -129,7 +152,7 @@ public class Modifiers {
 		searchBestOrder(inputType, new ArrayList<>(modifiers), new ArrayList<>(modifiers.size()), 0, bestOrder);
 
 		if (bestOrder.cost == IMPOSSIBLE_COST) {
-			return modifiers;
+			return null;
 		}
 
 		return bestOrder.modifiers;
@@ -193,7 +216,13 @@ public class Modifiers {
 	}
 
 	private static boolean isNumericType(Class<?> type) {
-		return type == Byte.class || type == Short.class || type == Integer.class || type == Long.class || type == Float.class || type == Double.class;
+		return type == Byte.class
+				|| type == Short.class
+				|| type == Integer.class
+				|| type == Long.class
+				|| type == Float.class
+				|| type == Double.class
+				|| type == BigDecimal.class;
 	}
 
 	private static Object applyResolvedModifier(Object input, ResolvedModifier<?, ?> resolvedModifier) {
@@ -218,6 +247,10 @@ public class Modifiers {
 		}
 
 		if (isNumericType(targetType)) {
+			if (targetType == BigDecimal.class) {
+				return toBigDecimal(value);
+			}
+
 			double numericValue = toDouble(value);
 			return castDoubleToTarget(numericValue, targetType);
 		}
@@ -239,6 +272,33 @@ public class Modifiers {
 		}
 
 		throw new IllegalArgumentException("Cannot coerce " + value.getClass().getSimpleName() + " to a numeric type");
+	}
+
+	private static BigDecimal toBigDecimal(Object value) {
+		if (value instanceof BigDecimal bigDecimal) {
+			return bigDecimal;
+		}
+
+		if (value instanceof Byte
+				|| value instanceof Short
+				|| value instanceof Integer
+				|| value instanceof Long) {
+			return BigDecimal.valueOf(((Number) value).longValue());
+		}
+
+		if (value instanceof Number number) {
+			return BigDecimal.valueOf(number.doubleValue());
+		}
+
+		if (value instanceof String stringValue) {
+			try {
+				return new BigDecimal(stringValue);
+			} catch (NumberFormatException e) {
+				throw new IllegalArgumentException("Cannot parse BigDecimal from \"" + stringValue + "\"", e);
+			}
+		}
+
+		throw new IllegalArgumentException("Cannot coerce " + value.getClass().getSimpleName() + " to BigDecimal");
 	}
 
 	private static Object castDoubleToTarget(double value, Class<?> targetType) {
@@ -267,6 +327,11 @@ public class Modifiers {
 	private static final class BestOrder {
 		private int cost = IMPOSSIBLE_COST;
 		private List<ResolvedModifier<?, ?>> modifiers = List.of();
+	}
+
+	@FunctionalInterface
+	public interface CompiledFormatter {
+		String format(@Nullable Object value);
 	}
 
 	public record ResolvedModifier<I, R>(Modifier<I, R> modifier, Matcher matcher) {
