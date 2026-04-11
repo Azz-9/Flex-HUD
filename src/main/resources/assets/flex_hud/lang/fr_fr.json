@@ -264,6 +264,7 @@
 	"flex_hud.entity_count.config.only_mbos": "Uniquement les mobs",
 	"flex_hud.entity_count.config.only_items": "Uniquement les objets",
 	"flex_hud.entity_count.config.range": "Rayon",
+	"flex_hud.entity_count.config.y_range": "Rayon Y",
 
 	"flex_hud.toggle_sprint": "Toggle sprint",
 	"flex_hud.toggle_sprint.config.enable": "Afficher toggle sprint statut",
@@ -321,6 +322,9 @@
 	"flex_hud.full_inventory_indicator.label": "Inventaire plein !",
 
 	"flex_hud.entity_count.text.entities": "Compteur d'entités: %d (rayon %d)",
-	"flex_hud.entity_count.text.mobs": "Compteur de mobs: %d (radius %d)",
-	"flex_hud.entity_count.text.items": "Compteur d'objets: %d (radius %d)"
+	"flex_hud.entity_count.text.mobs": "Compteur de mobs: %d (rayon %d)",
+	"flex_hud.entity_count.text.items": "Compteur d'objets: %d (rayon %d)",
+	"flex_hud.entity_count.text.entities.different_y": "Compteur d'entités: %d (r%d y%d)",
+	"flex_hud.entity_count.text.mobs.different_y": "Compteur de mobs: %d (r%d y%d)",
+	"flex_hud.entity_count.text.items.different_y": "Compteur d'objets: %d (r%d y%d)"
 }

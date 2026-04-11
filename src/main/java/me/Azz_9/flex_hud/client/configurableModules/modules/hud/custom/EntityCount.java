@@ -31,6 +31,7 @@ public class EntityCount extends AbstractTextModule implements TickableModule {
 	private final ConfigBoolean onlyMobs = new ConfigBoolean(false, "flex_hud.entity_count.config.only_mbos");
 	private final ConfigBoolean onlyItems = new ConfigBoolean(false, "flex_hud.entity_count.config.only_items");
 	private final ConfigInteger range = new ConfigInteger(16, "flex_hud.entity_count.config.range", 0, 512);
+	private final ConfigInteger yRange = new ConfigInteger(16, "flex_hud.entity_count.config.y_range", 0, 512);
 	public static int entityCount = 0;
 
 	public EntityCount(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
@@ -42,6 +43,7 @@ public class EntityCount extends AbstractTextModule implements TickableModule {
 		ConfigRegistry.register(getID(), "onlyMobs", onlyMobs);
 		ConfigRegistry.register(getID(), "onlyItems", onlyItems);
 		ConfigRegistry.register(getID(), "range", range);
+		ConfigRegistry.register(getID(), "yRange", yRange);
 	}
 
 	@Override
@@ -84,15 +86,20 @@ public class EntityCount extends AbstractTextModule implements TickableModule {
 	private String getText() {
 		int entityCount = Flex_hudClient.isInMoveElementScreen ? 10 : EntityCount.entityCount;
 
-		String text;
+		String translationKey;
 		if (onlyMobs.getValue()) {
-			text = Component.translatable("flex_hud.entity_count.text.mobs", entityCount, range.getValue()).getString();
+			translationKey = "flex_hud.entity_count.text.mobs";
 		} else if (onlyItems.getValue()) {
-			text = Component.translatable("flex_hud.entity_count.text.items", entityCount, range.getValue()).getString();
+			translationKey = "flex_hud.entity_count.text.items";
 		} else {
-			text = Component.translatable("flex_hud.entity_count.text.entities", entityCount, range.getValue()).getString();
+			translationKey = "flex_hud.entity_count.text.entities";
 		}
-		return text;
+
+		if (!range.getValue().equals(yRange.getValue())) {
+			translationKey += ".different_y";
+		}
+
+		return Component.translatable(translationKey, entityCount, range.getValue(), yRange.getValue()).getString();
 	}
 
 	@Override
@@ -159,6 +166,11 @@ public class EntityCount extends AbstractTextModule implements TickableModule {
 								.setIntFieldWidth(30)
 								.setVariable(range)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build(),
+						new IntFieldEntry.Builder()
+								.setIntFieldWidth(30)
+								.setVariable(yRange)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 			}
@@ -169,7 +181,8 @@ public class EntityCount extends AbstractTextModule implements TickableModule {
 		LocalPlayer player = MINECRAFT.player;
 		if (player != null) {
 			int radius = ModulesHelper.getInstance().entityCount.range.getValue();
-			return entity.position().closerThan(player.position(), radius);
+			int yRadius = ModulesHelper.getInstance().entityCount.yRange.getValue();
+			return entity.position().closerThan(player.position(), radius, yRadius);
 		}
 		return false;
 	}
