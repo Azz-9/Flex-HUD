@@ -193,7 +193,7 @@ public final class CompiledCustomText {
 		for (int i = 0; i < glyphs.size(); i++) {
 			StyledGlyph glyph = glyphs.get(i);
 			int width = widths.get(i);
-			if (glyph.style().colorSource() == GradientPlaceholderColorSource.INSTANCE) {
+			if (glyph.style().currentColorSource() == GradientPlaceholderColorSource.INSTANCE) {
 				float progress = totalWidth <= 0 ? 0.0f : (float) ((currentX + width / 2.0) / totalWidth);
 				int gradientColor = interpolateRgb(startColor, endColor, progress);
 				glyphs.set(i, glyph.withColorSource(new StaticColorSource(gradientColor)));
@@ -229,7 +229,7 @@ public final class CompiledCustomText {
 
 	private record StyledGlyph(String text, StyleState style) {
 		private StyledGlyph withColorSource(ColorSource colorSource) {
-			return new StyledGlyph(text, style.withColorSource(colorSource));
+			return new StyledGlyph(text, style.replaceCurrentColorSource(colorSource));
 		}
 	}
 
@@ -275,7 +275,7 @@ public final class CompiledCustomText {
 		@Override
 		public StyleState render(StyleState style, List<StyledGlyph> output, WidthMeasurer widthMeasurer) {
 			List<StyledGlyph> gradientGlyphs = new ArrayList<>();
-			content.render(style.withColorSource(GradientPlaceholderColorSource.INSTANCE), gradientGlyphs, widthMeasurer);
+			content.render(style.pushColorSource(GradientPlaceholderColorSource.INSTANCE), gradientGlyphs, widthMeasurer);
 			applyGradient(gradientGlyphs, startColor, endColor, widthMeasurer);
 			output.addAll(gradientGlyphs);
 			return style;
@@ -287,38 +287,65 @@ public final class CompiledCustomText {
 	                          boolean underline,
 	                          boolean strikethrough,
 	                          boolean obfuscated,
-	                          ColorSource colorSource) {
+	                          List<ColorSource> colorSources) {
 
 		private static final StyleState EMPTY = new StyleState(
-				false, false, false, false, false, DefaultColorSource.INSTANCE
+				false, false, false, false, false, List.of()
 		);
 
 		private StyleState withBold(boolean newValue) {
-			return new StyleState(newValue, italic, underline, strikethrough, obfuscated, colorSource);
+			return new StyleState(newValue, italic, underline, strikethrough, obfuscated, colorSources);
 		}
 
 		private StyleState withItalic(boolean newValue) {
-			return new StyleState(bold, newValue, underline, strikethrough, obfuscated, colorSource);
+			return new StyleState(bold, newValue, underline, strikethrough, obfuscated, colorSources);
 		}
 
 		private StyleState withUnderline(boolean newValue) {
-			return new StyleState(bold, italic, newValue, strikethrough, obfuscated, colorSource);
+			return new StyleState(bold, italic, newValue, strikethrough, obfuscated, colorSources);
 		}
 
 		private StyleState withStrikethrough(boolean newValue) {
-			return new StyleState(bold, italic, underline, newValue, obfuscated, colorSource);
+			return new StyleState(bold, italic, underline, newValue, obfuscated, colorSources);
 		}
 
 		private StyleState withObfuscated(boolean newValue) {
-			return new StyleState(bold, italic, underline, strikethrough, newValue, colorSource);
+			return new StyleState(bold, italic, underline, strikethrough, newValue, colorSources);
 		}
 
-		private StyleState withColorSource(ColorSource newColorSource) {
-			return new StyleState(bold, italic, underline, strikethrough, obfuscated, newColorSource);
+		private StyleState pushColorSource(ColorSource newColorSource) {
+			List<ColorSource> newColorSources = new ArrayList<>(colorSources);
+			newColorSources.add(newColorSource);
+			return new StyleState(bold, italic, underline, strikethrough, obfuscated, List.copyOf(newColorSources));
+		}
+
+		private StyleState toggleColorSource(ColorSource toggledColorSource) {
+			if (!colorSources.isEmpty() && colorSources.get(colorSources.size() - 1).equals(toggledColorSource)) {
+				return new StyleState(
+						bold,
+						italic,
+						underline,
+						strikethrough,
+						obfuscated,
+						List.copyOf(colorSources.subList(0, colorSources.size() - 1))
+				);
+			}
+
+			return pushColorSource(toggledColorSource);
+		}
+
+		private StyleState replaceCurrentColorSource(ColorSource newColorSource) {
+			if (colorSources.isEmpty()) {
+				return pushColorSource(newColorSource);
+			}
+
+			List<ColorSource> newColorSources = new ArrayList<>(colorSources);
+			newColorSources.set(newColorSources.size() - 1, newColorSource);
+			return new StyleState(bold, italic, underline, strikethrough, obfuscated, List.copyOf(newColorSources));
 		}
 
 		private StyleState withoutColorSource() {
-			return withColorSource(DefaultColorSource.INSTANCE);
+			return new StyleState(bold, italic, underline, strikethrough, obfuscated, List.of());
 		}
 
 		private StyleState reset() {
@@ -333,7 +360,10 @@ public final class CompiledCustomText {
 					.withStrikethrough(strikethrough)
 					.withObfuscated(obfuscated);
 
-			Integer rgb = colorSource.resolveRgb(forceDefaultColor);
+			ColorSource colorSource = currentColorSource();
+			Integer rgb = colorSource != null
+					? colorSource.resolveRgb(forceDefaultColor)
+					: (forceDefaultColor ? DEFAULT_STYLED_TEXT_COLOR : null);
 			if (rgb != null) {
 				style = style.withColor(TextColor.fromRgb(rgb));
 			}
@@ -343,6 +373,10 @@ public final class CompiledCustomText {
 
 		private Style toMeasurementStyle() {
 			return withoutColorSource().toMinecraftStyle(false);
+		}
+
+		private @Nullable ColorSource currentColorSource() {
+			return colorSources.isEmpty() ? null : colorSources.get(colorSources.size() - 1);
 		}
 	}
 
@@ -432,7 +466,7 @@ public final class CompiledCustomText {
 	private record ColorDirective(ColorSource colorSource) implements StyleDirective {
 		@Override
 		public StyleState apply(StyleState style) {
-			return style.withColorSource(colorSource);
+			return style.toggleColorSource(colorSource);
 		}
 
 		@Override
@@ -599,19 +633,19 @@ public final class CompiledCustomText {
 			index = end + 1;
 
 			String inner = source.substring(start + 1, end);
-			String[] parts = inner.split(":", -1);
-			if (parts.length == 0) {
+			List<String> parts = Modifiers.splitUnescaped(inner, ':');
+			if (parts.isEmpty()) {
 				return new LiteralNode(rawPlaceholder);
 			}
 
-			Variable<?> variable = variableResolver.apply(parts[0].trim());
+			Variable<?> variable = variableResolver.apply(parts.getFirst().trim());
 			if (variable == null) {
 				return new LiteralNode(rawPlaceholder);
 			}
 
-			List<Modifiers.ResolvedModifier<?, ?>> modifiers = new ArrayList<>(Math.max(0, parts.length - 1));
-			for (int i = 1; i < parts.length; i++) {
-				Modifiers.ResolvedModifier<?, ?> resolvedModifier = Modifiers.get(parts[i].trim());
+			List<Modifiers.ResolvedModifier<?, ?>> modifiers = new ArrayList<>(Math.max(0, parts.size() - 1));
+			for (int i = 1; i < parts.size(); i++) {
+				Modifiers.ResolvedModifier<?, ?> resolvedModifier = Modifiers.get(parts.get(i));
 				if (resolvedModifier == null) {
 					return new LiteralNode(rawPlaceholder);
 				}

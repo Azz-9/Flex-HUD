@@ -76,6 +76,42 @@ public class CompiledCustomTextTest {
 		assertNotEquals(dColor.getRgb(), eColor.getRgb());
 	}
 
+	@Test
+	void sameColorDirectiveTogglesBackToDefaultStyledColor() {
+		CompiledCustomText template = CompiledCustomText.compile("&greenAB&greenCD", key -> null);
+
+		CompiledCustomText.RenderData renderData = template.getRenderDataForTests();
+		List<Text> siblings = renderData.text().getSiblings();
+
+		assertEquals("ABCD", renderData.text().getString());
+		assertTrue(renderData.hasOwnColors());
+		assertEquals(2, siblings.size());
+		assertEquals(0x55ff55, colorOf(siblings.getFirst().getStyle()).getRgb());
+		assertEquals(0xffffff, colorOf(siblings.getLast().getStyle()).getRgb());
+	}
+
+	@Test
+	void chainedConditionalBranchesUseTheOriginalNumericValue() {
+		Modifiers.init();
+
+		AtomicReference<Integer> value = new AtomicReference<>(5);
+		Variable<Integer> variable = createVariable("player.x", value::get);
+		CompiledCustomText template = CompiledCustomText.compile(
+				"{player.x:if_lt.10.<10.0.if_gt.100.>100}",
+				key -> "player.x".equals(key) ? variable : null
+		);
+
+		assertEquals("<10.0", template.getRenderDataForTests().text().getString());
+
+		value.set(150);
+		variable.updateValue();
+		assertEquals(">100", template.getRenderDataForTests().text().getString());
+
+		value.set(50);
+		variable.updateValue();
+		assertEquals("50", template.getRenderDataForTests().text().getString());
+	}
+
 	private static <T> Variable<T> createVariable(String key, java.util.function.Supplier<T> supplier) {
 		Variable<T> variable = new Variable<>(Text.of(key), Text.of(key), key, supplier);
 		variable.updateValue();

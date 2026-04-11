@@ -11,7 +11,6 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,57 +23,80 @@ public class Modifiers {
 	public static void init() {
 		MODIFIERS.clear();
 
-		// BigDecomal -> BigDecimal
+		// BigDecimal -> BigDecimal
 		register(BigDecimal.class, BigDecimal.class, "abs", BigDecimal::abs);
-		register(BigDecimal.class, BigDecimal.class, Pattern.compile("round\\.(\\d{1,2})"), (val, matcher) -> val.setScale(Integer.parseInt(matcher.group(1)), RoundingMode.HALF_UP));
-		register(BigDecimal.class, BigDecimal.class, Pattern.compile("floor\\.(\\d{1,2})"), (val, matcher) -> val.setScale(Integer.parseInt(matcher.group(1)), RoundingMode.FLOOR));
-		register(BigDecimal.class, BigDecimal.class, Pattern.compile("ceil\\.(\\d{1,2})"), (val, matcher) -> val.setScale(Integer.parseInt(matcher.group(1)), RoundingMode.CEILING));
+		registerRegex(BigDecimal.class, BigDecimal.class, "round", Pattern.compile("round\\.(\\d{1,2})"), (val, arguments) -> val.setScale(Integer.parseInt(arguments.getFirst()), RoundingMode.HALF_UP));
+		registerRegex(BigDecimal.class, BigDecimal.class, "floor", Pattern.compile("floor\\.(\\d{1,2})"), (val, arguments) -> val.setScale(Integer.parseInt(arguments.getFirst()), RoundingMode.FLOOR));
+		registerRegex(BigDecimal.class, BigDecimal.class, "ceil", Pattern.compile("ceil\\.(\\d{1,2})"), (val, arguments) -> val.setScale(Integer.parseInt(arguments.getFirst()), RoundingMode.CEILING));
 		register(BigDecimal.class, BigDecimal.class, "negate", BigDecimal::negate);
-		register(BigDecimal.class, BigDecimal.class, Pattern.compile("clamp\\.(\\d+)\\.(\\d+)"), (val, matcher) -> val.min(new BigDecimal(matcher.group(1))).max(new BigDecimal(matcher.group(2))));
-		register(BigDecimal.class, BigDecimal.class, Pattern.compile("min\\.(\\d+)"), (val, matcher) -> val.min(new BigDecimal(matcher.group(1))));
-		register(BigDecimal.class, BigDecimal.class, Pattern.compile("max\\.(\\d+)"), (val, matcher) -> val.max(new BigDecimal(matcher.group(1))));
-		register(BigDecimal.class, BigDecimal.class, Pattern.compile("add\\.(\\d+)"), (val, matcher) -> val.add(new BigDecimal(matcher.group(1))));
-		register(BigDecimal.class, BigDecimal.class, Pattern.compile("sub\\.(\\d+)"), (val, matcher) -> val.subtract(new BigDecimal(matcher.group(1))));
-		register(BigDecimal.class, BigDecimal.class, Pattern.compile("mul\\.(\\d+)"), (val, matcher) -> val.multiply(new BigDecimal(matcher.group(1))));
-		register(BigDecimal.class, BigDecimal.class, Pattern.compile("div\\.([1-9][0-9]*)"), (val, matcher) -> val.divide(new BigDecimal(matcher.group(1)), RoundingMode.HALF_UP));
-		register(BigDecimal.class, BigDecimal.class, Pattern.compile("mod\\.(\\d+)"), (val, matcher) -> val.remainder(new BigDecimal(matcher.group(1))));
-		register(BigDecimal.class, BigDecimal.class, Pattern.compile("pow\\.(\\d+)"), (val, matcher) -> val.pow(Integer.parseInt(matcher.group(1))));
-		register(BigDecimal.class, BigDecimal.class, "sqrt", (val) -> val.sqrt(new MathContext(15)));
+		registerRegex(BigDecimal.class, BigDecimal.class, "clamp", Pattern.compile("clamp\\.(-?\\d+)\\.(-?\\d+)"), (val, arguments) -> val.min(new BigDecimal(arguments.getFirst())).max(new BigDecimal(arguments.get(1))));
+		registerRegex(BigDecimal.class, BigDecimal.class, "min", Pattern.compile("min\\.(-?\\d+)"), (val, arguments) -> val.min(new BigDecimal(arguments.getFirst())));
+		registerRegex(BigDecimal.class, BigDecimal.class, "max", Pattern.compile("max\\.(-?\\d+)"), (val, arguments) -> val.max(new BigDecimal(arguments.getFirst())));
+		registerRegex(BigDecimal.class, BigDecimal.class, "add", Pattern.compile("add\\.(-?\\d+)"), (val, arguments) -> val.add(new BigDecimal(arguments.getFirst())));
+		registerRegex(BigDecimal.class, BigDecimal.class, "sub", Pattern.compile("sub\\.(-?\\d+)"), (val, arguments) -> val.subtract(new BigDecimal(arguments.getFirst())));
+		registerRegex(BigDecimal.class, BigDecimal.class, "mul", Pattern.compile("mul\\.(-?\\d+)"), (val, arguments) -> val.multiply(new BigDecimal(arguments.getFirst())));
+		registerRegex(BigDecimal.class, BigDecimal.class, "div", Pattern.compile("div\\.(-?[1-9][0-9]*)"), (val, arguments) -> val.divide(new BigDecimal(arguments.getFirst()), RoundingMode.HALF_UP));
+		registerRegex(BigDecimal.class, BigDecimal.class, "mod", Pattern.compile("mod\\.(-?\\d+)"), (val, arguments) -> val.remainder(new BigDecimal(arguments.getFirst())));
+		registerRegex(BigDecimal.class, BigDecimal.class, "pow", Pattern.compile("pow\\.(\\d+)"), (val, arguments) -> val.pow(Integer.parseInt(arguments.getFirst())));
+		register(BigDecimal.class, BigDecimal.class, "sqrt", val -> val.sqrt(new MathContext(15)));
 		register(BigDecimal.class, Integer.class, "sign", BigDecimal::signum);
 
-		// BigDecomal -> String
-		register(BigDecimal.class, String.class, "sign_str", (val) -> val.compareTo(BigDecimal.valueOf(0)) < 0 ? val.toString() : "+" + val);
-		register(BigDecimal.class, String.class, Pattern.compile("percent\\.(\\d{1,2})"), (val, matcher) -> val.multiply(BigDecimal.valueOf(100)).setScale(Integer.parseInt(matcher.group(1)), RoundingMode.HALF_UP) + "%");
+		// BigDecimal -> String
+		register(BigDecimal.class, String.class, "sign_str", val -> val.compareTo(BigDecimal.ZERO) < 0 ? val.toString() : "+" + val);
+		registerRegex(BigDecimal.class, String.class, "percent", Pattern.compile("percent\\.(\\d{1,2})"), (val, arguments) -> val.multiply(BigDecimal.valueOf(100)).setScale(Integer.parseInt(arguments.getFirst()), RoundingMode.HALF_UP) + "%");
 
 		// Integer -> String
 		register(Integer.class, String.class, "roman", Modifiers::intToRoman);
 
 		// Boolean -> String
-		register(Boolean.class, String.class, Pattern.compile("bool\\.(.+)\\.(.+)"), (val, matcher) -> val ? matcher.group(1) : matcher.group(2));
+		registerCustom(Boolean.class, String.class, "bool", Modifiers::parseBooleanArguments, (val, arguments) -> val ? arguments.getFirst() : arguments.get(1));
 
 		// String -> String
 		register(String.class, String.class, "upper", String::toUpperCase);
 		register(String.class, String.class, "lower", String::toLowerCase);
-		register(String.class, String.class, "title", (val) -> val.isEmpty() ? val : Character.toUpperCase(val.charAt(0)) + val.substring(1));
-		register(String.class, String.class, Pattern.compile("pad_left\\.(\\d{1,2})\\.(.)"), (val, matcher) -> StringUtils.leftPad(val, Integer.parseInt(matcher.group(1)), matcher.group(2)));
-		register(String.class, String.class, Pattern.compile("pad_right\\.(\\d{1,2})\\.(.)"), (val, matcher) -> StringUtils.rightPad(val, Integer.parseInt(matcher.group(1)), matcher.group(2)));
-		register(String.class, String.class, Pattern.compile("pad_center\\.(\\d{1,2})\\.(.)"), (val, matcher) -> StringUtils.center(val, Integer.parseInt(matcher.group(1)), matcher.group(2)));
-		register(String.class, String.class, Pattern.compile("truncate\\.(\\d{1,2})"), (val, matcher) -> StringHelper.truncate(val, Integer.parseInt(matcher.group(1)), true));
-		register(String.class, String.class, Pattern.compile("replace\\.(.)\\.(.)"), (val, matcher) -> val.replace(matcher.group(1), matcher.group(2)));
+		register(String.class, String.class, "title", val -> val.isEmpty() ? val : Character.toUpperCase(val.charAt(0)) + val.substring(1));
+		registerCustom(String.class, String.class, "pad_left", raw -> parseWidthAndCharArguments(raw, "pad_left"), (val, arguments) -> StringUtils.leftPad(val, Integer.parseInt(arguments.getFirst()), arguments.get(1).charAt(0)));
+		registerCustom(String.class, String.class, "pad_right", raw -> parseWidthAndCharArguments(raw, "pad_right"), (val, arguments) -> StringUtils.rightPad(val, Integer.parseInt(arguments.getFirst()), arguments.get(1).charAt(0)));
+		registerCustom(String.class, String.class, "pad_center", raw -> parseWidthAndCharArguments(raw, "pad_center"), (val, arguments) -> StringUtils.center(val, Integer.parseInt(arguments.getFirst()), arguments.get(1).charAt(0)));
+		registerRegex(String.class, String.class, "truncate", Pattern.compile("truncate\\.(\\d{1,2})"), (val, arguments) -> StringHelper.truncate(val, Integer.parseInt(arguments.getFirst()), true));
+		registerCustom(String.class, String.class, "replace", Modifiers::parseReplaceArguments, (val, arguments) -> val.replace(arguments.getFirst(), arguments.get(1)));
 
 		// conditional
-		register(String.class, String.class, Pattern.compile("if_empty\\.(.+)"), (val, matcher) -> val == null || val.isEmpty() ? matcher.group(1) : val);
-		register(BigDecimal.class, String.class, Pattern.compile("if_gt\\.(\\d+)\\.(.+)"), (val, matcher) -> val.compareTo(new BigDecimal(matcher.group(1))) > 0 ? matcher.group(2) : val.toString());
-		register(BigDecimal.class, String.class, Pattern.compile("if_lt\\.(\\d+)\\.(.+)"), (val, matcher) -> val.compareTo(new BigDecimal(matcher.group(1))) < 0 ? matcher.group(2) : val.toString());
-		register(BigDecimal.class, String.class, Pattern.compile("if_eq\\.(\\d+)\\.(.+)"), (val, matcher) -> val.compareTo(new BigDecimal(matcher.group(1))) == 0 ? matcher.group(2) : val.toString());
+		registerCustom(String.class, String.class, "if_empty", raw -> parseTextAfterPrefix(raw, "if_empty"), (val, arguments) -> val == null || val.isEmpty() ? arguments.getFirst() : val);
+		registerCustom(BigDecimal.class, String.class, "if_gt", Modifiers::parseConditionalBranches, Modifiers::applyConditionalBranches);
 	}
 
-	private static <I, R> void register(Class<I> inputType, Class<R> outputType, Pattern regex, BiFunction<I, Matcher, R> modifierFunction) {
-		MODIFIERS.add(new Modifier<>(regex, inputType, outputType, modifierFunction));
+	private static <I, R> void registerCustom(Class<I> inputType,
+	                                          Class<R> outputType,
+	                                          String key,
+	                                          Function<String, @Nullable List<String>> parser,
+	                                          java.util.function.BiFunction<I, List<String>, R> modifierFunction) {
+		MODIFIERS.add(new Modifier<>(key, parser, inputType, outputType, modifierFunction));
+	}
+
+	private static <I, R> void registerRegex(Class<I> inputType,
+	                                         Class<R> outputType,
+	                                         String key,
+	                                         Pattern regex,
+	                                         java.util.function.BiFunction<I, List<String>, R> modifierFunction) {
+		registerCustom(inputType, outputType, key, raw -> matchRegex(regex, raw), modifierFunction);
 	}
 
 	private static <I, R> void register(Class<I> inputType, Class<R> outputType, String key, Function<I, R> modifierFunction) {
-		register(inputType, outputType, Pattern.compile(Pattern.quote(key)), (val, k) -> modifierFunction.apply(val));
+		registerCustom(inputType, outputType, key, raw -> raw.equals(key) ? List.of() : null, (val, arguments) -> modifierFunction.apply(val));
+	}
+
+	private static @Nullable List<String> matchRegex(Pattern regex, String rawInput) {
+		Matcher matcher = regex.matcher(rawInput);
+		if (!matcher.matches()) {
+			return null;
+		}
+
+		List<String> arguments = new ArrayList<>(matcher.groupCount());
+		for (int i = 1; i <= matcher.groupCount(); i++) {
+			arguments.add(matcher.group(i));
+		}
+		return arguments;
 	}
 
 	private static String intToRoman(int num) {
@@ -91,11 +113,46 @@ public class Modifiers {
 		return sb.toString();
 	}
 
+	public static List<String> splitUnescaped(String input, char delimiter) {
+		List<String> parts = new ArrayList<>();
+		StringBuilder current = new StringBuilder();
+		boolean escaped = false;
+
+		for (int i = 0; i < input.length(); i++) {
+			char character = input.charAt(i);
+			if (escaped) {
+				current.append('\\').append(character);
+				escaped = false;
+				continue;
+			}
+
+			if (character == '\\') {
+				escaped = true;
+				continue;
+			}
+
+			if (character == delimiter) {
+				parts.add(current.toString());
+				current.setLength(0);
+				continue;
+			}
+
+			current.append(character);
+		}
+
+		if (escaped) {
+			current.append('\\');
+		}
+
+		parts.add(current.toString());
+		return parts;
+	}
+
 	public static @Nullable ResolvedModifier<?, ?> get(String input) {
 		for (Modifier<?, ?> modifier : MODIFIERS) {
-			Matcher matcher = modifier.getRegex().matcher(input);
-			if (matcher.matches()) {
-				return new ResolvedModifier<>(modifier, matcher);
+			List<String> arguments = modifier.resolveArguments(input);
+			if (arguments != null) {
+				return new ResolvedModifier<>(modifier, arguments);
 			}
 		}
 
@@ -104,7 +161,7 @@ public class Modifiers {
 
 	public static @Nullable CompiledFormatter compileFormatter(@Nullable Class<?> inputType, List<ResolvedModifier<?, ?>> modifiers) {
 		if (modifiers.isEmpty()) {
-			return value -> String.valueOf(value);
+			return String::valueOf;
 		}
 
 		if (inputType == null) {
@@ -228,7 +285,7 @@ public class Modifiers {
 	private static Object applyResolvedModifier(Object input, ResolvedModifier<?, ?> resolvedModifier) {
 		Modifier<?, ?> modifier = resolvedModifier.modifier();
 		Object adaptedInput = coerce(input, modifier.inputType());
-		return modifier.applyUnchecked(adaptedInput, resolvedModifier.matcher);
+		return modifier.applyUnchecked(adaptedInput, resolvedModifier.arguments());
 	}
 
 	private static Object coerce(Object value, Class<?> targetType) {
@@ -324,9 +381,303 @@ public class Modifiers {
 		throw new IllegalArgumentException("Unsupported numeric target type: " + targetType.getSimpleName());
 	}
 
+	private static @Nullable List<String> parseWidthAndCharArguments(String rawInput, String key) {
+		if (!rawInput.startsWith(key + ".")) {
+			return null;
+		}
+
+		int widthStart = key.length() + 1;
+		int widthEnd = findNextUnescaped(rawInput, widthStart, '.');
+		if (widthEnd == -1) {
+			return null;
+		}
+
+		String width = rawInput.substring(widthStart, widthEnd);
+		if (!width.matches("\\d{1,2}")) {
+			return null;
+		}
+
+		String charToken = rawInput.substring(widthEnd + 1);
+		String character = decodeSingleCharacter(charToken);
+		if (character == null) {
+			return null;
+		}
+
+		return List.of(width, character);
+	}
+
+	private static @Nullable List<String> parseReplaceArguments(String rawInput) {
+		if (!rawInput.startsWith("replace.")) {
+			return null;
+		}
+
+		SingleCharacterToken fromCharacter = parseSingleCharacterToken(rawInput, "replace.".length());
+		if (fromCharacter == null || fromCharacter.nextIndex() >= rawInput.length() || rawInput.charAt(fromCharacter.nextIndex()) != '.') {
+			return null;
+		}
+
+		SingleCharacterToken toCharacter = parseSingleCharacterToken(rawInput, fromCharacter.nextIndex() + 1);
+		if (toCharacter == null || toCharacter.nextIndex() != rawInput.length()) {
+			return null;
+		}
+
+		return List.of(fromCharacter.value(), toCharacter.value());
+	}
+
+	private static @Nullable List<String> parseBooleanArguments(String rawInput) {
+		if (!rawInput.startsWith("bool.")) {
+			return null;
+		}
+
+		int separator = findNextUnescaped(rawInput, "bool.".length(), '.');
+		if (separator == -1) {
+			return null;
+		}
+
+		String trueText = unescape(rawInput.substring("bool.".length(), separator));
+		String falseText = unescape(rawInput.substring(separator + 1));
+		return List.of(trueText, falseText);
+	}
+
+	private static @Nullable List<String> parseTextAfterPrefix(String rawInput, String key) {
+		if (!rawInput.startsWith(key + ".")) {
+			return null;
+		}
+
+		return List.of(unescape(rawInput.substring(key.length() + 1)));
+	}
+
+	private static @Nullable List<String> parseConditionalBranches(String rawInput) {
+		List<String> arguments = new ArrayList<>();
+		int cursor = 0;
+
+		while (cursor < rawInput.length()) {
+			ConditionalOperator operator = ConditionalOperator.match(rawInput, cursor);
+			if (operator == null) {
+				return null;
+			}
+
+			cursor += operator.key.length();
+			if (cursor >= rawInput.length() || rawInput.charAt(cursor) != '.') {
+				return null;
+			}
+
+			cursor++;
+			int thresholdEnd = findNextUnescaped(rawInput, cursor, '.');
+			if (thresholdEnd == -1) {
+				return null;
+			}
+
+			String threshold = rawInput.substring(cursor, thresholdEnd);
+			if (!threshold.matches("-?\\d+")) {
+				return null;
+			}
+
+			cursor = thresholdEnd + 1;
+			int nextBranchStart = findNextConditionalBranchStart(rawInput, cursor);
+			String resultText = nextBranchStart == -1
+					? rawInput.substring(cursor)
+					: rawInput.substring(cursor, nextBranchStart - 1);
+
+			arguments.add(operator.key);
+			arguments.add(threshold);
+			arguments.add(unescape(resultText));
+
+			if (nextBranchStart == -1) {
+				break;
+			}
+
+			cursor = nextBranchStart;
+		}
+
+		return arguments.isEmpty() ? null : List.copyOf(arguments);
+	}
+
+	private static String applyConditionalBranches(BigDecimal value, List<String> arguments) {
+		for (int i = 0; i < arguments.size(); i += 3) {
+			ConditionalOperator operator = ConditionalOperator.fromKey(arguments.get(i));
+			BigDecimal threshold = new BigDecimal(arguments.get(i + 1));
+			String result = arguments.get(i + 2);
+
+			if (operator.test(value, threshold)) {
+				return result;
+			}
+		}
+
+		return value.toString();
+	}
+
+	private static int findNextConditionalBranchStart(String input, int textStart) {
+		boolean escaped = false;
+		for (int i = textStart; i < input.length(); i++) {
+			char character = input.charAt(i);
+			if (escaped) {
+				escaped = false;
+				continue;
+			}
+
+			if (character == '\\') {
+				escaped = true;
+				continue;
+			}
+
+			if (character != '.') {
+				continue;
+			}
+
+			ConditionalOperator operator = ConditionalOperator.match(input, i + 1);
+			if (operator == null) {
+				continue;
+			}
+
+			int afterKey = i + 1 + operator.key.length();
+			if (afterKey >= input.length() || input.charAt(afterKey) != '.') {
+				continue;
+			}
+
+			int thresholdStart = afterKey + 1;
+			int thresholdEnd = findNextUnescaped(input, thresholdStart, '.');
+			if (thresholdEnd == -1) {
+				continue;
+			}
+
+			String threshold = input.substring(thresholdStart, thresholdEnd);
+			if (threshold.matches("-?\\d+")) {
+				return i + 1;
+			}
+		}
+
+		return -1;
+	}
+
+	private static @Nullable SingleCharacterToken parseSingleCharacterToken(String input, int start) {
+		if (start >= input.length()) {
+			return null;
+		}
+
+		if (input.charAt(start) == '\\') {
+			if (start + 1 >= input.length()) {
+				return null;
+			}
+			return new SingleCharacterToken(String.valueOf(input.charAt(start + 1)), start + 2);
+		}
+
+		return new SingleCharacterToken(String.valueOf(input.charAt(start)), start + 1);
+	}
+
+	private static @Nullable String decodeSingleCharacter(String rawToken) {
+		SingleCharacterToken token = parseSingleCharacterToken(rawToken, 0);
+		if (token == null || token.nextIndex() != rawToken.length()) {
+			return null;
+		}
+
+		return token.value();
+	}
+
+	private static String unescape(String input) {
+		StringBuilder unescaped = new StringBuilder(input.length());
+		boolean escaped = false;
+
+		for (int i = 0; i < input.length(); i++) {
+			char character = input.charAt(i);
+			if (escaped) {
+				unescaped.append(character);
+				escaped = false;
+				continue;
+			}
+
+			if (character == '\\') {
+				escaped = true;
+				continue;
+			}
+
+			unescaped.append(character);
+		}
+
+		if (escaped) {
+			unescaped.append('\\');
+		}
+
+		return unescaped.toString();
+	}
+
+	private static int findNextUnescaped(String input, int start, char target) {
+		boolean escaped = false;
+		for (int i = start; i < input.length(); i++) {
+			char character = input.charAt(i);
+			if (escaped) {
+				escaped = false;
+				continue;
+			}
+
+			if (character == '\\') {
+				escaped = true;
+				continue;
+			}
+
+			if (character == target) {
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
 	private static final class BestOrder {
 		private int cost = IMPOSSIBLE_COST;
 		private List<ResolvedModifier<?, ?>> modifiers = List.of();
+	}
+
+	private record SingleCharacterToken(String value, int nextIndex) {
+	}
+
+	private enum ConditionalOperator {
+		GREATER_THAN("if_gt") {
+			@Override
+			boolean test(BigDecimal value, BigDecimal threshold) {
+				return value.compareTo(threshold) > 0;
+			}
+		},
+		LOWER_THAN("if_lt") {
+			@Override
+			boolean test(BigDecimal value, BigDecimal threshold) {
+				return value.compareTo(threshold) < 0;
+			}
+		},
+		EQUAL("if_eq") {
+			@Override
+			boolean test(BigDecimal value, BigDecimal threshold) {
+				return value.compareTo(threshold) == 0;
+			}
+		};
+
+		private final String key;
+
+		ConditionalOperator(String key) {
+			this.key = key;
+		}
+
+		abstract boolean test(BigDecimal value, BigDecimal threshold);
+
+		private static @Nullable ConditionalOperator match(String rawInput, int startIndex) {
+			for (ConditionalOperator operator : values()) {
+				if (rawInput.startsWith(operator.key, startIndex)) {
+					return operator;
+				}
+			}
+
+			return null;
+		}
+
+		private static ConditionalOperator fromKey(String key) {
+			for (ConditionalOperator operator : values()) {
+				if (operator.key.equals(key)) {
+					return operator;
+				}
+			}
+
+			throw new IllegalArgumentException("Unknown conditional operator " + key);
+		}
 	}
 
 	@FunctionalInterface
@@ -334,10 +685,10 @@ public class Modifiers {
 		String format(@Nullable Object value);
 	}
 
-	public record ResolvedModifier<I, R>(Modifier<I, R> modifier, Matcher matcher) {
+	public record ResolvedModifier<I, R>(Modifier<I, R> modifier, List<String> arguments) {
 		public ResolvedModifier {
 			Objects.requireNonNull(modifier, "modifier");
-			Objects.requireNonNull(matcher, "matcher");
+			Objects.requireNonNull(arguments, "arguments");
 		}
 	}
 }

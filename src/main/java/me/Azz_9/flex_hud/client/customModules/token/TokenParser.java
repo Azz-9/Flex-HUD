@@ -3,9 +3,7 @@ package me.Azz_9.flex_hud.client.customModules.token;
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,7 +13,7 @@ import me.Azz_9.flex_hud.client.customModules.modifiers.Modifiers;
 
 public class TokenParser {
 
-	public static final Pattern VARIABLE_PATTERN = Pattern.compile("\\{([a-zA-Z0-9_.:]+)}");
+	public static final Pattern VARIABLE_PATTERN = Pattern.compile("\\{((?:\\\\.|[^{}])+)}");
 	public static final String DELIMITER = ":";
 
 	public static List<Token> parseText(@NonNull String text) {
@@ -35,18 +33,23 @@ public class TokenParser {
 				}
 			}
 
-			String[] parts = matcher.group(1).split(DELIMITER);
-			String variableKey = parts[0].trim();
+			List<String> parts = Modifiers.splitUnescaped(matcher.group(1), DELIMITER.charAt(0));
+			String variableKey = parts.getFirst().trim();
 			Variable<?> variable = Variables.get(variableKey);
 
 			if (variable != null) {
-				List<Modifiers.ResolvedModifier<?, ?>> modifiers = Arrays.stream(parts)
-						.skip(1)
-						.<Modifiers.ResolvedModifier<?, ?>>map(Modifiers::get)
-						.filter(Objects::nonNull)
-						.toList();
+				List<Modifiers.ResolvedModifier<?, ?>> modifiers = new ArrayList<>(Math.max(0, parts.size() - 1));
+				boolean invalidModifier = false;
+				for (int i = 1; i < parts.size(); i++) {
+					Modifiers.ResolvedModifier<?, ?> resolvedModifier = Modifiers.get(parts.get(i));
+					if (resolvedModifier == null) {
+						invalidModifier = true;
+						break;
+					}
+					modifiers.add(resolvedModifier);
+				}
 
-				tokens.add(new VariableToken<>(variable, modifiers));
+				tokens.add(invalidModifier ? new TextToken(matcher.group()) : new VariableToken<>(variable, modifiers));
 			} else {
 				tokens.add(new TextToken(matcher.group()));
 			}
