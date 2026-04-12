@@ -2,16 +2,6 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 
-import me.Azz_9.flex_hud.client.Flex_hudClient;
-import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
-import me.Azz_9.flex_hud.client.utils.ItemUtils;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -21,7 +11,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.ColorHelper;
+
 import org.jetbrains.annotations.NotNull;
+
+import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
+import me.Azz_9.flex_hud.client.utils.ItemUtils;
 
 public class HeldItem extends AbstractTextModule {
 
@@ -31,8 +32,6 @@ public class HeldItem extends AbstractTextModule {
 
 	public HeldItem(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
-		this.enabled.setValue(false);
-		this.enabled.setDefaultValue(false);
 		this.enabled.setConfigTextTranslationKey("flex_hud.held_item.config.enable");
 
 		ConfigRegistry.register(getID(), "durabilityType", durabilityType);

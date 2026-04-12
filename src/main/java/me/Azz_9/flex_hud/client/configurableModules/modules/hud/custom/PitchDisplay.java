@@ -2,6 +2,18 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Items;
+import net.minecraft.text.Text;
+import net.minecraft.util.math.ColorHelper;
+
+import net.minecraft.util.math.RotationAxis;
+import org.jetbrains.annotations.NotNull;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
@@ -11,17 +23,6 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.IntFie
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Items;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.ColorHelper;
-import net.minecraft.util.math.RotationAxis;
-import org.jetbrains.annotations.NotNull;
 
 public class PitchDisplay extends AbstractTextModule {
 
@@ -32,8 +33,6 @@ public class PitchDisplay extends AbstractTextModule {
 
 	public PitchDisplay(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
-		this.enabled.setValue(false);
-		this.enabled.setDefaultValue(false);
 		this.enabled.setConfigTextTranslationKey("flex_hud.pitch_display.config.enable");
 
 		ConfigRegistry.register(getID(), "displayWhenElytraIsEquipped", displayWhenElytraIsEquipped);
