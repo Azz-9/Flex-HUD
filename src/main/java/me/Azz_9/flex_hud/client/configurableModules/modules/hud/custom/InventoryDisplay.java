@@ -3,18 +3,18 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 
-import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.ColorHelper;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,13 +76,13 @@ public class InventoryDisplay extends AbstractMovableModule {
 			}
 		}
 
-		Matrix3x2fStack matrices = context.getMatrices();
-		matrices.pushMatrix();
-		matrices.translate(getRoundedX(), getRoundedY());
-		matrices.scale(getScale());
+		MatrixStack matrices = context.getMatrices();
+		matrices.push();
+		matrices.translate(getRoundedX(), getRoundedY(), 0);
+		matrices.scale(getScale(), getScale(), 1.0f);
 
 		if (!backgroundOpacity.getValue().equals(0)) {
-			context.drawTexture(RenderPipelines.GUI_TEXTURED, HandledScreen.BACKGROUND_TEXTURE, 0, 0, 6, 82, 164, 56, 256, 256, ColorHelper.withAlpha(backgroundOpacity.getValue(), 0xffffff));
+			context.drawTexture(RenderLayer::getGuiTextured, HandledScreen.BACKGROUND_TEXTURE, 0, 0, 6, 82, 164, 56, 256, 256, ColorHelper.withAlpha(backgroundOpacity.getValue(), 0xffffff));
 		}
 
 		for (int row = 0; row < NUM_ROWS; row++) {
@@ -95,7 +95,7 @@ public class InventoryDisplay extends AbstractMovableModule {
 			}
 		}
 
-		matrices.popMatrix();
+		matrices.pop();
 	}
 
 	@Override
