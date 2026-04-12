@@ -83,6 +83,12 @@
 	"flex_hud.global.config.show_background": "Afficher l'arrière-plan",
 	"flex_hud.global.config.background_color": "Couleur de l'arrière-plan",
 	"flex_hud.global.config.hide_in_f3": "Cacher dans le menu F3",
+	"flex_hud.global.config.anchor_mode_x": "Mode d'ancrage X",
+	"flex_hud.global.config.anchor_mode_y": "Mode d'ancrage Y",
+	"flex_hud.global.config.anchor_mode.auto": "Auto",
+	"flex_hud.global.config.anchor_mode.start": "Début",
+	"flex_hud.global.config.anchor_mode.center": "Centre",
+	"flex_hud.global.config.anchor_mode.end": "Fin",
 
 	"flex_hud.armor_status": "État de l'armure",
 	"flex_hud.armor_status.config.enable": "Afficher l'état de l'armure",
@@ -99,6 +105,7 @@
 	"flex_hud.armor_status.config.orientation": "Orientation",
 	"flex_hud.armor_status.config.alignment": "Alignement",
 	"flex_hud.armor_status.config.move_each_pieces_independently": "Bouger les objets indépendaments",
+	"flex_hud.armor_status.config.text_position": "Position du texte",
 
 	"flex_hud.clock": "Horloge",
 	"flex_hud.clock.config.enable": "Afficher l'horloge",

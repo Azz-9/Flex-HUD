@@ -1,22 +1,25 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries;
 
-import me.Azz_9.flex_hud.client.configurableModules.modules.Translatable;
-import me.Azz_9.flex_hud.client.screens.TrackableChange;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.ScrollableConfigList;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.ConfigCyclingButtonWidget;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.text.Text;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+
+import me.Azz_9.flex_hud.client.configurableModules.modules.Translatable;
+import me.Azz_9.flex_hud.client.screens.TrackableChange;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.ScrollableConfigList;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.ConfigCyclingButtonWidget;
 
 public class CyclingButtonEntry<E extends Enum<E> & Translatable> extends ScrollableConfigList.AbstractConfigEntry {
 	private final ConfigCyclingButtonWidget<?, E> cyclingButtonWidget;
@@ -131,6 +134,9 @@ public class CyclingButtonEntry<E extends Enum<E> & Translatable> extends Scroll
 					resetButtonSize,
 					getTooltip
 			);
+			for (Observer observer : observers) {
+				entry.addObserver(observer);
+			}
 			for (Dependency<?> dependency : dependencies) {
 				entry.addDependency(dependency.entry(), dependency.disableWhen());
 				dependency.entry().addObserver(entry);
