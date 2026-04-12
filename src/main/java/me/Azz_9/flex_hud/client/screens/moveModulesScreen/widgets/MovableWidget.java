@@ -2,6 +2,20 @@ package me.Azz_9.flex_hud.client.screens.moveModulesScreen.widgets;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.cursor.Cursor;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.input.KeyInput;
+import net.minecraft.text.Text;
+
+import org.joml.Matrix3x2fStack;
+import org.lwjgl.glfw.GLFW;
+
+import java.util.HashSet;
+import java.util.Set;
+
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractMovableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.DimensionHud;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.MovableModule;
@@ -11,19 +25,6 @@ import me.Azz_9.flex_hud.client.screens.moveModulesScreen.MoveModulesScreen;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.actions.MoveAction;
 import me.Azz_9.flex_hud.client.screens.moveModulesScreen.actions.ScaleAction;
 import me.Azz_9.flex_hud.client.utils.Cursors;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.cursor.Cursor;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.text.Text;
-import org.joml.Matrix3x2fStack;
-import org.lwjgl.glfw.GLFW;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class MovableWidget extends ClickableWidget implements TrackableChange {
 	private final MoveModulesScreen PARENT;
@@ -63,7 +64,9 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 	private boolean shouldDrawScaleValue = false;
 	private final float STEP = 0.25f;
 
-	public MovableWidget(DimensionHud hudElement, MoveModulesScreen parent) {
+	private final AbstractMovableModule.AnchorMode anchorModeX, anchorModeY;
+
+	public MovableWidget(DimensionHud hudElement, AbstractMovableModule.AnchorMode anchorModeX, AbstractMovableModule.AnchorMode anchorModeY, MoveModulesScreen parent) {
 		super(
 				hudElement.getRoundedX(),
 				hudElement.getRoundedY(),
@@ -76,6 +79,8 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 		this.INITIAL_OFFSET_Y = hudElement.getOffsetY();
 		this.INITIAL_ANCHOR_X = hudElement.getAnchorX();
 		this.INITIAL_ANCHOR_Y = hudElement.getAnchorY();
+		this.anchorModeX = anchorModeX;
+		this.anchorModeY = anchorModeY;
 
 		updateScaleHandle();
 	}
@@ -471,8 +476,8 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 		x = Math.clamp(x, 0, CLIENT.getWindow().getScaledWidth() - this.getWidth());
 		y = Math.clamp(y, 0, CLIENT.getWindow().getScaledHeight() - this.getHeight());
 
-		HUD_ELEMENT.setX(x);
-		HUD_ELEMENT.setY(y);
+		HUD_ELEMENT.setX(x, anchorModeX);
+		HUD_ELEMENT.setY(y, anchorModeY);
 		this.setPosition(HUD_ELEMENT.getRoundedX(), HUD_ELEMENT.getRoundedY());
 		updateScaleHandle();
 		PARENT.onWidgetChange();

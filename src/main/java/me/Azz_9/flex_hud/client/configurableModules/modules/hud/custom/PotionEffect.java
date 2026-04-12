@@ -3,6 +3,23 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 
 import com.google.common.collect.Ordering;
+
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
+
+import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix3x2fStack;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.Translatable;
@@ -16,21 +33,6 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorB
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
-import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class PotionEffect extends AbstractTextModule {
 	private final ConfigEnum<Alignment> alignment = new ConfigEnum<>(Alignment.class, Alignment.AUTO, "flex_hud.potion_effect.config.alignment");
@@ -279,6 +281,18 @@ public class PotionEffect extends AbstractTextModule {
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(hideInF3)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeX)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeX(anchorModeX.getValue()))
+								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeY)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeY(anchorModeY.getValue()))
 								.build(),
 						new CyclingButtonEntry.Builder<Alignment>()
 								.setCyclingButtonWidth(80)

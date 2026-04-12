@@ -18,6 +18,7 @@ import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModu
 import me.Azz_9.flex_hud.client.mixin.toggleSprintSneak.KeyBindingAccessor;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 
 public class ToggleSprint extends AbstractTextModule {
@@ -97,8 +98,6 @@ public class ToggleSprint extends AbstractTextModule {
 			protected void init() {
 				if (CLIENT.getLanguageManager().getLanguage().equals("fr_fr")) {
 					buttonWidth = 180;
-				} else {
-					buttonWidth = 160;
 				}
 
 				super.init();
@@ -145,6 +144,18 @@ public class ToggleSprint extends AbstractTextModule {
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(hideInF3)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeX)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeX(anchorModeX.getValue()))
+								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeY)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeY(anchorModeY.getValue()))
 								.build()
 				);
 			}

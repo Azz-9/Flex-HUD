@@ -1,13 +1,8 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
-import me.Azz_9.flex_hud.client.Flex_hudClient;
-import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
-import net.minecraft.client.MinecraftClient;
+import static java.util.Map.entry;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
@@ -16,13 +11,20 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.text.Text;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
+
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 
 import java.util.Map;
 
-import static java.util.Map.entry;
-import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 
 public class BiomeDisplay extends AbstractTextModule {
 	private final ConfigBoolean biomeSpecificColor = new ConfigBoolean(true, "flex_hud.biome_display.config.biome_specific_color");
@@ -148,6 +150,18 @@ public class BiomeDisplay extends AbstractTextModule {
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(hideInF3)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeX)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeX(anchorModeX.getValue()))
+								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeY)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeY(anchorModeY.getValue()))
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
