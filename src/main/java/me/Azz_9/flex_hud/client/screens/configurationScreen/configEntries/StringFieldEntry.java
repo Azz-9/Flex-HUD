@@ -2,12 +2,6 @@ package me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 
-import me.Azz_9.flex_hud.client.screens.TrackableChange;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.ScrollableConfigList;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigString;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.fields.ConfigTextFieldWidget;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
@@ -19,6 +13,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
+
+import me.Azz_9.flex_hud.client.screens.TrackableChange;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.ScrollableConfigList;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigString;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.fields.ConfigTextFieldWidget;
 
 public class StringFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 	private ConfigTextFieldWidget textFieldWidget;
@@ -149,6 +150,9 @@ public class StringFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 					resetButtonSize,
 					getTooltip
 			);
+			for (Observer observer : observers) {
+				entry.addObserver(observer);
+			}
 			for (Dependency<?> dependency : dependencies) {
 				entry.addDependency(dependency.entry(), dependency.disableWhen());
 				dependency.entry().addObserver(entry);

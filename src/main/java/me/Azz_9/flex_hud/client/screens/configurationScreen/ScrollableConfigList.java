@@ -2,10 +2,6 @@ package me.Azz_9.flex_hud.client.screens.configurationScreen;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 
-import me.Azz_9.flex_hud.client.screens.AbstractSmoothScrollableList;
-import me.Azz_9.flex_hud.client.screens.TrackableChange;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.ConfigResetButtonWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
@@ -19,6 +15,11 @@ import net.minecraft.text.Text;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+
+import me.Azz_9.flex_hud.client.screens.AbstractSmoothScrollableList;
+import me.Azz_9.flex_hud.client.screens.TrackableChange;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.ConfigResetButtonWidget;
 
 public class ScrollableConfigList extends AbstractSmoothScrollableList<ScrollableConfigList.AbstractConfigEntry> {
 	private final int itemWidth;
@@ -112,6 +113,7 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 			protected int resetButtonSize = 20;
 			protected Text text;
 			protected Function<T, Tooltip> getTooltip = null;
+			protected final List<Observer> observers = new ArrayList<>();
 
 			public AbstractBuilder<T> setResetButtonSize(int size) {
 				this.resetButtonSize = size;
@@ -125,6 +127,11 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 
 			public AbstractBuilder<T> setGetTooltip(Function<T, Tooltip> tooltip) {
 				this.getTooltip = tooltip;
+				return this;
+			}
+
+			public AbstractBuilder<T> addObserver(Observer observer) {
+				observers.add(observer);
 				return this;
 			}
 
