@@ -9,16 +9,16 @@ import me.Azz_9.flex_hud.client.configurableModules.Configurable;
 import me.Azz_9.flex_hud.client.utils.SpeedTester;
 
 public interface HudElement extends Configurable {
-	void render(GuiGraphicsExtractor context, DeltaTracker tickCounter);
+	void render(GuiGraphicsExtractor graphics, DeltaTracker tickCounter);
 
-	default void renderWithSpeedTest(GuiGraphicsExtractor context, DeltaTracker tickCounter) {
+	default void renderWithSpeedTest(GuiGraphicsExtractor graphics, DeltaTracker tickCounter) {
 		if (!isEnabled()) {
 			return;
 		}
 
 		SpeedTester.start(getID());
 
-		this.render(context, tickCounter);
+		this.render(graphics, tickCounter);
 
 		SpeedTester.end(getID());
 	}
