@@ -2,6 +2,16 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
+import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.Vec3d;
+
+import org.jetbrains.annotations.NotNull;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
@@ -12,15 +22,6 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.IntFie
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 import me.Azz_9.flex_hud.client.tickables.RaycastTickable;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.Vec3d;
-import org.jetbrains.annotations.NotNull;
 
 public class Distance extends AbstractTextModule implements TickableModule {
 
@@ -31,8 +32,6 @@ public class Distance extends AbstractTextModule implements TickableModule {
 
 	public Distance(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
-		this.enabled.setValue(false);
-		this.enabled.setDefaultValue(false);
 		this.enabled.setConfigTextTranslationKey("flex_hud.distance.config.enable");
 
 		ConfigRegistry.register(getID(), "digits", digits);
