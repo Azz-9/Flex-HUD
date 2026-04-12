@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.customModules.modifiers;
 
+import net.minecraft.text.Text;
+
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
@@ -14,17 +16,20 @@ public class Modifier<I, R> {
 	private final Class<R> outputType;
 	private final Function<String, @Nullable List<String>> parser;
 	private final BiFunction<I, List<String>, R> modifierFunction;
+	private final UiMetadata uiMetadata;
 
 	public Modifier(String key,
 	                Function<String, @Nullable List<String>> parser,
 	                Class<I> inputType,
 	                Class<R> outputType,
-	                BiFunction<I, List<String>, R> modifierFunction) {
+	                BiFunction<I, List<String>, R> modifierFunction,
+	                UiMetadata uiMetadata) {
 		this.key = Objects.requireNonNull(key, "key");
 		this.parser = Objects.requireNonNull(parser, "parser");
 		this.inputType = Objects.requireNonNull(inputType, "inputType");
 		this.outputType = Objects.requireNonNull(outputType, "outputType");
 		this.modifierFunction = Objects.requireNonNull(modifierFunction, "modifierFunction");
+		this.uiMetadata = Objects.requireNonNull(uiMetadata, "uiMetadata");
 	}
 
 	public String key() {
@@ -54,5 +59,55 @@ public class Modifier<I, R> {
 		}
 
 		return apply(inputType.cast(input), arguments);
+	}
+
+	public UiMetadata uiMetadata() {
+		return uiMetadata;
+	}
+
+	public record UiMetadata(EditorKind editorKind,
+	                         List<ParameterDefinition> parameters,
+	                         Function<List<String>, String> rawFormatter,
+	                         Function<List<String>, String> displayFormatter) {
+		public UiMetadata {
+			Objects.requireNonNull(editorKind, "editorKind");
+			Objects.requireNonNull(parameters, "parameters");
+			Objects.requireNonNull(rawFormatter, "rawFormatter");
+			Objects.requireNonNull(displayFormatter, "displayFormatter");
+			parameters = List.copyOf(parameters);
+		}
+
+		public Text getName(String modifierKey) {
+			return Text.translatable("flex_hud.custom_modules.modifier.name." + modifierKey);
+		}
+
+		public Text getDescription(String modifierKey) {
+			return Text.translatable("flex_hud.custom_modules.modifier.description." + modifierKey);
+		}
+	}
+
+	public record ParameterDefinition(String key, ParameterKind kind) {
+		public ParameterDefinition {
+			Objects.requireNonNull(key, "key");
+			Objects.requireNonNull(kind, "kind");
+		}
+
+		public Text getName(String modifierKey) {
+			return Text.translatable("flex_hud.custom_modules.modifier.parameter." + modifierKey + "." + key);
+		}
+	}
+
+	public enum ParameterKind {
+		INTEGER,
+		DECIMAL,
+		TEXT,
+		CHARACTER,
+		CONDITIONAL_BRANCHES
+	}
+
+	public enum EditorKind {
+		NONE,
+		FIXED_FIELDS,
+		CONDITIONAL_BRANCHES
 	}
 }
