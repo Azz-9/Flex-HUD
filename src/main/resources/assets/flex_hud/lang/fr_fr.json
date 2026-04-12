@@ -275,6 +275,10 @@
 	"flex_hud.scoreboard.config.show_scoreboard": "Afficher le scoreboard",
 	"flex_hud.scoreboard.config.show_score": "Afficher le score",
 
+	"flex_hud.inventory_display": "Inventaire",
+	"flex_hud.inventory_display.config.enable": "Afficher l'inventaire",
+	"flex_hud.inventory_display.config.background_opacity": "Opactité du fond",
+
 	"flex_hud.coordinates.hud.direction.south": "Sud",
 	"flex_hud.coordinates.hud.direction.south_west": "Sud-Ouest",
 	"flex_hud.coordinates.hud.direction.west": "Ouest",
