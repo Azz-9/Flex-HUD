@@ -53,7 +53,7 @@ public class ModulesHelper {
 	public ToggleSprint toggleSprint = new ToggleSprint(-60, 12, AbstractMovableModule.AnchorPosition.END, AbstractMovableModule.AnchorPosition.START);
 	public ToggleSneak toggleSneak = new ToggleSneak(-60, 22, AbstractMovableModule.AnchorPosition.END, AbstractMovableModule.AnchorPosition.START);
 	public Scoreboard scoreboard = new Scoreboard(0, 0, AbstractMovableModule.AnchorPosition.END, AbstractMovableModule.AnchorPosition.CENTER);
-	public InventoryDisplay inventoryDisplay = new InventoryDisplay(0, 0, AbstractMovableModule.AnchorPosition.START, AbstractMovableModule.AnchorPosition.START);
+	public InventoryDisplay inventoryDisplay = new InventoryDisplay(0, -50, AbstractMovableModule.AnchorPosition.CENTER, AbstractMovableModule.AnchorPosition.END);
 	//others
 	public WeatherChanger weatherChanger = new WeatherChanger();
 	public TimeChanger timeChanger = new TimeChanger();
