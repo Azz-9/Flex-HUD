@@ -2,17 +2,18 @@ package me.Azz_9.flex_hud.client.screens.configurationScreen;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.text.Text;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import me.Azz_9.flex_hud.client.screens.AbstractCallbackScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector.ColorBindable;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector.ColorSelector;
 import me.Azz_9.flex_hud.client.screens.modulesList.ModulesListScreen;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.text.Text;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen implements Observer, ColorSelectorGetter {
 
@@ -32,7 +33,7 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 	}
 
 	public AbstractConfigurationScreen(Text title, Screen parent) {
-		this(title, parent, 150, 20);
+		this(title, parent, 165, 20);
 	}
 
 	public void addAllEntries(ScrollableConfigList.AbstractConfigEntry... entries) {

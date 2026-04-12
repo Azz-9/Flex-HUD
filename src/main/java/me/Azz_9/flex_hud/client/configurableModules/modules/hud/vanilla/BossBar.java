@@ -2,13 +2,6 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.hud.vanilla;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 
-import me.Azz_9.flex_hud.client.Flex_hudClient;
-import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractMovableModule;
-import me.Azz_9.flex_hud.client.mixin.bossBar.BossBarAccessor;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.ClientBossBar;
@@ -19,11 +12,21 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractMovableModule;
+import me.Azz_9.flex_hud.client.mixin.bossBar.BossBarAccessor;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 
 public class BossBar extends AbstractMovableModule {
 	private static final Identifier[] BACKGROUND_TEXTURES = new Identifier[]{
@@ -198,6 +201,18 @@ public class BossBar extends AbstractMovableModule {
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(hideInF3)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeX)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeX(anchorModeX.getValue()))
+								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeY)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeY(anchorModeY.getValue()))
 								.build()
 				);
 			}
