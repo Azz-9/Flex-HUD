@@ -38,8 +38,6 @@ public class DurabilityPing extends AbstractModule {
 
 	public DurabilityPing() {
 		this.enabled.setConfigTextTranslationKey("flex_hud.durability_ping.config.enable");
-		this.enabled.setDefaultValue(false);
-		this.enabled.setValue(false);
 
 		ConfigRegistry.register(getID(), "threshold", threshold);
 		ConfigRegistry.register(getID(), "pingType", pingType);

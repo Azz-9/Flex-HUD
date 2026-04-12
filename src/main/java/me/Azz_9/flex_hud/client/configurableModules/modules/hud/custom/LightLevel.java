@@ -25,8 +25,6 @@ public class LightLevel extends AbstractTextModule {
 
 	public LightLevel(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
-		this.enabled.setValue(false);
-		this.enabled.setDefaultValue(false);
 		this.enabled.setConfigTextTranslationKey("flex_hud.light_level.config.enable");
 
 		ConfigRegistry.register(getID(), "colorDependsOnLightLevel", colorDependsOnLightLevel);

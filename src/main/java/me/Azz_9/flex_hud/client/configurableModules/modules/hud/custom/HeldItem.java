@@ -32,8 +32,6 @@ public class HeldItem extends AbstractTextModule {
 
 	public HeldItem(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
-		this.enabled.setValue(false);
-		this.enabled.setDefaultValue(false);
 		this.enabled.setConfigTextTranslationKey("flex_hud.held_item.config.enable");
 
 		ConfigRegistry.register(getID(), "durabilityType", durabilityType);

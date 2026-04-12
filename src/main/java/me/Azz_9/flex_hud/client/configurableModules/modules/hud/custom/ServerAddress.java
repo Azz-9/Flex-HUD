@@ -29,8 +29,6 @@ public class ServerAddress extends AbstractTextModule {
 	public ServerAddress(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.server_address.config.enable");
-		this.enabled.setDefaultValue(false);
-		this.enabled.setValue(false);
 
 		ConfigRegistry.register(getID(), "hideWhenOffline", hideWhenOffline);
 		ConfigRegistry.register(getID(), "showServerIcon", showServerIcon);

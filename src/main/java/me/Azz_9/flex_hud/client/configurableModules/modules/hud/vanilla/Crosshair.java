@@ -81,8 +81,6 @@ public class Crosshair extends AbstractModule implements HudElement {
 
 	public Crosshair() {
 		this.enabled.setConfigTextTranslationKey("flex_hud.crosshair.config.enable");
-		this.enabled.setDefaultValue(false);
-		this.enabled.setValue(false);
 
 		ConfigRegistry.register(getID(), "scale", scale);
 		ConfigRegistry.register(getID(), "pixels", pixels);

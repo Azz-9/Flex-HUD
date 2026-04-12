@@ -8,7 +8,7 @@ public abstract class AbstractModule implements Configurable {
 	public ConfigBoolean enabled;
 
 	public AbstractModule() {
-		this.enabled = new ConfigBoolean(true, "enabled");
+		this.enabled = new ConfigBoolean(false, "enabled");
 
 		ConfigRegistry.register(getID(), "enabled", enabled);
 	}

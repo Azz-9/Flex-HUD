@@ -51,8 +51,6 @@ public class KeyStrokes extends AbstractTextModule {
 	public KeyStrokes(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.key_strokes.config.enable");
-		this.enabled.setDefaultValue(false);
-		this.enabled.setValue(false);
 		this.drawBackground.setDefaultValue(true);
 		this.drawBackground.setValue(true);
 
