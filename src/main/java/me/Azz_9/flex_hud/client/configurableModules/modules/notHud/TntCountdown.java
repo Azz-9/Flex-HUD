@@ -2,12 +2,6 @@ package me.Azz_9.flex_hud.client.configurableModules.modules.notHud;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 
-import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
-import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.AbstractCrosshairConfigScreen;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,11 +11,15 @@ import net.minecraft.util.Formatting;
 
 import java.util.List;
 
+import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
+import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.crosshairConfigScreen.AbstractCrosshairConfigScreen;
+
 public class TntCountdown extends AbstractModule implements TickableModule {
 	public TntCountdown() {
 		this.enabled.setConfigTextTranslationKey("flex_hud.tnt_countdown.config.enable");
-		this.enabled.setDefaultValue(false);
-		this.enabled.setValue(false);
 	}
 
 	@Override

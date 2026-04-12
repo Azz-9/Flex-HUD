@@ -1,5 +1,18 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+
+import net.minecraft.client.gl.RenderPipelines;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+
+import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix3x2fStack;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
@@ -8,18 +21,6 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorB
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.utils.FaviconUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
-
-import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
-import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 
 public class ServerAddress extends AbstractTextModule {
 	private final ConfigBoolean hideWhenOffline = new ConfigBoolean(true, "flex_hud.server_address.config.hide_when_offline");
@@ -28,8 +29,6 @@ public class ServerAddress extends AbstractTextModule {
 	public ServerAddress(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.server_address.config.enable");
-		this.enabled.setDefaultValue(false);
-		this.enabled.setValue(false);
 
 		ConfigRegistry.register(getID(), "hideWhenOffline", hideWhenOffline);
 		ConfigRegistry.register(getID(), "showServerIcon", showServerIcon);
