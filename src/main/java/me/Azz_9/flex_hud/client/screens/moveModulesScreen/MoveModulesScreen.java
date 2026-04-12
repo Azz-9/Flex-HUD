@@ -65,7 +65,7 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 
 				for (DimensionHud dimensionHud : movableModule.getDimensionHudList()) {
 					if (dimensionHud.isEnabled()) {
-						MovableWidget movableWidget = new MovableWidget(dimensionHud, this);
+						MovableWidget movableWidget = new MovableWidget(dimensionHud, movableModule.getAnchorModeX(), movableModule.getAnchorModeY(), this);
 						movableWidgets.add(movableWidget);
 						this.addRenderableWidget(movableWidget);
 						registerTrackableWidget(movableWidget);

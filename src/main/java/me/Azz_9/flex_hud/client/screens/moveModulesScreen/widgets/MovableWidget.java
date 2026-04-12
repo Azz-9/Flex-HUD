@@ -66,7 +66,9 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 	private boolean shouldDrawScaleValue = false;
 	private final float STEP = 0.25f;
 
-	public MovableWidget(DimensionHud hudElement, MoveModulesScreen parent) {
+	private final AbstractMovableModule.AnchorMode anchorModeX, anchorModeY;
+
+	public MovableWidget(DimensionHud hudElement, AbstractMovableModule.AnchorMode anchorModeX, AbstractMovableModule.AnchorMode anchorModeY, MoveModulesScreen parent) {
 		super(
 				hudElement.getRoundedX(),
 				hudElement.getRoundedY(),
@@ -79,6 +81,8 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 		this.INITIAL_OFFSET_Y = hudElement.getOffsetY();
 		this.INITIAL_ANCHOR_X = hudElement.getAnchorX();
 		this.INITIAL_ANCHOR_Y = hudElement.getAnchorY();
+		this.anchorModeX = anchorModeX;
+		this.anchorModeY = anchorModeY;
 
 		updateScaleHandle();
 	}
@@ -474,8 +478,8 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 		x = Math.clamp(x, 0, MINECRAFT.getWindow().getGuiScaledWidth() - this.getWidth());
 		y = Math.clamp(y, 0, MINECRAFT.getWindow().getGuiScaledHeight() - this.getHeight());
 
-		HUD_ELEMENT.setX(x);
-		HUD_ELEMENT.setY(y);
+		HUD_ELEMENT.setX(x, anchorModeX);
+		HUD_ELEMENT.setY(y, anchorModeY);
 		this.setPosition(HUD_ELEMENT.getRoundedX(), HUD_ELEMENT.getRoundedY());
 		updateScaleHandle();
 		PARENT.onWidgetChange();

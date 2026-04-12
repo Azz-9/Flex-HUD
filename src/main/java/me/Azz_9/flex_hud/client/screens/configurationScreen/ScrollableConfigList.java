@@ -131,6 +131,7 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 			protected int resetButtonSize = 20;
 			protected Component text;
 			protected Function<T, Tooltip> getTooltip = null;
+			protected final List<Observer> observers = new ArrayList<>();
 
 			public AbstractBuilder<T> setResetButtonSize(int size) {
 				this.resetButtonSize = size;
@@ -144,6 +145,11 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 
 			public AbstractBuilder<T> setGetTooltip(Function<T, Tooltip> tooltip) {
 				this.getTooltip = tooltip;
+				return this;
+			}
+
+			public AbstractBuilder<T> addObserver(Observer observer) {
+				observers.add(observer);
 				return this;
 			}
 

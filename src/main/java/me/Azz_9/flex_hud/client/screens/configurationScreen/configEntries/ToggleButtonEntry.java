@@ -15,6 +15,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
 import me.Azz_9.flex_hud.client.screens.TrackableChange;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.ScrollableConfigList;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
@@ -165,6 +166,9 @@ public class ToggleButtonEntry extends ScrollableConfigList.AbstractConfigEntry 
 					getTooltip,
 					toggleable
 			);
+			for (Observer observer : observers) {
+				entry.addObserver(observer);
+			}
 			for (Dependency<?> dependency : dependencies) {
 				entry.addDependency(dependency.entry(), dependency.disableWhen());
 				dependency.entry().addObserver(entry);

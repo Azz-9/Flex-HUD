@@ -37,7 +37,7 @@ public abstract class AbstractConfigurationScreen extends AbstractCallbackScreen
 	}
 
 	public AbstractConfigurationScreen(Component title, Screen parent) {
-		this(title, parent, 150, 20);
+		this(title, parent, 165, 20);
 	}
 
 	public void addAllEntries(ScrollableConfigList.AbstractConfigEntry... entries) {
