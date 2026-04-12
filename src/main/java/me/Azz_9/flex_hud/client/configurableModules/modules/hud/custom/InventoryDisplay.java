@@ -90,7 +90,7 @@ public class InventoryDisplay extends AbstractMovableModule {
 				int x = PADDING + col * ITEM_SIZE;
 				int y = PADDING + row * ITEM_SIZE;
 				graphics.item(stack, x, y);
-				graphics.itemDecorations(MINECRAFT.font, stack, x, y, String.valueOf(stack.getCount()));
+				graphics.itemDecorations(MINECRAFT.font, stack, x, y, stack.getCount() > 1 ? String.valueOf(stack.getCount()) : null);
 			}
 		}
 
@@ -102,6 +102,12 @@ public class InventoryDisplay extends AbstractMovableModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
+				if (MINECRAFT.getLanguageManager().getSelected().equals("fr_fr")) {
+					buttonWidth = 175;
+				} else {
+					buttonWidth = 190;
+				}
+
 				super.init();
 
 				this.addAllEntries(
