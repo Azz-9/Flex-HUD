@@ -15,6 +15,7 @@ import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.IntFieldEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
@@ -73,11 +74,6 @@ public class Reach extends AbstractTextModule implements TickableModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-
-				if (CLIENT.getLanguageManager().getLanguage().equals("fr_fr")) {
-					buttonWidth = 160;
-				}
-
 				super.init();
 
 				this.addAllEntries(
@@ -122,6 +118,18 @@ public class Reach extends AbstractTextModule implements TickableModule {
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(hideInF3)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeX)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeX(anchorModeX.getValue()))
+								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeY)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeY(anchorModeY.getValue()))
 								.build(),
 						new IntFieldEntry.Builder()
 								.setIntFieldWidth(20)

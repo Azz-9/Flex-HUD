@@ -1,12 +1,8 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries;
 
-import me.Azz_9.flex_hud.client.screens.TrackableChange;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.ScrollableConfigList;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.fields.ConfigIntFieldWidget;
-import me.Azz_9.flex_hud.client.screens.widgets.buttons.TexturedButtonWidget;
-import net.minecraft.client.MinecraftClient;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
@@ -20,8 +16,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
-import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+import me.Azz_9.flex_hud.client.screens.TrackableChange;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.ScrollableConfigList;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.fields.ConfigIntFieldWidget;
+import me.Azz_9.flex_hud.client.screens.widgets.buttons.TexturedButtonWidget;
 
 public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 	private final ConfigIntFieldWidget intFieldWidget;
@@ -184,6 +185,9 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 					resetButtonSize,
 					getTooltip
 			);
+			for (Observer observer : observers) {
+				entry.addObserver(observer);
+			}
 			for (Dependency<?> dependency : dependencies) {
 				entry.addDependency(dependency.entry(), dependency.disableWhen());
 				dependency.entry().addObserver(entry);

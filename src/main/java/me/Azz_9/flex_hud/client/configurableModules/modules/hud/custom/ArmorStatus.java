@@ -426,6 +426,18 @@ public class ArmorStatus extends AbstractTextModule {
 								.setVariable(hideInF3)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeX)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeX(anchorModeX.getValue()))
+								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeY)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeY(anchorModeY.getValue()))
+								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(showHelmet)
