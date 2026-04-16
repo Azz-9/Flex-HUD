@@ -1,5 +1,8 @@
 package me.Azz_9.flex_hud.client.configurableModules;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractMovableModule;
@@ -7,15 +10,13 @@ import me.Azz_9.flex_hud.client.configurableModules.modules.hud.HudElement;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom.*;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.vanilla.BossBar;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.vanilla.Crosshair;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.vanilla.Scoreboard;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.DurabilityPing;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.TimeChanger;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.TntCountdown;
 import me.Azz_9.flex_hud.client.configurableModules.modules.notHud.WeatherChanger;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ModulesHelper {
 	public ConfigBoolean isEnabled = new ConfigBoolean(true);
@@ -49,6 +50,10 @@ public class ModulesHelper {
 	public Distance distance = new Distance(0, 50, AbstractMovableModule.AnchorPosition.CENTER, AbstractMovableModule.AnchorPosition.START);
 	public HeldItem heldItem = new HeldItem(0, -80, AbstractMovableModule.AnchorPosition.CENTER, AbstractMovableModule.AnchorPosition.END);
 	public EntityCount entityCount = new EntityCount(0, -65, AbstractMovableModule.AnchorPosition.CENTER, AbstractMovableModule.AnchorPosition.END);
+	public ToggleSprint toggleSprint = new ToggleSprint(-60, 12, AbstractMovableModule.AnchorPosition.END, AbstractMovableModule.AnchorPosition.START);
+	public ToggleSneak toggleSneak = new ToggleSneak(-60, 22, AbstractMovableModule.AnchorPosition.END, AbstractMovableModule.AnchorPosition.START);
+	public Scoreboard scoreboard = new Scoreboard(0, 0, AbstractMovableModule.AnchorPosition.END, AbstractMovableModule.AnchorPosition.CENTER);
+	public InventoryDisplay inventoryDisplay = new InventoryDisplay(0, -50, AbstractMovableModule.AnchorPosition.CENTER, AbstractMovableModule.AnchorPosition.END);
 	//others
 	public WeatherChanger weatherChanger = new WeatherChanger();
 	public TimeChanger timeChanger = new TimeChanger();
@@ -105,6 +110,10 @@ public class ModulesHelper {
 				getInstance().distance,
 				getInstance().heldItem,
 				getInstance().entityCount,
+				getInstance().toggleSprint,
+				getInstance().toggleSneak,
+				getInstance().scoreboard,
+				getInstance().inventoryDisplay,
 				getInstance().weatherChanger,
 				getInstance().timeChanger,
 				getInstance().crosshair,
@@ -122,9 +131,15 @@ public class ModulesHelper {
 
 	// Méthode pour obtenir l'instance de la configuration
 	public static ModulesHelper getInstance() {
+		return getInstance(true);
+	}
+
+	public static ModulesHelper getInstance(boolean loadConfig) {
 		if (INSTANCE == null) {
 			INSTANCE = new ModulesHelper();
-			ConfigLoader.loadConfig();
+			if (loadConfig) {
+				ConfigLoader.loadConfig();
+			}
 			INSTANCE.init();
 		}
 		return INSTANCE;

@@ -5,18 +5,18 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigString;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class ConfigTextFieldWidget extends TextFieldWidget implements TrackableChange, DataGetter<String>, ResetAware {
+public class ConfigTextFieldWidget extends EditBox implements TrackableChange, DataGetter<String>, ResetAware {
 	private final String INITIAL_VALUE;
 	private final ConfigString variable;
 	private final Predicate<String> IS_VALID;
@@ -24,22 +24,22 @@ public class ConfigTextFieldWidget extends TextFieldWidget implements TrackableC
 	@Nullable
 	private final Function<String, Tooltip> getTooltip;
 
-	public ConfigTextFieldWidget(TextRenderer textRenderer, int width, int height, ConfigString variable, List<Observer> observers, Predicate<String> isValid, @Nullable Function<String, Tooltip> getTooltip) {
-		super(textRenderer, width, height, Text.translatable("flex_hud.text_field"));
+	public ConfigTextFieldWidget(Font font, int width, int height, ConfigString variable, List<Observer> observers, Predicate<String> isValid, @Nullable Function<String, Tooltip> getTooltip) {
+		super(font, width, height, Component.translatable("flex_hud.text_field"));
 		this.INITIAL_VALUE = variable.getValue();
 		this.variable = variable;
 		this.IS_VALID = isValid;
 		this.observers = observers;
 		this.getTooltip = getTooltip;
 
-		setText(variable.getValue());
+		setValue(variable.getValue());
 
-		setChangedListener(text -> {
+		setResponder(text -> {
 			if (isValid()) {
 				variable.setValue(text);
-				setEditableColor(0xffffffff);
+				setTextColor(0xffffffff);
 			} else {
-				setEditableColor((Formatting.RED.getColorValue() != null ? Formatting.RED.getColorValue() : 0xfc5454) | 0xff000000);
+				setTextColor((ChatFormatting.RED.getColor() != null ? ChatFormatting.RED.getColor() : 0xfc5454) | 0xff000000);
 			}
 
 			for (Observer observer : observers) {
@@ -55,12 +55,12 @@ public class ConfigTextFieldWidget extends TextFieldWidget implements TrackableC
 	@Override
 	public void setToDefaultState() {
 		variable.setToDefault();
-		setText(variable.getValue());
+		setValue(variable.getValue());
 	}
 
 	@Override
 	public boolean hasChanged() {
-		return !getText().equals(INITIAL_VALUE);
+		return !getValue().equals(INITIAL_VALUE);
 	}
 
 	@Override
@@ -70,12 +70,12 @@ public class ConfigTextFieldWidget extends TextFieldWidget implements TrackableC
 
 	@Override
 	public String getData() {
-		return getText();
+		return getValue();
 	}
 
 	@Override
 	public boolean isCurrentValueDefault() {
-		return getText().equals(variable.getDefaultValue());
+		return getValue().equals(variable.getDefaultValue());
 	}
 
 	@Override
@@ -83,7 +83,7 @@ public class ConfigTextFieldWidget extends TextFieldWidget implements TrackableC
 		if (IS_VALID == null) {
 			return true;
 		}
-		return IS_VALID.test(getText());
+		return IS_VALID.test(getValue());
 	}
 
 	public void addObserver(Observer observer) {

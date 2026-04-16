@@ -1,12 +1,13 @@
 package me.Azz_9.flex_hud.client.screens;
 
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.widget.ElementListWidget;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 
-public abstract class AbstractSmoothScrollableList<E extends ElementListWidget.Entry<E>> extends ElementListWidget<E> {
+import org.jspecify.annotations.NonNull;
+
+public abstract class AbstractSmoothScrollableList<E extends ContainerObjectSelectionList.Entry<E>> extends ContainerObjectSelectionList<E> {
 	private double targetScroll = 0; // Target scroll amount (set by mouse wheel)
 	private double currentScroll = 0; // Interpolated scroll amount (used for rendering)
 	private final double SCROLL_SPEED = 25.0; // Pixels per notch
@@ -15,7 +16,7 @@ public abstract class AbstractSmoothScrollableList<E extends ElementListWidget.E
 	private final boolean externalSmoothDetected = FabricLoader.getInstance().isModLoaded("smoothscroll") ||
 			FabricLoader.getInstance().isModLoaded("smoothscrollingrefurbished");
 
-	public AbstractSmoothScrollableList(MinecraftClient minecraftClient, int width, int height, int y, int itemHeight) {
+	public AbstractSmoothScrollableList(Minecraft minecraftClient, int width, int height, int y, int itemHeight) {
 		super(minecraftClient, width, height, y, itemHeight);
 	}
 
@@ -27,14 +28,14 @@ public abstract class AbstractSmoothScrollableList<E extends ElementListWidget.E
 
 		// Update the target scroll position
 		targetScroll -= verticalAmount * SCROLL_SPEED;
-		targetScroll = MathHelper.clamp(targetScroll, 0.0F, this.getMaxScrollY() + 1);
+		targetScroll = Math.clamp(targetScroll, 0.0F, this.maxScrollAmount() + 1);
 		return true;
 	}
 
 	@Override
-	protected void renderList(DrawContext context, int mouseX, int mouseY, float delta) {
+	protected void extractListItems(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
 		if (externalSmoothDetected) {
-			super.renderList(context, mouseX, mouseY, delta);
+			super.extractListItems(graphics, mouseX, mouseY, delta);
 			return;
 		}
 
@@ -46,18 +47,18 @@ public abstract class AbstractSmoothScrollableList<E extends ElementListWidget.E
 
 		currentScroll += (targetScroll - currentScroll) * alpha;
 
-		super.setScrollY(currentScroll);
-		super.renderList(context, mouseX, mouseY, delta);
+		super.setScrollAmount(currentScroll);
+		super.extractListItems(graphics, mouseX, mouseY, delta);
 	}
 
 	@Override
-	public void setScrollY(double scrollY) {
+	public void setScrollAmount(double scrollY) {
 		if (externalSmoothDetected) {
-			super.setScrollY(scrollY);
+			super.setScrollAmount(scrollY);
 			return;
 		}
 
-		super.setScrollY(scrollY);
+		super.setScrollAmount(scrollY);
 		targetScroll = scrollY;
 		currentScroll = scrollY;
 	}

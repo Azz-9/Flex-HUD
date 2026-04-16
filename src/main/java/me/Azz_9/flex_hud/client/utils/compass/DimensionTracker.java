@@ -1,19 +1,19 @@
 package me.Azz_9.flex_hud.client.utils.compass;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.world.World;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
 
 public class DimensionTracker {
-	private static RegistryKey<World> currentDimension = null;
+	private static ResourceKey<Level> currentDimension = null;
 	public static boolean shouldInit = false;
 
 	public static void check() {
-		MinecraftClient client = MinecraftClient.getInstance();
+		if (MINECRAFT.level == null) return;
 
-		if (client.world == null) return;
-
-		RegistryKey<World> newDimension = client.world.getRegistryKey();
+		ResourceKey<Level> newDimension = MINECRAFT.level.dimension();
 
 		if (currentDimension == null || !currentDimension.equals(newDimension)) {
 			shouldInit = true;

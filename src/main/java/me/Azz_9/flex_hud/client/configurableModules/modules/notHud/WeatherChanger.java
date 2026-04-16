@@ -1,5 +1,8 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.notHud;
 
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.Translatable;
@@ -7,16 +10,12 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfiguratio
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.text.Text;
 
 public class WeatherChanger extends AbstractModule {
 	public final ConfigEnum<Weather> selectedWeather = new ConfigEnum<>(Weather.class, Weather.CLEAR, "flex_hud.weather_changer.config.selected_weather");
 
 	public WeatherChanger() {
 		this.enabled.setConfigTextTranslationKey("flex_hud.weather_changer.config.enable");
-		this.enabled.setDefaultValue(false);
-		this.enabled.setValue(false);
 
 		ConfigRegistry.register(getID(), "selectedWeather", selectedWeather);
 	}
@@ -27,8 +26,8 @@ public class WeatherChanger extends AbstractModule {
 	}
 
 	@Override
-	public Text getName() {
-		return Text.translatable("flex_hud.weather_changer");
+	public Component getName() {
+		return Component.translatable("flex_hud.weather_changer");
 	}
 
 	@Override

@@ -1,22 +1,27 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries;
 
-import me.Azz_9.flex_hud.client.screens.TrackableChange;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.ScrollableConfigList;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigString;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.fields.ConfigTextFieldWidget;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.text.Text;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.network.chat.Component;
+
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
+
+import me.Azz_9.flex_hud.client.screens.TrackableChange;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.ScrollableConfigList;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigString;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.fields.ConfigTextFieldWidget;
 
 public class StringFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 	private ConfigTextFieldWidget textFieldWidget;
@@ -31,9 +36,9 @@ public class StringFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 			int resetButtonSize,
 			Function<String, Tooltip> getTooltip
 	) {
-		super(resetButtonSize, Text.translatable(variable.getConfigTextTranslationKey()));
+		super(resetButtonSize, Component.translatable(Objects.requireNonNull(variable.getConfigTextTranslationKey())));
 		textFieldWidget = new ConfigTextFieldWidget(
-				MinecraftClient.getInstance().textRenderer,
+				MINECRAFT.font,
 				textFieldWidth, textFieldHeight,
 				variable,
 				observers,
@@ -59,19 +64,19 @@ public class StringFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 	}
 
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
-		super.render(context, mouseX, mouseY, hovered, deltaTicks);
+	public void extractContent(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+		super.extractContent(graphics, mouseX, mouseY, hovered, deltaTicks);
 
-		textFieldWidget.render(context, mouseX, mouseY, deltaTicks);
+		textFieldWidget.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
 	}
 
 	@Override
-	public List<? extends Selectable> selectableChildren() {
+	public @NonNull List<? extends NarratableEntry> narratables() {
 		return List.of(textFieldWidget, resetButtonWidget);
 	}
 
 	@Override
-	public List<? extends Element> children() {
+	public @NonNull List<? extends GuiEventListener> children() {
 		return List.of(resetButtonWidget, textFieldWidget);
 	}
 
@@ -158,6 +163,9 @@ public class StringFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 					resetButtonSize,
 					getTooltip
 			);
+			for (Observer observer : observers) {
+				entry.addObserver(observer);
+			}
 			for (Dependency<?> dependency : dependencies) {
 				entry.addDependency(dependency.entry(), dependency.disableWhen());
 				dependency.entry().addObserver(entry);

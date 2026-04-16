@@ -1,16 +1,19 @@
 package me.Azz_9.flex_hud.client.screens.modulesList;
 
-import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
-import me.Azz_9.flex_hud.client.screens.AbstractSmoothScrollableList;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.gui.widget.ElementListWidget;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.ContainerObjectSelectionList;
+import net.minecraft.client.renderer.RenderPipelines;
+
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
+import me.Azz_9.flex_hud.client.screens.AbstractSmoothScrollableList;
 
 public class ScrollableModulesList extends AbstractSmoothScrollableList<ScrollableModulesList.Entry> {
 
@@ -21,8 +24,8 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 	private int padding;
 	private int columns;
 
-	public ScrollableModulesList(MinecraftClient client, int width, int height, int top, int itemHeight, int buttonWidth, int buttonHeight, int iconWidthHeight, int padding, int columns) {
-		super(client, width, height, top, itemHeight);
+	public ScrollableModulesList(Minecraft minecraft, int width, int height, int top, int itemHeight, int buttonWidth, int buttonHeight, int iconWidthHeight, int padding, int columns) {
+		super(minecraft, width, height, top, itemHeight);
 		this.buttonWidth = buttonWidth;
 		this.buttonHeight = buttonHeight;
 		this.iconWidthHeight = iconWidthHeight;
@@ -84,8 +87,8 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 	}
 
 	public void updateScroll() {
-		if (this.getScrollY() > this.getMaxScrollY()) {
-			this.setScrollY(this.getMaxScrollY());
+		if (this.scrollAmount() > this.maxScrollAmount()) {
+			this.setScrollAmount(this.maxScrollAmount());
 		}
 	}
 
@@ -117,7 +120,7 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 		this.entries.clear();
 	}
 
-	public static class Entry extends ElementListWidget.Entry<Entry> {
+	public static class Entry extends ContainerObjectSelectionList.Entry<Entry> {
 		private final List<Module> rowModules;
 		private final ScrollableModulesList scrollableModulesList;
 
@@ -127,7 +130,7 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 		}
 
 		@Override
-		public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+		public void extractContent(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
 			int totalButtonWidth = scrollableModulesList.buttonWidth * scrollableModulesList.columns + scrollableModulesList.padding;
 			int buttonX = getX() + (getWidth() - totalButtonWidth) / scrollableModulesList.columns;
 			int iconX = buttonX + (scrollableModulesList.buttonWidth - scrollableModulesList.iconWidthHeight) / 2;
@@ -142,18 +145,17 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 					iconX = buttonX + (scrollableModulesList.buttonWidth - scrollableModulesList.iconWidthHeight) / 2;
 				}
 
-				context.drawTexture(RenderPipelines.GUI_TEXTURED, this.rowModules.get(i).icon, iconX, getY(), 0, 0,
+				graphics.blit(RenderPipelines.GUI_TEXTURED, this.rowModules.get(i).icon, iconX, getY(), 0, 0,
 						scrollableModulesList.iconWidthHeight, scrollableModulesList.iconWidthHeight, scrollableModulesList.iconWidthHeight, scrollableModulesList.iconWidthHeight);
 				this.rowModules.get(i).button.setX(buttonX);
 				this.rowModules.get(i).button.setY(getY() + scrollableModulesList.iconWidthHeight + scrollableModulesList.padding / 2);
-				this.rowModules.get(i).button.render(context, mouseX, mouseY, deltaTicks);
+				this.rowModules.get(i).button.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
 			}
 		}
 
-
 		@Override
-		public List<ClickableWidget> children() {
-			List<ClickableWidget> clickableWidgets = new ArrayList<>();
+		public @NonNull List<AbstractWidget.WithInactiveMessage> children() {
+			List<AbstractWidget.WithInactiveMessage> clickableWidgets = new ArrayList<>();
 			for (Module module : rowModules) {
 				if (module != null) {
 					clickableWidgets.add(module.button);
@@ -163,7 +165,7 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 		}
 
 		@Override
-		public List<ClickableWidget> selectableChildren() {
+		public @NonNull List<AbstractWidget.WithInactiveMessage> narratables() {
 			return this.children();
 		}
 	}

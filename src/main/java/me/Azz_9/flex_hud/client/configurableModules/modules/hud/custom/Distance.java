@@ -1,24 +1,28 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+
+import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix3x2fStack;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.IntFieldEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 import me.Azz_9.flex_hud.client.tickables.RaycastTickable;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.text.Text;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.Vec3d;
-import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
 public class Distance extends AbstractTextModule implements TickableModule {
 
@@ -29,8 +33,6 @@ public class Distance extends AbstractTextModule implements TickableModule {
 
 	public Distance(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
-		this.enabled.setValue(false);
-		this.enabled.setDefaultValue(false);
 		this.enabled.setConfigTextTranslationKey("flex_hud.distance.config.enable");
 
 		ConfigRegistry.register(getID(), "digits", digits);
@@ -38,12 +40,12 @@ public class Distance extends AbstractTextModule implements TickableModule {
 
 	@Override
 	public void init() {
-		setHeight(MinecraftClient.getInstance().textRenderer.fontHeight);
+		setHeight(MINECRAFT.font.lineHeight);
 	}
 
 	@Override
-	public Text getName() {
-		return Text.translatable("flex_hud.distance");
+	public Component getName() {
+		return Component.translatable("flex_hud.distance");
 	}
 
 	@Override
@@ -52,21 +54,21 @@ public class Distance extends AbstractTextModule implements TickableModule {
 	}
 
 	@Override
-	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && MinecraftClient.getInstance().getCameraEntity() == null) {
+	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && MINECRAFT.getCameraEntity() == null) {
 			return;
 		}
 
 		setWidth(distanceText);
 
-		Matrix3x2fStack matrices = context.getMatrices();
+		Matrix3x2fStack matrices = graphics.pose();
 		matrices.pushMatrix();
 		matrices.translate(getRoundedX(), getRoundedY());
 		matrices.scale(getScale());
 
-		drawBackground(context);
+		drawBackground(graphics);
 
-		context.drawText(MinecraftClient.getInstance().textRenderer, distanceText, 0, 0, getColor(), shadow.getValue());
+		graphics.text(MINECRAFT.font, distanceText, 0, 0, getColor(), shadow.getValue());
 
 		matrices.popMatrix();
 	}
@@ -76,10 +78,6 @@ public class Distance extends AbstractTextModule implements TickableModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
-					buttonWidth = 160;
-				}
-
 				super.init();
 
 				this.addAllEntries(
@@ -125,6 +123,18 @@ public class Distance extends AbstractTextModule implements TickableModule {
 								.setVariable(hideInF3)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeX)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeX(anchorModeX.getValue()))
+								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeY)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeY(anchorModeY.getValue()))
+								.build(),
 						new IntFieldEntry.Builder()
 								.setIntFieldWidth(20)
 								.setVariable(digits)
@@ -143,19 +153,18 @@ public class Distance extends AbstractTextModule implements TickableModule {
 			return;
 		}
 
-		MinecraftClient client = MinecraftClient.getInstance();
 		HitResult hitResult = RaycastTickable.getHitResult();
 
-		if (client.getCameraEntity() == null || client.player == null || hitResult == null) return;
+		if (MINECRAFT.getCameraEntity() == null || MINECRAFT.player == null || hitResult == null) return;
 
 		if (hitResult.getType() == HitResult.Type.MISS) {
 			distanceText = "[∞]";
 		} else if (hitResult.getType() == HitResult.Type.BLOCK) {
-			Vec3d lerpedPos = client.getCameraEntity().getLerpedPos(0);
-			float eyeHeight = client.getCameraEntity().getEyeHeight(client.player.getPose());
-			Vec3d eyePos = new Vec3d(lerpedPos.getX(), lerpedPos.getY() + eyeHeight, lerpedPos.getZ());
+			Vec3 lerpedPos = MINECRAFT.getCameraEntity().getPosition(0);
+			float eyeHeight = MINECRAFT.getCameraEntity().getEyeHeight(MINECRAFT.player.getPose());
+			Vec3 eyePos = new Vec3(lerpedPos.x(), lerpedPos.y() + eyeHeight, lerpedPos.z());
 
-			double distance = hitResult.getPos().distanceTo(eyePos);
+			double distance = hitResult.getLocation().distanceTo(eyePos);
 
 			// format distance to string with selected amount of digits
 			String format = "[%." + digits.getValue() + "f]";

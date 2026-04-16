@@ -1,10 +1,12 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud;
 
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+
+import org.jetbrains.annotations.NotNull;
+
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
-import net.minecraft.client.gui.DrawContext;
-import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractBackgroundModule extends AbstractMovableModule {
 	protected transient final int BACKGROUND_PADDING = 2;
@@ -19,14 +21,14 @@ public abstract class AbstractBackgroundModule extends AbstractMovableModule {
 		ConfigRegistry.register(getID(), "backgroundColor", backgroundColor);
 	}
 
-	protected void drawBackground(DrawContext context) {
-		drawBackground(0, context);
+	protected void drawBackground(GuiGraphicsExtractor graphics) {
+		drawBackground(0, graphics);
 	}
 
-	protected void drawBackground(int index, DrawContext context) {
+	protected void drawBackground(int index, GuiGraphicsExtractor graphics) {
 		DimensionHud dimensionHud = getDimensionHudList().get(index);
 		if (drawBackground.getValue() && dimensionHud.isDisplayed() && dimensionHud.getWidth() != 0 && dimensionHud.getHeight() != 0) {
-			context.fill(-BACKGROUND_PADDING, -BACKGROUND_PADDING, dimensionHud.getWidth() + BACKGROUND_PADDING, dimensionHud.getHeight() + BACKGROUND_PADDING, getBackgroundColor());
+			graphics.fill(-BACKGROUND_PADDING, -BACKGROUND_PADDING, dimensionHud.getWidth() + BACKGROUND_PADDING, dimensionHud.getHeight() + BACKGROUND_PADDING, getBackgroundColor());
 		}
 	}
 

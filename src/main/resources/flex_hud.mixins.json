@@ -4,23 +4,27 @@
 	"package": "me.Azz_9.flex_hud.client.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
-		"cps.MouseMixin",
+		"cps.MouseHandlerMixin",
 		"timeChanger.ClientWorldPropertiesMixin",
 		"weatherChanger.ClientWorldMixin"
 	],
 	"client": [
 		"CursorAccessor",
 		"bossBar.BossBarAccessor",
-		"bossBar.BossBarHudMixin",
-		"compass.InGameHudMixin",
-		"compass.LocatorBarMixin",
-		"cps.KeyboardMixin",
+		"bossBar.BossHealthOverlayMixin",
+		"compass.GuiMixin",
+		"compass.LocatorBarRendererMixin",
+		"cps.KeyboardHandlerMixin",
 		"crosshair.CrosshairMixin",
-		"drawContext.DrawContextAccessor",
+		"drawContext.GuiGraphicsExtractorAccessor",
 		"durabilityPing.ClientPlayNetworkHandlerMixin",
 		"keybind.KeyBindingMixin",
+		"ping.ClientPlayNetworkHandlerMixin",
 		"potionEffect.PotionEffectMixin",
-		"reach.ClientPlayerInteractionManagerMixin"
+		"reach.MultiPlayerGameModeMixin",
+		"scoreboard.GuiAccessor",
+		"scoreboard.GuiMixin",
+		"toggleSprintSneak.KeyMappingAccessor"
 	],
 	"injectors": {
 		"defaultRequire": 1

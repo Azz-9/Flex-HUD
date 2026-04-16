@@ -1,11 +1,13 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 import me.Azz_9.flex_hud.client.tickables.ChromaColorTickable;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.util.math.ColorHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.ARGB;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractTextModule extends AbstractBackgroundModule {
@@ -23,37 +25,32 @@ public abstract class AbstractTextModule extends AbstractBackgroundModule {
 	}
 
 	protected void updateWidth(String text) {
-		int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(text);
+		int textWidth = MINECRAFT.font.width(text);
 		if (textWidth > getWidth()) {
 			setWidth(textWidth);
 		}
 	}
 
 	protected void updateWidth(String text, int startX) {
-		int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(text);
+		int textWidth = MINECRAFT.font.width(text);
 		if (startX + textWidth > getWidth()) {
 			setWidth(startX + textWidth);
 		}
 	}
 
 	protected void setWidth(String text) {
-		setWidth(MinecraftClient.getInstance().textRenderer.getWidth(text));
+		setWidth(MINECRAFT.font.width(text));
 	}
 
 	protected void setWidth(String text, int startX) {
-		int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(text);
+		int textWidth = MINECRAFT.font.width(text);
 		setWidth(startX + textWidth);
-	}
-
-	protected void setWidth(String text, int startX) {
-		int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(text);
-		this.width = startX + textWidth;
 	}
 
 	protected int getColor() {
 		if (chromaColor.getValue()) {
 			return ChromaColorTickable.getColor();
 		}
-		return ColorHelper.withAlpha(255, color.getValue());
+		return ARGB.color(255, color.getValue());
 	}
 }

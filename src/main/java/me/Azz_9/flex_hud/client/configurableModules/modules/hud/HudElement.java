@@ -1,23 +1,24 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud;
 
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.resources.Identifier;
+
 import me.Azz_9.flex_hud.client.configurableModules.Configurable;
 import me.Azz_9.flex_hud.client.utils.SpeedTester;
-import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.util.Identifier;
 
 public interface HudElement extends Configurable {
-	void render(DrawContext context, RenderTickCounter tickCounter);
+	void render(GuiGraphicsExtractor graphics, DeltaTracker tickCounter);
 
-	default void renderWithSpeedTest(DrawContext context, RenderTickCounter tickCounter) {
+	default void renderWithSpeedTest(GuiGraphicsExtractor graphics, DeltaTracker tickCounter) {
 		if (!isEnabled()) {
 			return;
 		}
 
 		SpeedTester.start(getID());
 
-		this.render(context, tickCounter);
+		this.render(graphics, tickCounter);
 
 		SpeedTester.end(getID());
 	}

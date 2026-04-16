@@ -1,24 +1,28 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+
+import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix3x2fStack;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
-import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
 public class FullInventoryIndicator extends AbstractTextModule implements TickableModule {
 
@@ -28,8 +32,6 @@ public class FullInventoryIndicator extends AbstractTextModule implements Tickab
 
 	public FullInventoryIndicator(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
-		this.enabled.setValue(false);
-		this.enabled.setDefaultValue(false);
 		this.enabled.setConfigTextTranslationKey("flex_hud.full_inventory_indicator.config.enable");
 
 		this.color.setValue(0xff0000);
@@ -40,12 +42,12 @@ public class FullInventoryIndicator extends AbstractTextModule implements Tickab
 
 	@Override
 	public void init() {
-		setHeight(MinecraftClient.getInstance().textRenderer.fontHeight);
+		setHeight(MINECRAFT.font.lineHeight);
 	}
 
 	@Override
-	public Text getName() {
-		return Text.translatable("flex_hud.full_inventory_indicator");
+	public Component getName() {
+		return Component.translatable("flex_hud.full_inventory_indicator");
 	}
 
 	@Override
@@ -54,23 +56,23 @@ public class FullInventoryIndicator extends AbstractTextModule implements Tickab
 	}
 
 	@Override
-	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && MinecraftClient.getInstance().player == null) {
+	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && MINECRAFT.player == null) {
 			return;
 		}
 
 		if (isInventoryFull || Flex_hudClient.isInMoveElementScreen) {
-			Text label = Text.translatable("flex_hud.full_inventory_indicator.label");
+			Component label = Component.translatable("flex_hud.full_inventory_indicator.label");
 			setWidth(label.getString());
 
-			Matrix3x2fStack matrices = context.getMatrices();
+			Matrix3x2fStack matrices = graphics.pose();
 			matrices.pushMatrix();
 			matrices.translate(getRoundedX(), getRoundedY());
 			matrices.scale(getScale());
 
-			drawBackground(context);
+			drawBackground(graphics);
 
-			context.drawText(MinecraftClient.getInstance().textRenderer, Text.translatable("flex_hud.full_inventory_indicator.label"), 0, 0, getColor(), shadow.getValue());
+			graphics.text(MINECRAFT.font, Component.translatable("flex_hud.full_inventory_indicator.label"), 0, 0, getColor(), shadow.getValue());
 
 			matrices.popMatrix();
 		}
@@ -81,7 +83,7 @@ public class FullInventoryIndicator extends AbstractTextModule implements Tickab
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (MINECRAFT.getLanguageManager().getSelected().equals("fr_fr")) {
 					buttonWidth = 220;
 				} else {
 					buttonWidth = 175;
@@ -132,6 +134,18 @@ public class FullInventoryIndicator extends AbstractTextModule implements Tickab
 								.setVariable(hideInF3)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeX)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeX(anchorModeX.getValue()))
+								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeY)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeY(anchorModeY.getValue()))
+								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(playSound)
@@ -144,20 +158,20 @@ public class FullInventoryIndicator extends AbstractTextModule implements Tickab
 
 	@Override
 	public void tick() {
-		if (MinecraftClient.getInstance().player == null) {
+		if (MINECRAFT.player == null) {
 			return;
 		}
 
 		for (int i = 0; i < 36; i++) {
-			ItemStack stack = MinecraftClient.getInstance().player.getInventory().getStack(i);
-			if (stack.isOf(Items.AIR)) {
+			ItemStack stack = MINECRAFT.player.getInventory().getItem(i);
+			if (stack.is(Items.AIR)) {
 				isInventoryFull = false;
 				return;
 			}
 		}
 
 		if (!isInventoryFull && playSound.getValue()) {
-			MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.ui(SoundEvents.ITEM_ARMOR_EQUIP_LEATHER.value(), 1.0f, 2.0f));
+			MINECRAFT.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.ARMOR_EQUIP_LEATHER.value(), 1.0f, 2.0f));
 		}
 
 		isInventoryFull = true;

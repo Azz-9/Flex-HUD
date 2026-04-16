@@ -1,6 +1,25 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
 import com.google.common.collect.Ordering;
+
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+
+import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix3x2fStack;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.Translatable;
@@ -14,21 +33,6 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorB
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
-import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class PotionEffect extends AbstractTextModule {
 	private final ConfigEnum<Alignment> alignment = new ConfigEnum<>(Alignment.class, Alignment.AUTO, "flex_hud.potion_effect.config.alignment");
@@ -43,8 +47,8 @@ public class PotionEffect extends AbstractTextModule {
 	}
 
 	@Override
-	public Text getName() {
-		return Text.translatable("flex_hud.potion_effect");
+	public Component getName() {
+		return Component.translatable("flex_hud.potion_effect");
 	}
 
 	@Override
@@ -53,10 +57,8 @@ public class PotionEffect extends AbstractTextModule {
 	}
 
 	@Override
-	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
-
-		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && client.player == null) {
+	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && MINECRAFT.player == null) {
 			return;
 		}
 
@@ -65,11 +67,11 @@ public class PotionEffect extends AbstractTextModule {
 
 		int hudY = 0;
 
-		List<StatusEffectInstance> playerEffects;
+		List<MobEffectInstance> playerEffects;
 		if (Flex_hudClient.isInMoveElementScreen) {
-			playerEffects = List.of(new StatusEffectInstance(StatusEffects.SPEED, 1800, 1), new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 200));
+			playerEffects = List.of(new MobEffectInstance(MobEffects.SPEED, 1800, 1), new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 200));
 		} else {
-			playerEffects = Ordering.natural().sortedCopy(client.player.getStatusEffects());
+			playerEffects = Ordering.natural().sortedCopy(MINECRAFT.player.getActiveEffects());
 		}
 
 		setWidth(0);
@@ -81,33 +83,33 @@ public class PotionEffect extends AbstractTextModule {
 		int effectGap = 6;
 
 		// height
-		final int horizontalHeight = Math.max(iconSize, client.textRenderer.fontHeight * 2 + textGap);
-		final int verticalHeight = iconSize + textIconGap + client.textRenderer.fontHeight * 2 + textGap;
+		final int horizontalHeight = Math.max(iconSize, MINECRAFT.font.lineHeight * 2 + textGap);
+		final int verticalHeight = iconSize + textIconGap + MINECRAFT.font.lineHeight * 2 + textGap;
 
-		for (StatusEffectInstance effect : playerEffects) {
+		for (MobEffectInstance effect : playerEffects) {
 			if (effect == null) continue;
 
 			int textWidth;
 
-			String effectString = Text.translatable(effect.getTranslationKey()).getString() + " " + (effect.getAmplifier() + 1);
-			String durationString = effect.isInfinite() ? "∞" : getDurationString(effect.getDuration() / 20);
-			Identifier icon = InGameHud.getEffectTexture(effect.getEffectType());
+			String effectString = Component.translatable(effect.getDescriptionId()).getString() + " " + (effect.getAmplifier() + 1);
+			String durationString = effect.isInfiniteDuration() ? "∞" : getDurationString(effect.getDuration() / 20);
+			Identifier icon = Gui.getMobEffectSprite(effect.getEffect());
 
 			textWidth = Math.max(
-					client.textRenderer.getWidth(effectString),
-					client.textRenderer.getWidth(durationString)
+					MINECRAFT.font.width(effectString),
+					MINECRAFT.font.width(durationString)
 			);
 
-			int durationColor = (effect.isInfinite() ? getColor() : ColorHelper.withAlpha(getTimestampAlpha(effect.getDuration()), getColor()));
+			int durationColor = (effect.isInfiniteDuration() ? getColor() : ARGB.color(getTimestampAlpha(effect.getDuration()), getColor()));
 
 			switch (iconPlacement.getValue()) {
 				case TOP -> {
-					setHeight(hudY + iconSize + textIconGap + client.textRenderer.fontHeight * 2 + textGap);
+					setHeight(hudY + iconSize + textIconGap + MINECRAFT.font.lineHeight * 2 + textGap);
 					setWidth(Math.max(getWidth(), Math.max(textWidth, iconSize)));
 
 					renderables.add(new MultiRenderable(0, textWidth,
-							new RenderableText(0, hudY + iconSize + textIconGap, Text.of(effectString), getColor(), shadow.getValue()),
-							new RenderableText(0, hudY + iconSize + textIconGap + client.textRenderer.fontHeight + textGap, Text.of(durationString), durationColor, shadow.getValue())
+							new RenderableText(0, hudY + iconSize + textIconGap, Component.literal(effectString), getColor(), shadow.getValue()),
+							new RenderableText(0, hudY + iconSize + textIconGap + MINECRAFT.font.lineHeight + textGap, Component.literal(durationString), durationColor, shadow.getValue())
 					));
 					renderables.add(new MultiRenderable(0, iconSize,
 							new RenderableImage(0, hudY, icon, iconSize, iconSize)
@@ -122,24 +124,24 @@ public class PotionEffect extends AbstractTextModule {
 					setHeight(Math.max(getHeight(), hudY + horizontalHeight));
 
 					renderables.add(new MultiRenderable(0, currentWidth,
-							new RenderableText(0, hudY, Text.of(effectString), getColor(), shadow.getValue()),
-							new RenderableText(0, hudY + client.textRenderer.fontHeight + textGap, Text.of(durationString), durationColor, shadow.getValue()),
+							new RenderableText(0, hudY, Component.literal(effectString), getColor(), shadow.getValue()),
+							new RenderableText(0, hudY + MINECRAFT.font.lineHeight + textGap, Component.literal(durationString), durationColor, shadow.getValue()),
 							new RenderableImage(textWidth + textIconGap, hudY, icon, iconSize, iconSize)
 					));
 
 					hudY += horizontalHeight + effectGap;
 				}
 				case BOTTOM -> {
-					setHeight(hudY + iconSize + textIconGap + client.textRenderer.fontHeight * 2 + textGap);
+					setHeight(hudY + iconSize + textIconGap + MINECRAFT.font.lineHeight * 2 + textGap);
 					setWidth(Math.max(getWidth(), Math.max(textWidth, iconSize)));
 
 					renderables.add(new MultiRenderable(0, textWidth,
-							new RenderableText(0, hudY, Text.of(effectString), getColor(), shadow.getValue()),
-							new RenderableText(0, hudY + client.textRenderer.fontHeight + textGap, Text.of(durationString), durationColor, shadow.getValue())
+							new RenderableText(0, hudY, Component.literal(effectString), getColor(), shadow.getValue()),
+							new RenderableText(0, hudY + MINECRAFT.font.lineHeight + textGap, Component.literal(durationString), durationColor, shadow.getValue())
 
 					));
 					renderables.add(new MultiRenderable(0, iconSize,
-							new RenderableImage(0, hudY + client.textRenderer.fontHeight * 2 + textGap + textIconGap, icon, iconSize, iconSize)
+							new RenderableImage(0, hudY + MINECRAFT.font.lineHeight * 2 + textGap + textIconGap, icon, iconSize, iconSize)
 					));
 
 					hudY += verticalHeight + effectGap;
@@ -152,8 +154,8 @@ public class PotionEffect extends AbstractTextModule {
 
 					renderables.add(new MultiRenderable(0, currentWidth,
 							new RenderableImage(0, hudY, icon, iconSize, iconSize),
-							new RenderableText(iconSize + textIconGap, hudY, Text.of(effectString), getColor(), shadow.getValue()),
-							new RenderableText(iconSize + textIconGap, hudY + client.textRenderer.fontHeight + textGap, Text.of(durationString), durationColor, shadow.getValue())
+							new RenderableText(iconSize + textIconGap, hudY, Component.literal(effectString), getColor(), shadow.getValue()),
+							new RenderableText(iconSize + textIconGap, hudY + MINECRAFT.font.lineHeight + textGap, Component.literal(durationString), durationColor, shadow.getValue())
 					));
 
 					hudY += horizontalHeight + effectGap;
@@ -167,15 +169,15 @@ public class PotionEffect extends AbstractTextModule {
 			MultiRenderable.alignCenter(renderables, getWidth() / 2);
 		}
 
-		Matrix3x2fStack matrices = context.getMatrices();
+		Matrix3x2fStack matrices = graphics.pose();
 		matrices.pushMatrix();
 		matrices.translate(getRoundedX(), getRoundedY());
 		matrices.scale(getScale());
 
-		drawBackground(context);
+		drawBackground(graphics);
 
 		for (MultiRenderable multiRenderable : renderables) {
-			multiRenderable.render(context, tickCounter);
+			multiRenderable.render(graphics, deltaTracker);
 		}
 
 		matrices.popMatrix();
@@ -190,18 +192,16 @@ public class PotionEffect extends AbstractTextModule {
 	}
 
 	private int getTimestampAlpha(int duration) {
-		MinecraftClient client = MinecraftClient.getInstance();
-
 		// Always opaque if paused or no world (e.g., title screen)
-		if (client.isPaused() || client.world == null) {
+		if (MINECRAFT.isPaused() || MINECRAFT.level == null) {
 			return 255;
 		}
 
 		// Smooth fraction of current tick [0..1]; works on Fabric/Yarn
-		float tickDelta = client.getRenderTickCounter().getDynamicDeltaTicks();
+		float tickDelta = MINECRAFT.getDeltaTracker().getGameTimeDeltaTicks();
 
 		// Add tickDelta to world time for smooth animation
-		float ticks = client.world.getTimeOfDay() + tickDelta;
+		float ticks = MINECRAFT.level.getOverworldClockTime() + tickDelta;
 
 		// 20 ticks ~= 1 second at 20 TPS
 		float cycle = (ticks % 20.0f) / 20.0f;
@@ -231,7 +231,7 @@ public class PotionEffect extends AbstractTextModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (MINECRAFT.getLanguageManager().getSelected().equals("fr_fr")) {
 					buttonWidth = 200;
 				} else {
 					buttonWidth = 165;
@@ -281,6 +281,18 @@ public class PotionEffect extends AbstractTextModule {
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(hideInF3)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeX)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeX(anchorModeX.getValue()))
+								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeY)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeY(anchorModeY.getValue()))
 								.build(),
 						new CyclingButtonEntry.Builder<Alignment>()
 								.setCyclingButtonWidth(80)

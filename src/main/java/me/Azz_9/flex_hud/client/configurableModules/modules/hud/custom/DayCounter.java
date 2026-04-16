@@ -1,34 +1,36 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix3x2fStack;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix3x2fStack;
 
 public class DayCounter extends AbstractTextModule {
 
 	public DayCounter(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.day_counter.config.enable");
-		this.enabled.setDefaultValue(false);
-		this.enabled.setValue(false);
 	}
 
 	@Override
 	public void init() {
-		setHeight(MinecraftClient.getInstance().textRenderer.fontHeight);
+		setHeight(MINECRAFT.font.lineHeight);
 	}
 
 	@Override
@@ -37,15 +39,13 @@ public class DayCounter extends AbstractTextModule {
 	}
 
 	@Override
-	public Text getName() {
-		return Text.translatable("flex_hud.day_counter");
+	public Component getName() {
+		return Component.translatable("flex_hud.day_counter");
 	}
 
 	@Override
-	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
-
-		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && client.world == null) {
+	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && MINECRAFT.level == null) {
 			return;
 		}
 
@@ -53,20 +53,20 @@ public class DayCounter extends AbstractTextModule {
 		if (Flex_hudClient.isInMoveElementScreen) {
 			day = 5;
 		} else {
-			day = client.world.getTimeOfDay() / 24000;
+			day = MINECRAFT.level.getOverworldClockTime() / 24000;
 		}
-		Text text = Text.translatable("flex_hud.day_counter.hud.prefix").append(" " + (int) day);
+		Component text = Component.translatable("flex_hud.day_counter.hud.prefix").append(" " + (int) day);
 
 		setWidth(text.getString());
 
-		Matrix3x2fStack matrices = context.getMatrices();
+		Matrix3x2fStack matrices = graphics.pose();
 		matrices.pushMatrix();
 		matrices.translate(getRoundedX(), getRoundedY());
 		matrices.scale(getScale());
 
-		drawBackground(context);
+		drawBackground(graphics);
 
-		context.drawText(client.textRenderer, text, 0, 0, getColor(), this.shadow.getValue());
+		graphics.text(MINECRAFT.font, text, 0, 0, getColor(), this.shadow.getValue());
 
 		matrices.popMatrix();
 	}
@@ -74,7 +74,7 @@ public class DayCounter extends AbstractTextModule {
 	@Override
 	public @Nullable Tooltip getTooltip() {
 		if (ModulesHelper.getInstance().timeChanger.isEnabled()) {
-			return Tooltip.of(Text.literal("⚠ ").append(Text.translatable("flex_hud.configuration_screen.module_compatibility_warning")).append(Text.translatable("flex_hud.time_changer")).formatted(Formatting.RED));
+			return Tooltip.create(Component.literal("⚠ ").append(Component.translatable("flex_hud.configuration_screen.module_compatibility_warning")).append(Component.translatable("flex_hud.time_changer")).withStyle(ChatFormatting.RED));
 		} else {
 			return null;
 		}
@@ -85,9 +85,6 @@ public class DayCounter extends AbstractTextModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
-					buttonWidth = 160;
-				}
 
 				super.init();
 
@@ -133,6 +130,18 @@ public class DayCounter extends AbstractTextModule {
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(hideInF3)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeX)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeX(anchorModeX.getValue()))
+								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeY)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeY(anchorModeY.getValue()))
 								.build()
 				);
 			}

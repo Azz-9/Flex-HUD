@@ -23,6 +23,9 @@
 		],
 		"modmenu": [
 			"me.Azz_9.flex_hud.compat.ModMenuCompat"
+		],
+		"journeymap": [
+			"me.Azz_9.flex_hud.compat.waypointsCollectors.JourneyMapIntegration"
 		]
 	},
 
@@ -31,8 +34,6 @@
 	],
 	"depends": {
 		"fabricloader": ">=${loader_version}",
-		"fabric": "*",
-		"fabric-key-binding-api-v1": "*",
 		"minecraft": "${minecraft_version}"
 	}
 }

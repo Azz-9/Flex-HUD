@@ -1,22 +1,23 @@
 package me.Azz_9.flex_hud.client.screens;
 
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.text.Text;
+
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 
 public abstract class AbstractBackNavigableScreen extends Screen {
 	protected final Screen PARENT;
 
-	protected AbstractBackNavigableScreen(Text title, Screen parent) {
+	protected AbstractBackNavigableScreen(Component title, Screen parent) {
 		super(title);
 		this.PARENT = parent;
 	}
 
 	@Override
-	public void close() {
-		if (client != null && PARENT != null) {
-			client.setScreen(PARENT);
+	public void onClose() {
+		if (PARENT != null) {
+			minecraft.setScreen(PARENT);
 		} else {
-			super.close();
+			super.onClose();
 		}
 	}
 }

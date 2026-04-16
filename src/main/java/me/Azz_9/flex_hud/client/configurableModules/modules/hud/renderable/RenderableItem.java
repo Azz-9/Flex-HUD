@@ -1,15 +1,17 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable;
 
-import me.Azz_9.flex_hud.client.mixin.drawContext.DrawContextAccessor;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+
 import org.jetbrains.annotations.NotNull;
+
+import me.Azz_9.flex_hud.client.mixin.drawContext.GuiGraphicsExtractorAccessor;
 
 public class RenderableItem extends Renderable {
 	@NotNull
-	private final ItemStack stack;
+	private final net.minecraft.world.item.ItemStack stack;
 	private final boolean drawItemBar;
 
 	public RenderableItem(int x, int y, int width, @NotNull ItemStack stack, boolean drawItemBar) {
@@ -25,18 +27,18 @@ public class RenderableItem extends Renderable {
 	}
 
 	@Override
-	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		context.drawItem(stack, x, y);
+	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+		graphics.item(stack, x, y);
 
 		if (!stack.isEmpty()) {
-			context.getMatrices().pushMatrix();
+			graphics.pose().pushMatrix();
 
 			if (drawItemBar) {
-				((DrawContextAccessor) context).flex_hud$drawItemBar(stack, x, y);
+				((GuiGraphicsExtractorAccessor) graphics).flex_hud$renderItemBar(stack, x, y);
 			}
-			((DrawContextAccessor) context).flex_hud$drawCooldownProgress(stack, x, y);
+			((GuiGraphicsExtractorAccessor) graphics).flex_hud$renderItemCooldown(stack, x, y);
 
-			context.getMatrices().popMatrix();
+			graphics.pose().popMatrix();
 		}
 	}
 }

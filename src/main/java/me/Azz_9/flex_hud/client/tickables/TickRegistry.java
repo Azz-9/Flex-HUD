@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.client.tickables;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,9 +12,9 @@ public class TickRegistry {
 		TICKABLES.add(tickable);
 	}
 
-	public static void tickAll(MinecraftClient client) {
+	public static void tickAll(Minecraft minecraft) {
 		for (Tickable tickable : TICKABLES) {
-			if (tickable.shouldTick()) tickable.tick(client);
+			if (tickable.shouldTick()) tickable.tick(minecraft);
 		}
 	}
 }

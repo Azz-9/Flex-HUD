@@ -1,24 +1,27 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+
+import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix3x2fStack;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
 import me.Azz_9.flex_hud.client.utils.FaviconUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
-
-import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
 
 public class ServerAddress extends AbstractTextModule {
 	private final ConfigBoolean hideWhenOffline = new ConfigBoolean(true, "flex_hud.server_address.config.hide_when_offline");
@@ -27,8 +30,6 @@ public class ServerAddress extends AbstractTextModule {
 	public ServerAddress(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.server_address.config.enable");
-		this.enabled.setDefaultValue(false);
-		this.enabled.setValue(false);
 
 		ConfigRegistry.register(getID(), "hideWhenOffline", hideWhenOffline);
 		ConfigRegistry.register(getID(), "showServerIcon", showServerIcon);
@@ -40,14 +41,12 @@ public class ServerAddress extends AbstractTextModule {
 	}
 
 	@Override
-	public Text getName() {
-		return Text.translatable("flex_hud.server_address");
+	public Component getName() {
+		return Component.translatable("flex_hud.server_address");
 	}
 
 	@Override
-	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
-
+	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 		if (shouldNotRender()) {
 			return;
 		}
@@ -59,13 +58,13 @@ public class ServerAddress extends AbstractTextModule {
 			text = "play.hypixel.net";
 
 		} else {
-			if (client.getCurrentServerEntry() != null) {
+			if (MINECRAFT.getCurrentServer() != null) {
 
-				text = client.getCurrentServerEntry().address;
+				text = MINECRAFT.getCurrentServer().ip;
 
 			} else if (!this.hideWhenOffline.getValue()) {
 
-				text = Text.translatable("flex_hud.server_address.hud.offline").getString();
+				text = Component.translatable("flex_hud.server_address.hud.offline").getString();
 
 			}
 		}
@@ -79,34 +78,34 @@ public class ServerAddress extends AbstractTextModule {
 			int textY = 0;
 			int faviconSize = 14;
 			Identifier icon = null;
-			if (showServerIcon.getValue() && (client.getCurrentServerEntry() != null || Flex_hudClient.isInMoveElementScreen)) {
+			if (showServerIcon.getValue() && (MINECRAFT.getCurrentServer() != null || Flex_hudClient.isInMoveElementScreen)) {
 				if (Flex_hudClient.isInMoveElementScreen) {
-					icon = Identifier.of(MOD_ID, "misc/hypixel-logo.png");
+					icon = Identifier.fromNamespaceAndPath(MOD_ID, "misc/hypixel-logo.png");
 				} else {
 					icon = FaviconUtils.getCurrentServerFavicon();
 					if (icon == null) {
-						icon = Identifier.of("minecraft", "textures/misc/unknown_server.png");
+						icon = Identifier.fromNamespaceAndPath("minecraft", "textures/misc/unknown_server.png");
 					}
 				}
 
 				textX = faviconSize + 2;
-				textY = (faviconSize - client.textRenderer.fontHeight) / 2;
+				textY = (faviconSize - MINECRAFT.font.lineHeight) / 2;
 				setHeight(faviconSize);
 				setWidth(text);
 				setWidth(getWidth() + textX);
 			}
 
-			Matrix3x2fStack matrices = context.getMatrices();
+			Matrix3x2fStack matrices = graphics.pose();
 			matrices.pushMatrix();
 			matrices.translate(getRoundedX(), getRoundedY());
 			matrices.scale(getScale());
 
-			drawBackground(context);
+			drawBackground(graphics);
 
 			if (icon != null) {
-				context.drawTexture(RenderPipelines.GUI_TEXTURED, icon, 0, 0, 0, 0, faviconSize, faviconSize, faviconSize, faviconSize);
+				graphics.blit(RenderPipelines.GUI_TEXTURED, icon, 0, 0, 0, 0, faviconSize, faviconSize, faviconSize, faviconSize);
 			}
-			context.drawText(client.textRenderer, text, textX, textY, getColor(), this.shadow.getValue());
+			graphics.text(MINECRAFT.font, text, textX, textY, getColor(), this.shadow.getValue());
 
 			matrices.popMatrix();
 		}
@@ -114,7 +113,7 @@ public class ServerAddress extends AbstractTextModule {
 
 	@Override
 	public boolean shouldNotRender() {
-		return super.shouldNotRender() || (this.hideWhenOffline.getValue() && MinecraftClient.getInstance().getCurrentServerEntry() == null && !Flex_hudClient.isInMoveElementScreen);
+		return super.shouldNotRender() || (this.hideWhenOffline.getValue() && MINECRAFT.getCurrentServer() == null && !Flex_hudClient.isInMoveElementScreen);
 	}
 
 	@Override
@@ -122,7 +121,7 @@ public class ServerAddress extends AbstractTextModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (MINECRAFT.getLanguageManager().getSelected().equals("fr_fr")) {
 					buttonWidth = 225;
 				}
 
@@ -170,6 +169,18 @@ public class ServerAddress extends AbstractTextModule {
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(hideInF3)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeX)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeX(anchorModeX.getValue()))
+								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeY)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeY(anchorModeY.getValue()))
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)

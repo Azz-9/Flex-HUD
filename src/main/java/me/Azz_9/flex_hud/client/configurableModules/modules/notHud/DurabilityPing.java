@@ -1,5 +1,20 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.notHud;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.item.ItemStack;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.Translatable;
@@ -11,18 +26,6 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.Conf
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigInteger;
 import me.Azz_9.flex_hud.client.utils.ItemUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class DurabilityPing extends AbstractModule {
 	@NotNull
@@ -35,8 +38,6 @@ public class DurabilityPing extends AbstractModule {
 
 	public DurabilityPing() {
 		this.enabled.setConfigTextTranslationKey("flex_hud.durability_ping.config.enable");
-		this.enabled.setDefaultValue(false);
-		this.enabled.setValue(false);
 
 		ConfigRegistry.register(getID(), "threshold", threshold);
 		ConfigRegistry.register(getID(), "pingType", pingType);
@@ -50,13 +51,13 @@ public class DurabilityPing extends AbstractModule {
 	}
 
 	@Override
-	public Text getName() {
-		return Text.translatable("flex_hud.durability_ping");
+	public Component getName() {
+		return Component.translatable("flex_hud.durability_ping");
 	}
 
 
 	public boolean isDurabilityUnderThreshold(ItemStack stack) {
-		if (stack == null || !stack.isDamageable() || stack.getMaxDamage() == 0) {
+		if (stack == null || !stack.isDamageableItem() || stack.getMaxDamage() == 0) {
 			return false;
 		}
 
@@ -67,20 +68,20 @@ public class DurabilityPing extends AbstractModule {
 
 		long currentTime = System.currentTimeMillis();
 
-		PlayerEntity player = MinecraftClient.getInstance().player;
+		LocalPlayer player = MINECRAFT.player;
 
 		// 1 minute has passed since the last ping
-		if (player != null && (!lastPingTime.containsKey(stack.getItem().getTranslationKey()) || currentTime - lastPingTime.get(stack.getItem().getTranslationKey()) > 60000)) {
+		if (player != null && (!lastPingTime.containsKey(stack.getItem().getDescriptionId()) || currentTime - lastPingTime.get(stack.getItem().getDescriptionId()) > 60000)) {
 
-			lastPingTime.put(stack.getItem().getTranslationKey(), currentTime);
+			lastPingTime.put(stack.getItem().getDescriptionId(), currentTime);
 
 			// play sound, display message or both based on the selected option in the config menu
 			if (pingType.getValue() != PingType.SOUND) {
-				Text message = Text.literal(stack.getItemName().getString().toLowerCase() + " ").append(Text.translatable("flex_hud.durability_ping.message")).formatted(Formatting.RED); // TODO améliorer le message en fr parce que la bon
-				player.sendMessage(message, true);
+				Component message = Component.translatable("flex_hud.durability_ping.message", stack.getItemName().getString().toLowerCase()).withStyle(ChatFormatting.RED);
+				player.sendOverlayMessage(message);
 			}
 			if (pingType.getValue() != PingType.MESSAGE) {
-				MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.ui(SoundEvents.BLOCK_ANVIL_LAND, 2.0f));
+				MINECRAFT.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.ANVIL_LAND, 2.0f));
 			}
 		}
 	}
@@ -90,7 +91,7 @@ public class DurabilityPing extends AbstractModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (MINECRAFT.getLanguageManager().getSelected().equals("fr_fr")) {
 					buttonWidth = 250;
 				} else {
 					buttonWidth = 180;

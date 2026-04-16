@@ -84,6 +84,12 @@
 	"flex_hud.global.config.show_background": "Show background",
 	"flex_hud.global.config.background_color": "Background color",
 	"flex_hud.global.config.hide_in_f3": "Hide in F3 menu",
+	"flex_hud.global.config.anchor_mode_x": "Anchor mode X",
+	"flex_hud.global.config.anchor_mode_y": "Anchor mode Y",
+	"flex_hud.global.config.anchor_mode.auto": "Auto",
+	"flex_hud.global.config.anchor_mode.start": "Start",
+	"flex_hud.global.config.anchor_mode.center": "Center",
+	"flex_hud.global.config.anchor_mode.end": "End",
 
 	"flex_hud.armor_status": "Armor status",
 	"flex_hud.armor_status.config.enable": "Show armor status",
@@ -100,6 +106,7 @@
 	"flex_hud.armor_status.config.orientation": "Orientation",
 	"flex_hud.armor_status.config.alignment": "Alignment",
 	"flex_hud.armor_status.config.move_each_pieces_independently": "Move each item independently",
+	"flex_hud.armor_status.config.text_position": "Text position",
 
 	"flex_hud.clock": "Clock",
 	"flex_hud.clock.config.enable": "Show clock",
@@ -264,6 +271,22 @@
 	"flex_hud.entity_count.config.only_mbos": "Only mobs",
 	"flex_hud.entity_count.config.only_items": "Only items",
 	"flex_hud.entity_count.config.range": "Range",
+	"flex_hud.entity_count.config.y_range": "Y-Range",
+
+	"flex_hud.toggle_sprint": "Toggle sprint",
+	"flex_hud.toggle_sprint.config.enable": "Show toggle sprint status",
+
+	"flex_hud.toggle_sneak": "Toggle sneak",
+	"flex_hud.toggle_sneak.config.enable": "Show toggle sneak status",
+
+	"flex_hud.scoreboard": "Scoreboard",
+	"flex_hud.scoreboard.config.enable": "Enable custom scoreboard",
+	"flex_hud.scoreboard.config.show_scoreboard": "Show scoreboard",
+	"flex_hud.scoreboard.config.show_score": "Show score",
+
+	"flex_hud.inventory_display": "Inventory display",
+	"flex_hud.inventory_display.config.enable": "Show inventory",
+	"flex_hud.inventory_display.config.background_opacity": "Background opacity",
 
 	"flex_hud.coordinates.hud.direction.south": "South",
 	"flex_hud.coordinates.hud.direction.south_west": "South-West",
@@ -303,7 +326,7 @@
 
 	"flex_hud.shrieker_warning_level.hud.prefix": "Warning level",
 
-	"flex_hud.durability_ping.message": "durability low!",
+	"flex_hud.durability_ping.message": "%s durability low!",
 
 	"flex_hud.sign_reader.placeholder_content": "text",
 
@@ -311,5 +334,8 @@
 
 	"flex_hud.entity_count.text.entities": "Entity count: %d (radius %d)",
 	"flex_hud.entity_count.text.mobs": "Mobs count: %d (radius %d)",
-	"flex_hud.entity_count.text.items": "Items count: %d (radius %d)"
+	"flex_hud.entity_count.text.items": "Items count: %d (radius %d)",
+	"flex_hud.entity_count.text.entities.different_y": "Entity count: %d (r%d y%d)",
+	"flex_hud.entity_count.text.mobs.different_y": "Mobs count: %d (r%d y%d)",
+	"flex_hud.entity_count.text.items.different_y": "Items count: %d (r%d y%d)"
 }

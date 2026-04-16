@@ -1,5 +1,19 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.ARGB;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+
+import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix3x2fStack;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
@@ -9,17 +23,6 @@ import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.Cyclin
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigEnum;
 import me.Azz_9.flex_hud.client.utils.ItemUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.ColorHelper;
-import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
 public class HeldItem extends AbstractTextModule {
 
@@ -29,8 +32,6 @@ public class HeldItem extends AbstractTextModule {
 
 	public HeldItem(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
-		this.enabled.setValue(false);
-		this.enabled.setDefaultValue(false);
 		this.enabled.setConfigTextTranslationKey("flex_hud.held_item.config.enable");
 
 		ConfigRegistry.register(getID(), "durabilityType", durabilityType);
@@ -42,8 +43,8 @@ public class HeldItem extends AbstractTextModule {
 	}
 
 	@Override
-	public Text getName() {
-		return Text.translatable("flex_hud.held_item");
+	public Component getName() {
+		return Component.translatable("flex_hud.held_item");
 	}
 
 	@Override
@@ -53,9 +54,7 @@ public class HeldItem extends AbstractTextModule {
 
 
 	@Override
-	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
-
+	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 		if (shouldNotRender()) {
 			return;
 		}
@@ -65,28 +64,28 @@ public class HeldItem extends AbstractTextModule {
 		String label = "";
 		ItemStack stack;
 		int textColor;
-		if (Flex_hudClient.isInMoveElementScreen || client.player == null) {
+		if (Flex_hudClient.isInMoveElementScreen || MINECRAFT.player == null) {
 			// placeholder
 			label = "64/256";
 			stack = new ItemStack(Items.DIAMOND_BLOCK);
 			textColor = getColor();
 
 		} else {
-			stack = client.player.getMainHandStack();
+			stack = MINECRAFT.player.getMainHandItem();
 
-			if (stack == null || stack.isEmpty() || stack.isOf(Items.AIR)) {
+			if (stack.isEmpty() || stack.is(Items.AIR)) {
 				return;
 			}
 
-			if (stack.isDamageable()) {
+			if (stack.isDamageableItem()) {
 				if (durabilityType.getValue() == ArmorStatus.DurabilityType.PERCENTAGE) {
 					label = Math.round(ItemUtils.getDurabilityPercentage(stack)) + "%";
 				} else if (durabilityType.getValue() == ArmorStatus.DurabilityType.VALUE) {
 					label = ItemUtils.getDurabilityValue(stack) + "/" + stack.getMaxDamage();
 				}
-				textColor = ColorHelper.withAlpha(255, stack.getItemBarColor());
+				textColor = ARGB.color(255, stack.getBarColor());
 			} else {
-				label = stack.getCount() + "/" + ItemUtils.getStackCount(stack, client.player.getInventory());
+				label = stack.getCount() + "/" + ItemUtils.getStackCount(stack, MINECRAFT.player.getInventory());
 				textColor = getColor();
 			}
 		}
@@ -98,20 +97,20 @@ public class HeldItem extends AbstractTextModule {
 			setWidth(ITEM_SIZE);
 		}
 
-		Matrix3x2fStack matrices = context.getMatrices();
+		Matrix3x2fStack matrices = graphics.pose();
 		matrices.pushMatrix();
 		matrices.translate(getRoundedX(), getRoundedY());
 		matrices.scale(getScale());
 
-		drawBackground(context);
+		drawBackground(graphics);
 
+		Font font = MINECRAFT.font;
 		if (getAnchorX() == AnchorPosition.END) {
-			TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-			context.drawText(textRenderer, label, 0, 4, getColor(), this.shadow.getValue());
-			context.drawItem(stack, textRenderer.getWidth(label) + gap, 0);
+			graphics.text(font, label, 0, 4, getColor(), this.shadow.getValue());
+			graphics.item(stack, font.width(label) + gap, 0);
 		} else {
-			context.drawItem(stack, 0, 0);
-			context.drawText(MinecraftClient.getInstance().textRenderer, label, ITEM_SIZE + gap, 4, textColor, this.shadow.getValue());
+			graphics.item(stack, 0, 0);
+			graphics.text(font, label, ITEM_SIZE + gap, 4, textColor, this.shadow.getValue());
 		}
 
 		matrices.popMatrix();
@@ -122,7 +121,7 @@ public class HeldItem extends AbstractTextModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (MINECRAFT.getLanguageManager().getSelected().equals("fr_fr")) {
 					buttonWidth = 210;
 				} else {
 					buttonWidth = 170;
@@ -172,6 +171,18 @@ public class HeldItem extends AbstractTextModule {
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(hideInF3)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeX)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeX(anchorModeX.getValue()))
+								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeY)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeY(anchorModeY.getValue()))
 								.build(),
 						new CyclingButtonEntry.Builder<ArmorStatus.DurabilityType>()
 								.setCyclingButtonWidth(80)

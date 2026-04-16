@@ -1,24 +1,14 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
-import me.Azz_9.flex_hud.client.Flex_hudClient;
-import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
-import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
-import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.StringFieldEntry;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigString;
-import me.Azz_9.flex_hud.client.utils.clock.ClockUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2fStack;
@@ -26,6 +16,20 @@ import org.joml.Matrix3x2fStack;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+
+import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
+import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.StringFieldEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigString;
+import me.Azz_9.flex_hud.client.utils.clock.ClockUtils;
 
 public class InGameTime extends AbstractTextModule implements TickableModule {
 
@@ -36,8 +40,6 @@ public class InGameTime extends AbstractTextModule implements TickableModule {
 
 	public InGameTime(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
-		this.enabled.setValue(false);
-		this.enabled.setDefaultValue(false);
 		this.enabled.setConfigTextTranslationKey("flex_hud.in_game_time.config.enable");
 
 		// get the time format depending on the locale
@@ -49,12 +51,12 @@ public class InGameTime extends AbstractTextModule implements TickableModule {
 
 	@Override
 	public void init() {
-		setHeight(MinecraftClient.getInstance().textRenderer.fontHeight);
+		setHeight(MINECRAFT.font.lineHeight);
 	}
 
 	@Override
-	public Text getName() {
-		return Text.translatable("flex_hud.in_game_time");
+	public Component getName() {
+		return Component.translatable("flex_hud.in_game_time");
 	}
 
 	@Override
@@ -63,21 +65,21 @@ public class InGameTime extends AbstractTextModule implements TickableModule {
 	}
 
 	@Override
-	public void render(DrawContext context, RenderTickCounter tickCounter) {
+	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 		if (shouldNotRender()) {
 			return;
 		}
 
 		setWidth(formattedTime);
 
-		Matrix3x2fStack matrices = context.getMatrices();
+		Matrix3x2fStack matrices = graphics.pose();
 		matrices.pushMatrix();
 		matrices.translate(getRoundedX(), getRoundedY());
 		matrices.scale(getScale());
 
-		drawBackground(context);
+		drawBackground(graphics);
 
-		context.drawText(MinecraftClient.getInstance().textRenderer, formattedTime, 0, 0, getColor(), shadow.getValue());
+		graphics.text(MINECRAFT.font, formattedTime, 0, 0, getColor(), shadow.getValue());
 
 		matrices.popMatrix();
 	}
@@ -85,7 +87,7 @@ public class InGameTime extends AbstractTextModule implements TickableModule {
 	@Override
 	public @Nullable Tooltip getTooltip() {
 		if (ModulesHelper.getInstance().timeChanger.isEnabled()) {
-			return Tooltip.of(Text.literal("⚠ ").append(Text.translatable("flex_hud.configuration_screen.module_compatibility_warning")).append(Text.translatable("flex_hud.time_changer")).formatted(Formatting.RED));
+			return Tooltip.create(Component.literal("⚠ ").append(Component.translatable("flex_hud.configuration_screen.module_compatibility_warning")).append(Component.translatable("flex_hud.time_changer")).withStyle(ChatFormatting.RED));
 		} else {
 			return null;
 		}
@@ -141,6 +143,18 @@ public class InGameTime extends AbstractTextModule implements TickableModule {
 								.setVariable(hideInF3)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeX)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeX(anchorModeX.getValue()))
+								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeY)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeY(anchorModeY.getValue()))
+								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(isTwentyFourHourFormat)
@@ -167,8 +181,11 @@ public class InGameTime extends AbstractTextModule implements TickableModule {
 										return false;
 									}
 								})
-								.setGetTooltip((value) -> Tooltip.of(Text.of("hh: " + Text.translatable("flex_hud.global.hours").getString() + "\nmm: " + Text.translatable("flex_hud.global.minutes").getString() + "\nss: " + Text.translatable("flex_hud.global.seconds").getString())))
-								.setText(Text.translatable("flex_hud.clock.config.text_format"))
+								.setGetTooltip((value) -> Tooltip.create(Component.literal(
+										"hh: " + Component.translatable("flex_hud.global.hours").getString() +
+												"\nmm: " + Component.translatable("flex_hud.global.minutes").getString() +
+												"\nss: " + Component.translatable("flex_hud.global.seconds").getString())))
+								.setText(Component.translatable("flex_hud.clock.config.text_format"))
 								.build()
 				);
 			}
@@ -177,13 +194,13 @@ public class InGameTime extends AbstractTextModule implements TickableModule {
 
 	@Override
 	public void tick() {
-		if (MinecraftClient.getInstance().world == null && !Flex_hudClient.isInMoveElementScreen) return;
+		if (MINECRAFT.level == null && !Flex_hudClient.isInMoveElementScreen) return;
 
 		int timeOfDay;
 		if (Flex_hudClient.isInMoveElementScreen) {
 			timeOfDay = 12000;
 		} else {
-			timeOfDay = (int) (MinecraftClient.getInstance().world.getTimeOfDay() % 24000 + 6000) % 24000;
+			timeOfDay = (int) (MINECRAFT.level.getOverworldClockTime() % 24000 + 6000) % 24000;
 		}
 
 		int totalSeconds = (int) Math.round(timeOfDay * 3.6);

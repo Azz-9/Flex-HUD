@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.15-SNAPSHOT'
+	id 'net.fabricmc.fabric-loom' version "${loom_version}"
 	id 'maven-publish'
 }
 
@@ -29,29 +29,48 @@ repositories {
 		name "Xaero's Maven"
 		url "https://chocolateminecraft.com/maven"
 	}
+	maven {
+		name = "JourneyMap Maven"
+		url = 'https://maven.blamejared.com'
+	}
+	maven {
+		name = "Nucleoid"
+		url = "https://maven.nucleoid.xyz/"
+	}
 }
 
 dependencies {
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
 	if (includeModMenu) {
-		modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
+		implementation("com.terraformersmc:modmenu:${project.modmenu_version}")
 	} else {
 		compileOnly("com.terraformersmc:modmenu:${project.modmenu_version}")
 	}
 
 	if (includeXaero) {
-		modImplementation "xaero.minimap:xaerominimap-fabric-${project.minecraft_version}:${project.xaero_minimap_version}"
+		implementation "xaero.minimap:xaerominimap-fabric-${project.minecraft_version}:${project.xaero_minimap_version}"
 	} else {
-		compileOnly "xaero.minimap:xaerominimap-fabric-${project.minecraft_version}:${project.xaero_minimap_version}"
+		//compileOnly "xaero.minimap:xaerominimap-fabric-${project.minecraft_version}:${project.xaero_minimap_version}"
+		compileOnly "xaero.minimap:xaerominimap-fabric-1.21.11:${project.xaero_minimap_version}"
 	}
 
-	compileOnly files("libs/journeymap-fabric-${project.minecraft_version}-${project.journeymap_version}.jar")
+	//implementation files("libs/journeymap-fabric-${project.minecraft_version}-${project.journeymap_version}.jar")
+	compileOnly "info.journeymap:journeymap-api-fabric:${project.journeymap_api_version}"
+
+	testImplementation platform("org.junit:junit-bom:5.10.2")
+	testImplementation "org.junit.jupiter:junit-jupiter"
+	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+}
+
+test {
+	useJUnitPlatform()
 }
 
 processResources {
@@ -67,32 +86,25 @@ processResources {
 	}
 }
 
-def targetJavaVersion = 21
 tasks.withType(JavaCompile).configureEach {
-	// ensure that the encoding is set to UTF-8, no matter what the system default is
-	// this fixes some edge cases with special characters not displaying correctly
-	// see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
-	// If Javadoc is generated, this must be specified in that task too.
-	it.options.encoding = "UTF-8"
-	if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
-		it.options.release.set(targetJavaVersion)
-	}
+	it.options.release = 25
 }
 
 java {
-	def javaVersion = JavaVersion.toVersion(targetJavaVersion)
-	if (JavaVersion.current() < javaVersion) {
-		toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
-	}
 	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
 	// if it is present.
 	// If you remove this line, sources will not be generated.
 	withSourcesJar()
+
+	sourceCompatibility = JavaVersion.VERSION_25
+	targetCompatibility = JavaVersion.VERSION_25
 }
 
 jar {
+	inputs.property "archivesName", project.base.archivesName
+
 	from("LICENSE") {
-		rename { "${it}_${project.archivesBaseName}" }
+		rename { "${it}_${inputs.properties.archivesName}" }
 	}
 }
 

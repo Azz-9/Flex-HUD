@@ -12,8 +12,9 @@ in one place.
 - **FPS** – _show your framerate in real time_
 - **Coordinates** – _always know where you are_
 - **Biome Display** – _show the biome you’re currently in directly on your HUD_
-- **Nether Coordinates** - _instantly view the equivalent coordinates between the Overworld and the Nether_
+- **Nether Coordinates** – _instantly view the equivalent coordinates between the Overworld and the Nether_
 - **Compass** – _navigate easily without opening the F3 screen_
+- **Pitch Display** – _show your vertical viewing angle, similar to the compass module but vertical_
 - **Day Counter** – _see how many days have passed in your world_
 - **Ping** – _check your server connection latency_
 - **Server Address** – _display the IP of the server you’re playing on_
@@ -23,7 +24,7 @@ in one place.
 - **Playtime** – _count your total play session duration_
 - **Potion Effect** – _list active potion effects with timers_
 - **Weather Display** – _show the current weather status_
-- **Key Strokes** - _visualize your key presses in real time with optional CPS display_
+- **Key Strokes** – _visualize your key presses in real time with optional CPS display_
 - **Boss Bar** – _reposition or toggle the boss bar_
 - **Sign Reader** – _instantly read the sign you're looking at directly in your HUD_
 - **Full Inventory Indicator** – _get a clear warning when your inventory is full_
@@ -33,6 +34,9 @@ in one place.
 - **Held Item** – _show information about the item you're currently holding_
 - **Entity Count** – _display the number of entities, mobs, or items within a configurable radius_
 - **Crosshair** – _customize your crosshair appearance_
+- **Toggle Sprint/Sneak** – _display the current sprint/sneak mode directly on your HUD_
+- **Scoreboard** – _reposition the scoreboard, customize its background color, and optionally hide the score numbers_
+- **Inventory display** – _keep your full inventory visible on your HUD at all times_
 
 ### Additional features (non-HUD):
 

@@ -1,21 +1,25 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries;
 
-import me.Azz_9.flex_hud.client.screens.TrackableChange;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.ScrollableConfigList;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.ConfigToggleButtonWidget;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.network.chat.Component;
+
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
+
+import me.Azz_9.flex_hud.client.screens.TrackableChange;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.ScrollableConfigList;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.ConfigToggleButtonWidget;
 
 public class ToggleButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 	private final ConfigToggleButtonWidget toggleButtonWidget;
@@ -31,7 +35,7 @@ public class ToggleButtonEntry extends ScrollableConfigList.AbstractConfigEntry 
 			Function<Boolean, Tooltip> getTooltip,
 			BooleanSupplier toggleable
 	) {
-		super(resetButtonSize, Text.translatable(variable.getConfigTextTranslationKey()));
+		super(resetButtonSize, Component.translatable(Objects.requireNonNull(variable.getConfigTextTranslationKey())));
 		toggleButtonWidget = new ConfigToggleButtonWidget(toggleButtonWidth, toggleButtonHeight, variable, observers, getTooltip);
 		setResetButtonPressAction((btn) -> toggleButtonWidget.setToDefaultState());
 
@@ -59,19 +63,19 @@ public class ToggleButtonEntry extends ScrollableConfigList.AbstractConfigEntry 
 	}
 
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
-		super.render(context, mouseX, mouseY, hovered, deltaTicks);
+	public void extractContent(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+		super.extractContent(graphics, mouseX, mouseY, hovered, deltaTicks);
 
-		toggleButtonWidget.render(context, mouseX, mouseY, deltaTicks);
+		toggleButtonWidget.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
 	}
 
 	@Override
-	public List<? extends Selectable> selectableChildren() {
+	public @NonNull List<? extends NarratableEntry> narratables() {
 		return List.of(toggleButtonWidget, resetButtonWidget);
 	}
 
 	@Override
-	public List<? extends Element> children() {
+	public @NonNull List<? extends GuiEventListener> children() {
 		return List.of(toggleButtonWidget, resetButtonWidget);
 	}
 
@@ -162,6 +166,9 @@ public class ToggleButtonEntry extends ScrollableConfigList.AbstractConfigEntry 
 					getTooltip,
 					toggleable
 			);
+			for (Observer observer : observers) {
+				entry.addObserver(observer);
+			}
 			for (Dependency<?> dependency : dependencies) {
 				entry.addDependency(dependency.entry(), dependency.disableWhen());
 				dependency.entry().addObserver(entry);

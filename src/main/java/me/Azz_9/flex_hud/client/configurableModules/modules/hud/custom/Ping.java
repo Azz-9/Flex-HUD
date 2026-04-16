@@ -1,38 +1,80 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.ping.ServerboundPingRequestPacket;
+import net.minecraft.util.Util;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix3x2fStack;
+
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.concurrent.*;
+
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
-import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigBoolean;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.text.Text;
-import net.minecraft.util.profiler.MultiValueDebugSampleLogImpl;
-import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
-public class Ping extends AbstractTextModule implements TickableModule {
+public class Ping extends AbstractTextModule {
 	private final ConfigBoolean hideWhenOffline = new ConfigBoolean(true, "flex_hud.ping.config.hide_when_offline");
-	private long averagePing = 0;
+
+	private final static @NotNull ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor();
+	private final static int PERIOD = 1000; // ms
+	private static @Nullable ScheduledFuture<?> pingFuture;
+	public static @Nullable PacketSender packetSender;
+	private final static Deque<Long> pings = new ArrayDeque<>();
+	private final static int maxSize = 20;
+	private static long sum = 0;
 
 	public Ping(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.ping.config.enable");
-		this.enabled.setDefaultValue(false);
-		this.enabled.setValue(false);
 
 		ConfigRegistry.register(getID(), "hideWhenOffline", hideWhenOffline);
 	}
 
+	public static void startPinging() {
+		pingFuture = SCHEDULED_EXECUTOR_SERVICE.scheduleAtFixedRate(() -> {
+			if (ModulesHelper.getInstance().ping.isEnabled() && packetSender != null) {
+				packetSender.sendPacket(new ServerboundPingRequestPacket(Util.getMillis()));
+			}
+		}, 0, PERIOD, TimeUnit.MILLISECONDS);
+	}
+
+	public static void stopPinging() {
+		if (pingFuture != null && pingFuture.state().equals(Future.State.RUNNING)) {
+			pingFuture.cancel(true);
+		}
+		packetSender = null;
+		pings.clear();
+		sum = 0;
+	}
+
+	public static void addPingValue(long ping) {
+		pings.addLast(ping);
+		sum += ping;
+
+		if (pings.size() > maxSize) {
+			sum -= pings.removeFirst();
+		}
+	}
+
 	@Override
 	public void init() {
-		setHeight(MinecraftClient.getInstance().textRenderer.fontHeight);
+		setHeight(MINECRAFT.font.lineHeight);
 	}
 
 	@Override
@@ -41,15 +83,13 @@ public class Ping extends AbstractTextModule implements TickableModule {
 	}
 
 	@Override
-	public Text getName() {
-		return Text.translatable("flex_hud.ping");
+	public Component getName() {
+		return Component.translatable("flex_hud.ping");
 	}
 
 	@Override
-	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		MinecraftClient client = MinecraftClient.getInstance();
-
-		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && client.player == null) {
+	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+		if (shouldNotRender() || !Flex_hudClient.isInMoveElementScreen && MINECRAFT.player == null) {
 			return;
 		}
 
@@ -60,13 +100,14 @@ public class Ping extends AbstractTextModule implements TickableModule {
 			text = "20 ms";
 
 		} else {
-			if (client.getCurrentServerEntry() != null) {
+			if (MINECRAFT.getCurrentServer() != null) {
 
-				text = averagePing + " ms";
+				long ping = pings.isEmpty() ? 0 : sum / pings.size();
+				text = ping + " ms";
 
 			} else if (!this.hideWhenOffline.getValue()) {
 
-				text = Text.translatable("flex_hud.ping.hud.offline").getString();
+				text = Component.translatable("flex_hud.ping.hud.offline").getString();
 
 			}
 		}
@@ -75,14 +116,14 @@ public class Ping extends AbstractTextModule implements TickableModule {
 
 			setWidth(text);
 
-			Matrix3x2fStack matrices = context.getMatrices();
+			Matrix3x2fStack matrices = graphics.pose();
 			matrices.pushMatrix();
 			matrices.translate(getRoundedX(), getRoundedY());
 			matrices.scale(getScale());
 
-			drawBackground(context);
+			drawBackground(graphics);
 
-			context.drawText(client.textRenderer, text, 0, 0, getColor(), this.shadow.getValue());
+			graphics.text(MINECRAFT.font, text, 0, 0, getColor(), this.shadow.getValue());
 
 			matrices.popMatrix();
 		}
@@ -90,7 +131,7 @@ public class Ping extends AbstractTextModule implements TickableModule {
 
 	@Override
 	public boolean shouldNotRender() {
-		return super.shouldNotRender() || (this.hideWhenOffline.getValue() && MinecraftClient.getInstance().getCurrentServerEntry() == null && !Flex_hudClient.isInMoveElementScreen);
+		return super.shouldNotRender() || (this.hideWhenOffline.getValue() && MINECRAFT.getCurrentServer() == null && !Flex_hudClient.isInMoveElementScreen);
 	}
 
 	@Override
@@ -98,7 +139,7 @@ public class Ping extends AbstractTextModule implements TickableModule {
 		return new AbstractConfigurationScreen(getName(), parent) {
 			@Override
 			protected void init() {
-				if (MinecraftClient.getInstance().getLanguageManager().getLanguage().equals("fr_fr")) {
+				if (MINECRAFT.getLanguageManager().getSelected().equals("fr_fr")) {
 					buttonWidth = 225;
 				}
 
@@ -147,6 +188,18 @@ public class Ping extends AbstractTextModule implements TickableModule {
 								.setVariable(hideInF3)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeX)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeX(anchorModeX.getValue()))
+								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeY)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeY(anchorModeY.getValue()))
+								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(hideWhenOffline)
@@ -155,19 +208,5 @@ public class Ping extends AbstractTextModule implements TickableModule {
 				);
 			}
 		};
-	}
-
-	@Override
-	public void tick() {
-		MultiValueDebugSampleLogImpl pingLogger = MinecraftClient.getInstance().getDebugHud().getPingLog();
-
-		if (pingLogger.getLength() > 0) {
-			long total = 0;
-			for (int i = 0; i < pingLogger.getLength(); i++) {
-				total += pingLogger.get(i);
-			}
-
-			averagePing = total / pingLogger.getLength();
-		}
 	}
 }

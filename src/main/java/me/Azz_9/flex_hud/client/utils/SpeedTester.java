@@ -1,9 +1,13 @@
 package me.Azz_9.flex_hud.client.utils;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+
+import com.mojang.blaze3d.platform.InputConstants;
+
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,10 +48,8 @@ public class SpeedTester {
 	// Called every tick — prints average render time when pressing O
 	public static void tick() {
 		if (times.isEmpty()) return;
-
-		MinecraftClient client = MinecraftClient.getInstance();
-
-		boolean keyPressed = InputUtil.isKeyPressed(client.getWindow(), InputUtil.GLFW_KEY_O);
+		
+		boolean keyPressed = InputConstants.isKeyDown(MINECRAFT.getWindow(), InputConstants.KEY_O);
 
 		if (keyPressed && !wasKeyPressed) {
 			for (String module : times.keySet()) {
@@ -57,18 +59,18 @@ public class SpeedTester {
 				// Compute average time in microseconds for readability
 				double average = moduleTimes.stream().mapToLong(Long::longValue).average().orElse(0.0) / 1000.0;
 
-				Text text = Text.literal(String.format("%s: avg ", module))
-						.append(Text.literal(String.format("%.2fµs", average)).formatted(Formatting.AQUA))
+				Component text = Component.literal(String.format("%s: avg ", module))
+						.append(Component.literal(String.format("%.2fµs", average)).withStyle(ChatFormatting.AQUA))
 						.append(", ")
-						.append(Text.literal(String.format("%.2fms", average / 1000.0)).formatted(Formatting.RED))
-						.append(String.format(" (%d samples ~%.2fs)", moduleTimes.size(), (float) (moduleTimes.size()) / MinecraftClient.getInstance().getCurrentFps()));
+						.append(Component.literal(String.format("%.2fms", average / 1000.0)).withStyle(ChatFormatting.RED))
+						.append(String.format(" (%d samples ~%.2fs)", moduleTimes.size(), (float) (moduleTimes.size()) / Minecraft.getInstance().getFps()));
 
-				if (client.player != null) {
-					client.player.sendMessage(text, false);
+				if (MINECRAFT.player != null) {
+					MINECRAFT.player.sendSystemMessage(text);
 				}
-				System.out.println(text.getString());
+				FlexHudLogger.debug(text.getString());
 			}
-			System.out.println();
+			FlexHudLogger.debug("");
 			wasKeyPressed = true;
 		} else if (!keyPressed) {
 			wasKeyPressed = false;

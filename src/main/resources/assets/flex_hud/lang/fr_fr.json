@@ -84,6 +84,12 @@
 	"flex_hud.global.config.show_background": "Afficher l'arrière-plan",
 	"flex_hud.global.config.background_color": "Couleur de l'arrière-plan",
 	"flex_hud.global.config.hide_in_f3": "Cacher dans le menu F3",
+	"flex_hud.global.config.anchor_mode_x": "Mode d'ancrage X",
+	"flex_hud.global.config.anchor_mode_y": "Mode d'ancrage Y",
+	"flex_hud.global.config.anchor_mode.auto": "Auto",
+	"flex_hud.global.config.anchor_mode.start": "Début",
+	"flex_hud.global.config.anchor_mode.center": "Centre",
+	"flex_hud.global.config.anchor_mode.end": "Fin",
 
 	"flex_hud.armor_status": "État de l'armure",
 	"flex_hud.armor_status.config.enable": "Afficher l'état de l'armure",
@@ -100,6 +106,7 @@
 	"flex_hud.armor_status.config.orientation": "Orientation",
 	"flex_hud.armor_status.config.alignment": "Alignement",
 	"flex_hud.armor_status.config.move_each_pieces_independently": "Bouger les objets indépendaments",
+	"flex_hud.armor_status.config.text_position": "Position du texte",
 
 	"flex_hud.clock": "Horloge",
 	"flex_hud.clock.config.enable": "Afficher l'horloge",
@@ -264,6 +271,22 @@
 	"flex_hud.entity_count.config.only_mbos": "Uniquement les mobs",
 	"flex_hud.entity_count.config.only_items": "Uniquement les objets",
 	"flex_hud.entity_count.config.range": "Rayon",
+	"flex_hud.entity_count.config.y_range": "Rayon Y",
+
+	"flex_hud.toggle_sprint": "Toggle sprint",
+	"flex_hud.toggle_sprint.config.enable": "Afficher toggle sprint statut",
+
+	"flex_hud.toggle_sneak": "Toggle sneak",
+	"flex_hud.toggle_sneak.config.enable": "Afficher toggle sneak statut",
+
+	"flex_hud.scoreboard": "Scoreboard",
+	"flex_hud.scoreboard.config.enable": "Activer le scoreboard customisé",
+	"flex_hud.scoreboard.config.show_scoreboard": "Afficher le scoreboard",
+	"flex_hud.scoreboard.config.show_score": "Afficher le score",
+
+	"flex_hud.inventory_display": "Inventaire",
+	"flex_hud.inventory_display.config.enable": "Afficher l'inventaire",
+	"flex_hud.inventory_display.config.background_opacity": "Opactité du fond",
 
 	"flex_hud.coordinates.hud.direction.south": "Sud",
 	"flex_hud.coordinates.hud.direction.south_west": "Sud-Ouest",
@@ -303,13 +326,16 @@
 
 	"flex_hud.shrieker_warning_level.hud.prefix": "Niveau d'alerte",
 
-	"flex_hud.durability_ping.message": "durabilité faible!",
+	"flex_hud.durability_ping.message": "durabilité de %s faible!",
 
 	"flex_hud.sign_reader.placeholder_content": "texte",
 
 	"flex_hud.full_inventory_indicator.label": "Inventaire plein !",
 
 	"flex_hud.entity_count.text.entities": "Compteur d'entités: %d (rayon %d)",
-	"flex_hud.entity_count.text.mobs": "Compteur de mobs: %d (radius %d)",
-	"flex_hud.entity_count.text.items": "Compteur d'objets: %d (radius %d)"
+	"flex_hud.entity_count.text.mobs": "Compteur de mobs: %d (rayon %d)",
+	"flex_hud.entity_count.text.items": "Compteur d'objets: %d (rayon %d)",
+	"flex_hud.entity_count.text.entities.different_y": "Compteur d'entités: %d (r%d y%d)",
+	"flex_hud.entity_count.text.mobs.different_y": "Compteur de mobs: %d (r%d y%d)",
+	"flex_hud.entity_count.text.items.different_y": "Compteur d'objets: %d (r%d y%d)"
 }
