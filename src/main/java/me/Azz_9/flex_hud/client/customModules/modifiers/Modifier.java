@@ -93,7 +93,7 @@ public class Modifier<I, R> {
 		}
 
 		public Text getName(String modifierKey) {
-			return Text.translatable("flex_hud.custom_modules.modifier.parameter." + modifierKey + "." + key);
+			return Text.translatable("flex_hud.custom_modules.modifier.parameter." + key);
 		}
 	}
 

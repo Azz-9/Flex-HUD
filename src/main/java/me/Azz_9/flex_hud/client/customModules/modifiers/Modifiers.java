@@ -635,9 +635,13 @@ public class Modifiers {
 	}
 
 	private static String formatConditionalBranches(List<String> arguments) {
+		if (arguments.isEmpty()) {
+			return "if_gt.0.";
+		}
+
 		StringBuilder builder = new StringBuilder();
-		for (int i = 0; i < arguments.size(); i += 3) {
-			if (builder.length() > 0) {
+		for (int i = 0; i + 2 < arguments.size(); i += 3) {
+			if (!builder.isEmpty()) {
 				builder.append('.');
 			}
 
@@ -647,12 +651,12 @@ public class Modifiers {
 					.append('.')
 					.append(escapeText(arguments.get(i + 2)));
 		}
-		return builder.toString();
+		return builder.isEmpty() ? "if_gt.0." : builder.toString();
 	}
 
 	private static String formatConditionalDisplay(List<String> arguments) {
 		List<String> branches = new ArrayList<>();
-		for (int i = 0; i < arguments.size(); i += 3) {
+		for (int i = 0; i + 2 < arguments.size(); i += 3) {
 			String operator = switch (arguments.get(i)) {
 				case "if_gt" -> ">";
 				case "if_lt" -> "<";
@@ -661,11 +665,11 @@ public class Modifiers {
 			};
 			branches.add(operator + " " + arguments.get(i + 1) + " -> " + arguments.get(i + 2));
 		}
-		return String.join(" | ", branches);
+		return branches.isEmpty() ? "" : String.join(" | ", branches);
 	}
 
 	private static String applyConditionalBranches(BigDecimal value, List<String> arguments) {
-		for (int i = 0; i < arguments.size(); i += 3) {
+		for (int i = 0; i + 2 < arguments.size(); i += 3) {
 			ConditionalOperator operator = ConditionalOperator.fromKey(arguments.get(i));
 			BigDecimal threshold = new BigDecimal(arguments.get(i + 1));
 			String result = arguments.get(i + 2);

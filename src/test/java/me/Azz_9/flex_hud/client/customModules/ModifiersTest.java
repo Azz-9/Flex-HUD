@@ -49,4 +49,18 @@ public class ModifiersTest {
 
 		assertEquals("1_2_3", formatter.format("1.2.3"));
 	}
+
+	@Test
+	void conditionalModifierSupportsEmptyDefaultBranchText() {
+		Modifiers.init();
+
+		Modifiers.ResolvedModifier<?, ?> conditionalModifier = Modifiers.get("if_gt.0.");
+		assertNotNull(conditionalModifier);
+
+		Modifiers.CompiledFormatter formatter = Modifiers.compileFormatter(Double.class, List.of(conditionalModifier));
+		assertNotNull(formatter);
+
+		assertEquals("", formatter.format(10.0));
+		assertEquals("-2.0", formatter.format(-2.0));
+	}
 }

@@ -54,6 +54,7 @@ public class ClickableVariableWidget extends ClickableWidget {
 	@Override
 	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
 		variableWidget.render(context, mouseX, mouseY, deltaTicks);
+		setCursor(context);
 	}
 
 	@Override

@@ -23,8 +23,6 @@ public class CreateModuleScreen extends AbstractCallbackScreen {
 
 	private static final int PADDING = 1;
 	private static final int GAP = 20;
-	private static final int FORM_Y = 100;
-	private static final int FORM_WIDTH = 200;
 	private static final int TEXT_FIELDS_HEIGHT = 20;
 
 	private double parentScrollAmount = 0;
@@ -60,14 +58,14 @@ public class CreateModuleScreen extends AbstractCallbackScreen {
 
 		Text moduleNameText = Text.translatable("flex_hud.create_module_screen.module_name");
 		moduleNameTextWidget = new TextWidget(
-				(width - FORM_WIDTH) / 2, FORM_Y,
+				variablesList.getRight() + GAP, height / 5,
 				CLIENT.textRenderer.getWidth(moduleNameText), TEXT_FIELDS_HEIGHT,
 				moduleNameText, CLIENT.textRenderer
 		);
 		moduleNameField = createModuleNameField(customModule != null ? customModule.getName().getString() : "");
 		feedbackTextWidget = new TextWidget(
 				moduleNameTextWidget.getX(), moduleNameField.getBottom(),
-				FORM_WIDTH, TEXT_FIELDS_HEIGHT,
+				width - moduleNameTextWidget.getX() - GAP, TEXT_FIELDS_HEIGHT,
 				Text.empty(), CLIENT.textRenderer
 		);
 
@@ -126,7 +124,7 @@ public class CreateModuleScreen extends AbstractCallbackScreen {
 	private ModuleNameField createModuleNameField(String initialText) {
 		ModuleNameField moduleNameField = new ModuleNameField(
 				moduleNameTextWidget.getX(), moduleNameTextWidget.getBottom(),
-				FORM_WIDTH, TEXT_FIELDS_HEIGHT,
+				width - moduleNameTextWidget.getX() - GAP, TEXT_FIELDS_HEIGHT,
 				initialText
 		);
 		moduleNameField.setChangedListener((text) -> {
@@ -146,7 +144,7 @@ public class CreateModuleScreen extends AbstractCallbackScreen {
 	private ModuleContentField createModuleContentField(String initialText) {
 		ModuleContentField moduleContentField = new ModuleContentField(
 				moduleContentTextWidget.getX(), moduleContentTextWidget.getBottom(),
-				FORM_WIDTH, TEXT_FIELDS_HEIGHT,
+				width - moduleContentTextWidget.getX() - GAP, TEXT_FIELDS_HEIGHT,
 				initialText
 		);
 		moduleContentField.setMaxLength(200);
@@ -179,7 +177,6 @@ public class CreateModuleScreen extends AbstractCallbackScreen {
 		feedbackTextWidget.render(context, mouseX, mouseY, deltaTicks);
 
 		moduleContentTextWidget.render(context, mouseX, mouseY, deltaTicks);
-		moduleContentField.render(context, mouseX, mouseY, deltaTicks);
 
 		previewTextWidget.render(context, mouseX, mouseY, deltaTicks);
 
@@ -187,6 +184,9 @@ public class CreateModuleScreen extends AbstractCallbackScreen {
 				previewTextWidget.getX(), previewTextWidget.getBottom(),
 				context, deltaTicks
 		);
+
+		// render content field last so the popups are above everything
+		moduleContentField.render(context, mouseX, mouseY, deltaTicks);
 	}
 
 	@Override
