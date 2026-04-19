@@ -1,8 +1,10 @@
 package me.Azz_9.flex_hud.client.screens.modulesList;
 
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+
 import com.google.common.collect.ImmutableList;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
-import net.minecraft.client.Minecraft;
+
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
@@ -10,8 +12,7 @@ import net.minecraft.resources.Identifier;
 
 import java.util.function.Supplier;
 
-import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
-import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 
 public class Module {
 	public String name;
@@ -31,7 +32,7 @@ public class Module {
 			this.configScreen = configScreen;
 			this.button = Button.builder(Component.literal(name), (btn) -> {
 						configScreen.setParentScrollAmount(parent.getModulesListWidget().scrollAmount());
-						MINECRAFT.setScreen(configScreen);
+						MINECRAFT.setScreenAndShow(configScreen);
 					})
 					.size(buttonWidth, buttonHeight)
 					.build();

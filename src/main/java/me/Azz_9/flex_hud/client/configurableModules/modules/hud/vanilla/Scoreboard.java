@@ -25,7 +25,7 @@ import org.joml.Matrix3x2fStack;
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractMovableModule;
-import me.Azz_9.flex_hud.client.mixin.scoreboard.GuiAccessor;
+import me.Azz_9.flex_hud.client.mixin.scoreboard.HudAccessor;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
@@ -121,7 +121,7 @@ public class Scoreboard extends AbstractMovableModule {
 		DisplayEntry[] entriesToDisplay = scoreboard.listPlayerScores(objective)
 				.stream()
 				.filter((input) -> !input.isHidden())
-				.sorted(((GuiAccessor) MINECRAFT.gui).getScoreDisplayOrder())
+				.sorted(((HudAccessor) MINECRAFT.gui.hud).getScoreDisplayOrder())
 				.limit(15L)
 				.map((score) -> {
 					PlayerTeam team = scoreboard.getPlayersTeam(score.owner());

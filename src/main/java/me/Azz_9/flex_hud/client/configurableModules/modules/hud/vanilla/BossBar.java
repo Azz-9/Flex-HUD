@@ -151,7 +151,7 @@ public class BossBar extends AbstractMovableModule {
 	}
 
 	private void updateBossBars() {
-		events = ((BossBarAccessor) MINECRAFT.gui.getBossOverlay()).getBossBars();
+		events = ((BossBarAccessor) MINECRAFT.gui.hud.getBossOverlay()).getBossBars();
 	}
 
 	@Override

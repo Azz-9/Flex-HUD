@@ -40,7 +40,7 @@ public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 		super(resetButtonSize, Component.translatable(Objects.requireNonNull(variable.getConfigTextTranslationKey())));
 		colorButtonWidget = new ConfigColorButtonWidget(colorButtonWidth, colorButtonHeight, variable, observers,
 				(btn) -> {
-					AbstractConfigurationScreen screen = (AbstractConfigurationScreen) MINECRAFT.screen;
+					AbstractConfigurationScreen screen = (AbstractConfigurationScreen) MINECRAFT.gui.screen();
 					if (screen != null) {
 						ColorSelector colorSelector = screen.getColorSelector();
 						if (colorSelector == null || !colorSelector.isFocused()) {
@@ -109,7 +109,7 @@ public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 
 		setActive(!shouldDisable);
 		// fermer le color selector si le color button est désacitvé
-		AbstractConfigurationScreen screen = (AbstractConfigurationScreen) MINECRAFT.screen;
+		AbstractConfigurationScreen screen = (AbstractConfigurationScreen) MINECRAFT.gui.screen();
 		if (screen != null && shouldDisable) {
 			screen.closeColorSelector();
 		}

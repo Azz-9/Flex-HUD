@@ -422,17 +422,17 @@ public class Compass extends AbstractTextModule {
 		MINECRAFT.player.connection.getWaypointManager().forEachWaypoint(MINECRAFT.getCameraEntity(), (waypoint) -> {
 			if (!(Boolean) waypoint.id().left().map((uuid) -> uuid.equals(MINECRAFT.getCameraEntity().getUUID())).orElse(false)) {
 
-				double angleDifference = waypoint.yawAngleToCamera(MINECRAFT.level, MINECRAFT.gameRenderer.getMainCamera(), partialTickSupplier);
+				double angleDifference = waypoint.yawAngleToCamera(MINECRAFT.level, MINECRAFT.gameRenderer.mainCamera(), partialTickSupplier);
 
 				if (Math.abs(angleDifference) <= 120) {
 					// Calculer la position X de chaque point cardinal en fonction de l'angle
 					double positionX = calculatePositionX((float) angleDifference);
 
-					Waypoint.Icon config = waypoint.icon();
-					WaypointStyle style = MINECRAFT.getWaypointStyles().get(config.style);
+					Waypoint.Icon icon = waypoint.icon();
+					WaypointStyle style = MINECRAFT.gui.hud.getWaypointStyles().get(icon.style);
 					float distance = (float) Math.sqrt(waypoint.distanceSquared(MINECRAFT.getCameraEntity()));
 					Identifier waypointIdentifier = style.sprite(distance);
-					int color = config.color.orElseGet(() -> waypoint.id().map((uuid) -> ARGB.setBrightness(ARGB.color(255, uuid.hashCode()), 0.9F), (name) -> ARGB.setBrightness(ARGB.color(255, name.hashCode()), 0.9F)));
+					int color = icon.color.orElseGet(() -> waypoint.id().map((uuid) -> ARGB.setBrightness(ARGB.color(255, uuid.hashCode()), 0.9F), (name) -> ARGB.setBrightness(ARGB.color(255, name.hashCode()), 0.9F)));
 
 					int textureSize = 9;
 
