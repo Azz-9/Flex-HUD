@@ -257,10 +257,6 @@ public class Modifiers {
 	}
 
 	private static @Nullable List<ResolvedModifier<?, ?>> orderForInputType(Class<?> inputType, List<ResolvedModifier<?, ?>> modifiers) {
-		if (modifiers.size() <= 1) {
-			return modifiers;
-		}
-
 		BestOrder bestOrder = new BestOrder();
 		searchBestOrder(inputType, new ArrayList<>(modifiers), new ArrayList<>(modifiers.size()), 0, bestOrder);
 
@@ -322,7 +318,7 @@ public class Modifiers {
 		}
 
 		if (isNumericType(toType)) {
-			return fromType == String.class || Number.class.isAssignableFrom(fromType);
+			return Number.class.isAssignableFrom(fromType);
 		}
 
 		return false;

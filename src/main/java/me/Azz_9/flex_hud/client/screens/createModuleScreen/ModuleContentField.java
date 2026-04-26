@@ -53,6 +53,11 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 	private static final int VARIABLE_PADDING_X = 4;
 	private static final int VARIABLE_PADDING_Y = 2;
 	private static final int VARIABLE_GAP = 4;
+	private static final int MODIFIER_BG_COLOR = 0xff172332;
+	private static final int MODIFIER_SELECTED_BG_COLOR = 0xff27415f;
+	private static final int MODIFIER_PADDING_X = 4;
+	private static final int MODIFIER_SEPARATOR_GAP = 6;
+	private static final int MODIFIER_SEPARATOR_COLOR = 0xff7892b0;
 	private static final int VARIABLE_PLUS_GAP = 5;
 	private static final int DESCRIPTION_DELAY = 500;
 	private static final int DESCRIPTION_MAX_WIDTH = 220;
@@ -99,6 +104,7 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 	private int[] caretPositions = new int[]{0};
 	private int contentWidth;
 	private @Nullable HoverTarget hoveredTarget;
+	private @Nullable VariableHit hoveredVariableHit;
 	private long hoverStartTime;
 	private @Nullable SelectionBounds selectionBounds;
 	private List<ToolbarButton> toolbarButtons = List.of();
@@ -129,15 +135,16 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		int innerTop = getY() + TEXT_PADDING_Y;
 		int innerRight = getRight() - TEXT_PADDING_X;
 		int innerBottom = getBottom() - TEXT_PADDING_Y;
+		int contentTextY = getContentTextY();
 
 		context.enableScissor(innerLeft, innerTop, innerRight, innerBottom);
-		renderSelection(context, innerLeft, innerTop);
-		renderContent(context, innerLeft, innerTop);
-		renderCaret(context, innerLeft, innerTop);
+		renderSelection(context, innerLeft, contentTextY);
+		renderContent(context, innerLeft, contentTextY);
+		renderCaret(context, innerLeft, contentTextY);
 		context.disableScissor();
 
 		if (rawText.isEmpty() && !isFocused()) {
-			context.drawText(CLIENT.textRenderer, Text.translatable("flex_hud.create_module_screen.module_content.placeholder"), innerLeft, innerTop, PLACEHOLDER_COLOR, false);
+			context.drawText(CLIENT.textRenderer, Text.translatable("flex_hud.create_module_screen.module_content.placeholder"), innerLeft, contentTextY, PLACEHOLDER_COLOR, false);
 		}
 
 		setCursor(context);
@@ -153,11 +160,18 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 	@Override
 	protected void setCursor(DrawContext context) {
 		if (this.isHovered()) {
-			context.setCursor(this.isInteractable() ? StandardCursors.IBEAM : StandardCursors.NOT_ALLOWED);
+			if (!this.isInteractable()) {
+				context.setCursor(StandardCursors.NOT_ALLOWED);
+			} else if (hoveredVariableHit != null
+					&& (hoveredVariableHit.kind() == VariableHitKind.PLUS || hoveredVariableHit.kind() == VariableHitKind.MODIFIER)) {
+				context.setCursor(StandardCursors.POINTING_HAND);
+			} else {
+				context.setCursor(StandardCursors.IBEAM);
+			}
 		}
 	}
 
-	private void renderContent(DrawContext context, int innerLeft, int innerTop) {
+	private void renderContent(DrawContext context, int innerLeft, int contentTextY) {
 		for (DisplayItem item : displayItems) {
 			int drawX = innerLeft + item.x() - horizontalScroll;
 			if (drawX + item.width() < innerLeft || drawX > getRight() - TEXT_PADDING_X) {
@@ -165,26 +179,36 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 			}
 
 			if (item instanceof TextDisplayItem textDisplayItem) {
-				context.drawText(CLIENT.textRenderer, textDisplayItem.text(), drawX, innerTop, textDisplayItem.color(), false);
+				context.drawText(CLIENT.textRenderer, textDisplayItem.text(), drawX, contentTextY, textDisplayItem.color(), false);
 				continue;
 			}
 
 			VariableDisplayItem variableDisplayItem = (VariableDisplayItem) item;
-			int backgroundColor = isIndexSelected(variableDisplayItem.modelIndex()) ? VARIABLE_SELECTED_BG_COLOR : VARIABLE_BG_COLOR;
-			context.fill(drawX, innerTop - 1, drawX + variableDisplayItem.width(), innerTop + variableDisplayItem.height(), backgroundColor);
-			context.drawStrokedRectangle(drawX, innerTop - 1, variableDisplayItem.width(), variableDisplayItem.height(), VARIABLE_BORDER_COLOR);
+			int chipTop = getDisplayItemTop(variableDisplayItem, contentTextY);
+			boolean selected = isIndexSelected(variableDisplayItem.modelIndex());
+			int backgroundColor = selected ? VARIABLE_SELECTED_BG_COLOR : VARIABLE_BG_COLOR;
+			int modifierBackgroundColor = selected ? MODIFIER_SELECTED_BG_COLOR : MODIFIER_BG_COLOR;
+			context.fill(drawX, chipTop, drawX + variableDisplayItem.width(), getDisplayItemBottom(variableDisplayItem, contentTextY), backgroundColor);
+			context.drawStrokedRectangle(drawX, chipTop, variableDisplayItem.width(), variableDisplayItem.height(), VARIABLE_BORDER_COLOR);
 
-			context.drawText(CLIENT.textRenderer, variableDisplayItem.name(), drawX + VARIABLE_PADDING_X, innerTop + VARIABLE_PADDING_Y - 1, variableDisplayItem.color(), false);
+			context.drawText(CLIENT.textRenderer, variableDisplayItem.name(), drawX + VARIABLE_PADDING_X, contentTextY, variableDisplayItem.color(), false);
 
-			for (ModifierPart modifierPart : variableDisplayItem.modifiers()) {
-				context.drawText(CLIENT.textRenderer, modifierPart.displayText(), drawX + modifierPart.startX(), innerTop + VARIABLE_PADDING_Y - 1, modifierPart.color(), false);
+			for (int modifierIndex = 0; modifierIndex < variableDisplayItem.modifiers().size(); modifierIndex++) {
+				ModifierPart modifierPart = variableDisplayItem.modifiers().get(modifierIndex);
+				int modifierX = drawX + modifierPart.startX();
+				context.fill(modifierX, chipTop + 1, modifierX + modifierPart.width(), chipTop + variableDisplayItem.height() - 1, modifierBackgroundColor);
+				context.drawText(CLIENT.textRenderer, modifierPart.displayText(), modifierX + MODIFIER_PADDING_X, contentTextY, modifierPart.color(), false);
+				if (modifierIndex < variableDisplayItem.modifiers().size() - 1) {
+					int separatorX = modifierX + modifierPart.width() + MODIFIER_SEPARATOR_GAP / 2;
+					context.fill(separatorX, chipTop + 2, separatorX + 1, chipTop + variableDisplayItem.height() - 1, MODIFIER_SEPARATOR_COLOR);
+				}
 			}
 
-			context.drawText(CLIENT.textRenderer, "+", drawX + variableDisplayItem.plusX(), innerTop + VARIABLE_PADDING_Y - 1, variableDisplayItem.color(), false);
+			context.drawText(CLIENT.textRenderer, "+", drawX + variableDisplayItem.plusX(), contentTextY, variableDisplayItem.color(), false);
 		}
 	}
 
-	private void renderSelection(DrawContext context, int innerLeft, int innerTop) {
+	private void renderSelection(DrawContext context, int innerLeft, int contentTextY) {
 		int selectionStart = Math.min(caretIndex, selectionAnchor);
 		int selectionEnd = Math.max(caretIndex, selectionAnchor);
 		if (selectionStart == selectionEnd) {
@@ -197,11 +221,11 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 			}
 
 			int drawX = innerLeft + item.x() - horizontalScroll;
-			context.fill(drawX, innerTop - 1, drawX + item.width(), innerTop + item.height(), SELECTION_COLOR);
+			context.fill(drawX, getDisplayItemTop(item, contentTextY), drawX + item.width(), getDisplayItemBottom(item, contentTextY), SELECTION_COLOR);
 		}
 	}
 
-	private void renderCaret(DrawContext context, int innerLeft, int innerTop) {
+	private void renderCaret(DrawContext context, int innerLeft, int contentTextY) {
 		if (!isFocused() || hasSelection()) {
 			return;
 		}
@@ -211,7 +235,7 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		}
 
 		int caretX = innerLeft + caretPositions[Math.clamp(caretIndex, 0, caretPositions.length - 1)] - horizontalScroll;
-		context.fill(caretX, innerTop - 1, caretX + 1, innerTop + CLIENT.textRenderer.fontHeight + 1, CARET_COLOR);
+		context.fill(caretX, contentTextY - 1, caretX + 1, contentTextY + CLIENT.textRenderer.fontHeight + 1, CARET_COLOR);
 	}
 
 	private void renderTooltip(DrawContext context, int mouseX, int mouseY) {
@@ -250,6 +274,22 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		}
 	}
 
+	private int centeredTextY(int top, int height) {
+		return top + Math.max(0, Math.floorDiv(height - CLIENT.textRenderer.fontHeight + 1, 2));
+	}
+
+	private int getContentTextY() {
+		return centeredTextY(getY(), getHeight());
+	}
+
+	private int getDisplayItemTop(DisplayItem item, int contentTextY) {
+		return item instanceof VariableDisplayItem ? contentTextY - VARIABLE_PADDING_Y : contentTextY - 1;
+	}
+
+	private int getDisplayItemBottom(DisplayItem item, int contentTextY) {
+		return getDisplayItemTop(item, contentTextY) + item.height() + 1;
+	}
+
 	private void renderToolbar(DrawContext context, int mouseX, int mouseY) {
 		for (ToolbarButton button : toolbarButtons) {
 			renderButtonCenterLabel(context, button.bounds(), button.label(), button.backgroundColor(mouseX, mouseY), BUTTON_TEXT_COLOR, mouseX, mouseY);
@@ -281,6 +321,7 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 	}
 
 	private void updateHover(int mouseX, int mouseY) {
+		hoveredVariableHit = findVariableHit(mouseX, mouseY);
 		HoverTarget newTarget = findHoverTarget(mouseX, mouseY);
 		if (!Objects.equals(newTarget, hoveredTarget)) {
 			hoveredTarget = newTarget;
@@ -303,10 +344,10 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		}
 
 		int innerLeft = getX() + TEXT_PADDING_X;
-		int innerTop = getY() + TEXT_PADDING_Y;
+		int contentTextY = getContentTextY();
 		for (DisplayItem item : displayItems) {
 			int drawX = innerLeft + item.x() - horizontalScroll;
-			if (mouseY < innerTop - 1 || mouseY > innerTop + item.height()) {
+			if (mouseY < getDisplayItemTop(item, contentTextY) || mouseY > getDisplayItemBottom(item, contentTextY)) {
 				continue;
 			}
 			if (mouseX < drawX || mouseX > drawX + item.width()) {
@@ -800,17 +841,21 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 			Modifiers.ResolvedModifier<?, ?> modifier = variableElement.modifiers().get(modifierIndex);
 			String displaySuffix = modifier.modifier().uiMetadata().displayFormatter().apply(modifier.arguments());
 			String displayName = modifier.modifier().uiMetadata().getName(modifier.modifier().key()).getString();
-			String displayText = displaySuffix.isBlank() ? displayName : displayName + " " + displaySuffix;
-			int width = CLIENT.textRenderer.getWidth(Text.literal(displayText).setStyle(style));
+			String displayText = displaySuffix.isBlank() ? displayName : displayName + "(" + displaySuffix + ")";
+			int textWidth = CLIENT.textRenderer.getWidth(Text.literal(displayText).setStyle(style));
+			int width = textWidth + MODIFIER_PADDING_X * 2;
 			modifiers.add(new ModifierPart(displayText, width, color, modifier.modifier().uiMetadata().getDescription(modifier.modifier().key()), currentX, modifierIndex));
-			currentX += width + VARIABLE_GAP;
+			currentX += width;
+			if (modifierIndex < variableElement.modifiers().size() - 1) {
+				currentX += MODIFIER_SEPARATOR_GAP;
+			}
 		}
 
 		int width = VARIABLE_PADDING_X * 2 + nameWidth;
 		if (!modifiers.isEmpty()) {
 			width += VARIABLE_GAP;
 			width += modifiers.stream().mapToInt(ModifierPart::width).sum();
-			width += (modifiers.size() - 1) * VARIABLE_GAP;
+			width += (modifiers.size() - 1) * MODIFIER_SEPARATOR_GAP;
 		}
 		width += VARIABLE_PLUS_GAP + CHIP_PLUS_WIDTH;
 		int height = CLIENT.textRenderer.fontHeight + VARIABLE_PADDING_Y * 2;
@@ -863,9 +908,10 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 
 		int left = Integer.MAX_VALUE;
 		int right = Integer.MIN_VALUE;
-		int top = getY() + TEXT_PADDING_Y - 1;
-		int bottom = top + CLIENT.textRenderer.fontHeight + 3;
+		int top = Integer.MAX_VALUE;
+		int bottom = Integer.MIN_VALUE;
 		int innerLeft = getX() + TEXT_PADDING_X;
+		int contentTextY = getContentTextY();
 
 		for (DisplayItem item : displayItems) {
 			if (!isIndexSelected(item.modelIndex())) {
@@ -874,10 +920,11 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 			int drawX = innerLeft + item.x() - horizontalScroll;
 			left = Math.min(left, drawX);
 			right = Math.max(right, drawX + item.width());
-			bottom = Math.max(bottom, top + item.height());
+			top = Math.min(top, getDisplayItemTop(item, contentTextY));
+			bottom = Math.max(bottom, getDisplayItemBottom(item, contentTextY));
 		}
 
-		if (left == Integer.MAX_VALUE) {
+		if (left == Integer.MAX_VALUE || top == Integer.MAX_VALUE) {
 			return null;
 		}
 
@@ -1063,7 +1110,7 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 			context.fill(bounds.x(), bounds.y(), bounds.right(), bounds.bottom(), backgroundColor);
 			context.drawStrokedRectangle(bounds.x(), bounds.y(), bounds.width(), bounds.height(), POPUP_BORDER);
 			int textX = bounds.x() + (bounds.width() - CLIENT.textRenderer.getWidth(label)) / 2;
-			int textY = bounds.y() + (bounds.height() - CLIENT.textRenderer.fontHeight) / 2;
+			int textY = centeredTextY(bounds.y(), bounds.height());
 			context.drawText(CLIENT.textRenderer, label, textX, textY, textColor, false);
 
 			if (bounds.contains(mouseX, mouseY)) {
@@ -1080,7 +1127,7 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 			context.fill(bounds.x(), bounds.y(), bounds.right(), bounds.bottom(), backgroundColor);
 			context.drawStrokedRectangle(bounds.x(), bounds.y(), bounds.width(), bounds.height(), POPUP_BORDER);
 			int textX = bounds.x() + padding;
-			int textY = bounds.y() + (bounds.height() - CLIENT.textRenderer.fontHeight) / 2;
+			int textY = centeredTextY(bounds.y(), bounds.height());
 			context.drawText(CLIENT.textRenderer, label, textX, textY, textColor, false);
 
 			if (bounds.contains(mouseX, mouseY)) {
@@ -1124,14 +1171,14 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 
 	private @Nullable VariableHit findVariableHit(double mouseX, double mouseY) {
 		int innerLeft = getX() + TEXT_PADDING_X;
-		int innerTop = getY() + TEXT_PADDING_Y;
+		int contentTextY = getContentTextY();
 		for (DisplayItem item : displayItems) {
 			if (!(item instanceof VariableDisplayItem variableDisplayItem)) {
 				continue;
 			}
 
 			int drawX = innerLeft + item.x() - horizontalScroll;
-			if (mouseY < innerTop - 1 || mouseY > innerTop + item.height()) {
+			if (mouseY < getDisplayItemTop(item, contentTextY) || mouseY > getDisplayItemBottom(item, contentTextY)) {
 				continue;
 			}
 			if (mouseX < drawX || mouseX > drawX + item.width()) {

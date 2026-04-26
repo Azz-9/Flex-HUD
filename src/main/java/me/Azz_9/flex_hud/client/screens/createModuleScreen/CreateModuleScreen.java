@@ -23,7 +23,7 @@ public class CreateModuleScreen extends AbstractCallbackScreen {
 
 	private static final int PADDING = 1;
 	private static final int GAP = 20;
-	private static final int TEXT_FIELDS_HEIGHT = 20;
+	private static final int TEXT_FIELDS_HEIGHT = 21;
 
 	private double parentScrollAmount = 0;
 
@@ -84,10 +84,10 @@ public class CreateModuleScreen extends AbstractCallbackScreen {
 				previewText, CLIENT.textRenderer
 		);
 
+		this.addDrawableChild(moduleContentField);
 		this.addDrawableChild(searchBar);
 		this.addDrawableChild(variablesList);
 		this.addDrawableChild(moduleNameField);
-		this.addDrawableChild(moduleContentField);
 	}
 
 	private VariablesList createVariableList() {

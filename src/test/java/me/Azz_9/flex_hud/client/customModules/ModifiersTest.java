@@ -1,7 +1,6 @@
 package me.Azz_9.flex_hud.client.customModules;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
@@ -62,5 +61,25 @@ public class ModifiersTest {
 
 		assertEquals("", formatter.format(10.0));
 		assertEquals("-2.0", formatter.format(-2.0));
+	}
+
+	@Test
+	void numericModifiersAreRejectedForStringInputs() {
+		Modifiers.init();
+
+		Modifiers.ResolvedModifier<?, ?> roundModifier = Modifiers.get("round.2");
+		assertNotNull(roundModifier);
+
+		assertNull(Modifiers.compileFormatter(String.class, List.of(roundModifier)));
+	}
+
+	@Test
+	void numericModifiersAreRejectedForBooleanInputs() {
+		Modifiers.init();
+
+		Modifiers.ResolvedModifier<?, ?> absoluteValueModifier = Modifiers.get("abs");
+		assertNotNull(absoluteValueModifier);
+
+		assertNull(Modifiers.compileFormatter(Boolean.class, List.of(absoluteValueModifier)));
 	}
 }
