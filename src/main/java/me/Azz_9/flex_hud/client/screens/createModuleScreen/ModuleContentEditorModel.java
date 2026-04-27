@@ -138,6 +138,16 @@ public final class ModuleContentEditorModel {
 		elements.subList(Math.clamp(start, 0, elements.size()), Math.clamp(end, 0, elements.size())).clear();
 	}
 
+	public ModuleContentEditorModel copyRange(int start, int end) {
+		int clampedStart = Math.clamp(start, 0, elements.size());
+		int clampedEnd = Math.clamp(end, clampedStart, elements.size());
+		List<InlineElement> copies = new ArrayList<>(clampedEnd - clampedStart);
+		for (int index = clampedStart; index < clampedEnd; index++) {
+			copies.add(elements.get(index).copy());
+		}
+		return new ModuleContentEditorModel(copies);
+	}
+
 	public StyleState getInsertionStyle(int index) {
 		if (!elements.isEmpty()) {
 			if (index < elements.size()) {

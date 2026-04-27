@@ -25,6 +25,8 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 import me.Azz_9.flex_hud.client.customModules.Variable;
 import me.Azz_9.flex_hud.client.customModules.modifiers.Modifier;
@@ -87,6 +89,10 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 	);
 	private static final int SCROLLBAR_THUMB_COLOR = 0xff636360;
 	private static final int SCROLLBAR_THUMB_ACTIVE_COLOR = 0xffa8a8a4;
+	private static final Pattern UNSIGNED_INTEGER_INPUT = Pattern.compile("\\d{0,9}");
+	private static final Pattern UNSIGNED_TWO_DIGIT_INTEGER_INPUT = Pattern.compile("\\d{0,2}");
+	private static final Pattern SIGNED_INTEGER_INPUT = Pattern.compile("-?\\d{0,9}");
+	private static final Pattern SIGNED_NON_ZERO_INTEGER_INPUT = Pattern.compile("-?[1-9]\\d{0,8}");
 
 	private final @Nullable String initialContent;
 
@@ -416,6 +422,10 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 				openModifierPicker(variableHit.variableItem());
 			} else if (variableHit.kind() == VariableHitKind.MODIFIER) {
 				openModifierEditor(variableHit.variableItem(), variableHit.modifierIndex());
+			} else if (doubled) {
+				closeModifierPopups();
+				closeSelectionPopups();
+				selectWord(variableHit.variableItem().modelIndex());
 			} else {
 				handleBodyClick(click, variableHit.variableItem());
 			}
@@ -425,6 +435,12 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 
 		closeModifierPopups();
 		closeSelectionPopups();
+
+		if (doubled) {
+			selectWordAt(click.x());
+			draggingSelection = true;
+			return true;
+		}
 
 		int clickedIndex = getClosestCaretIndex(click.x());
 		if ((click.modifiers() & GLFW.GLFW_MOD_SHIFT) != 0) {
@@ -557,47 +573,54 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 			return false;
 		}
 
-		if (hasControl(input)) {
-			switch (input.key()) {
-				case GLFW.GLFW_KEY_A -> {
-					caretIndex = model.size();
-					selectionAnchor = 0;
-					ensureCaretVisible();
-					refreshOverlayLayout();
-					return true;
-				}
-				case GLFW.GLFW_KEY_V -> {
-					write(CLIENT.keyboard.getClipboard());
-					return true;
-				}
-				default -> {
-				}
-			}
+		if (input.isSelectAll()) {
+			selectAll();
+			return true;
+		}
+		if (input.isCopy()) {
+			copySelectionToClipboard();
+			return true;
+		}
+		if (input.isPaste()) {
+			write(CLIENT.keyboard.getClipboard());
+			return true;
+		}
+		if (input.isCut()) {
+			cutSelectionToClipboard();
+			return true;
 		}
 
 		switch (input.key()) {
-			case GLFW.GLFW_KEY_LEFT -> {
-				moveCaret(-1, hasShift(input));
-				return true;
-			}
-			case GLFW.GLFW_KEY_RIGHT -> {
-				moveCaret(1, hasShift(input));
-				return true;
-			}
-			case GLFW.GLFW_KEY_HOME -> {
-				setCaret(0, hasShift(input));
-				return true;
-			}
-			case GLFW.GLFW_KEY_END -> {
-				setCaret(model.size(), hasShift(input));
-				return true;
-			}
 			case GLFW.GLFW_KEY_BACKSPACE -> {
-				deleteBackward();
+				erase(-1, input.hasCtrlOrCmd());
 				return true;
 			}
 			case GLFW.GLFW_KEY_DELETE -> {
-				deleteForward();
+				erase(1, input.hasCtrlOrCmd());
+				return true;
+			}
+			case GLFW.GLFW_KEY_LEFT -> {
+				if (input.hasCtrlOrCmd()) {
+					setCaret(getWordSkipPosition(-1), input.hasShift());
+				} else {
+					moveCaret(-1, input.hasShift());
+				}
+				return true;
+			}
+			case GLFW.GLFW_KEY_RIGHT -> {
+				if (input.hasCtrlOrCmd()) {
+					setCaret(getWordSkipPosition(1), input.hasShift());
+				} else {
+					moveCaret(1, input.hasShift());
+				}
+				return true;
+			}
+			case GLFW.GLFW_KEY_HOME -> {
+				setCaret(0, input.hasShift());
+				return true;
+			}
+			case GLFW.GLFW_KEY_END -> {
+				setCaret(model.size(), input.hasShift());
 				return true;
 			}
 			default -> {
@@ -614,14 +637,6 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 				|| (modifierEditorPopup != null && modifierEditorPopup.contains(mouseX, mouseY))
 				|| (colorPopup != null && colorPopup.contains(mouseX, mouseY))
 				|| (gradientPopup != null && gradientPopup.contains(mouseX, mouseY));
-	}
-
-	private boolean hasControl(KeyInput input) {
-		return (input.modifiers() & GLFW.GLFW_MOD_CONTROL) != 0;
-	}
-
-	private boolean hasShift(KeyInput input) {
-		return (input.modifiers() & GLFW.GLFW_MOD_SHIFT) != 0;
 	}
 
 	private boolean isInsideField(double mouseX, double mouseY) {
@@ -641,6 +656,36 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		setCaret(Math.clamp(caretIndex + offset, 0, model.size()), extendSelection);
 	}
 
+	private int getWordSkipPosition(int wordOffset) {
+		return getWordSkipPosition(wordOffset, caretIndex, true);
+	}
+
+	private int getWordSkipPosition(int wordOffset, int cursorPosition, boolean skipOverSpaces) {
+		int index = Math.clamp(cursorPosition, 0, model.size());
+		boolean backwards = wordOffset < 0;
+		int steps = Math.abs(wordOffset);
+
+		for (int step = 0; step < steps; step++) {
+			if (backwards) {
+				while (skipOverSpaces && index > 0 && isWhitespaceElement(index - 1)) {
+					index--;
+				}
+				while (index > 0 && !isWhitespaceElement(index - 1)) {
+					index--;
+				}
+			} else {
+				while (index < model.size() && !isWhitespaceElement(index)) {
+					index++;
+				}
+				while (skipOverSpaces && index < model.size() && isWhitespaceElement(index)) {
+					index++;
+				}
+			}
+		}
+
+		return index;
+	}
+
 	private void setCaret(int index, boolean extendSelection) {
 		caretIndex = Math.clamp(index, 0, model.size());
 		if (!extendSelection) {
@@ -648,6 +693,126 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		}
 		ensureCaretVisible();
 		refreshOverlayLayout();
+	}
+
+	private void selectAll() {
+		caretIndex = model.size();
+		selectionAnchor = 0;
+		ensureCaretVisible();
+		refreshOverlayLayout();
+	}
+
+	private void setSelection(int start, int end) {
+		selectionAnchor = Math.clamp(start, 0, model.size());
+		caretIndex = Math.clamp(end, 0, model.size());
+		ensureCaretVisible();
+		refreshOverlayLayout();
+	}
+
+	private void selectWordAt(double mouseX) {
+		Integer clickedElementIndex = getElementIndexAt(mouseX);
+		if (clickedElementIndex != null && !isWhitespaceElement(clickedElementIndex)) {
+			selectWord(clickedElementIndex);
+			return;
+		}
+
+		int clickedIndex = getClosestCaretIndex(mouseX);
+		setSelection(getWordSkipPosition(-1, clickedIndex, true), getWordSkipPosition(1, clickedIndex, true));
+	}
+
+	private void selectWord(int elementIndex) {
+		if (model.isEmpty()) {
+			setSelection(0, 0);
+			return;
+		}
+
+		int index = Math.clamp(elementIndex, 0, model.size() - 1);
+		if (isWhitespaceElement(index)) {
+			setSelection(index, Math.min(model.size(), index + 1));
+			return;
+		}
+
+		int start = index;
+		while (start > 0 && !isWhitespaceElement(start - 1)) {
+			start--;
+		}
+
+		int end = index + 1;
+		while (end < model.size() && !isWhitespaceElement(end)) {
+			end++;
+		}
+
+		setSelection(start, end);
+	}
+
+	private @Nullable Integer getElementIndexAt(double mouseX) {
+		int relativeX = (int) mouseX - (getX() + TEXT_PADDING_X) + horizontalScroll;
+		for (DisplayItem item : displayItems) {
+			if (item.x() <= relativeX && relativeX <= item.endX()) {
+				return item.modelIndex();
+			}
+		}
+		return null;
+	}
+
+	private boolean isWhitespaceElement(int index) {
+		if (index < 0 || index >= model.size()) {
+			return false;
+		}
+
+		ModuleContentEditorModel.InlineElement element = model.get(index);
+		return element instanceof ModuleContentEditorModel.TextElement textElement
+				&& !textElement.text().isEmpty()
+				&& Character.isWhitespace(textElement.text().charAt(0));
+	}
+
+	private void erase(int offset, boolean words) {
+		if (words) {
+			eraseWords(offset);
+		} else if (offset < 0) {
+			deleteBackward();
+		} else if (offset > 0) {
+			deleteForward();
+		}
+	}
+
+	private void eraseWords(int wordOffset) {
+		if (hasSelection()) {
+			deleteSelection();
+			return;
+		}
+
+		int targetIndex = getWordSkipPosition(wordOffset);
+		if (targetIndex == caretIndex) {
+			return;
+		}
+
+		applyMutation(() -> {
+			int start = Math.min(caretIndex, targetIndex);
+			int end = Math.max(caretIndex, targetIndex);
+			model.deleteRange(start, end);
+			caretIndex = start;
+			selectionAnchor = start;
+		});
+	}
+
+	private void copySelectionToClipboard() {
+		CLIENT.keyboard.setClipboard(getSelectedRawText());
+	}
+
+	private void cutSelectionToClipboard() {
+		copySelectionToClipboard();
+		deleteSelection();
+	}
+
+	private String getSelectedRawText() {
+		if (!hasSelection()) {
+			return "";
+		}
+
+		int start = Math.min(caretIndex, selectionAnchor);
+		int end = Math.max(caretIndex, selectionAnchor);
+		return model.copyRange(start, end).serialize();
 	}
 
 	private void deleteBackward() {
@@ -1269,23 +1434,41 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 			return List.of("if_gt", "0", "");
 		}
 
-		return defaultArguments(modifier.uiMetadata().parameters());
-	}
-
-	private List<String> defaultArguments(List<Modifier.ParameterDefinition> parameters) {
-		List<String> arguments = new ArrayList<>(parameters.size());
-		for (Modifier.ParameterDefinition parameter : parameters) {
-			arguments.add(defaultValue(parameter.kind()));
+		List<String> arguments = new ArrayList<>(modifier.uiMetadata().parameters().size());
+		for (Modifier.ParameterDefinition parameter : modifier.uiMetadata().parameters()) {
+			arguments.add(defaultValue(modifier, parameter));
 		}
 		return arguments;
 	}
 
-	private String defaultValue(Modifier.ParameterKind kind) {
-		return switch (kind) {
+	private String defaultValue(Modifier<?, ?> modifier, Modifier.ParameterDefinition parameter) {
+		if (parameter.kind() == Modifier.ParameterKind.DECIMAL && modifier.key().equals("div")) {
+			return "1";
+		}
+
+		return switch (parameter.kind()) {
 			case INTEGER, DECIMAL -> "0";
 			case CHARACTER -> " ";
 			case CONDITIONAL_BRANCHES, TEXT -> "";
 		};
+	}
+
+	private static boolean isUnsignedIntegerInput(String text) {
+		return UNSIGNED_INTEGER_INPUT.matcher(text).matches();
+	}
+
+	private static boolean isUnsignedTwoDigitIntegerInput(String text) {
+		return UNSIGNED_TWO_DIGIT_INTEGER_INPUT.matcher(text).matches();
+	}
+
+	private static boolean isSignedIntegerInput(String text) {
+		return SIGNED_INTEGER_INPUT.matcher(text).matches();
+	}
+
+	private static boolean isSignedNonZeroIntegerInput(String text) {
+		return text.isEmpty()
+				|| text.equals("-")
+				|| SIGNED_NON_ZERO_INTEGER_INPUT.matcher(text).matches();
 	}
 
 	private void applyModifierChange(int elementIndex, @Nullable Integer modifierIndex, Modifiers.ResolvedModifier<?, ?> newModifier, boolean deleteModifier) {
@@ -1496,6 +1679,16 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 			return contentHeight > viewportHeight;
 		}
 
+		private int maxScroll() {
+			return Math.max(0, contentHeight - viewportHeight);
+		}
+
+		private void setScrollPosition(double scrollPosition) {
+			double clamped = MathHelper.clamp(scrollPosition, 0.0, maxScroll());
+			currentScroll = clamped;
+			targetScroll = clamped;
+		}
+
 		private void layout(VariableDisplayItem variableItem) {
 			List<Modifier<?, ?>> compatibleModifiers = getCompatibleModifiers(variableItem.element());
 
@@ -1532,7 +1725,8 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 			}
 
 			bounds = new Bounds(clampX(preferredX, width), clampY(preferredY, totalHeight), width, totalHeight);
-			currentScroll = MathHelper.clamp(currentScroll, 0, Math.max(0, contentHeight - viewportHeight));
+			currentScroll = MathHelper.clamp(currentScroll, 0.0, maxScroll());
+			targetScroll = MathHelper.clamp(targetScroll, 0.0, maxScroll());
 
 			// Build entries (positions relatives au début du contenu, avant scroll)
 			List<ModifierPickerEntry> builtEntries = new ArrayList<>();
@@ -1662,9 +1856,7 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 
 		private boolean mouseScrolled(double mouseX, double mouseY, double amount) {
 			if (!bounds.contains(mouseX, mouseY)) return false;
-			int maxScroll = Math.max(0, contentHeight - viewportHeight);
-			targetScroll -= amount * SCROLL_SPEED;
-			targetScroll = MathHelper.clamp(targetScroll, 0.0F, maxScroll + 1);
+			targetScroll = MathHelper.clamp(targetScroll - amount * SCROLL_SPEED, 0.0, maxScroll());
 			return true;
 		}
 
@@ -1674,6 +1866,7 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 				isDraggingScrollbar = true;
 				dragStartMouseY = click.y();
 				dragStartScrollOffset = currentScroll;
+				targetScroll = currentScroll;
 				return true;
 			}
 
@@ -1708,8 +1901,7 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 			// Convertir le déplacement souris en déplacement de scroll
 			float scrollPerPixel = (float) (contentHeight - viewportHeight) / maxThumbOffset;
 			int delta = (int) ((click.y() - dragStartMouseY) * scrollPerPixel);
-			int maxScroll = Math.max(0, contentHeight - viewportHeight);
-			currentScroll = MathHelper.clamp(dragStartScrollOffset + delta, 0, maxScroll);
+			setScrollPosition(dragStartScrollOffset + delta);
 			return true;
 		}
 
@@ -1791,10 +1983,11 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 				case FIXED_FIELDS -> {
 					for (int i = 0; i < modifier.uiMetadata().parameters().size(); i++) {
 						Modifier.ParameterDefinition parameter = modifier.uiMetadata().parameters().get(i);
-						String value = i < initialArguments.size() ? initialArguments.get(i) : defaultValue(parameter.kind());
+						String value = i < initialArguments.size() ? initialArguments.get(i) : defaultValue(modifier, parameter);
 						PopupTextFieldWidget field = new PopupTextFieldWidget(140, FIELD_HEIGHT);
 						field.setText(value);
 						field.setMaxLength(parameter.kind() == Modifier.ParameterKind.CHARACTER ? 1 : 128);
+						applyParameterTextPredicate(field, parameter);
 						parameterFields.add(field);
 					}
 				}
@@ -1808,6 +2001,28 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 					}
 				}
 			}
+		}
+
+		private void applyParameterTextPredicate(PopupTextFieldWidget field, Modifier.ParameterDefinition parameter) {
+			Predicate<String> predicate = parameterTextPredicate(parameter);
+			if (predicate != null) {
+				field.setTextPredicate(predicate);
+			}
+		}
+
+		private @Nullable Predicate<String> parameterTextPredicate(Modifier.ParameterDefinition parameter) {
+			return switch (parameter.kind()) {
+				case INTEGER -> switch (modifier.key()) {
+					case "round", "floor", "ceil", "percent", "pad_left", "pad_right", "pad_center", "truncate" ->
+							ModuleContentField::isUnsignedTwoDigitIntegerInput;
+					case "pow" -> ModuleContentField::isUnsignedIntegerInput;
+					default -> ModuleContentField::isUnsignedIntegerInput;
+				};
+				case DECIMAL -> modifier.key().equals("div")
+						? ModuleContentField::isSignedNonZeroIntegerInput
+						: ModuleContentField::isSignedIntegerInput;
+				case TEXT, CHARACTER, CONDITIONAL_BRANCHES -> null;
+			};
 		}
 
 		private void layout(VariableDisplayItem variableItem) {
@@ -2109,6 +2324,7 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 				this.thresholdField = new PopupTextFieldWidget(CONDITIONAL_THRESHOLD_WIDTH, FIELD_HEIGHT);
 				this.thresholdField.setText(threshold);
 				this.thresholdField.setMaxLength(32);
+				this.thresholdField.setTextPredicate(ModuleContentField::isSignedIntegerInput);
 				this.resultField = new PopupTextFieldWidget(120, FIELD_HEIGHT);
 				this.resultField.setText(result);
 				this.resultField.setMaxLength(128);
@@ -2190,7 +2406,7 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 			}
 		}
 
-		private final class PopupTextFieldWidget extends TextFieldWidget {
+		private static final class PopupTextFieldWidget extends TextFieldWidget {
 			private PopupTextFieldWidget(int width, int height) {
 				super(CLIENT.textRenderer, 0, 0, width, height, Text.empty());
 			}
