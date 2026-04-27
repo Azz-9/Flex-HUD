@@ -2788,9 +2788,11 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 
 	private static int interpolateRgb(int startColor, int endColor, float progress) {
 		float clampedProgress = Math.clamp(progress, 0.0f, 1.0f);
+
 		int startRed = (startColor >> 16) & 0xff;
 		int startGreen = (startColor >> 8) & 0xff;
 		int startBlue = startColor & 0xff;
+
 		int endRed = (endColor >> 16) & 0xff;
 		int endGreen = (endColor >> 8) & 0xff;
 		int endBlue = endColor & 0xff;
@@ -2798,6 +2800,7 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		int red = Math.round(startRed + (endRed - startRed) * clampedProgress);
 		int green = Math.round(startGreen + (endGreen - startGreen) * clampedProgress);
 		int blue = Math.round(startBlue + (endBlue - startBlue) * clampedProgress);
+
 		return red << 16 | green << 8 | blue;
 	}
 }

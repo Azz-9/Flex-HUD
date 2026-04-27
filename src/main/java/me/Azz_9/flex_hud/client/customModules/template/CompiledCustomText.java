@@ -10,70 +10,20 @@ import net.minecraft.text.TextColor;
 
 import org.jspecify.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 import me.Azz_9.flex_hud.client.customModules.Variable;
 import me.Azz_9.flex_hud.client.customModules.Variables;
 import me.Azz_9.flex_hud.client.customModules.modifiers.Modifiers;
+import me.Azz_9.flex_hud.client.customModules.text.CustomTextParser;
 import me.Azz_9.flex_hud.client.tickables.ChromaColorTickable;
 
 public final class CompiledCustomText {
 
 	private static final int DEFAULT_STYLED_TEXT_COLOR = 0xffffff;
-	private static final Map<String, NamedDirective> NAMED_DIRECTIVES = new HashMap<>();
-	private static final List<NamedDirective> NAMED_DIRECTIVES_BY_LENGTH = new ArrayList<>();
-	private static final Map<Character, StyleDirective> SINGLE_CHAR_DIRECTIVES = new HashMap<>();
-	private static final Map<String, Integer> NAMED_COLORS = new HashMap<>();
-
-	static {
-		registerNamedColor("black", 0x000000, '0');
-		registerNamedColor("dark_blue", 0x0000aa, '1');
-		registerNamedColor("dark_green", 0x00aa00, '2');
-		registerNamedColor("dark_aqua", 0x00aaaa, '3');
-		registerNamedColor("dark_red", 0xaa0000, '4');
-		registerNamedColor("dark_purple", 0xaa00aa, '5');
-		registerNamedColor("gold", 0xffaa00, '6');
-		registerNamedColor("gray", 0xaaaaaa, '7');
-		registerNamedColor("dark_gray", 0x555555, '8');
-		registerNamedColor("blue", 0x5555ff, '9');
-		registerNamedColor("green", 0x55ff55, 'a');
-		registerNamedColor("aqua", 0x55ffff, 'b');
-		registerNamedColor("red", 0xff5555, 'c');
-		registerNamedColor("light_purple", 0xff55ff, 'd');
-		registerNamedColor("yellow", 0xffff55, 'e');
-		registerNamedColor("white", 0xffffff, 'f');
-
-		registerNamedColorAlias("darkblue", "dark_blue");
-		registerNamedColorAlias("darkgreen", "dark_green");
-		registerNamedColorAlias("darkaqua", "dark_aqua");
-		registerNamedColorAlias("darkred", "dark_red");
-		registerNamedColorAlias("darkpurple", "dark_purple");
-		registerNamedColorAlias("grey", "gray");
-		registerNamedColorAlias("darkgrey", "dark_gray");
-		registerNamedColorAlias("lightpurple", "light_purple");
-
-		registerNamedDirective("bold", ToggleStyleDirective.BOLD);
-		registerNamedDirective("italic", ToggleStyleDirective.ITALIC);
-		registerNamedDirective("underline", ToggleStyleDirective.UNDERLINE);
-		registerNamedDirective("underlined", ToggleStyleDirective.UNDERLINE);
-		registerNamedDirective("strikethrough", ToggleStyleDirective.STRIKETHROUGH);
-		registerNamedDirective("strike", ToggleStyleDirective.STRIKETHROUGH);
-		registerNamedDirective("obfuscated", ToggleStyleDirective.OBFUSCATED);
-		registerNamedDirective("magic", ToggleStyleDirective.OBFUSCATED);
-		registerNamedDirective("reset", ResetDirective.INSTANCE);
-		registerNamedDirective("chroma", new ColorDirective(DynamicColorSource.INSTANCE));
-
-		registerSingleCharDirective('k', ToggleStyleDirective.OBFUSCATED);
-		registerSingleCharDirective('l', ToggleStyleDirective.BOLD);
-		registerSingleCharDirective('m', ToggleStyleDirective.STRIKETHROUGH);
-		registerSingleCharDirective('n', ToggleStyleDirective.UNDERLINE);
-		registerSingleCharDirective('o', ToggleStyleDirective.ITALIC);
-		registerSingleCharDirective('r', ResetDirective.INSTANCE);
-
-		NAMED_DIRECTIVES_BY_LENGTH.addAll(NAMED_DIRECTIVES.values());
-		NAMED_DIRECTIVES_BY_LENGTH.sort(Comparator.comparingInt((NamedDirective directive) -> directive.key().length()).reversed());
-	}
 
 	private final String source;
 	private final SequenceNode root;
@@ -100,7 +50,60 @@ public final class CompiledCustomText {
 	}
 
 	public static CompiledCustomText compile(String source, Function<String, @Nullable Variable<?>> variableResolver) {
-		return new Parser(source, variableResolver).parse();
+		CustomTextParser.ParsedDocument parsedDocument = CustomTextParser.parse(source, variableResolver);
+		BuildContext buildContext = new BuildContext();
+		SequenceNode root = compileSequence(parsedDocument.root(), buildContext);
+		return new CompiledCustomText(source, root, buildContext.variables, parsedDocument.hasExplicitColors(), parsedDocument.hasDynamicColors());
+	}
+
+	private static SequenceNode compileSequence(CustomTextParser.SequenceNode sequence, BuildContext buildContext) {
+		List<Node> nodes = new ArrayList<>(sequence.children().size());
+		for (CustomTextParser.Node child : sequence.children()) {
+			nodes.add(compileNode(child, buildContext));
+		}
+		return new SequenceNode(List.copyOf(nodes));
+	}
+
+	private static Node compileNode(CustomTextParser.Node node, BuildContext buildContext) {
+		if (node instanceof CustomTextParser.LiteralNode literalNode) {
+			return new LiteralNode(literalNode.text());
+		}
+
+		if (node instanceof CustomTextParser.VariableNode variableNode) {
+			CompiledVariable compiledVariable = new CompiledVariable(variableNode.rawPlaceholder(), variableNode.variable(), variableNode.modifiers());
+			compiledVariable.refreshIfNeeded();
+			buildContext.variables.add(compiledVariable);
+			return new VariableNode(compiledVariable);
+		}
+
+		if (node instanceof CustomTextParser.DirectiveNode directiveNode) {
+			return new DirectiveNode(compileDirective(directiveNode.directive()));
+		}
+
+		CustomTextParser.GradientNode gradientNode = (CustomTextParser.GradientNode) node;
+		return new GradientNode(gradientNode.startColor(), gradientNode.endColor(), compileSequence(gradientNode.content(), buildContext));
+	}
+
+	private static StyleDirective compileDirective(CustomTextParser.Directive directive) {
+		if (directive instanceof CustomTextParser.ToggleDirective toggleDirective) {
+			return switch (toggleDirective) {
+				case BOLD -> ToggleStyleDirective.BOLD;
+				case ITALIC -> ToggleStyleDirective.ITALIC;
+				case UNDERLINE -> ToggleStyleDirective.UNDERLINE;
+				case STRIKETHROUGH -> ToggleStyleDirective.STRIKETHROUGH;
+				case OBFUSCATED -> ToggleStyleDirective.OBFUSCATED;
+			};
+		}
+
+		if (directive == CustomTextParser.ResetDirective.INSTANCE) {
+			return ResetDirective.INSTANCE;
+		}
+
+		CustomTextParser.ColorDirective colorDirective = (CustomTextParser.ColorDirective) directive;
+		return switch (colorDirective.kind()) {
+			case STATIC -> new ColorDirective(new StaticColorSource(requireNonNull(colorDirective.rgb(), "rgb")));
+			case CHROMA -> new ColorDirective(DynamicColorSource.INSTANCE);
+		};
 	}
 
 	public RenderData getRenderData() {
@@ -420,14 +423,6 @@ public final class CompiledCustomText {
 
 	private sealed interface StyleDirective permits ToggleStyleDirective, ColorDirective, ResetDirective {
 		StyleState apply(StyleState style);
-
-		default boolean isColorDirective() {
-			return false;
-		}
-
-		default boolean isDynamicColorDirective() {
-			return false;
-		}
 	}
 
 	private enum ToggleStyleDirective implements StyleDirective {
@@ -468,16 +463,6 @@ public final class CompiledCustomText {
 		public StyleState apply(StyleState style) {
 			return style.toggleColorSource(colorSource);
 		}
-
-		@Override
-		public boolean isColorDirective() {
-			return true;
-		}
-
-		@Override
-		public boolean isDynamicColorDirective() {
-			return colorSource == DynamicColorSource.INSTANCE;
-		}
 	}
 
 	private enum ResetDirective implements StyleDirective {
@@ -487,9 +472,6 @@ public final class CompiledCustomText {
 		public StyleState apply(StyleState style) {
 			return style.reset();
 		}
-	}
-
-	private record NamedDirective(String key, StyleDirective directive) {
 	}
 
 	private static final class CompiledVariable {
@@ -546,338 +528,8 @@ public final class CompiledCustomText {
 		}
 	}
 
-	private static final class Parser {
-		private final String source;
-		private final Function<String, @Nullable Variable<?>> variableResolver;
+	private static final class BuildContext {
 		private final List<CompiledVariable> variables = new ArrayList<>();
-
-		private int index;
-		private boolean hasExplicitColors;
-		private boolean hasDynamicColors;
-
-		private Parser(String source, Function<String, @Nullable Variable<?>> variableResolver) {
-			this.source = requireNonNull(source, "source");
-			this.variableResolver = requireNonNull(variableResolver, "variableResolver");
-		}
-
-		private CompiledCustomText parse() {
-			SequenceNode root = parseSequence(false);
-			return new CompiledCustomText(source, root, variables, hasExplicitColors, hasDynamicColors);
-		}
-
-		private SequenceNode parseSequence(boolean stopAtRightBracket) {
-			List<Node> nodes = new ArrayList<>();
-			StringBuilder literal = new StringBuilder();
-
-			while (index < source.length()) {
-				char current = source.charAt(index);
-
-				if (stopAtRightBracket && current == ']') {
-					break;
-				}
-
-				if (current == '\\') {
-					if (index + 1 < source.length()) {
-						literal.append(source.charAt(index + 1));
-						index += 2;
-					} else {
-						literal.append(current);
-						index++;
-					}
-					continue;
-				}
-
-				if (current == '{') {
-					flushLiteral(literal, nodes);
-					nodes.add(parseVariable());
-					continue;
-				}
-
-				if (current == '&') {
-					flushLiteral(literal, nodes);
-					nodes.add(parseDirective());
-					continue;
-				}
-
-				if (current == '[') {
-					flushLiteral(literal, nodes);
-					nodes.add(parseGradient());
-					continue;
-				}
-
-				literal.append(current);
-				index++;
-			}
-
-			flushLiteral(literal, nodes);
-			return new SequenceNode(List.copyOf(nodes));
-		}
-
-		private void flushLiteral(StringBuilder literal, List<Node> nodes) {
-			if (literal.length() > 0) {
-				nodes.add(new LiteralNode(literal.toString()));
-				literal.setLength(0);
-			}
-		}
-
-		private Node parseVariable() {
-			int start = index;
-			int end = findMatchingDelimiter(start + 1, '{', '}');
-			if (end == -1) {
-				String raw = source.substring(start);
-				index = source.length();
-				return new LiteralNode(raw);
-			}
-
-			String rawPlaceholder = source.substring(start, end + 1);
-			index = end + 1;
-
-			String inner = source.substring(start + 1, end);
-			List<String> parts = Modifiers.splitUnescaped(inner, ':');
-			if (parts.isEmpty()) {
-				return new LiteralNode(rawPlaceholder);
-			}
-
-			Variable<?> variable = variableResolver.apply(parts.getFirst().trim());
-			if (variable == null) {
-				return new LiteralNode(rawPlaceholder);
-			}
-
-			List<Modifiers.ResolvedModifier<?, ?>> modifiers = new ArrayList<>(Math.max(0, parts.size() - 1));
-			for (int i = 1; i < parts.size(); i++) {
-				Modifiers.ResolvedModifier<?, ?> resolvedModifier = Modifiers.get(parts.get(i));
-				if (resolvedModifier == null) {
-					return new LiteralNode(rawPlaceholder);
-				}
-				modifiers.add(resolvedModifier);
-			}
-
-			CompiledVariable compiledVariable = new CompiledVariable(rawPlaceholder, variable, modifiers);
-			compiledVariable.refreshIfNeeded();
-			variables.add(compiledVariable);
-			return new VariableNode(compiledVariable);
-		}
-
-		private Node parseDirective() {
-			int start = index;
-
-			ColorDirective hexDirective = parseHexDirective(start);
-			if (hexDirective != null) {
-				index += 8;
-				hasExplicitColors = true;
-				return new DirectiveNode(hexDirective);
-			}
-
-			NamedDirective namedDirective = findNamedDirective(start + 1);
-			if (namedDirective != null) {
-				index += 1 + namedDirective.key().length();
-				hasExplicitColors |= namedDirective.directive().isColorDirective();
-				hasDynamicColors |= namedDirective.directive().isDynamicColorDirective();
-				return new DirectiveNode(namedDirective.directive());
-			}
-
-			if (start + 1 < source.length()) {
-				StyleDirective singleCharDirective = SINGLE_CHAR_DIRECTIVES.get(source.charAt(start + 1));
-				if (singleCharDirective != null && hasSingleCharBoundary(start + 2)) {
-					index += 2;
-					hasExplicitColors |= singleCharDirective.isColorDirective();
-					hasDynamicColors |= singleCharDirective.isDynamicColorDirective();
-					return new DirectiveNode(singleCharDirective);
-				}
-			}
-
-			int literalEnd = findDirectiveLiteralEnd(start);
-			String literal = source.substring(start, literalEnd);
-			index = literalEnd;
-			return new LiteralNode(literal);
-		}
-
-		private @Nullable ColorDirective parseHexDirective(int start) {
-			if (start + 8 > source.length() || source.charAt(start + 1) != '#') {
-				return null;
-			}
-
-			String hex = source.substring(start + 2, start + 8);
-			if (!hex.chars().allMatch(character -> Character.digit(character, 16) != -1)) {
-				return null;
-			}
-
-			return new ColorDirective(new StaticColorSource(Integer.parseInt(hex, 16)));
-		}
-
-		private @Nullable NamedDirective findNamedDirective(int start) {
-			String lowerCaseTail = source.substring(start).toLowerCase();
-			for (NamedDirective directive : NAMED_DIRECTIVES_BY_LENGTH) {
-				if (lowerCaseTail.startsWith(directive.key())) {
-					return directive;
-				}
-			}
-
-			return null;
-		}
-
-		private boolean hasSingleCharBoundary(int nextIndex) {
-			return nextIndex >= source.length() || !Character.isLowerCase(source.charAt(nextIndex));
-		}
-
-		private int findDirectiveLiteralEnd(int start) {
-			int cursor = start + 1;
-			if (cursor >= source.length()) {
-				return source.length();
-			}
-
-			if (source.charAt(cursor) == '#') {
-				cursor++;
-				while (cursor < source.length() && isHexCharacter(source.charAt(cursor))) {
-					cursor++;
-				}
-				return cursor;
-			}
-
-			while (cursor < source.length() && isDirectiveTokenCharacter(source.charAt(cursor))) {
-				cursor++;
-			}
-
-			return Math.max(start + 2, cursor);
-		}
-
-		private Node parseGradient() {
-			int start = index;
-			int commaIndex = findGradientHeaderSeparator(start + 1);
-			int gradientEnd = findMatchingDelimiter(start + 1, '[', ']');
-
-			if (commaIndex == -1 || gradientEnd == -1 || commaIndex > gradientEnd) {
-				index = gradientEnd == -1 ? source.length() : gradientEnd + 1;
-				return new LiteralNode(source.substring(start, index));
-			}
-
-			String header = source.substring(start + 1, commaIndex).trim();
-			int separatorIndex = header.indexOf(':');
-			if (separatorIndex <= 0 || separatorIndex != header.lastIndexOf(':')) {
-				index = gradientEnd + 1;
-				return new LiteralNode(source.substring(start, index));
-			}
-
-			Integer startColor = parseGradientColorSpec(header.substring(0, separatorIndex).trim());
-			Integer endColor = parseGradientColorSpec(header.substring(separatorIndex + 1).trim());
-			if (startColor == null || endColor == null) {
-				index = gradientEnd + 1;
-				return new LiteralNode(source.substring(start, index));
-			}
-
-			index = commaIndex + 1;
-			int contentStart = index;
-			SequenceNode content = parseSequence(true);
-			if (index >= source.length() || source.charAt(index) != ']') {
-				index = gradientEnd + 1;
-				return new LiteralNode(source.substring(start, index));
-			}
-
-			if (contentStart > gradientEnd) {
-				index = gradientEnd + 1;
-				return new LiteralNode(source.substring(start, index));
-			}
-
-			index++;
-			hasExplicitColors = true;
-			return new GradientNode(startColor, endColor, content);
-		}
-
-		private int findGradientHeaderSeparator(int start) {
-			boolean escaped = false;
-			for (int cursor = start; cursor < source.length(); cursor++) {
-				char current = source.charAt(cursor);
-				if (escaped) {
-					escaped = false;
-					continue;
-				}
-
-				if (current == '\\') {
-					escaped = true;
-					continue;
-				}
-
-				if (current == ',') {
-					return cursor;
-				}
-
-				if (current == ']') {
-					return -1;
-				}
-			}
-
-			return -1;
-		}
-
-		private int findMatchingDelimiter(int start, char open, char close) {
-			int depth = 0;
-			boolean escaped = false;
-
-			for (int cursor = start; cursor < source.length(); cursor++) {
-				char current = source.charAt(cursor);
-				if (escaped) {
-					escaped = false;
-					continue;
-				}
-
-				if (current == '\\') {
-					escaped = true;
-					continue;
-				}
-
-				if (current == open) {
-					depth++;
-				} else if (current == close) {
-					if (depth == 0) {
-						return cursor;
-					}
-					depth--;
-				}
-			}
-
-			return -1;
-		}
-
-		private @Nullable Integer parseGradientColorSpec(String rawColor) {
-			if (rawColor.startsWith("#") && rawColor.length() == 7 && rawColor.substring(1).chars().allMatch(character -> Character.digit(character, 16) != -1)) {
-				return Integer.parseInt(rawColor.substring(1), 16);
-			}
-
-			return NAMED_COLORS.get(rawColor.toLowerCase());
-		}
-	}
-
-	private static void registerNamedColor(String key, int rgb, char singleCharCode) {
-		ColorDirective directive = new ColorDirective(new StaticColorSource(rgb));
-		NAMED_COLORS.put(key, rgb);
-		registerNamedDirective(key, directive);
-		registerSingleCharDirective(singleCharCode, directive);
-	}
-
-	private static void registerNamedColorAlias(String alias, String target) {
-		Integer rgb = NAMED_COLORS.get(target);
-		if (rgb == null) {
-			throw new IllegalArgumentException("Unknown target color " + target);
-		}
-
-		NAMED_COLORS.put(alias, rgb);
-		registerNamedDirective(alias, new ColorDirective(new StaticColorSource(rgb)));
-	}
-
-	private static void registerNamedDirective(String key, StyleDirective directive) {
-		NAMED_DIRECTIVES.put(key, new NamedDirective(key, directive));
-	}
-
-	private static void registerSingleCharDirective(char key, StyleDirective directive) {
-		SINGLE_CHAR_DIRECTIVES.put(key, directive);
-	}
-
-	private static boolean isDirectiveTokenCharacter(char character) {
-		return Character.isLowerCase(character) || Character.isDigit(character) || character == '_';
-	}
-
-	private static boolean isHexCharacter(char character) {
-		return Character.digit(character, 16) != -1;
 	}
 
 	@FunctionalInterface
