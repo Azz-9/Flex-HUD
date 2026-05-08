@@ -11,10 +11,10 @@ public abstract class AbstractModule implements Configurable {
 	private @NonNull String id;
 
 	public AbstractModule(@NonNull String id) {
-		this.enabled = new ConfigBoolean(true, "enabled");
+		this.enabled = new ConfigBoolean(true, "flex_hud.global.config.enabled");
 		this.id = id;
 
-		ConfigRegistry.register(getID(), "flex_hud.global.config.enabled", enabled);
+		ConfigRegistry.register(getID(), "enabled", enabled);
 	}
 
 	@Override

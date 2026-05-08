@@ -4,20 +4,27 @@ import static java.util.Objects.requireNonNull;
 import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 import static me.Azz_9.flex_hud.client.customModules.Variables.UpdateFrequency.*;
 
+import net.minecraft.SharedConstants;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeKeys;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.time.LocalTime;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import me.Azz_9.flex_hud.client.tickables.MemoryUsageTickable;
 import me.Azz_9.flex_hud.client.tickables.SpeedTickable;
+import me.Azz_9.flex_hud.client.utils.PingUtils;
+import me.Azz_9.flex_hud.client.utils.cps.CpsUtils;
 
 public class Variables {
 
@@ -41,8 +48,8 @@ public class Variables {
 		ON_JOIN_WORLD_UPDATE_VARIABLES.clear();
 
 		// player
-		register("player.gamemode", SafeSupplier.create(() -> requireNonNull(requireNonNull(CLIENT.player).getGameMode()).getSimpleTranslatableName().getString(), Text.translatable("selectWorld.gameMode.survival")), TICK);
-		register("player.name", CLIENT::getName, ON_JOIN_WORLD);
+		register("player.gamemode", SafeSupplier.create(() -> requireNonNull(requireNonNull(CLIENT.player).getGameMode()).getSimpleTranslatableName().getString(), Text.translatable("selectWorld.gameMode.survival").getString()), TICK);
+		register("player.name", () -> CLIENT.getSession().getUsername(), ON_JOIN_WORLD);
 		register("player.yaw", SafeSupplier.create(() -> (requireNonNull(CLIENT.player).getYaw() % 360 + 360) % 360 - 180, 180f), FRAME);
 		register("player.pitch", SafeSupplier.create(() -> requireNonNull(CLIENT.player).getPitch(), 0.0f), FRAME);
 		register("player.x", SafeSupplier.create(() -> requireNonNull(CLIENT.player).getX(), 0.0), TICK);
@@ -59,19 +66,48 @@ public class Variables {
 		register("player.speed", SpeedTickable::getSpeed, TICK);
 		register("player.health", SafeSupplier.create(() -> requireNonNull(CLIENT.player).getHealth(), 20), TICK);
 		register("player.health_max", SafeSupplier.create(() -> requireNonNull(CLIENT.player).getMaxHealth(), 20), TICK);
-		register("player.health_percent", SafeSupplier.create(() -> requireNonNull(CLIENT.player).getHealth() / CLIENT.player.getMaxHealth(), 100), TICK);
+		register("player.health_percent", SafeSupplier.create(() -> requireNonNull(CLIENT.player).getMaxHealth() == 0 ? 0 : CLIENT.player.getHealth() / CLIENT.player.getMaxHealth(), 100), TICK);
 		register("player.absorption", SafeSupplier.create(() -> requireNonNull(CLIENT.player).getAbsorptionAmount(), 0), TICK);
 		register("player.absorption_max", SafeSupplier.create(() -> requireNonNull(CLIENT.player).getMaxAbsorption(), 0), TICK);
-		register("player.absorption_percent", SafeSupplier.create(() -> requireNonNull(CLIENT.player).getAbsorptionAmount() / CLIENT.player.getMaxAbsorption(), 0), TICK);
+		register("player.absorption_percent", SafeSupplier.create(() -> requireNonNull(CLIENT.player).getMaxAbsorption() == 0 ? 0 : CLIENT.player.getAbsorptionAmount() / CLIENT.player.getMaxAbsorption(), 100), TICK);
 		register("player.food", SafeSupplier.create(() -> requireNonNull(CLIENT.player).getHungerManager().getFoodLevel(), 20), TICK);
 		register("player.saturation", SafeSupplier.create(() -> requireNonNull(CLIENT.player).getHungerManager().getSaturationLevel(), 20), TICK);
 		register("player.armor", SafeSupplier.create(() -> requireNonNull(CLIENT.player).getArmor(), 20), TICK);
 		// world
-		register("world.biome", SafeSupplier.create(() -> requireNonNull(CLIENT.world).getBiome(requireNonNull(CLIENT.player).getBlockPos()).getKeyOrValue().map(key -> key.getValue().getPath(), value -> "[unregistered " + value + "]"), BiomeKeys.PLAINS), TICK);
+		register("world.name", SafeSupplier.create(() -> requireNonNull(CLIENT.getServer()).getSaveProperties().getLevelName(), "", "World name"), ON_JOIN_WORLD);
+		register("world.biome", SafeSupplier.create(() -> requireNonNull(CLIENT.world).getBiome(requireNonNull(CLIENT.player).getBlockPos()).getKeyOrValue().map(key -> key.getValue().getPath(), value -> "[unregistered " + value + "]"), "", BiomeKeys.PLAINS.getValue().getPath()), TICK);
+		register("world.dimension", SafeSupplier.create(() -> requireNonNull(CLIENT.world).getRegistryKey().getValue().getPath(), "", World.OVERWORLD.getValue().getPath()), TICK);
+		register("world.time", SafeSupplier.create(() -> requireNonNull(CLIENT.world).getTimeOfDay() % 24000, 12000L), TICK);
+		register("world.time.hour_24", SafeSupplier.create(() -> (requireNonNull(CLIENT.world).getTimeOfDay() / 1000 + 6) % 24, 18L), TICK);
+		register("world.time.minute", SafeSupplier.create(() -> (requireNonNull(CLIENT.world).getTimeOfDay() % 1000) * 60 / 1000, 0L), TICK);
+		register("world.time.second", SafeSupplier.create(() -> (requireNonNull(CLIENT.world).getTimeOfDay() % 1000) * 60 / 1000, 0L), TICK);
+		register("world.time.hour_12", SafeSupplier.create(() -> (requireNonNull(CLIENT.world).getTimeOfDay() / 1000 + 6) % 24, 18L), TICK);
+		register("world.time.ampm", SafeSupplier.create(() -> (requireNonNull(CLIENT.world).getTimeOfDay() / 1000 + 6) % 24 < 12 ? "AM" : "PM", "AM"), TICK);
+		register("world.day", SafeSupplier.create(() -> requireNonNull(CLIENT.world).getTimeOfDay() / 24000, 5), TICK);
+
+		// server
+		register("server.ip", SafeSupplier.create(() -> requireNonNull(CLIENT.getCurrentServerEntry()).address, "", "play.hypixel.net"), ON_JOIN_WORLD);
+		register("server.name", SafeSupplier.create(() -> requireNonNull(CLIENT.getCurrentServerEntry()).name, "", "Hypixel"), ON_JOIN_WORLD);
+		register("server.ping", PingUtils::getPing, TICK);
 		// client
 		register("client.fps", CLIENT::getCurrentFps, TICK);
-		register("client.version", CLIENT::getGameVersion, ON_JOIN_WORLD);
+		register("client.version", () -> SharedConstants.getGameVersion().id(), ON_JOIN_WORLD);
 		register("client.render_distance", () -> CLIENT.options.getViewDistance().getValue(), TICK);
+		// cps
+		register("cps.left", CpsUtils::getLeftCps, FRAME);
+		register("cps.right", CpsUtils::getRightCps, FRAME);
+		// pc
+		register("pc.memory_usage", MemoryUsageTickable::getUsedMemory, TICK);
+		register("pc.max_memory", MemoryUsageTickable::getMaxMemory, TICK);
+		register("pc.memory_usage_percentage", MemoryUsageTickable::getUsedMemoryPercentage, TICK);
+		// time
+		register("time.hour_24", () -> LocalTime.now().getHour(), TICK);
+		register("time.minutes", () -> LocalTime.now().getMinute(), TICK);
+		register("time.secondes", () -> LocalTime.now().getSecond(), TICK);
+		register("time.ms", () -> LocalTime.now().getNano() / 1_000_000, FRAME);
+		register("time.hour_12", () -> LocalTime.now().get(ChronoField.CLOCK_HOUR_OF_AMPM), TICK);
+		register("time.ampm", () -> LocalTime.now().get(ChronoField.AMPM_OF_DAY) == 0 ? "AM" : "PM", TICK);
+
 	}
 
 	public static Map<String, Variable<?>> getAllVariables() {

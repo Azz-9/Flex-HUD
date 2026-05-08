@@ -17,6 +17,17 @@ public class ConfigRegistry {
 		MODULES.get(moduleName).remove(key);
 	}
 
+	public static void renameModule(String oldModuleName, String newModuleName) {
+		if (oldModuleName.equals(newModuleName)) {
+			return;
+		}
+
+		Map<String, AbstractConfigObject<?>> module = MODULES.remove(oldModuleName);
+		if (module != null) {
+			MODULES.put(newModuleName, module);
+		}
+	}
+
 	public static Map<String, AbstractConfigObject<?>> getModule(String moduleName) {
 		return MODULES.get(moduleName);
 	}

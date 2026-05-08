@@ -19,6 +19,7 @@ import me.Azz_9.flex_hud.client.configurableModules.Configurable;
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.customModules.CustomModule;
 import me.Azz_9.flex_hud.client.customModules.CustomModuleRegistry;
+import me.Azz_9.flex_hud.client.customModules.CustomModulesPersistence;
 import me.Azz_9.flex_hud.client.screens.AbstractBackNavigableScreen;
 import me.Azz_9.flex_hud.client.screens.createModuleScreen.CreateModuleScreen;
 import me.Azz_9.flex_hud.client.screens.widgets.textFieldWidget.PlaceholderTextFieldWidget;
@@ -104,6 +105,7 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 
 	@Override
 	public void close() {
+		CustomModulesPersistence.saveConfig();
 		ConfigLoader.saveConfig();
 		super.close();
 	}
@@ -122,9 +124,10 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 		this.modulesListWidget.filterModules(text);
 	}
 
-	private void refreshModulesList() {
+	public void refreshModulesList() {
 		modulesListWidget.clearEntries();
 		addMods(this.modulesListWidget.getButtonWidth(), this.modulesListWidget.getButtonHeight(), columnsButton.getValue());
+		onSearchUpdate(this.searchBar.getText());
 	}
 
 	private void addMods(int buttonWidth, int buttonHeight, int columns) {

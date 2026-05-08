@@ -10,6 +10,7 @@ import net.minecraft.text.Text;
 import org.joml.Matrix3x2fStack;
 import org.jspecify.annotations.NonNull;
 
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
 import me.Azz_9.flex_hud.client.customModules.template.CompiledCustomText;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
@@ -20,7 +21,7 @@ public class CustomModule extends AbstractTextModule {
 
 
 	private CompiledCustomText compiledText = CompiledCustomText.compile("");
-	private final @NonNull String text;
+	private @NonNull String text;
 
 	private @NonNull String name;
 
@@ -28,9 +29,6 @@ public class CustomModule extends AbstractTextModule {
 		super(CustomModuleRegistry.nameToId(name), 0, 0, AnchorPosition.START, AnchorPosition.START);
 		this.name = name;
 		this.text = text;
-
-		//TODO on peut pas créer un module custom avec un nom qu'un module existant utilise déjà
-		// TODO peut être faire en sorte que si un utilisateur créé un module avec un nom et que une nouversion du mod ajoute un module avec le même nom, alors ça renomme le module custom avec (1) ou quelque chose comme ça
 	}
 
 	public static CustomModule fromText(@NonNull String id, @NonNull String text) {
@@ -79,9 +77,17 @@ public class CustomModule extends AbstractTextModule {
 		return Text.of(name);
 	}
 
-	public void setName(@NonNull String name) {
-		setId(CustomModuleRegistry.nameToId(name));
+	public void update(@NonNull String name, @NonNull String text) {
+		String newId = CustomModuleRegistry.nameToId(name);
+		if (!getID().equals(newId)) {
+			ConfigRegistry.renameModule(getID(), newId);
+			setId(newId);
+		}
+
 		this.name = name;
+		this.text = text;
+		this.compiledText = CompiledCustomText.compile(text);
+		init();
 	}
 
 	public @NonNull String getText() {

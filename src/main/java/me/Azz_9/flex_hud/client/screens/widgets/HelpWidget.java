@@ -1,8 +1,8 @@
 package me.Azz_9.flex_hud.client.screens.widgets;
 
-import me.Azz_9.flex_hud.client.utils.Cursors;
-import me.Azz_9.flex_hud.client.utils.EaseUtils;
-import net.minecraft.client.MinecraftClient;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
+import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.Click;
@@ -11,10 +11,11 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Easing;
+
 import org.joml.Matrix3x2fStack;
 
-import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
-import static me.Azz_9.flex_hud.client.Flex_hudClient.MOD_ID;
+import me.Azz_9.flex_hud.client.utils.Cursors;
 
 public class HelpWidget extends ClickableWidget {
 	private final Identifier texture = Identifier.of(MOD_ID, "widgets/buttons/help/help.png");
@@ -48,10 +49,10 @@ public class HelpWidget extends ClickableWidget {
 			float easedProgress = 1.0f;
 			if (displayHelp && !isFadingOut && elapsedTime < TRANSITION_DURATION) {
 				// Ease-Out
-				easedProgress = EaseUtils.getEaseOutQuad(elapsedTime / (float) TRANSITION_DURATION);
+				easedProgress = Easing.outQuad(elapsedTime / (float) TRANSITION_DURATION);
 			} else if (isFadingOut) {
 				// Ease-Out reversed
-				easedProgress = -EaseUtils.getEaseOutQuad(Math.min(1.0f, elapsedTime / (float) TRANSITION_DURATION)) + 1;
+				easedProgress = -Easing.outQuad(Math.min(1.0f, elapsedTime / (float) TRANSITION_DURATION)) + 1;
 				if (easedProgress <= 0.0f) {
 					isFadingOut = false;
 				}

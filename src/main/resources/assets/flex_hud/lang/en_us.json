@@ -8,8 +8,8 @@
 	"flex_hud.configuration_screen.columns": "Columns",
 	"flex_hud.configuration_screen.done": "Done",
 	"flex_hud.configuration_screen.module_compatibility_warning": "This module doesn't work properly with ",
-	"flex_hud.configuration_screen.edit_module": "Modifier ce module",
-	"flex_hud.configuration_screen.delete_module": "Supprimer ce module",
+	"flex_hud.configuration_screen.edit_module": "Edit module",
+	"flex_hud.configuration_screen.delete_module": "Delete module",
 
 	"flex_hud.create_module_screen.module_name": "Module name",
 	"flex_hud.create_module_screen.module_content": "Module content",

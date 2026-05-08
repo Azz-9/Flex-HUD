@@ -10,18 +10,13 @@ import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryMXBean;
-
-import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ToggleButtonEntry;
+import me.Azz_9.flex_hud.client.tickables.MemoryUsageTickable;
 
-public class MemoryUsage extends AbstractTextModule implements TickableModule {
-
-	private int memoryUsage;
+public class MemoryUsage extends AbstractTextModule {
 
 	public MemoryUsage(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super("memory_usage", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
@@ -47,7 +42,7 @@ public class MemoryUsage extends AbstractTextModule implements TickableModule {
 			return;
 		}
 
-		String text = "Mem: " + memoryUsage + "%";
+		String text = "Mem: " + (int) MemoryUsageTickable.getUsedMemoryPercentage() + "%";
 
 		setWidth(text);
 
@@ -120,21 +115,5 @@ public class MemoryUsage extends AbstractTextModule implements TickableModule {
 				);
 			}
 		};
-	}
-
-	@Override
-	public void tick() {
-		// Accéder au gestionnaire de mémoire de la JVM
-		MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
-
-		// Obtenir les informations sur la mémoire heap
-		java.lang.management.MemoryUsage heapMemoryUsage = memoryBean.getHeapMemoryUsage();
-
-		// Mémoire utilisée et maximum allouée
-		long usedMemory = heapMemoryUsage.getUsed();
-		long maxMemory = heapMemoryUsage.getMax();
-
-		// Calculer le pourcentage
-		memoryUsage = (int) ((double) usedMemory / maxMemory * 100);
 	}
 }

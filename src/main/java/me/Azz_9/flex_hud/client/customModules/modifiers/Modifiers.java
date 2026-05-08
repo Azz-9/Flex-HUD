@@ -97,7 +97,7 @@ public class Modifiers {
 
 		// conditional
 		registerCustom(String.class, String.class, "if_empty", raw -> parseTextAfterPrefix(raw, "if_empty"), (val, arguments) -> val == null || val.isEmpty() ? arguments.getFirst() : val, uiFixed("if_empty", List.of(parameter("value", Modifier.ParameterKind.TEXT)), arguments -> formatFixedRaw("if_empty", List.of(parameter("value", Modifier.ParameterKind.TEXT)), arguments)));
-		registerCustom(BigDecimal.class, String.class, "conditional", Modifiers::parseConditionalBranches, Modifiers::applyConditionalBranches, uiConditional("conditional"));
+		registerCustom(BigDecimal.class, String.class, "conditional", Modifiers::parseConditionalBranches, Modifiers::applyConditionalBranches, uiConditional());
 	}
 
 	private static <I, R> void registerCustom(Class<I> inputType,
@@ -565,11 +565,11 @@ public class Modifiers {
 				parameters.isEmpty() ? Modifier.EditorKind.NONE : Modifier.EditorKind.FIXED_FIELDS,
 				parameters,
 				rawFormatter,
-				arguments -> formatDisplayArguments(arguments)
+				Modifiers::formatDisplayArguments
 		);
 	}
 
-	private static Modifier.UiMetadata uiConditional(String key) {
+	private static Modifier.UiMetadata uiConditional() {
 		return new Modifier.UiMetadata(
 				Modifier.EditorKind.CONDITIONAL_BRANCHES,
 				List.of(parameter("branches", Modifier.ParameterKind.CONDITIONAL_BRANCHES)),

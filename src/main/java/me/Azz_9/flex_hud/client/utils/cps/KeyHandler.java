@@ -2,10 +2,11 @@ package me.Azz_9.flex_hud.client.utils.cps;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 
-import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.minecraft.client.MinecraftClient;
+
 import org.lwjgl.glfw.GLFW;
+
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 
 public class KeyHandler {
 	private static boolean isAttackKeyPressed = false;
@@ -13,7 +14,7 @@ public class KeyHandler {
 
 	public static void onKey(int button, int action) {
 
-		if (!ModulesHelper.getInstance().isEnabled.getValue() || !ModulesHelper.getInstance().cps.isEnabled() && !ModulesHelper.getInstance().keyStrokes.isEnabled()) {
+		if (!ModulesHelper.getInstance().isEnabled.getValue()) {
 			isAttackKeyPressed = false;
 			isUseKeyPressed = false;
 			return;
@@ -22,13 +23,6 @@ public class KeyHandler {
 		int attackKeyCode = KeyBindingHelper.getBoundKeyOf(CLIENT.options.attackKey).getCode();
 		int useKeyCode = KeyBindingHelper.getBoundKeyOf(CLIENT.options.useKey).getCode();
 
-		if ((button != attackKeyCode && button != useKeyCode) ||
-				(button == attackKeyCode && !ModulesHelper.getInstance().cps.showLeftClick.getValue() && !ModulesHelper.getInstance().keyStrokes.isEnabled()) ||
-				(button == useKeyCode && !ModulesHelper.getInstance().cps.showRightClick.getValue() && !ModulesHelper.getInstance().keyStrokes.isEnabled())) {
-			isAttackKeyPressed = false;
-			isUseKeyPressed = false;
-			return;
-		}
 		if (action == GLFW.GLFW_PRESS) {
 			if (!isAttackKeyPressed && button == attackKeyCode) {
 				isAttackKeyPressed = true;

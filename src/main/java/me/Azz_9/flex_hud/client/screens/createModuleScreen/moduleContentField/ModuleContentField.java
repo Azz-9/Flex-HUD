@@ -1,4 +1,4 @@
-package me.Azz_9.flex_hud.client.screens.createModuleScreen;
+package me.Azz_9.flex_hud.client.screens.createModuleScreen.moduleContentField;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 
@@ -11,21 +11,18 @@ import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.input.CharInput;
 import net.minecraft.client.input.KeyInput;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
 
 import org.jspecify.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import me.Azz_9.flex_hud.client.customModules.Variable;
@@ -34,6 +31,7 @@ import me.Azz_9.flex_hud.client.customModules.modifiers.Modifiers;
 import me.Azz_9.flex_hud.client.screens.TrackableChange;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector.ColorBindable;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector.ColorSelector;
+import me.Azz_9.flex_hud.client.screens.createModuleScreen.ModuleContentEditorModel;
 import me.Azz_9.flex_hud.client.tickables.ChromaColorTickable;
 
 public class ModuleContentField extends ClickableWidget implements TrackableChange {
@@ -42,12 +40,12 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 			Identifier.ofVanilla("widget/text_field"), Identifier.ofVanilla("widget/text_field_highlighted")
 	);
 
-	private static final int TEXT_PADDING_X = 4;
+	static final int TEXT_PADDING_X = 4;
 	private static final int TEXT_PADDING_Y = 4;
 	private static final int SELECTION_COLOR = 0x66357dff;
 	private static final int CARET_COLOR = 0xffffffff;
-	private static final int TEXT_COLOR = 0xffffffff;
-	private static final int PLACEHOLDER_COLOR = 0xff8a8f98;
+	static final int TEXT_COLOR = 0xffffffff;
+	static final int PLACEHOLDER_COLOR = 0xff8a8f98;
 
 	private static final int VARIABLE_BG_COLOR = 0xff24354c;
 	private static final int VARIABLE_BORDER_COLOR = 0xff4d6d92;
@@ -67,17 +65,17 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 	private static final int DESCRIPTION_BACKGROUND = 0xf01e1f22;
 	private static final int POPUP_BACKGROUND = 0xff1e1f22;
 	private static final int POPUP_BORDER = 0xff4a4f59;
-	private static final int POPUP_PADDING = 6;
-	private static final int POPUP_GAP = 4;
-	private static final int OVERLAY_GAP = 6;
-	private static final int BUTTON_HEIGHT = 16;
-	private static final int BUTTON_HORIZONTAL_PADDING = 5;
-	private static final int BUTTON_BACKGROUND = 0xff2c3138;
-	private static final int BUTTON_HOVERED_BACKGROUND = 0xff404651;
+	static final int POPUP_PADDING = 6;
+	static final int POPUP_GAP = 4;
+	static final int OVERLAY_GAP = 6;
+	static final int BUTTON_HEIGHT = 16;
+	static final int BUTTON_HORIZONTAL_PADDING = 5;
+	static final int BUTTON_BACKGROUND = 0xff2c3138;
+	static final int BUTTON_HOVERED_BACKGROUND = 0xff404651;
 	private static final int BUTTON_ACTIVE_BACKGROUND = 0xff365277;
 	private static final int BUTTON_MIXED_BACKGROUND = 0xff675a32;
-	private static final int BUTTON_TEXT_COLOR = 0xffffffff;
-	private static final int POPUP_ERROR_COLOR = 0xffff7070;
+	static final int BUTTON_TEXT_COLOR = 0xffffffff;
+	static final int POPUP_ERROR_COLOR = 0xffff7070;
 	private static final int CHIP_PLUS_WIDTH = 8;
 	private static final int TOOLBAR_BUTTON_WIDTH = 18;
 	private static final int TOOLBAR_ICON_BUTTON_WIDTH = 30;
@@ -87,8 +85,8 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 			0x555555, 0x5555ff, 0x55ff55, 0x55ffff,
 			0xff5555, 0xff55ff, 0xffff55, 0xffffff
 	);
-	private static final int SCROLLBAR_THUMB_COLOR = 0xff636360;
-	private static final int SCROLLBAR_THUMB_ACTIVE_COLOR = 0xffa8a8a4;
+	static final int SCROLLBAR_THUMB_COLOR = 0xff636360;
+	static final int SCROLLBAR_THUMB_ACTIVE_COLOR = 0xffa8a8a4;
 	private static final Pattern UNSIGNED_INTEGER_INPUT = Pattern.compile("\\d{0,9}");
 	private static final Pattern UNSIGNED_TWO_DIGIT_INTEGER_INPUT = Pattern.compile("\\d{0,2}");
 	private static final Pattern SIGNED_INTEGER_INPUT = Pattern.compile("-?\\d{0,9}");
@@ -96,14 +94,14 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 
 	private final @Nullable String initialContent;
 
-	private ModuleContentEditorModel model;
+	ModuleContentEditorModel model;
 	private String rawText;
 	private int maxLength = 200;
 	private Consumer<String> changedListener = text -> {
 	};
 	private int caretIndex;
 	private int selectionAnchor;
-	private int horizontalScroll;
+	int horizontalScroll;
 	private boolean draggingSelection;
 
 	private List<DisplayItem> displayItems = List.of();
@@ -114,8 +112,8 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 	private long hoverStartTime;
 	private @Nullable SelectionBounds selectionBounds;
 	private List<ToolbarButton> toolbarButtons = List.of();
-	private @Nullable ModifierPickerPopup modifierPickerPopup;
-	private @Nullable ModifierEditorPopup modifierEditorPopup;
+	@Nullable ModifierPickerPopup modifierPickerPopup;
+	@Nullable ModifierEditorPopup modifierEditorPopup;
 	private @Nullable ColorPopup colorPopup;
 	private @Nullable GradientPopup gradientPopup;
 
@@ -149,7 +147,7 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		renderCaret(context, innerLeft, contentTextY);
 		context.disableScissor();
 
-		if (rawText.isEmpty() && !isFocused()) {
+		if (rawText.isEmpty()) {
 			context.drawText(CLIENT.textRenderer, Text.translatable("flex_hud.create_module_screen.module_content.placeholder"), innerLeft, contentTextY, PLACEHOLDER_COLOR, false);
 		}
 
@@ -525,6 +523,9 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		if (modifierEditorPopup != null && modifierEditorPopup.charTyped(input)) {
 			return true;
 		}
+		if (modifierPickerPopup != null && modifierPickerPopup.charTyped(input)) {
+			return true;
+		}
 
 		if (!isFocused() || !input.isValidChar()) {
 			return false;
@@ -566,6 +567,9 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 			return true;
 		}
 		if (modifierEditorPopup != null && modifierEditorPopup.keyPressed(input)) {
+			return true;
+		}
+		if (modifierPickerPopup != null && modifierPickerPopup.keyPressed(input)) {
 			return true;
 		}
 
@@ -931,7 +935,7 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		} else if (caretX - horizontalScroll > innerWidth - 1) {
 			horizontalScroll = caretX - innerWidth + 1;
 		}
-		horizontalScroll = Math.max(0, Math.min(horizontalScroll, Math.max(0, contentWidth - innerWidth)));
+		horizontalScroll = Math.clamp(horizontalScroll, 0, Math.max(0, contentWidth - innerWidth));
 	}
 
 	private void rebuildLayout() {
@@ -976,8 +980,8 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		}
 
 		ModuleContentEditorModel.ColorLayer topLayer = colorLayers.getLast();
-		if (topLayer instanceof ModuleContentEditorModel.StaticColorLayer staticColorLayer) {
-			return 0xff000000 | staticColorLayer.rgb();
+		if (topLayer instanceof ModuleContentEditorModel.StaticColorLayer(int rgb)) {
+			return 0xff000000 | rgb;
 		}
 		if (topLayer == ModuleContentEditorModel.ChromaColorLayer.INSTANCE) {
 			return ChromaColorTickable.getColor();
@@ -1030,14 +1034,13 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 	}
 
 	private Style toMinecraftStyle(ModuleContentEditorModel.StyleState style, int color) {
-		Style minecraftStyle = Style.EMPTY
+		return Style.EMPTY
 				.withBold(style.bold())
 				.withItalic(style.italic())
 				.withUnderline(style.underline())
 				.withStrikethrough(style.strikethrough())
 				.withObfuscated(style.obfuscated())
 				.withColor(TextColor.fromRgb(color & 0x00ffffff));
-		return minecraftStyle;
 	}
 
 	private void refreshOverlayLayout() {
@@ -1270,7 +1273,7 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		modifierPickerPopup = null;
 	}
 
-	private void renderButtonCenterLabel(DrawContext context, Bounds bounds, Text label, int backgroundColor, int textColor, double mouseX, double mouseY) {
+	void renderButtonCenterLabel(DrawContext context, Bounds bounds, Text label, int backgroundColor, int textColor, double mouseX, double mouseY) {
 		if (!label.getString().isEmpty()) {
 			context.fill(bounds.x(), bounds.y(), bounds.right(), bounds.bottom(), backgroundColor);
 			context.drawStrokedRectangle(bounds.x(), bounds.y(), bounds.width(), bounds.height(), POPUP_BORDER);
@@ -1287,7 +1290,7 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		}
 	}
 
-	private void renderButton(DrawContext context, Bounds bounds, Text label, int backgroundColor, int textColor, int padding, double mouseX, double mouseY) {
+	void renderButton(DrawContext context, Bounds bounds, Text label, int backgroundColor, int textColor, int padding, double mouseX, double mouseY) {
 		if (!label.getString().isEmpty()) {
 			context.fill(bounds.x(), bounds.y(), bounds.right(), bounds.bottom(), backgroundColor);
 			context.drawStrokedRectangle(bounds.x(), bounds.y(), bounds.width(), bounds.height(), POPUP_BORDER);
@@ -1304,12 +1307,12 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		}
 	}
 
-	private void renderPanel(DrawContext context, Bounds bounds) {
+	void renderPanel(DrawContext context, Bounds bounds) {
 		context.fill(bounds.x(), bounds.y(), bounds.right(), bounds.bottom(), POPUP_BACKGROUND);
 		context.drawStrokedRectangle(bounds.x(), bounds.y(), bounds.width(), bounds.height(), POPUP_BORDER);
 	}
 
-	private int clampX(int x, int width) {
+	int clampX(int x, int width) {
 		Screen screen = CLIENT.currentScreen;
 		if (screen == null) {
 			return x;
@@ -1317,7 +1320,7 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		return Math.clamp(x, 4, Math.max(4, screen.width - width - 4));
 	}
 
-	private int clampY(int y, int height) {
+	int clampY(int y, int height) {
 		Screen screen = CLIENT.currentScreen;
 		if (screen == null) {
 			return y;
@@ -1369,14 +1372,14 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 	private void openModifierPicker(VariableDisplayItem variableItem) {
 		modifierEditorPopup = null;
 		closeSelectionPopups();
-		modifierPickerPopup = new ModifierPickerPopup(variableItem.modelIndex());
+		modifierPickerPopup = new ModifierPickerPopup(this, variableItem.modelIndex());
 		modifierPickerPopup.layout(variableItem);
 	}
 
 	private void openModifierEditor(VariableDisplayItem variableItem, int modifierIndex) {
 		closeModifierPicker();
 		closeSelectionPopups();
-		modifierEditorPopup = new ModifierEditorPopup(variableItem.modelIndex(), modifierIndex);
+		modifierEditorPopup = new ModifierEditorPopup(this, variableItem.modelIndex(), modifierIndex);
 		modifierEditorPopup.layout(variableItem);
 	}
 
@@ -1395,7 +1398,7 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		refreshOverlayLayout();
 	}
 
-	private @Nullable VariableDisplayItem findVariableDisplayItem(int elementIndex) {
+	@Nullable VariableDisplayItem findVariableDisplayItem(int elementIndex) {
 		for (DisplayItem item : displayItems) {
 			if (item.modelIndex() == elementIndex && item instanceof VariableDisplayItem variableDisplayItem) {
 				return variableDisplayItem;
@@ -1404,7 +1407,7 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		return null;
 	}
 
-	private List<Modifier<?, ?>> getCompatibleModifiers(ModuleContentEditorModel.VariableElement variableElement) {
+	List<Modifier<?, ?>> getCompatibleModifiers(ModuleContentEditorModel.VariableElement variableElement) {
 		List<Modifier<?, ?>> compatible = new ArrayList<>();
 		for (Modifier<?, ?> modifier : Modifiers.getAll()) {
 			List<Modifiers.ResolvedModifier<?, ?>> candidateModifiers = new ArrayList<>(variableElement.modifiers());
@@ -1422,14 +1425,14 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		return Modifiers.compileFormatter(inputType, modifiers) != null;
 	}
 
-	private Modifiers.ResolvedModifier<?, ?> defaultResolvedModifier(Modifier<?, ?> modifier) {
+	Modifiers.ResolvedModifier<?, ?> defaultResolvedModifier(Modifier<?, ?> modifier) {
 		List<String> arguments = defaultArguments(modifier);
 		String raw = modifier.uiMetadata().rawFormatter().apply(arguments);
 		Modifiers.ResolvedModifier<?, ?> resolvedModifier = Modifiers.get(raw);
 		return resolvedModifier != null ? resolvedModifier : new Modifiers.ResolvedModifier<>(modifier, arguments, raw);
 	}
 
-	private List<String> defaultArguments(Modifier<?, ?> modifier) {
+	List<String> defaultArguments(Modifier<?, ?> modifier) {
 		if (modifier.uiMetadata().editorKind() == Modifier.EditorKind.CONDITIONAL_BRANCHES) {
 			return List.of("if_gt", "0", "");
 		}
@@ -1441,7 +1444,7 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		return arguments;
 	}
 
-	private String defaultValue(Modifier<?, ?> modifier, Modifier.ParameterDefinition parameter) {
+	String defaultValue(Modifier<?, ?> modifier, Modifier.ParameterDefinition parameter) {
 		if (parameter.kind() == Modifier.ParameterKind.DECIMAL && modifier.key().equals("div")) {
 			return "1";
 		}
@@ -1453,25 +1456,25 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		};
 	}
 
-	private static boolean isUnsignedIntegerInput(String text) {
+	static boolean isUnsignedIntegerInput(String text) {
 		return UNSIGNED_INTEGER_INPUT.matcher(text).matches();
 	}
 
-	private static boolean isUnsignedTwoDigitIntegerInput(String text) {
+	static boolean isUnsignedTwoDigitIntegerInput(String text) {
 		return UNSIGNED_TWO_DIGIT_INTEGER_INPUT.matcher(text).matches();
 	}
 
-	private static boolean isSignedIntegerInput(String text) {
+	static boolean isSignedIntegerInput(String text) {
 		return SIGNED_INTEGER_INPUT.matcher(text).matches();
 	}
 
-	private static boolean isSignedNonZeroIntegerInput(String text) {
+	static boolean isSignedNonZeroIntegerInput(String text) {
 		return text.isEmpty()
 				|| text.equals("-")
 				|| SIGNED_NON_ZERO_INTEGER_INPUT.matcher(text).matches();
 	}
 
-	private void applyModifierChange(int elementIndex, @Nullable Integer modifierIndex, Modifiers.ResolvedModifier<?, ?> newModifier, boolean deleteModifier) {
+	void applyModifierChange(int elementIndex, @Nullable Integer modifierIndex, Modifiers.ResolvedModifier<?, ?> newModifier, boolean deleteModifier) {
 		if (!(model.get(elementIndex) instanceof ModuleContentEditorModel.VariableElement variableElement)) {
 			return;
 		}
@@ -1539,62 +1542,6 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		this.changedListener = changedListener;
 	}
 
-	private sealed interface DisplayItem permits TextDisplayItem, VariableDisplayItem {
-		int modelIndex();
-
-		int x();
-
-		int width();
-
-		int height();
-
-		default int endX() {
-			return x() + width();
-		}
-	}
-
-	private record TextDisplayItem(int modelIndex, int x, int width, int height, String text,
-	                               int color) implements DisplayItem {
-	}
-
-	private record VariableDisplayItem(int modelIndex,
-	                                   int x,
-	                                   int width,
-	                                   int height,
-	                                   int color,
-	                                   ModuleContentEditorModel.VariableElement element,
-	                                   String name,
-	                                   int nameWidth,
-	                                   List<ModifierPart> modifiers,
-	                                   int plusX) implements DisplayItem {
-	}
-
-	private record ModifierPart(String displayText, int width, int color, Text tooltip, int startX, int index) {
-	}
-
-	private record HoverTarget(Text tooltip) {
-	}
-
-	private record SelectionBounds(int left, int top, int right, int bottom) {
-		int centerX() {
-			return (left + right) / 2;
-		}
-	}
-
-	private record Bounds(int x, int y, int width, int height) {
-		int right() {
-			return x + width;
-		}
-
-		int bottom() {
-			return y + height;
-		}
-
-		boolean contains(double mouseX, double mouseY) {
-			return x <= mouseX && mouseX <= right() && y <= mouseY && mouseY <= bottom();
-		}
-	}
-
 	private enum ButtonState {
 		NORMAL,
 		ACTIVE,
@@ -1634,798 +1581,11 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		}
 	}
 
-	private enum VariableHitKind {
-		BODY,
-		MODIFIER,
-		PLUS
-	}
-
-	private record VariableHit(VariableHitKind kind, VariableDisplayItem variableItem, int modifierIndex) {
-	}
-
-	private record ModifierPickerEntry(Modifier<?, ?> modifier, Bounds bounds, Text tooltip) {
-	}
-
-	private final class ModifierPickerPopup {
-		private static final int BUTTON_PADDING = 2;
-		private static final int ROW_GAP = 1;
-		private static final int MAX_HEIGHT = 180;
-		private static final int SCROLLBAR_WIDTH = 4;
-		private static final int SCROLLBAR_MARGIN = 3;
-
-		private final int elementIndex;
-		private Bounds bounds = new Bounds(0, 0, 0, 0);
-		private List<ModifierPickerEntry> entries = List.of();
-		private int contentHeight = 0;
-		private int viewportHeight = 0; // hauteur dispo pour les entries
-		private boolean isDraggingScrollbar = false;
-		private double dragStartMouseY = 0;
-		private double dragStartScrollOffset = 0;
-
-		private double targetScroll = 0; // Target scroll amount (set by mouse wheel)
-		private double currentScroll = 0; // Interpolated scroll amount (used for rendering)
-		private final double SCROLL_SPEED = 25.0; // Pixels per notch
-		private long lastUpdateTime = System.nanoTime();
-
-		private ModifierPickerPopup(int elementIndex) {
-			this.elementIndex = elementIndex;
-		}
-
-		private int elementIndex() {
-			return elementIndex;
-		}
-
-		private boolean needsScrollbar() {
-			return contentHeight > viewportHeight;
-		}
-
-		private int maxScroll() {
-			return Math.max(0, contentHeight - viewportHeight);
-		}
-
-		private void setScrollPosition(double scrollPosition) {
-			double clamped = MathHelper.clamp(scrollPosition, 0.0, maxScroll());
-			currentScroll = clamped;
-			targetScroll = clamped;
-		}
-
-		private void layout(VariableDisplayItem variableItem) {
-			List<Modifier<?, ?>> compatibleModifiers = getCompatibleModifiers(variableItem.element());
-
-			int titleHeight = CLIENT.textRenderer.fontHeight;
-			int rowHeight = CLIENT.textRenderer.fontHeight + 4;
-
-			int width = CLIENT.textRenderer.getWidth(Text.translatable("flex_hud.create_module_screen.editor.add_modifier")) + POPUP_PADDING * 2;
-			for (Modifier<?, ?> modifier : compatibleModifiers) {
-				width = Math.max(width, CLIENT.textRenderer.getWidth(modifier.uiMetadata().getName(modifier.key())) + BUTTON_PADDING * 2 + POPUP_PADDING * 2);
-			}
-
-			// Hauteur totale du contenu des entries
-			contentHeight = compatibleModifiers.isEmpty()
-					? rowHeight
-					: compatibleModifiers.size() * (rowHeight + ROW_GAP) - ROW_GAP;
-
-			int headerHeight = POPUP_PADDING + titleHeight + POPUP_GAP;
-			int footerHeight = POPUP_PADDING;
-			int maxViewportHeight = MAX_HEIGHT - headerHeight - footerHeight;
-			viewportHeight = Math.min(contentHeight, maxViewportHeight);
-
-			int totalHeight = headerHeight + viewportHeight + footerHeight;
-
-			// On réserve de la place pour la scrollbar si besoin
-			if (needsScrollbar()) {
-				width += SCROLLBAR_WIDTH + SCROLLBAR_MARGIN;
-			}
-
-			int preferredX = getX() + TEXT_PADDING_X + variableItem.x() - horizontalScroll;
-			int preferredY = getBottom() + OVERLAY_GAP;
-			Screen screen = CLIENT.currentScreen;
-			if (screen != null && preferredY + totalHeight > screen.height - 4) {
-				preferredY = getY() - totalHeight - OVERLAY_GAP;
-			}
-
-			bounds = new Bounds(clampX(preferredX, width), clampY(preferredY, totalHeight), width, totalHeight);
-			currentScroll = MathHelper.clamp(currentScroll, 0.0, maxScroll());
-			targetScroll = MathHelper.clamp(targetScroll, 0.0, maxScroll());
-
-			// Build entries (positions relatives au début du contenu, avant scroll)
-			List<ModifierPickerEntry> builtEntries = new ArrayList<>();
-			int entryY = 0;
-			int entryWidth = bounds.width() - POPUP_PADDING * 2 - (needsScrollbar() ? SCROLLBAR_WIDTH + SCROLLBAR_MARGIN : 0);
-			for (Modifier<?, ?> modifier : compatibleModifiers) {
-				builtEntries.add(new ModifierPickerEntry(
-						modifier,
-						new Bounds(bounds.x() + POPUP_PADDING, entryY, entryWidth, rowHeight),
-						modifier.uiMetadata().getDescription(modifier.key())
-				));
-				entryY += rowHeight + ROW_GAP;
-			}
-			entries = List.copyOf(builtEntries);
-		}
-
-		private int entryRenderY(ModifierPickerEntry entry) {
-			// Position écran de l'entry selon le scroll
-			return entry.bounds().y() + viewportOriginY() - (int) currentScroll;
-		}
-
-		private int viewportOriginY() {
-			// Y écran du début de la zone viewport
-			return bounds.y() + POPUP_PADDING + CLIENT.textRenderer.fontHeight + POPUP_GAP;
-		}
-
-		private void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-			renderPanel(context, bounds);
-			// Titre
-			context.drawText(
-					CLIENT.textRenderer,
-					Text.translatable("flex_hud.create_module_screen.editor.add_modifier"),
-					bounds.x() + POPUP_PADDING,
-					bounds.y() + POPUP_PADDING,
-					TEXT_COLOR, false
-			);
-
-			if (entries.isEmpty()) {
-				context.drawText(
-						CLIENT.textRenderer,
-						Text.translatable("flex_hud.create_module_screen.editor.no_modifier_available"),
-						bounds.x() + POPUP_PADDING,
-						viewportOriginY(),
-						PLACEHOLDER_COLOR, false
-				);
-				return;
-			}
-
-			// Clip au viewport
-			int vpOriginY = viewportOriginY();
-			context.enableScissor(
-					bounds.x(),
-					vpOriginY,
-					bounds.x() + bounds.width(),
-					vpOriginY + viewportHeight
-			);
-
-			long currentTime = System.nanoTime();
-			double deltaSeconds = (currentTime - lastUpdateTime) / 1_000_000_000.0; // Convertir en secondes
-			lastUpdateTime = currentTime;
-
-			double alpha = 1.0 - Math.exp(-SCROLL_SPEED * deltaSeconds);
-
-			currentScroll += (targetScroll - currentScroll) * alpha;
-
-			for (ModifierPickerEntry entry : entries) {
-				int screenY = entryRenderY(entry);
-				// Sauter les entries hors viewport
-				if (screenY + entry.bounds().height() < vpOriginY) continue;
-				if (screenY > vpOriginY + viewportHeight) break;
-
-				Bounds renderBounds = new Bounds(entry.bounds().x(), screenY, entry.bounds().width(), entry.bounds().height());
-				int background = renderBounds.contains(mouseX, mouseY) ? BUTTON_HOVERED_BACKGROUND : BUTTON_BACKGROUND;
-				renderButton(context, renderBounds, entry.modifier().uiMetadata().getName(entry.modifier().key()), background, BUTTON_TEXT_COLOR, BUTTON_PADDING, mouseX, mouseY);
-			}
-
-			context.disableScissor();
-
-			// Scrollbar
-			if (needsScrollbar()) {
-				renderScrollbar(context, vpOriginY, mouseX, mouseY);
-			}
-		}
-
-		private void renderScrollbar(DrawContext context, int vpOriginY, double mouseX, double mouseY) {
-			int trackX = bounds.x() + bounds.width() - POPUP_PADDING - SCROLLBAR_WIDTH;
-			int trackHeight = viewportHeight;
-
-			// Thumb
-			float ratio = (float) viewportHeight / contentHeight;
-			int thumbHeight = Math.max(12, (int) (trackHeight * ratio));
-			int maxThumbOffset = trackHeight - thumbHeight;
-			int thumbOffset = (contentHeight > viewportHeight)
-					? (int) ((float) currentScroll / (contentHeight - viewportHeight) * maxThumbOffset)
-					: 0;
-
-			// Thumb plus clair si hover ou drag actif
-			boolean active = isDraggingScrollbar || isOverScrollbarThumb(mouseX, mouseY);
-			int thumbColor = active ? SCROLLBAR_THUMB_ACTIVE_COLOR : SCROLLBAR_THUMB_COLOR;
-
-			context.fill(
-					trackX, vpOriginY + thumbOffset,
-					trackX + SCROLLBAR_WIDTH, vpOriginY + thumbOffset + thumbHeight,
-					thumbColor
-			);
-
-			if (isOverScrollbarThumb(mouseX, mouseY)) {
-				context.setCursor(isDraggingScrollbar ? StandardCursors.RESIZE_NS : StandardCursors.POINTING_HAND);
-			}
-		}
-
-		private boolean isOverScrollbarThumb(double mouseX, double mouseY) {
-			if (!needsScrollbar()) return false;
-			int trackX = bounds.x() + bounds.width() - POPUP_PADDING - SCROLLBAR_WIDTH;
-			int vpOriginY = viewportOriginY();
-			int trackHeight = viewportHeight;
-			float ratio = (float) viewportHeight / contentHeight;
-			int thumbHeight = Math.max(12, (int) (trackHeight * ratio));
-			int maxThumbOffset = trackHeight - thumbHeight;
-			int thumbOffset = (contentHeight > viewportHeight)
-					? (int) ((float) currentScroll / (contentHeight - viewportHeight) * maxThumbOffset)
-					: 0;
-			int thumbY = vpOriginY + thumbOffset;
-			return mouseX >= trackX && mouseX <= trackX + SCROLLBAR_WIDTH
-					&& mouseY >= thumbY && mouseY <= thumbY + thumbHeight;
-		}
-
-		private boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-			if (!bounds.contains(mouseX, mouseY)) return false;
-			targetScroll = MathHelper.clamp(targetScroll - amount * SCROLL_SPEED, 0.0, maxScroll());
-			return true;
-		}
-
-		private boolean mouseClicked(Click click, boolean doubled) {
-			// Démarrer le drag si clic sur le thumb
-			if (isOverScrollbarThumb(click.x(), click.y())) {
-				isDraggingScrollbar = true;
-				dragStartMouseY = click.y();
-				dragStartScrollOffset = currentScroll;
-				targetScroll = currentScroll;
-				return true;
-			}
-
-			int vpOriginY = viewportOriginY();
-			for (ModifierPickerEntry entry : entries) {
-				int screenY = entryRenderY(entry);
-				Bounds renderBounds = new Bounds(entry.bounds().x(), screenY, entry.bounds().width(), entry.bounds().height());
-				if (!renderBounds.contains(click.x(), click.y())) continue;
-				if (click.y() < vpOriginY || click.y() > vpOriginY + viewportHeight) continue;
-
-				if (entry.modifier().uiMetadata().editorKind() == Modifier.EditorKind.NONE) {
-					applyModifierChange(elementIndex, null, defaultResolvedModifier(entry.modifier()), false);
-				} else {
-					modifierEditorPopup = new ModifierEditorPopup(elementIndex, null, entry.modifier(), defaultArguments(entry.modifier()));
-					VariableDisplayItem variableDisplayItem = findVariableDisplayItem(elementIndex);
-					if (variableDisplayItem != null) {
-						modifierEditorPopup.layout(variableDisplayItem);
-					}
-					modifierPickerPopup = null;
-				}
-				return true;
-			}
-			return bounds.contains(click.x(), click.y());
-		}
-
-		private boolean mouseDragged(Click click, double deltaX, double deltaY) {
-			if (!isDraggingScrollbar) return false;
-			int trackHeight = viewportHeight;
-			float ratio = (float) viewportHeight / contentHeight;
-			int thumbHeight = Math.max(12, (int) (trackHeight * ratio));
-			int maxThumbOffset = trackHeight - thumbHeight;
-			// Convertir le déplacement souris en déplacement de scroll
-			float scrollPerPixel = (float) (contentHeight - viewportHeight) / maxThumbOffset;
-			int delta = (int) ((click.y() - dragStartMouseY) * scrollPerPixel);
-			setScrollPosition(dragStartScrollOffset + delta);
-			return true;
-		}
-
-		private boolean mouseReleased(Click click) {
-			if (isDraggingScrollbar) {
-				isDraggingScrollbar = false;
-				return true;
-			}
-			return false;
-		}
-
-		private @Nullable HoverTarget findHoverTarget(int mouseX, int mouseY) {
-			int vpOriginY = viewportOriginY();
-			for (ModifierPickerEntry entry : entries) {
-				int screenY = entryRenderY(entry);
-				if (screenY < vpOriginY || screenY > vpOriginY + viewportHeight) continue;
-				Bounds renderBounds = new Bounds(entry.bounds().x(), screenY, entry.bounds().width(), entry.bounds().height());
-				if (renderBounds.contains(mouseX, mouseY)) {
-					return new HoverTarget(entry.tooltip());
-				}
-			}
-			return null;
-		}
-
-		private boolean contains(double mouseX, double mouseY) {
-			return bounds.contains(mouseX, mouseY);
-		}
-	}
-
-	private final class ModifierEditorPopup {
-		private static final int FIELD_HEIGHT = 18;
-		private static final int LABEL_FIELD_GAP = 2;
-		private static final int ROW_GAP = 4;
-		private static final int CONDITIONAL_REMOVE_WIDTH = 16;
-		private static final int CONDITIONAL_OPERATOR_WIDTH = 28;
-		private static final int CONDITIONAL_THRESHOLD_WIDTH = 46;
-
-		private final int elementIndex;
-		private final @Nullable Integer modifierIndex;
-		private final Modifier<?, ?> modifier;
-		private final List<PopupTextFieldWidget> parameterFields = new ArrayList<>();
-		private final List<ConditionalBranchRow> conditionalRows = new ArrayList<>();
-		private @Nullable Text error;
-
-		private Bounds bounds = new Bounds(0, 0, 0, 0);
-		private Bounds saveBounds = new Bounds(0, 0, 0, 0);
-		private Bounds cancelBounds = new Bounds(0, 0, 0, 0);
-		private @Nullable Bounds deleteBounds;
-		private @Nullable Bounds addConditionalBounds;
-
-		private ModifierEditorPopup(int elementIndex, @Nullable Integer modifierIndex) {
-			this.elementIndex = elementIndex;
-			this.modifierIndex = modifierIndex;
-			ModuleContentEditorModel.VariableElement variableElement = (ModuleContentEditorModel.VariableElement) model.get(elementIndex);
-			Modifiers.ResolvedModifier<?, ?> resolvedModifier = variableElement.modifiers().get(modifierIndex);
-			this.modifier = resolvedModifier.modifier();
-			buildFields(resolvedModifier.arguments());
-		}
-
-		private ModifierEditorPopup(int elementIndex, @Nullable Integer modifierIndex, Modifier<?, ?> modifier, List<String> initialArguments) {
-			this.elementIndex = elementIndex;
-			this.modifierIndex = modifierIndex;
-			this.modifier = modifier;
-			buildFields(initialArguments);
-		}
-
-		private int elementIndex() {
-			return elementIndex;
-		}
-
-		private void setError(Text error) {
-			this.error = error;
-		}
-
-		private void buildFields(List<String> initialArguments) {
-			switch (modifier.uiMetadata().editorKind()) {
-				case NONE -> {
-				}
-				case FIXED_FIELDS -> {
-					for (int i = 0; i < modifier.uiMetadata().parameters().size(); i++) {
-						Modifier.ParameterDefinition parameter = modifier.uiMetadata().parameters().get(i);
-						String value = i < initialArguments.size() ? initialArguments.get(i) : defaultValue(modifier, parameter);
-						PopupTextFieldWidget field = new PopupTextFieldWidget(140, FIELD_HEIGHT);
-						field.setText(value);
-						field.setMaxLength(parameter.kind() == Modifier.ParameterKind.CHARACTER ? 1 : 128);
-						applyParameterTextPredicate(field, parameter);
-						parameterFields.add(field);
-					}
-				}
-				case CONDITIONAL_BRANCHES -> {
-					if (initialArguments.isEmpty()) {
-						conditionalRows.add(new ConditionalBranchRow("if_gt", "0", ""));
-					} else {
-						for (int i = 0; i < initialArguments.size(); i += 3) {
-							conditionalRows.add(new ConditionalBranchRow(initialArguments.get(i), initialArguments.get(i + 1), initialArguments.get(i + 2)));
-						}
-					}
-				}
-			}
-		}
-
-		private void applyParameterTextPredicate(PopupTextFieldWidget field, Modifier.ParameterDefinition parameter) {
-			Predicate<String> predicate = parameterTextPredicate(parameter);
-			if (predicate != null) {
-				field.setTextPredicate(predicate);
-			}
-		}
-
-		private @Nullable Predicate<String> parameterTextPredicate(Modifier.ParameterDefinition parameter) {
-			return switch (parameter.kind()) {
-				case INTEGER -> switch (modifier.key()) {
-					case "round", "floor", "ceil", "percent", "pad_left", "pad_right", "pad_center", "truncate" ->
-							ModuleContentField::isUnsignedTwoDigitIntegerInput;
-					case "pow" -> ModuleContentField::isUnsignedIntegerInput;
-					default -> ModuleContentField::isUnsignedIntegerInput;
-				};
-				case DECIMAL -> modifier.key().equals("div")
-						? ModuleContentField::isSignedNonZeroIntegerInput
-						: ModuleContentField::isSignedIntegerInput;
-				case TEXT, CHARACTER, CONDITIONAL_BRANCHES -> null;
-			};
-		}
-
-		private void layout(VariableDisplayItem variableItem) {
-			int width = 240;
-			int titleHeight = CLIENT.textRenderer.fontHeight;
-			int height = POPUP_PADDING * 2 + titleHeight + POPUP_GAP;
-			switch (modifier.uiMetadata().editorKind()) {
-				case NONE -> height += FIELD_HEIGHT;
-				case FIXED_FIELDS -> {
-					for (int i = 0; i < parameterFields.size(); i++) {
-						height += CLIENT.textRenderer.fontHeight + LABEL_FIELD_GAP + FIELD_HEIGHT + (i == parameterFields.size() - 1 ? 0 : ROW_GAP);
-					}
-				}
-				case CONDITIONAL_BRANCHES ->
-						height += conditionalRows.size() * (FIELD_HEIGHT + ROW_GAP) + FIELD_HEIGHT + POPUP_GAP;
-			}
-			if (error != null) {
-				height += CLIENT.textRenderer.fontHeight + POPUP_GAP;
-			}
-			height += BUTTON_HEIGHT + POPUP_GAP;
-
-			int preferredX = getX() + TEXT_PADDING_X + variableItem.x() - horizontalScroll;
-			int preferredY = getBottom() + OVERLAY_GAP;
-			Screen screen = CLIENT.currentScreen;
-			if (screen != null && preferredY + height > screen.height - 4) {
-				preferredY = getY() - height - OVERLAY_GAP;
-			}
-
-			bounds = new Bounds(clampX(preferredX, width), clampY(preferredY, height), width, height);
-
-			int cursorY = bounds.y() + POPUP_PADDING + titleHeight + POPUP_GAP;
-			switch (modifier.uiMetadata().editorKind()) {
-				case NONE -> {
-				}
-				case FIXED_FIELDS -> {
-					for (PopupTextFieldWidget field : parameterFields) {
-						field.setPosition(bounds.x() + POPUP_PADDING, cursorY + CLIENT.textRenderer.fontHeight + LABEL_FIELD_GAP);
-						field.setWidth(bounds.width() - POPUP_PADDING * 2);
-						cursorY += CLIENT.textRenderer.fontHeight + LABEL_FIELD_GAP + FIELD_HEIGHT + ROW_GAP;
-					}
-				}
-				case CONDITIONAL_BRANCHES -> {
-					for (ConditionalBranchRow row : conditionalRows) {
-						row.layout(bounds.x() + POPUP_PADDING, cursorY, bounds.width() - POPUP_PADDING * 2);
-						cursorY += FIELD_HEIGHT + ROW_GAP;
-					}
-					addConditionalBounds = new Bounds(bounds.x() + POPUP_PADDING, cursorY, 22, BUTTON_HEIGHT);
-					cursorY += FIELD_HEIGHT + POPUP_GAP;
-				}
-			}
-
-			int buttonsY = bounds.bottom() - POPUP_PADDING - BUTTON_HEIGHT;
-			int deleteWidth = modifierIndex != null ? textButtonWidth(Text.translatable("flex_hud.create_module_screen.editor.delete_modifier")) : 0;
-			int saveWidth = textButtonWidth(Text.translatable("flex_hud.create_module_screen.editor.apply"));
-			int cancelWidth = textButtonWidth(Text.translatable("flex_hud.global.config.cancel"));
-			int totalButtonsWidth = saveWidth + POPUP_GAP + cancelWidth + (modifierIndex != null ? POPUP_GAP + deleteWidth : 0);
-			int buttonX = bounds.right() - POPUP_PADDING - totalButtonsWidth;
-
-			if (modifierIndex != null) {
-				deleteBounds = new Bounds(buttonX, buttonsY, deleteWidth, BUTTON_HEIGHT);
-				buttonX += deleteWidth + POPUP_GAP;
-			} else {
-				deleteBounds = null;
-			}
-			saveBounds = new Bounds(buttonX, buttonsY, saveWidth, BUTTON_HEIGHT);
-			buttonX += saveWidth + POPUP_GAP;
-			cancelBounds = new Bounds(buttonX, buttonsY, cancelWidth, BUTTON_HEIGHT);
-		}
-
-		private void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-			renderPanel(context, bounds);
-			context.drawText(CLIENT.textRenderer, modifier.uiMetadata().getName(modifier.key()), bounds.x() + POPUP_PADDING, bounds.y() + POPUP_PADDING, TEXT_COLOR, false);
-			int cursorY = bounds.y() + POPUP_PADDING + CLIENT.textRenderer.fontHeight + POPUP_GAP;
-
-			switch (modifier.uiMetadata().editorKind()) {
-				case NONE ->
-						context.drawText(CLIENT.textRenderer, modifier.uiMetadata().getDescription(modifier.key()), bounds.x() + POPUP_PADDING, cursorY, PLACEHOLDER_COLOR, false);
-				case FIXED_FIELDS -> {
-					for (int i = 0; i < parameterFields.size(); i++) {
-						Modifier.ParameterDefinition parameter = modifier.uiMetadata().parameters().get(i);
-						context.drawText(CLIENT.textRenderer, parameter.getName(modifier.key()), bounds.x() + POPUP_PADDING, cursorY, TEXT_COLOR, false);
-						parameterFields.get(i).render(context, mouseX, mouseY, deltaTicks);
-						cursorY += CLIENT.textRenderer.fontHeight + LABEL_FIELD_GAP + FIELD_HEIGHT + ROW_GAP;
-					}
-				}
-				case CONDITIONAL_BRANCHES -> {
-					for (ConditionalBranchRow row : conditionalRows) {
-						row.render(context, mouseX, mouseY, deltaTicks);
-					}
-					if (addConditionalBounds != null) {
-						renderButtonCenterLabel(context, addConditionalBounds, Text.literal("+"), addConditionalBounds.contains(mouseX, mouseY) ? BUTTON_HOVERED_BACKGROUND : BUTTON_BACKGROUND, BUTTON_TEXT_COLOR, mouseX, mouseY);
-					}
-				}
-			}
-
-			if (error != null) {
-				context.drawText(CLIENT.textRenderer, error, bounds.x() + POPUP_PADDING, saveBounds.y() - POPUP_GAP - CLIENT.textRenderer.fontHeight, POPUP_ERROR_COLOR, false);
-			}
-
-			if (deleteBounds != null) {
-				renderButtonCenterLabel(context, deleteBounds, Text.translatable("flex_hud.create_module_screen.editor.delete_modifier"), deleteBounds.contains(mouseX, mouseY) ? BUTTON_HOVERED_BACKGROUND : BUTTON_BACKGROUND, BUTTON_TEXT_COLOR, mouseX, mouseY);
-			}
-			renderButtonCenterLabel(context, saveBounds, Text.translatable("flex_hud.create_module_screen.editor.apply"), saveBounds.contains(mouseX, mouseY) ? BUTTON_HOVERED_BACKGROUND : BUTTON_BACKGROUND, BUTTON_TEXT_COLOR, mouseX, mouseY);
-			renderButtonCenterLabel(context, cancelBounds, Text.translatable("flex_hud.global.config.cancel"), cancelBounds.contains(mouseX, mouseY) ? BUTTON_HOVERED_BACKGROUND : BUTTON_BACKGROUND, BUTTON_TEXT_COLOR, mouseX, mouseY);
-		}
-
-		private boolean mouseClicked(Click click, boolean doubled) {
-			setAllFieldsFocused(false);
-			for (PopupTextFieldWidget field : parameterFields) {
-				if (field.mouseClicked(click, doubled)) {
-					return true;
-				}
-			}
-			for (ConditionalBranchRow row : conditionalRows) {
-				if (row.mouseClicked(click, doubled)) {
-					return true;
-				}
-			}
-			if (addConditionalBounds != null && addConditionalBounds.contains(click.x(), click.y())) {
-				conditionalRows.add(new ConditionalBranchRow("if_gt", "0", ""));
-				layoutFromCurrentAnchor();
-				return true;
-			}
-			if (deleteBounds != null && deleteBounds.contains(click.x(), click.y())) {
-				applyModifierChange(elementIndex, modifierIndex, null, true);
-				return true;
-			}
-			if (saveBounds.contains(click.x(), click.y())) {
-				save();
-				return true;
-			}
-			if (cancelBounds.contains(click.x(), click.y())) {
-				modifierEditorPopup = null;
-				return true;
-			}
-			return bounds.contains(click.x(), click.y());
-		}
-
-		private boolean mouseDragged(Click click, double offsetX, double offsetY) {
-			for (PopupTextFieldWidget field : parameterFields) {
-				if (field.mouseDragged(click, offsetX, offsetY)) {
-					return true;
-				}
-			}
-			for (ConditionalBranchRow row : conditionalRows) {
-				if (row.mouseDragged(click, offsetX, offsetY)) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		private boolean mouseReleased(Click click) {
-			boolean handled = false;
-			for (PopupTextFieldWidget field : parameterFields) {
-				handled |= field.mouseReleased(click);
-			}
-			for (ConditionalBranchRow row : conditionalRows) {
-				handled |= row.mouseReleased(click);
-			}
-			return handled;
-		}
-
-		private boolean keyPressed(KeyInput input) {
-			for (PopupTextFieldWidget field : parameterFields) {
-				if (field.isFocused() && field.keyPressed(input)) {
-					return true;
-				}
-			}
-			for (ConditionalBranchRow row : conditionalRows) {
-				if (row.keyPressed(input)) {
-					return true;
-				}
-			}
-			if (input.key() == GLFW.GLFW_KEY_ENTER || input.key() == GLFW.GLFW_KEY_KP_ENTER) {
-				save();
-				return true;
-			}
-			if (input.key() == GLFW.GLFW_KEY_TAB) {
-				focusNextField();
-				return true;
-			}
-			return false;
-		}
-
-		private boolean charTyped(CharInput input) {
-			for (PopupTextFieldWidget field : parameterFields) {
-				if (field.isFocused() && field.charTyped(input)) {
-					return true;
-				}
-			}
-			for (ConditionalBranchRow row : conditionalRows) {
-				if (row.charTyped(input)) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		private void focusNextField() {
-			List<PopupTextFieldWidget> fields = new ArrayList<>(parameterFields);
-			for (ConditionalBranchRow row : conditionalRows) {
-				fields.add(row.thresholdField());
-				fields.add(row.resultField());
-			}
-			if (fields.isEmpty()) {
-				return;
-			}
-
-			int focusedIndex = -1;
-			for (int i = 0; i < fields.size(); i++) {
-				if (fields.get(i).isFocused()) {
-					focusedIndex = i;
-					fields.get(i).setFocused(false);
-					break;
-				}
-			}
-			fields.get((focusedIndex + 1) % fields.size()).setFocused(true);
-		}
-
-		private void setAllFieldsFocused(boolean focused) {
-			for (PopupTextFieldWidget field : parameterFields) {
-				field.setFocused(focused);
-			}
-			for (ConditionalBranchRow row : conditionalRows) {
-				row.thresholdField().setFocused(focused);
-				row.resultField().setFocused(focused);
-			}
-		}
-
-		private void save() {
-			Modifiers.ResolvedModifier<?, ?> resolvedModifier = buildResolvedModifier();
-			if (resolvedModifier == null) {
-				error = Text.translatable("flex_hud.create_module_screen.editor.invalid_modifier");
-				return;
-			}
-			applyModifierChange(elementIndex, modifierIndex, resolvedModifier, false);
-		}
-
-		private Modifiers.ResolvedModifier<?, ?> buildResolvedModifier() {
-			List<String> arguments = new ArrayList<>();
-			switch (modifier.uiMetadata().editorKind()) {
-				case NONE -> {
-				}
-				case FIXED_FIELDS -> {
-					for (int i = 0; i < parameterFields.size(); i++) {
-						String value = parameterFields.get(i).getText();
-						Modifier.ParameterKind kind = modifier.uiMetadata().parameters().get(i).kind();
-						if (kind == Modifier.ParameterKind.CHARACTER && value.isEmpty()) {
-							return null;
-						}
-						arguments.add(kind == Modifier.ParameterKind.CHARACTER ? value.substring(0, 1) : value);
-					}
-				}
-				case CONDITIONAL_BRANCHES -> {
-					for (ConditionalBranchRow row : conditionalRows) {
-						if (row.thresholdField().getText().isBlank()) {
-							return null;
-						}
-						arguments.add(row.operatorKey());
-						arguments.add(row.thresholdField().getText());
-						arguments.add(row.resultField().getText());
-					}
-				}
-			}
-
-			String raw = modifier.uiMetadata().rawFormatter().apply(arguments);
-			Modifiers.ResolvedModifier<?, ?> resolvedModifier = Modifiers.get(raw);
-			if (resolvedModifier == null || !resolvedModifier.modifier().key().equals(modifier.key())) {
-				return null;
-			}
-			return resolvedModifier;
-		}
-
-		private int textButtonWidth(Text text) {
-			return CLIENT.textRenderer.getWidth(text) + BUTTON_HORIZONTAL_PADDING * 2;
-		}
-
-		private void layoutFromCurrentAnchor() {
-			VariableDisplayItem variableDisplayItem = findVariableDisplayItem(elementIndex);
-			if (variableDisplayItem != null) {
-				layout(variableDisplayItem);
-			}
-		}
-
-		private boolean contains(double mouseX, double mouseY) {
-			return bounds.contains(mouseX, mouseY);
-		}
-
-		private final class ConditionalBranchRow {
-			private final PopupTextFieldWidget thresholdField;
-			private final PopupTextFieldWidget resultField;
-			private String operatorKey;
-			private Bounds operatorBounds = new Bounds(0, 0, 0, 0);
-			private Bounds removeBounds = new Bounds(0, 0, 0, 0);
-
-			private ConditionalBranchRow(String operatorKey, String threshold, String result) {
-				this.operatorKey = operatorKey;
-				this.thresholdField = new PopupTextFieldWidget(CONDITIONAL_THRESHOLD_WIDTH, FIELD_HEIGHT);
-				this.thresholdField.setText(threshold);
-				this.thresholdField.setMaxLength(32);
-				this.thresholdField.setTextPredicate(ModuleContentField::isSignedIntegerInput);
-				this.resultField = new PopupTextFieldWidget(120, FIELD_HEIGHT);
-				this.resultField.setText(result);
-				this.resultField.setMaxLength(128);
-			}
-
-			private void layout(int x, int y, int width) {
-				operatorBounds = new Bounds(x, y, CONDITIONAL_OPERATOR_WIDTH, FIELD_HEIGHT);
-				thresholdField.setPosition(x + CONDITIONAL_OPERATOR_WIDTH + POPUP_GAP, y);
-				resultField.setPosition(x + CONDITIONAL_OPERATOR_WIDTH + POPUP_GAP + CONDITIONAL_THRESHOLD_WIDTH + POPUP_GAP, y);
-				resultField.setWidth(width - CONDITIONAL_OPERATOR_WIDTH - CONDITIONAL_THRESHOLD_WIDTH - CONDITIONAL_REMOVE_WIDTH - POPUP_GAP * 3);
-				removeBounds = new Bounds(x + width - CONDITIONAL_REMOVE_WIDTH, y, CONDITIONAL_REMOVE_WIDTH, FIELD_HEIGHT);
-			}
-
-			private void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-				renderButtonCenterLabel(context, operatorBounds, Text.literal(displayOperator()), operatorBounds.contains(mouseX, mouseY) ? BUTTON_HOVERED_BACKGROUND : BUTTON_BACKGROUND, BUTTON_TEXT_COLOR, mouseX, mouseY);
-				thresholdField.render(context, mouseX, mouseY, deltaTicks);
-				resultField.render(context, mouseX, mouseY, deltaTicks);
-				renderButtonCenterLabel(context, removeBounds, Text.literal("x"), removeBounds.contains(mouseX, mouseY) ? BUTTON_HOVERED_BACKGROUND : BUTTON_BACKGROUND, BUTTON_TEXT_COLOR, mouseX, mouseY);
-			}
-
-			private boolean mouseClicked(Click click, boolean doubled) {
-				if (operatorBounds.contains(click.x(), click.y())) {
-					operatorKey = switch (operatorKey) {
-						case "if_gt" -> "if_lt";
-						case "if_lt" -> "if_eq";
-						default -> "if_gt";
-					};
-					return true;
-				}
-				if (removeBounds.contains(click.x(), click.y())) {
-					conditionalRows.remove(this);
-					if (conditionalRows.isEmpty()) {
-						conditionalRows.add(new ConditionalBranchRow("if_gt", "0", ""));
-					}
-					layoutFromCurrentAnchor();
-					return true;
-				}
-				return thresholdField.mouseClicked(click, doubled) || resultField.mouseClicked(click, doubled);
-			}
-
-			private boolean mouseDragged(Click click, double offsetX, double offsetY) {
-				return thresholdField.mouseDragged(click, offsetX, offsetY)
-						|| resultField.mouseDragged(click, offsetX, offsetY);
-			}
-
-			private boolean mouseReleased(Click click) {
-				return thresholdField.mouseReleased(click) || resultField.mouseReleased(click);
-			}
-
-			private boolean keyPressed(KeyInput input) {
-				return (thresholdField.isFocused() && thresholdField.keyPressed(input))
-						|| (resultField.isFocused() && resultField.keyPressed(input));
-			}
-
-			private boolean charTyped(CharInput input) {
-				return (thresholdField.isFocused() && thresholdField.charTyped(input))
-						|| (resultField.isFocused() && resultField.charTyped(input));
-			}
-
-			private String displayOperator() {
-				return switch (operatorKey) {
-					case "if_gt" -> ">";
-					case "if_lt" -> "<";
-					case "if_eq" -> "=";
-					default -> operatorKey;
-				};
-			}
-
-			private String operatorKey() {
-				return operatorKey;
-			}
-
-			private PopupTextFieldWidget thresholdField() {
-				return thresholdField;
-			}
-
-			private PopupTextFieldWidget resultField() {
-				return resultField;
-			}
-		}
-
-		private static final class PopupTextFieldWidget extends TextFieldWidget {
-			private PopupTextFieldWidget(int width, int height) {
-				super(CLIENT.textRenderer, 0, 0, width, height, Text.empty());
-			}
-
-			@Override
-			public boolean mouseClicked(Click click, boolean doubled) {
-				if (this.active && this.visible && this.isValidClickButton(click.buttonInfo())) {
-					setFocused(this.isMouseOver(click.x(), click.y()));
-				}
-				return super.mouseClicked(click, doubled);
-			}
-		}
-	}
-
 	private final class ColorPopup {
 		private final int selectionStart;
 		private final int selectionEnd;
 		private final SelectionColorBindable bindable;
-		private ColorSelector selector;
+		private final ColorSelector selector;
 		private Bounds bounds = new Bounds(0, 0, 0, 0);
 		private Bounds noneBounds = new Bounds(0, 0, 0, 0);
 		private Bounds chromaBounds = new Bounds(0, 0, 0, 0);
@@ -2738,55 +1898,8 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		}
 	}
 
-	private record GradientRegion(ModuleContentEditorModel.GradientColorLayer gradient,
-	                              int startIndex,
-	                              int endIndex,
-	                              int totalWidth,
-	                              int[] elementWidths) {
-		private static GradientRegion create(ModuleContentEditorModel.GradientColorLayer gradient,
-		                                     List<ModuleContentEditorModel.InlineElement> elements,
-		                                     java.util.function.ToIntFunction<ModuleContentEditorModel.InlineElement> widthMeasurer) {
-			int first = -1;
-			int last = -1;
-			for (int index = 0; index < elements.size(); index++) {
-				if (elements.get(index).style().colorLayers().contains(gradient)) {
-					if (first == -1) {
-						first = index;
-					}
-					last = index;
-				}
-			}
 
-			if (first == -1) {
-				return new GradientRegion(gradient, 0, 0, 0, new int[0]);
-			}
-
-			int[] widths = new int[last - first + 1];
-			int totalWidth = 0;
-			for (int index = first; index <= last; index++) {
-				int width = widthMeasurer.applyAsInt(elements.get(index));
-				widths[index - first] = width;
-				totalWidth += width;
-			}
-
-			return new GradientRegion(gradient, first, last + 1, totalWidth, widths);
-		}
-
-		private int colorAt(int elementIndex) {
-			double currentX = 0.0;
-			for (int index = startIndex; index < endIndex; index++) {
-				int width = elementWidths[index - startIndex];
-				if (index == elementIndex) {
-					float progress = totalWidth <= 0 ? 0.0f : (float) ((currentX + width / 2.0) / totalWidth);
-					return interpolateRgb(gradient.startColor(), gradient.endColor(), progress);
-				}
-				currentX += width;
-			}
-			return TEXT_COLOR;
-		}
-	}
-
-	private static int interpolateRgb(int startColor, int endColor, float progress) {
+	static int interpolateRgb(int startColor, int endColor, float progress) {
 		float clampedProgress = Math.clamp(progress, 0.0f, 1.0f);
 
 		int startRed = (startColor >> 16) & 0xff;

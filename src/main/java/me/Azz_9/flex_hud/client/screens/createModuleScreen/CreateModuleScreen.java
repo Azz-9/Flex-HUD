@@ -16,6 +16,7 @@ import me.Azz_9.flex_hud.client.customModules.CustomModule;
 import me.Azz_9.flex_hud.client.customModules.CustomModulePreview;
 import me.Azz_9.flex_hud.client.customModules.CustomModuleRegistry;
 import me.Azz_9.flex_hud.client.screens.AbstractCallbackScreen;
+import me.Azz_9.flex_hud.client.screens.createModuleScreen.moduleContentField.ModuleContentField;
 import me.Azz_9.flex_hud.client.screens.modulesList.ModulesListScreen;
 import me.Azz_9.flex_hud.client.screens.widgets.textFieldWidget.PlaceholderTextFieldWidget;
 
@@ -197,13 +198,22 @@ public class CreateModuleScreen extends AbstractCallbackScreen {
 			return;
 		}
 
+		String content = moduleContentField.getText();
+
 		try {
-			CustomModuleRegistry.register(CustomModule.fromText(name, moduleContentField.getText()));
+			if (customModule == null) {
+				CustomModuleRegistry.register(CustomModule.fromText(name, content));
+			} else {
+				CustomModuleRegistry.update(customModule, name, content);
+			}
 		} catch (IllegalStateException e) {
 			feedbackTextWidget.setMessage(formatFeedback(Text.translatable("flex_hud.create_module_screen.module_name.name_already_used")));
 			return;
 		}
 
+		if (PARENT instanceof ModulesListScreen modulesListScreen) {
+			modulesListScreen.refreshModulesList();
+		}
 		close();
 	}
 

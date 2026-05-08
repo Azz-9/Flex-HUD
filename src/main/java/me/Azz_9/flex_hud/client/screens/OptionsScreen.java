@@ -2,13 +2,6 @@ package me.Azz_9.flex_hud.client.screens;
 
 import static me.Azz_9.flex_hud.client.Flex_hudClient.*;
 
-import me.Azz_9.flex_hud.client.Flex_hudClient;
-import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
-import me.Azz_9.flex_hud.client.screens.modulesList.ModulesListScreen;
-import me.Azz_9.flex_hud.client.screens.moveModulesScreen.MoveModulesScreen;
-import me.Azz_9.flex_hud.client.screens.widgets.buttons.IconButton;
-import me.Azz_9.flex_hud.client.utils.EaseUtils;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
@@ -19,7 +12,15 @@ import net.minecraft.client.input.KeyInput;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Easing;
+
 import org.joml.Matrix3x2fStack;
+
+import me.Azz_9.flex_hud.client.Flex_hudClient;
+import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
+import me.Azz_9.flex_hud.client.screens.modulesList.ModulesListScreen;
+import me.Azz_9.flex_hud.client.screens.moveModulesScreen.MoveModulesScreen;
+import me.Azz_9.flex_hud.client.screens.widgets.buttons.IconButton;
 
 public class OptionsScreen extends AbstractBackNavigableScreen {
 	private long initTimestamp;
@@ -87,7 +88,7 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		final int ANIMATION_DURATION = 500;
 		float progress = Math.min((float) (System.currentTimeMillis() - initTimestamp) / ANIMATION_DURATION, 1.0f);
-		float easedProgress = EaseUtils.getEaseOutQuad(progress);
+		float easedProgress = Easing.outQuad(progress);
 
 		final Identifier modIcon = Identifier.of(MOD_ID, "logo-without-bg.png");
 

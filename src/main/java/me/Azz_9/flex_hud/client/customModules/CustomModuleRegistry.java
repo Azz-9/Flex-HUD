@@ -24,11 +24,23 @@ public class CustomModuleRegistry {
 		registered.remove(module.getID());
 	}
 
+	public static void update(CustomModule module, @NonNull String name, @NonNull String text) throws IllegalStateException {
+		String oldId = module.getID();
+		String newId = nameToId(name);
+		if (!oldId.equals(newId) && registered.contains(newId)) {
+			throw new IllegalStateException("CustomModule already registered: " + newId);
+		}
+
+		registered.remove(oldId);
+		module.update(name, text);
+		registered.add(module.getID());
+	}
+
 	public static boolean isRegistered(@NonNull String id) {
 		return registered.contains(id);
 	}
 
 	public static String nameToId(@NonNull String name) {
-		return "cutsom_module-" + name.toLowerCase().replace(' ', '_');
+		return "custom_module-" + name.toLowerCase().replace(' ', '_');
 	}
 }

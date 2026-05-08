@@ -13,10 +13,12 @@ import me.Azz_9.flex_hud.client.screens.TrackableChange;
 public class ModuleNameField extends TextFieldWidget implements TrackableChange {
 
 	private final @Nullable String INITIAL_CONTENT;
+	private final @Nullable String INITIAL_ID;
 
 	public ModuleNameField(int x, int y, int width, int height, @Nullable String initialContent) {
 		super(CLIENT.textRenderer, x, y, width, height, Text.empty());
 		this.INITIAL_CONTENT = initialContent;
+		this.INITIAL_ID = initialContent == null ? null : CustomModuleRegistry.nameToId(initialContent.strip());
 		setText(initialContent);
 	}
 
@@ -39,6 +41,7 @@ public class ModuleNameField extends TextFieldWidget implements TrackableChange 
 	}
 
 	public boolean isAlreadyRegistered() {
-		return CustomModuleRegistry.isRegistered(CustomModuleRegistry.nameToId(getText().strip()));
+		String currentId = CustomModuleRegistry.nameToId(getText().strip());
+		return !currentId.equals(INITIAL_ID) && CustomModuleRegistry.isRegistered(currentId);
 	}
 }
