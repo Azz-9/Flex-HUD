@@ -495,6 +495,7 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		}
 
 		draggingSelection = false;
+		refreshOverlayLayout();
 		return handled;
 	}
 
@@ -1070,7 +1071,7 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 	}
 
 	private @Nullable SelectionBounds computeSelectionBounds() {
-		if (!hasSelection()) {
+		if (draggingSelection || !hasSelection()) {
 			return null;
 		}
 

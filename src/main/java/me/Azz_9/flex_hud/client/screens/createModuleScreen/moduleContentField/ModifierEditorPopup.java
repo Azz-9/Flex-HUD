@@ -139,7 +139,7 @@ final class ModifierEditorPopup {
 					height += conditionalRows.size() * (FIELD_HEIGHT + ROW_GAP) + FIELD_HEIGHT + ModuleContentField.POPUP_GAP;
 		}
 		if (error != null) {
-			height += CLIENT.textRenderer.fontHeight + ModuleContentField.POPUP_GAP;
+			height += wrappedErrorHeight(width - ModuleContentField.POPUP_PADDING * 2) + ModuleContentField.POPUP_GAP;
 		}
 		height += ModuleContentField.BUTTON_HEIGHT + ModuleContentField.POPUP_GAP;
 
@@ -218,7 +218,9 @@ final class ModifierEditorPopup {
 		}
 
 		if (error != null) {
-			context.drawText(CLIENT.textRenderer, error, bounds.x() + ModuleContentField.POPUP_PADDING, saveBounds.y() - ModuleContentField.POPUP_GAP - CLIENT.textRenderer.fontHeight, ModuleContentField.POPUP_ERROR_COLOR, false);
+			int errorWidth = bounds.width() - ModuleContentField.POPUP_PADDING * 2;
+			int errorHeight = wrappedErrorHeight(errorWidth);
+			context.drawWrappedText(CLIENT.textRenderer, error, bounds.x() + ModuleContentField.POPUP_PADDING, saveBounds.y() - ModuleContentField.POPUP_GAP - errorHeight, errorWidth, ModuleContentField.POPUP_ERROR_COLOR, false);
 		}
 
 		if (deleteBounds != null) {
@@ -434,6 +436,10 @@ final class ModifierEditorPopup {
 
 	private int wrappedDescriptionHeight() {
 		return CLIENT.textRenderer.getWrappedLinesHeight(modifier.uiMetadata().getDescription(modifier.key()), wrappedDescriptionWidth);
+	}
+
+	private int wrappedErrorHeight(int width) {
+		return error == null ? 0 : CLIENT.textRenderer.getWrappedLinesHeight(error, width);
 	}
 
 	private int conditionalContentWidth() {
