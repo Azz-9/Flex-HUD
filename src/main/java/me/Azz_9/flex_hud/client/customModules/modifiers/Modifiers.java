@@ -243,6 +243,27 @@ public class Modifiers {
 		};
 	}
 
+	public static @Nullable Object applyValueModifiers(@Nullable Object value, List<ResolvedModifier<?, ?>> modifiers) {
+		if (modifiers.isEmpty()) {
+			return value;
+		}
+
+		if (value == null) {
+			return null;
+		}
+
+		List<ResolvedModifier<?, ?>> orderedModifiers = orderForInputType(value.getClass(), List.copyOf(modifiers));
+		if (orderedModifiers == null) {
+			return null;
+		}
+
+		Object current = value;
+		for (ResolvedModifier<?, ?> resolvedModifier : orderedModifiers) {
+			current = applyResolvedModifier(current, resolvedModifier);
+		}
+		return current;
+	}
+
 	public static <T> Function<T, String> formatterFromModifiers(List<ResolvedModifier<?, ?>> modifiers) {
 		List<ResolvedModifier<?, ?>> resolvedModifiers = List.copyOf(modifiers);
 

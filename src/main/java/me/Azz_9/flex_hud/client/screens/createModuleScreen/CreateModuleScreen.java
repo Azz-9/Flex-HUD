@@ -4,6 +4,7 @@ import static me.Azz_9.flex_hud.client.Flex_hudClient.CLIENT;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.text.MutableText;
@@ -36,6 +37,7 @@ public class CreateModuleScreen extends AbstractCallbackScreen {
 	private ModuleNameField moduleNameField;
 	private TextWidget feedbackTextWidget;
 	private TextWidget moduleContentTextWidget;
+	private ButtonWidget addConditionButton;
 	private ModuleContentField moduleContentField;
 	private TextWidget previewTextWidget;
 
@@ -77,6 +79,7 @@ public class CreateModuleScreen extends AbstractCallbackScreen {
 				moduleContentText, CLIENT.textRenderer
 		);
 		moduleContentField = createModuleContentField(customModule != null ? customModule.getText() : "");
+		addConditionButton = createAddConditionButton();
 
 		Text previewText = Text.translatable("flex_hud.create_module_screen.preview");
 		previewTextWidget = new TextWidget(
@@ -89,6 +92,7 @@ public class CreateModuleScreen extends AbstractCallbackScreen {
 		this.addDrawableChild(searchBar);
 		this.addDrawableChild(variablesList);
 		this.addDrawableChild(moduleNameField);
+		this.addDrawableChild(addConditionButton);
 	}
 
 	private VariablesList createVariableList() {
@@ -97,7 +101,7 @@ public class CreateModuleScreen extends AbstractCallbackScreen {
 				this.height - TEXT_FIELDS_HEIGHT - PADDING * 2
 		);
 		variablesList.setOnVariableClick((variable) -> {
-			moduleContentField.write("{" + variable.getKey() + "}");
+			moduleContentField.insertVariable(variable);
 		});
 
 		return variablesList;
@@ -115,7 +119,7 @@ public class CreateModuleScreen extends AbstractCallbackScreen {
 			variablesList.search(text);
 
 			variablesList.setOnVariableClick((variable) -> {
-				moduleContentField.write("{" + variable.getKey() + "}");
+				moduleContentField.insertVariable(variable);
 			});
 		});
 
@@ -160,6 +164,14 @@ public class CreateModuleScreen extends AbstractCallbackScreen {
 		return moduleContentField;
 	}
 
+	private ButtonWidget createAddConditionButton() {
+		Text label = Text.translatable("flex_hud.create_module_screen.editor.add_condition");
+		int buttonWidth = CLIENT.textRenderer.getWidth(label) + 12;
+		return ButtonWidget.builder(label, button -> moduleContentField.insertCondition())
+				.dimensions(moduleContentTextWidget.getRight() + 8, moduleContentTextWidget.getY() + 1, buttonWidth, TEXT_FIELDS_HEIGHT - 2)
+				.build();
+	}
+
 	public void setParentScrollAmount(double parentScrollAmount) {
 		this.parentScrollAmount = parentScrollAmount;
 	}
@@ -178,6 +190,7 @@ public class CreateModuleScreen extends AbstractCallbackScreen {
 		feedbackTextWidget.render(context, mouseX, mouseY, deltaTicks);
 
 		moduleContentTextWidget.render(context, mouseX, mouseY, deltaTicks);
+		addConditionButton.render(context, mouseX, mouseY, deltaTicks);
 
 		previewTextWidget.render(context, mouseX, mouseY, deltaTicks);
 
@@ -233,6 +246,7 @@ public class CreateModuleScreen extends AbstractCallbackScreen {
 	protected void disableAllChildren() {
 		super.disableAllChildren();
 		variablesList.active = false;
+		addConditionButton.active = false;
 		moduleContentField.active = false;
 	}
 
@@ -240,6 +254,7 @@ public class CreateModuleScreen extends AbstractCallbackScreen {
 	protected void enableAllChildren() {
 		super.enableAllChildren();
 		variablesList.active = true;
+		addConditionButton.active = true;
 		moduleContentField.active = true;
 	}
 }

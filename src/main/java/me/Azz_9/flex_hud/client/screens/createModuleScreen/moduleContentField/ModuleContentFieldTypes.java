@@ -7,7 +7,7 @@ import java.util.List;
 import me.Azz_9.flex_hud.client.customModules.modifiers.Modifier;
 import me.Azz_9.flex_hud.client.screens.createModuleScreen.ModuleContentEditorModel;
 
-sealed interface DisplayItem permits TextDisplayItem, VariableDisplayItem {
+sealed interface DisplayItem permits TextDisplayItem, VariableDisplayItem, ConditionDisplayItem {
 	int modelIndex();
 
 	int x();
@@ -34,6 +34,15 @@ record VariableDisplayItem(int modelIndex,
                            int nameWidth,
                            List<ModifierPart> modifiers,
                            int plusX) implements DisplayItem {
+}
+
+record ConditionDisplayItem(int modelIndex,
+                            int x,
+                            int width,
+                            int height,
+                            int color,
+                            ModuleContentEditorModel.ConditionElement element,
+                            String displayText) implements DisplayItem {
 }
 
 record ModifierPart(String displayText, int width, int color, Text tooltip, int startX, int index) {

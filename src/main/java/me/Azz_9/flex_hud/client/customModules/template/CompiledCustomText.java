@@ -18,6 +18,7 @@ import java.util.function.Function;
 import me.Azz_9.flex_hud.client.customModules.Variable;
 import me.Azz_9.flex_hud.client.customModules.Variables;
 import me.Azz_9.flex_hud.client.customModules.modifiers.Modifiers;
+import me.Azz_9.flex_hud.client.customModules.text.CustomCondition;
 import me.Azz_9.flex_hud.client.customModules.text.CustomTextParser;
 import me.Azz_9.flex_hud.client.tickables.ChromaColorTickable;
 
@@ -28,6 +29,7 @@ public final class CompiledCustomText {
 	private final String source;
 	private final SequenceNode root;
 	private final List<CompiledVariable> variables;
+	private final List<CompiledCondition> conditions;
 	private final boolean hasExplicitColors;
 	private final boolean hasDynamicColors;
 
@@ -36,11 +38,13 @@ public final class CompiledCustomText {
 	private CompiledCustomText(String source,
 	                           SequenceNode root,
 	                           List<CompiledVariable> variables,
+	                           List<CompiledCondition> conditions,
 	                           boolean hasExplicitColors,
 	                           boolean hasDynamicColors) {
 		this.source = source;
 		this.root = root;
 		this.variables = List.copyOf(variables);
+		this.conditions = List.copyOf(conditions);
 		this.hasExplicitColors = hasExplicitColors;
 		this.hasDynamicColors = hasDynamicColors;
 	}
@@ -53,7 +57,7 @@ public final class CompiledCustomText {
 		CustomTextParser.ParsedDocument parsedDocument = CustomTextParser.parse(source, variableResolver);
 		BuildContext buildContext = new BuildContext();
 		SequenceNode root = compileSequence(parsedDocument.root(), buildContext);
-		return new CompiledCustomText(source, root, buildContext.variables, parsedDocument.hasExplicitColors(), parsedDocument.hasDynamicColors());
+		return new CompiledCustomText(source, root, buildContext.variables, buildContext.conditions, parsedDocument.hasExplicitColors(), parsedDocument.hasDynamicColors());
 	}
 
 	private static SequenceNode compileSequence(CustomTextParser.SequenceNode sequence, BuildContext buildContext) {
@@ -74,6 +78,13 @@ public final class CompiledCustomText {
 			compiledVariable.refreshIfNeeded();
 			buildContext.variables.add(compiledVariable);
 			return new VariableNode(compiledVariable);
+		}
+
+		if (node instanceof CustomTextParser.ConditionNode conditionNode) {
+			CompiledCondition compiledCondition = new CompiledCondition(conditionNode.condition());
+			compiledCondition.refreshIfNeeded();
+			buildContext.conditions.add(compiledCondition);
+			return new ConditionNode(compiledCondition, compileSequence(conditionNode.content(), buildContext));
 		}
 
 		if (node instanceof CustomTextParser.DirectiveNode directiveNode) {
@@ -111,6 +122,9 @@ public final class CompiledCustomText {
 		for (CompiledVariable variable : variables) {
 			shouldRebuild |= variable.refreshIfNeeded();
 		}
+		for (CompiledCondition condition : conditions) {
+			shouldRebuild |= condition.refreshIfNeeded();
+		}
 
 		if (shouldRebuild) {
 			cachedRenderData = buildRenderData((text, style) -> CLIENT.textRenderer.getWidth(Text.literal(text).setStyle(style)));
@@ -122,6 +136,9 @@ public final class CompiledCustomText {
 	RenderData getRenderDataForTests() {
 		for (CompiledVariable variable : variables) {
 			variable.refreshIfNeeded();
+		}
+		for (CompiledCondition condition : conditions) {
+			condition.refreshIfNeeded();
 		}
 
 		return buildRenderData((text, style) -> text.codePointCount(0, text.length()));
@@ -236,7 +253,7 @@ public final class CompiledCustomText {
 		}
 	}
 
-	private sealed interface Node permits SequenceNode, LiteralNode, VariableNode, DirectiveNode, GradientNode {
+	private sealed interface Node permits SequenceNode, LiteralNode, VariableNode, ConditionNode, DirectiveNode, GradientNode {
 		StyleState render(StyleState style, List<StyledGlyph> output, WidthMeasurer widthMeasurer);
 	}
 
@@ -263,6 +280,16 @@ public final class CompiledCustomText {
 		@Override
 		public StyleState render(StyleState style, List<StyledGlyph> output, WidthMeasurer widthMeasurer) {
 			appendText(variable.getFormattedValue(), style, output);
+			return style;
+		}
+	}
+
+	private record ConditionNode(CompiledCondition condition, SequenceNode content) implements Node {
+		@Override
+		public StyleState render(StyleState style, List<StyledGlyph> output, WidthMeasurer widthMeasurer) {
+			if (condition.test()) {
+				content.render(style, output, widthMeasurer);
+			}
 			return style;
 		}
 	}
@@ -528,8 +555,34 @@ public final class CompiledCustomText {
 		}
 	}
 
+	private static final class CompiledCondition {
+		private final CustomCondition.Condition condition;
+		private final List<Variable<?>> dependencies;
+		private List<Long> lastSeenVersions = List.of();
+		private boolean lastResult;
+
+		private CompiledCondition(CustomCondition.Condition condition) {
+			this.condition = condition;
+			this.dependencies = condition.dependencies();
+		}
+
+		private boolean refreshIfNeeded() {
+			List<Long> versions = dependencies.stream().map(Variable::getVersion).toList();
+			boolean result = condition.test();
+			boolean changed = !versions.equals(lastSeenVersions) || result != lastResult;
+			lastSeenVersions = versions;
+			lastResult = result;
+			return changed;
+		}
+
+		private boolean test() {
+			return lastResult;
+		}
+	}
+
 	private static final class BuildContext {
 		private final List<CompiledVariable> variables = new ArrayList<>();
+		private final List<CompiledCondition> conditions = new ArrayList<>();
 	}
 
 	@FunctionalInterface

@@ -79,7 +79,7 @@ public final class CustomTextParser {
 		}
 	}
 
-	public sealed interface Node permits SequenceNode, LiteralNode, VariableNode, DirectiveNode, GradientNode {
+	public sealed interface Node permits SequenceNode, LiteralNode, VariableNode, ConditionNode, DirectiveNode, GradientNode {
 	}
 
 	public record SequenceNode(List<Node> children) implements Node {
@@ -103,6 +103,15 @@ public final class CustomTextParser {
 			requireNonNull(key, "key");
 			requireNonNull(variable, "variable");
 			modifiers = List.copyOf(modifiers);
+		}
+	}
+
+	public record ConditionNode(String rawInstruction, CustomCondition.Condition condition,
+	                            SequenceNode content) implements Node {
+		public ConditionNode {
+			requireNonNull(rawInstruction, "rawInstruction");
+			requireNonNull(condition, "condition");
+			requireNonNull(content, "content");
 		}
 	}
 
@@ -235,6 +244,10 @@ public final class CustomTextParser {
 			index = end + 1;
 
 			String inner = source.substring(start + 1, end);
+			if (inner.startsWith(CustomCondition.PREFIX)) {
+				return parseCondition(rawPlaceholder, inner);
+			}
+
 			List<String> parts = Modifiers.splitUnescaped(inner, ':');
 			if (parts.isEmpty()) {
 				return new LiteralNode(rawPlaceholder);
@@ -256,6 +269,26 @@ public final class CustomTextParser {
 			}
 
 			return new VariableNode(rawPlaceholder, variableKey, variable, modifiers);
+		}
+
+		private Node parseCondition(String rawInstruction, String inner) {
+			int conditionStart = CustomCondition.PREFIX.length();
+			int separator = findConditionContentSeparator(inner, conditionStart);
+			if (separator == -1) {
+				return new LiteralNode(rawInstruction);
+			}
+
+			String rawCondition = inner.substring(conditionStart, separator).trim();
+			CustomCondition.Condition condition = CustomCondition.parse(rawCondition, variableResolver);
+			if (condition == null) {
+				return new LiteralNode(rawInstruction);
+			}
+
+			String rawContent = inner.substring(separator + 1);
+			ParsedDocument parsedContent = CustomTextParser.parse(rawContent, variableResolver);
+			hasExplicitColors |= parsedContent.hasExplicitColors();
+			hasDynamicColors |= parsedContent.hasDynamicColors();
+			return new ConditionNode(rawInstruction, condition, parsedContent.root());
 		}
 
 		private Node parseDirective() {
@@ -434,6 +467,52 @@ public final class CustomTextParser {
 						return cursor;
 					}
 					depth--;
+				}
+			}
+
+			return -1;
+		}
+
+		private int findConditionContentSeparator(String input, int start) {
+			int curlyDepth = 0;
+			int bracketDepth = 0;
+			boolean escaped = false;
+
+			for (int cursor = start; cursor < input.length(); cursor++) {
+				char current = input.charAt(cursor);
+				if (escaped) {
+					escaped = false;
+					continue;
+				}
+
+				if (current == '\\') {
+					escaped = true;
+					continue;
+				}
+
+				if (current == '{') {
+					curlyDepth++;
+					continue;
+				}
+				if (current == '}') {
+					curlyDepth = Math.max(0, curlyDepth - 1);
+					continue;
+				}
+				if (current == '[') {
+					bracketDepth++;
+					continue;
+				}
+				if (current == ']') {
+					bracketDepth = Math.max(0, bracketDepth - 1);
+					continue;
+				}
+
+				if (current == '|' && curlyDepth == 0 && bracketDepth == 0) {
+					if (cursor + 1 < input.length() && input.charAt(cursor + 1) == '|') {
+						cursor++;
+						continue;
+					}
+					return cursor;
 				}
 			}
 

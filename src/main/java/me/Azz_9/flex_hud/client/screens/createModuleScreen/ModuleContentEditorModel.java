@@ -11,6 +11,7 @@ import java.util.Objects;
 import me.Azz_9.flex_hud.client.customModules.Variable;
 import me.Azz_9.flex_hud.client.customModules.Variables;
 import me.Azz_9.flex_hud.client.customModules.modifiers.Modifiers;
+import me.Azz_9.flex_hud.client.customModules.text.CustomCondition;
 import me.Azz_9.flex_hud.client.customModules.text.CustomTextParser;
 
 public final class ModuleContentEditorModel {
@@ -30,8 +31,12 @@ public final class ModuleContentEditorModel {
 	}
 
 	public static ModuleContentEditorModel parse(String rawText, StyleState initialStyle) {
+		return fromSequence(CustomTextParser.parse(rawText, Variables::get).root(), initialStyle);
+	}
+
+	private static ModuleContentEditorModel fromSequence(CustomTextParser.SequenceNode sequence, StyleState initialStyle) {
 		List<InlineElement> elements = new ArrayList<>();
-		appendSequence(CustomTextParser.parse(rawText, Variables::get).root(), initialStyle, elements);
+		appendSequence(sequence, initialStyle, elements);
 		return new ModuleContentEditorModel(elements);
 	}
 
@@ -51,6 +56,11 @@ public final class ModuleContentEditorModel {
 
 		if (node instanceof CustomTextParser.VariableNode variableNode) {
 			output.add(new VariableElement(variableNode.key(), variableNode.variable(), variableNode.modifiers(), style));
+			return style;
+		}
+
+		if (node instanceof CustomTextParser.ConditionNode conditionNode) {
+			output.add(new ConditionElement(conditionNode.condition(), fromSequence(conditionNode.content(), StyleState.EMPTY), style));
 			return style;
 		}
 
@@ -138,6 +148,10 @@ public final class ModuleContentEditorModel {
 		elements.add(Math.clamp(index, 0, elements.size()), new VariableElement(variable.getKey(), variable, new ArrayList<>(), style));
 	}
 
+	public void insertCondition(int index, CustomCondition.Condition condition, ModuleContentEditorModel content, StyleState style) {
+		elements.add(Math.clamp(index, 0, elements.size()), new ConditionElement(condition, content.copy(), style));
+	}
+
 	public void deleteRange(int start, int end) {
 		if (start >= end) {
 			return;
@@ -181,6 +195,13 @@ public final class ModuleContentEditorModel {
 		}
 	}
 
+	public void updateCondition(int elementIndex, CustomCondition.Condition condition, ModuleContentEditorModel content) {
+		if (0 <= elementIndex && elementIndex < elements.size() && elements.get(elementIndex) instanceof ConditionElement conditionElement) {
+			conditionElement.setCondition(condition);
+			conditionElement.setContent(content);
+		}
+	}
+
 	public SelectionSummary summarize(int start, int end) {
 		if (start >= end || elements.isEmpty()) {
 			return SelectionSummary.EMPTY;
@@ -195,6 +216,14 @@ public final class ModuleContentEditorModel {
 
 	public String serialize() {
 		return serializeNodes(buildColorNodes(elements, 0), BooleanState.EMPTY);
+	}
+
+	public String visibleText() {
+		StringBuilder builder = new StringBuilder();
+		for (InlineElement element : elements) {
+			builder.append(element.visibleText());
+		}
+		return builder.toString();
 	}
 
 	private void forEachElement(int start, int end, java.util.function.Consumer<InlineElement> consumer) {
@@ -304,6 +333,10 @@ public final class ModuleContentEditorModel {
 	private static String serializeElement(InlineElement element) {
 		if (element instanceof TextElement textElement) {
 			return escapeLiteral(textElement.text());
+		}
+
+		if (element instanceof ConditionElement conditionElement) {
+			return "{" + CustomCondition.PREFIX + conditionElement.condition().format() + "|" + conditionElement.content().serialize() + "}";
 		}
 
 		VariableElement variableElement = (VariableElement) element;
@@ -477,7 +510,7 @@ public final class ModuleContentEditorModel {
 		public static final BooleanState EMPTY = new BooleanState(false, false, false, false, false);
 	}
 
-	public sealed static abstract class InlineElement permits TextElement, VariableElement {
+	public sealed static abstract class InlineElement permits TextElement, VariableElement, ConditionElement {
 		private StyleState style;
 
 		protected InlineElement(StyleState style) {
@@ -556,6 +589,43 @@ public final class ModuleContentEditorModel {
 		@Override
 		public String visibleText() {
 			return variable.getName().getString();
+		}
+	}
+
+	public static final class ConditionElement extends InlineElement {
+		private CustomCondition.Condition condition;
+		private ModuleContentEditorModel content;
+
+		public ConditionElement(CustomCondition.Condition condition, ModuleContentEditorModel content, StyleState style) {
+			super(style);
+			this.condition = requireNonNull(condition, "condition");
+			this.content = requireNonNull(content, "content").copy();
+		}
+
+		public CustomCondition.Condition condition() {
+			return condition;
+		}
+
+		public ModuleContentEditorModel content() {
+			return content.copy();
+		}
+
+		public void setCondition(CustomCondition.Condition condition) {
+			this.condition = requireNonNull(condition, "condition");
+		}
+
+		public void setContent(ModuleContentEditorModel content) {
+			this.content = requireNonNull(content, "content").copy();
+		}
+
+		@Override
+		public InlineElement copy() {
+			return new ConditionElement(condition, content, style());
+		}
+
+		@Override
+		public String visibleText() {
+			return "if " + condition.displayText() + " -> " + content.visibleText();
 		}
 	}
 

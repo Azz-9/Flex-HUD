@@ -107,7 +107,6 @@ public class Variables {
 		register("time.ms", () -> LocalTime.now().getNano() / 1_000_000, FRAME);
 		register("time.hour_12", () -> LocalTime.now().get(ChronoField.CLOCK_HOUR_OF_AMPM), TICK);
 		register("time.ampm", () -> LocalTime.now().get(ChronoField.AMPM_OF_DAY) == 0 ? "AM" : "PM", TICK);
-
 	}
 
 	public static Map<String, Variable<?>> getAllVariables() {

@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import me.Azz_9.flex_hud.client.customModules.Variable;
 import me.Azz_9.flex_hud.client.customModules.modifiers.Modifiers;
+import me.Azz_9.flex_hud.client.customModules.text.CustomCondition;
 
 public class CompiledCustomTextTest {
 
@@ -110,6 +111,87 @@ public class CompiledCustomTextTest {
 		value.set(50);
 		variable.updateValue();
 		assertEquals("50", template.getRenderDataForTests().text().getString());
+	}
+
+	@Test
+	void generalConditionsCanRenderMixedTextAndVariables() {
+		Modifiers.init();
+
+		AtomicReference<Integer> health = new AtomicReference<>(10);
+		AtomicReference<Integer> food = new AtomicReference<>(5);
+		AtomicReference<Integer> armor = new AtomicReference<>(20);
+		Variable<Integer> healthVariable = createVariable("player.health", health::get);
+		Variable<Integer> foodVariable = createVariable("player.food", food::get);
+		Variable<Integer> armorVariable = createVariable("player.armor", armor::get);
+
+		CompiledCustomText template = CompiledCustomText.compile(
+				"{if:player.health>0&&player.food>0|Armor:{player.armor}}",
+				key -> switch (key) {
+					case "player.health" -> healthVariable;
+					case "player.food" -> foodVariable;
+					case "player.armor" -> armorVariable;
+					default -> null;
+				}
+		);
+
+		assertEquals("Armor:20", template.getRenderDataForTests().text().getString());
+
+		food.set(0);
+		foodVariable.updateValue();
+		assertEquals("", template.getRenderDataForTests().text().getString());
+	}
+
+	@Test
+	void generalConditionsCanUseOrConnectors() {
+		Modifiers.init();
+
+		AtomicReference<Integer> health = new AtomicReference<>(0);
+		AtomicReference<Integer> food = new AtomicReference<>(5);
+		AtomicReference<Integer> armor = new AtomicReference<>(20);
+		Variable<Integer> healthVariable = createVariable("player.health", health::get);
+		Variable<Integer> foodVariable = createVariable("player.food", food::get);
+		Variable<Integer> armorVariable = createVariable("player.armor", armor::get);
+
+		CompiledCustomText template = CompiledCustomText.compile(
+				"{if:player.health>0||player.food>0|Ready:{player.armor}}",
+				key -> switch (key) {
+					case "player.health" -> healthVariable;
+					case "player.food" -> foodVariable;
+					case "player.armor" -> armorVariable;
+					default -> null;
+				}
+		);
+
+		assertEquals("Ready:20", template.getRenderDataForTests().text().getString());
+
+		food.set(0);
+		foodVariable.updateValue();
+		assertEquals("", template.getRenderDataForTests().text().getString());
+
+		health.set(1);
+		healthVariable.updateValue();
+		assertEquals("Ready:20", template.getRenderDataForTests().text().getString());
+	}
+
+	@Test
+	void conditionDisplayUsesReadableConnectorNames() {
+		Modifiers.init();
+
+		Variable<Integer> healthVariable = createVariable("player.health", () -> 1);
+		Variable<Integer> foodVariable = createVariable("player.food", () -> 1);
+
+		CustomCondition.Condition condition = CustomCondition.parse(
+				"player.health>0 OR player.food>0",
+				key -> switch (key) {
+					case "player.health" -> healthVariable;
+					case "player.food" -> foodVariable;
+					default -> null;
+				}
+		);
+
+		assertNotNull(condition);
+		assertEquals("player.health > 0 OR player.food > 0", condition.displayText());
+		assertEquals("player.health>0||player.food>0", condition.format());
 	}
 
 	private static <T> Variable<T> createVariable(String key, java.util.function.Supplier<T> supplier) {

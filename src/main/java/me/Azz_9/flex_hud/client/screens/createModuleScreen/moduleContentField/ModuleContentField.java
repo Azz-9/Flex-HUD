@@ -26,8 +26,10 @@ import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 import me.Azz_9.flex_hud.client.customModules.Variable;
+import me.Azz_9.flex_hud.client.customModules.Variables;
 import me.Azz_9.flex_hud.client.customModules.modifiers.Modifier;
 import me.Azz_9.flex_hud.client.customModules.modifiers.Modifiers;
+import me.Azz_9.flex_hud.client.customModules.text.CustomCondition;
 import me.Azz_9.flex_hud.client.screens.TrackableChange;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector.ColorBindable;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.buttons.colorSelector.ColorSelector;
@@ -50,6 +52,9 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 	private static final int VARIABLE_BG_COLOR = 0xff24354c;
 	private static final int VARIABLE_BORDER_COLOR = 0xff4d6d92;
 	private static final int VARIABLE_SELECTED_BG_COLOR = 0xff365277;
+	private static final int CONDITION_BG_COLOR = 0xff322a42;
+	private static final int CONDITION_BORDER_COLOR = 0xff745c9c;
+	private static final int CONDITION_SELECTED_BG_COLOR = 0xff4a3a66;
 	private static final int VARIABLE_PADDING_X = 4;
 	private static final int VARIABLE_PADDING_Y = 2;
 	private static final int VARIABLE_GAP = 4;
@@ -90,9 +95,11 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 	private static final Pattern UNSIGNED_INTEGER_INPUT = Pattern.compile("\\d{0,9}");
 	private static final Pattern UNSIGNED_TWO_DIGIT_INTEGER_INPUT = Pattern.compile("\\d{0,2}");
 	private static final Pattern SIGNED_INTEGER_INPUT = Pattern.compile("-?\\d{0,9}");
+	private static final Pattern SIGNED_DECIMAL_INPUT = Pattern.compile("-?\\d{0,9}(\\.\\d{0,6})?");
 	private static final Pattern SIGNED_NON_ZERO_INTEGER_INPUT = Pattern.compile("-?[1-9]\\d{0,8}");
 
 	private final @Nullable String initialContent;
+	private boolean styleToolbarEnabled = true;
 
 	ModuleContentEditorModel model;
 	private String rawText;
@@ -109,11 +116,13 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 	private int contentWidth;
 	private @Nullable HoverTarget hoveredTarget;
 	private @Nullable VariableHit hoveredVariableHit;
+	private @Nullable ConditionDisplayItem hoveredConditionItem;
 	private long hoverStartTime;
 	private @Nullable SelectionBounds selectionBounds;
 	private List<ToolbarButton> toolbarButtons = List.of();
 	@Nullable ModifierPickerPopup modifierPickerPopup;
 	@Nullable ModifierEditorPopup modifierEditorPopup;
+	@Nullable ConditionEditorPopup conditionEditorPopup;
 	private @Nullable ColorPopup colorPopup;
 	private @Nullable GradientPopup gradientPopup;
 
@@ -125,6 +134,14 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		this.caretIndex = model.size();
 		this.selectionAnchor = caretIndex;
 		rebuildLayout();
+	}
+
+	@Override
+	public void setFocused(boolean focused) {
+		super.setFocused(focused);
+		if (!focused) {
+			draggingSelection = false;
+		}
 	}
 
 	@Override
@@ -156,6 +173,7 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		renderToolbar(context, mouseX, mouseY);
 		renderModifierPicker(context, mouseX, mouseY, deltaTicks);
 		renderModifierEditor(context, mouseX, mouseY, deltaTicks);
+		renderConditionEditor(context, mouseX, mouseY, deltaTicks);
 		renderColorPopup(context, mouseX, mouseY, deltaTicks);
 		renderGradientPopup(context, mouseX, mouseY, deltaTicks);
 		renderTooltip(context, mouseX, mouseY);
@@ -166,8 +184,9 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		if (this.isHovered()) {
 			if (!this.isInteractable()) {
 				context.setCursor(StandardCursors.NOT_ALLOWED);
-			} else if (hoveredVariableHit != null
-					&& (hoveredVariableHit.kind() == VariableHitKind.PLUS || hoveredVariableHit.kind() == VariableHitKind.MODIFIER)) {
+			} else if ((hoveredVariableHit != null
+					&& (hoveredVariableHit.kind() == VariableHitKind.PLUS || hoveredVariableHit.kind() == VariableHitKind.MODIFIER))
+					|| hoveredConditionItem != null) {
 				context.setCursor(StandardCursors.POINTING_HAND);
 			} else {
 				context.setCursor(StandardCursors.IBEAM);
@@ -184,6 +203,16 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 
 			if (item instanceof TextDisplayItem textDisplayItem) {
 				context.drawText(CLIENT.textRenderer, textDisplayItem.text(), drawX, contentTextY, textDisplayItem.color(), false);
+				continue;
+			}
+
+			if (item instanceof ConditionDisplayItem conditionDisplayItem) {
+				int chipTop = getDisplayItemTop(conditionDisplayItem, contentTextY);
+				boolean selected = isIndexSelected(conditionDisplayItem.modelIndex());
+				int backgroundColor = selected ? CONDITION_SELECTED_BG_COLOR : CONDITION_BG_COLOR;
+				context.fill(drawX, chipTop, drawX + conditionDisplayItem.width(), getDisplayItemBottom(conditionDisplayItem, contentTextY), backgroundColor);
+				context.drawStrokedRectangle(drawX, chipTop, conditionDisplayItem.width(), conditionDisplayItem.height(), CONDITION_BORDER_COLOR);
+				context.drawText(CLIENT.textRenderer, conditionDisplayItem.displayText(), drawX + VARIABLE_PADDING_X, contentTextY, conditionDisplayItem.color(), false);
 				continue;
 			}
 
@@ -287,14 +316,21 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 	}
 
 	private int getDisplayItemTop(DisplayItem item, int contentTextY) {
-		return item instanceof VariableDisplayItem ? contentTextY - VARIABLE_PADDING_Y : contentTextY - 1;
+		return isChipItem(item) ? contentTextY - VARIABLE_PADDING_Y : contentTextY - 1;
 	}
 
 	private int getDisplayItemBottom(DisplayItem item, int contentTextY) {
 		return getDisplayItemTop(item, contentTextY) + item.height() + 1;
 	}
 
+	private boolean isChipItem(DisplayItem item) {
+		return item instanceof VariableDisplayItem || item instanceof ConditionDisplayItem;
+	}
+
 	private void renderToolbar(DrawContext context, int mouseX, int mouseY) {
+		if (!styleToolbarEnabled) {
+			return;
+		}
 		for (ToolbarButton button : toolbarButtons) {
 			renderButtonCenterLabel(context, button.bounds(), button.label(), button.backgroundColor(mouseX, mouseY), BUTTON_TEXT_COLOR, mouseX, mouseY);
 		}
@@ -312,6 +348,12 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		}
 	}
 
+	private void renderConditionEditor(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+		if (conditionEditorPopup != null) {
+			conditionEditorPopup.render(context, mouseX, mouseY, deltaTicks);
+		}
+	}
+
 	private void renderColorPopup(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
 		if (colorPopup != null) {
 			colorPopup.render(context, mouseX, mouseY, deltaTicks);
@@ -326,6 +368,7 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 
 	private void updateHover(int mouseX, int mouseY) {
 		hoveredVariableHit = findVariableHit(mouseX, mouseY);
+		hoveredConditionItem = findConditionDisplayItemAt(mouseX, mouseY);
 		HoverTarget newTarget = findHoverTarget(mouseX, mouseY);
 		if (!Objects.equals(newTarget, hoveredTarget)) {
 			hoveredTarget = newTarget;
@@ -372,6 +415,10 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 
 				return new HoverTarget(variableDisplayItem.element().variable().getDescription());
 			}
+
+			if (item instanceof ConditionDisplayItem conditionDisplayItem) {
+				return new HoverTarget(Text.literal(conditionDisplayText(conditionDisplayItem.element().condition())));
+			}
 		}
 		return null;
 	}
@@ -391,6 +438,10 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 			return true;
 		}
 		if (modifierEditorPopup != null && modifierEditorPopup.mouseClicked(click, doubled)) {
+			setFocused(true);
+			return true;
+		}
+		if (conditionEditorPopup != null && conditionEditorPopup.mouseClicked(click, doubled)) {
 			setFocused(true);
 			return true;
 		}
@@ -431,6 +482,16 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 			return true;
 		}
 
+		ConditionDisplayItem conditionHit = findConditionDisplayItemAt(click.x(), click.y());
+		if (conditionHit != null) {
+			openConditionEditor(conditionHit);
+			caretIndex = conditionHit.modelIndex() + 1;
+			selectionAnchor = caretIndex;
+			ensureCaretVisible();
+			refreshOverlayLayout();
+			return true;
+		}
+
 		closeModifierPopups();
 		closeSelectionPopups();
 
@@ -464,6 +525,9 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		if (modifierEditorPopup != null && modifierEditorPopup.mouseDragged(click, offsetX, offsetY)) {
 			return true;
 		}
+		if (conditionEditorPopup != null && conditionEditorPopup.mouseDragged(click, offsetX, offsetY)) {
+			return true;
+		}
 		if (modifierPickerPopup != null && modifierPickerPopup.mouseDragged(click, offsetX, offsetY)) {
 			return true;
 		}
@@ -490,6 +554,9 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		if (modifierEditorPopup != null) {
 			handled |= modifierEditorPopup.mouseReleased(click);
 		}
+		if (conditionEditorPopup != null) {
+			handled |= conditionEditorPopup.mouseReleased(click);
+		}
 		if (modifierPickerPopup != null) {
 			handled |= modifierPickerPopup.mouseReleased(click);
 		}
@@ -502,8 +569,11 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
 		boolean handled = false;
+		if (conditionEditorPopup != null) {
+			handled = conditionEditorPopup.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
+		}
 		if (modifierPickerPopup != null) {
-			handled = modifierPickerPopup.mouseScrolled(mouseX, mouseY, verticalAmount);
+			handled |= modifierPickerPopup.mouseScrolled(mouseX, mouseY, verticalAmount);
 		}
 
 		return handled;
@@ -522,6 +592,9 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 			return true;
 		}
 		if (modifierEditorPopup != null && modifierEditorPopup.charTyped(input)) {
+			return true;
+		}
+		if (conditionEditorPopup != null && conditionEditorPopup.charTyped(input)) {
 			return true;
 		}
 		if (modifierPickerPopup != null && modifierPickerPopup.charTyped(input)) {
@@ -555,6 +628,10 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 				modifierEditorPopup = null;
 				return true;
 			}
+			if (conditionEditorPopup != null) {
+				conditionEditorPopup = null;
+				return true;
+			}
 			if (modifierPickerPopup != null) {
 				modifierPickerPopup = null;
 				return true;
@@ -568,6 +645,9 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 			return true;
 		}
 		if (modifierEditorPopup != null && modifierEditorPopup.keyPressed(input)) {
+			return true;
+		}
+		if (conditionEditorPopup != null && conditionEditorPopup.keyPressed(input)) {
 			return true;
 		}
 		if (modifierPickerPopup != null && modifierPickerPopup.keyPressed(input)) {
@@ -640,6 +720,7 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 				|| containsBounds(mouseX, mouseY, toolbarButtons.stream().map(ToolbarButton::bounds).toList())
 				|| (modifierPickerPopup != null && modifierPickerPopup.contains(mouseX, mouseY))
 				|| (modifierEditorPopup != null && modifierEditorPopup.contains(mouseX, mouseY))
+				|| (conditionEditorPopup != null && conditionEditorPopup.contains(mouseX, mouseY))
 				|| (colorPopup != null && colorPopup.contains(mouseX, mouseY))
 				|| (gradientPopup != null && gradientPopup.contains(mouseX, mouseY));
 	}
@@ -882,6 +963,53 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		});
 	}
 
+	public void insertVariable(Variable<?> variable) {
+		if (conditionEditorPopup != null && conditionEditorPopup.insertVariable(variable)) {
+			return;
+		}
+		write("{" + variable.getKey() + "}");
+	}
+
+	public void insertCondition() {
+		Variable<?> variable = defaultConditionVariable();
+		if (variable == null) {
+			return;
+		}
+
+		ModuleContentEditorModel.StyleState insertionStyle = model.getInsertionStyle(Math.min(caretIndex, selectionAnchor));
+		CustomCondition.Condition condition = CustomCondition.defaultCondition(variable);
+		ModuleContentEditorModel content = ModuleContentEditorModel.empty();
+		int[] insertedIndex = new int[]{Math.min(caretIndex, selectionAnchor)};
+
+		applyMutation(() -> {
+			if (hasSelection()) {
+				int start = Math.min(caretIndex, selectionAnchor);
+				int end = Math.max(caretIndex, selectionAnchor);
+				model.deleteRange(start, end);
+				caretIndex = start;
+				selectionAnchor = start;
+			}
+
+			insertedIndex[0] = caretIndex;
+			model.insertCondition(caretIndex, condition, content, insertionStyle);
+			caretIndex++;
+			selectionAnchor = caretIndex;
+		});
+
+		ConditionDisplayItem conditionItem = findConditionDisplayItem(insertedIndex[0]);
+		if (conditionItem != null) {
+			openConditionEditor(conditionItem);
+		}
+	}
+
+	private @Nullable Variable<?> defaultConditionVariable() {
+		Variable<?> health = Variables.get("player.health");
+		if (health != null) {
+			return health;
+		}
+		return Variables.getAllVariables().values().stream().findFirst().orElse(null);
+	}
+
 	private void applyMutation(Runnable mutation) {
 		ModuleContentEditorModel before = model.copy();
 		int beforeCaret = caretIndex;
@@ -956,8 +1084,10 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 			if (element instanceof ModuleContentEditorModel.TextElement textElement) {
 				int width = CLIENT.textRenderer.getWidth(Text.literal(textElement.text()).setStyle(style));
 				displayItem = new TextDisplayItem(index, x, Math.max(width, 1), CLIENT.textRenderer.fontHeight, textElement.text(), resolvedColor);
+			} else if (element instanceof ModuleContentEditorModel.VariableElement variableElement) {
+				displayItem = buildVariableDisplayItem(index, x, variableElement, style, resolvedColor);
 			} else {
-				displayItem = buildVariableDisplayItem(index, x, (ModuleContentEditorModel.VariableElement) element, style, resolvedColor);
+				displayItem = buildConditionDisplayItem(index, x, (ModuleContentEditorModel.ConditionElement) element, style, resolvedColor);
 			}
 
 			displayItems.add(displayItem);
@@ -998,7 +1128,10 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		if (element instanceof ModuleContentEditorModel.TextElement textElement) {
 			return Math.max(1, CLIENT.textRenderer.getWidth(Text.literal(textElement.text()).setStyle(style)));
 		}
-		return buildVariableDisplayItem(0, 0, (ModuleContentEditorModel.VariableElement) element, style, TEXT_COLOR).width();
+		if (element instanceof ModuleContentEditorModel.VariableElement variableElement) {
+			return buildVariableDisplayItem(0, 0, variableElement, style, TEXT_COLOR).width();
+		}
+		return buildConditionDisplayItem(0, 0, (ModuleContentEditorModel.ConditionElement) element, style, TEXT_COLOR).width();
 	}
 
 	private VariableDisplayItem buildVariableDisplayItem(int modelIndex, int x, ModuleContentEditorModel.VariableElement variableElement, Style style, int color) {
@@ -1034,6 +1167,24 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		return new VariableDisplayItem(modelIndex, x, width, height, color, variableElement, name, nameWidth, List.copyOf(modifiers), plusX);
 	}
 
+	private ConditionDisplayItem buildConditionDisplayItem(int modelIndex, int x, ModuleContentEditorModel.ConditionElement conditionElement, Style style, int color) {
+		String displayText = Text.translatable("flex_hud.create_module_screen.editor.condition_chip").getString()
+				+ " " + conditionDisplayText(conditionElement.condition())
+				+ " -> " + conditionElement.content().visibleText();
+		int textWidth = CLIENT.textRenderer.getWidth(Text.literal(displayText).setStyle(style));
+		int width = textWidth + VARIABLE_PADDING_X * 2;
+		int height = CLIENT.textRenderer.fontHeight + VARIABLE_PADDING_Y * 2;
+		return new ConditionDisplayItem(modelIndex, x, width, height, color, conditionElement, displayText);
+	}
+
+	static Text conditionConnectorLabel(CustomCondition.Connector connector) {
+		return Text.translatable("flex_hud.create_module_screen.editor.condition_connector." + connector.key());
+	}
+
+	private static String conditionDisplayText(CustomCondition.Condition condition) {
+		return condition.displayText(connector -> conditionConnectorLabel(connector).getString());
+	}
+
 	private Style toMinecraftStyle(ModuleContentEditorModel.StyleState style, int color) {
 		return Style.EMPTY
 				.withBold(style.bold())
@@ -1059,6 +1210,13 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 			VariableDisplayItem variableItem = findVariableDisplayItem(modifierEditorPopup.elementIndex());
 			if (variableItem != null) {
 				modifierEditorPopup.layout(variableItem);
+			}
+		}
+
+		if (conditionEditorPopup != null) {
+			ConditionDisplayItem conditionItem = findConditionDisplayItem(conditionEditorPopup.elementIndex());
+			if (conditionItem != null) {
+				conditionEditorPopup.layout(conditionItem);
 			}
 		}
 
@@ -1101,6 +1259,9 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 	}
 
 	private List<ToolbarButton> buildToolbarButtons(@Nullable SelectionBounds bounds) {
+		if (!styleToolbarEnabled) {
+			return List.of();
+		}
 		if (bounds == null) {
 			return List.of();
 		}
@@ -1247,6 +1408,9 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		if (modifierEditorPopup != null && findVariableDisplayItem(modifierEditorPopup.elementIndex()) == null) {
 			modifierEditorPopup = null;
 		}
+		if (conditionEditorPopup != null && findConditionDisplayItem(conditionEditorPopup.elementIndex()) == null) {
+			conditionEditorPopup = null;
+		}
 		if (colorPopup != null && !colorPopup.matchesSelection()) {
 			colorPopup = null;
 		}
@@ -1257,12 +1421,14 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 
 	private void closeTransientPopups() {
 		closeModifierPopups();
+		conditionEditorPopup = null;
 		closeSelectionPopups();
 	}
 
 	private void closeModifierPopups() {
 		modifierPickerPopup = null;
 		modifierEditorPopup = null;
+		conditionEditorPopup = null;
 	}
 
 	private void closeSelectionPopups() {
@@ -1370,8 +1536,28 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		return null;
 	}
 
+	private @Nullable ConditionDisplayItem findConditionDisplayItemAt(double mouseX, double mouseY) {
+		int innerLeft = getX() + TEXT_PADDING_X;
+		int contentTextY = getContentTextY();
+		for (DisplayItem item : displayItems) {
+			if (!(item instanceof ConditionDisplayItem conditionDisplayItem)) {
+				continue;
+			}
+
+			int drawX = innerLeft + item.x() - horizontalScroll;
+			if (mouseY < getDisplayItemTop(item, contentTextY) || mouseY > getDisplayItemBottom(item, contentTextY)) {
+				continue;
+			}
+			if (drawX <= mouseX && mouseX <= drawX + item.width()) {
+				return conditionDisplayItem;
+			}
+		}
+		return null;
+	}
+
 	private void openModifierPicker(VariableDisplayItem variableItem) {
 		modifierEditorPopup = null;
+		conditionEditorPopup = null;
 		closeSelectionPopups();
 		modifierPickerPopup = new ModifierPickerPopup(this, variableItem.modelIndex());
 		modifierPickerPopup.layout(variableItem);
@@ -1379,9 +1565,17 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 
 	private void openModifierEditor(VariableDisplayItem variableItem, int modifierIndex) {
 		closeModifierPicker();
+		conditionEditorPopup = null;
 		closeSelectionPopups();
 		modifierEditorPopup = new ModifierEditorPopup(this, variableItem.modelIndex(), modifierIndex);
 		modifierEditorPopup.layout(variableItem);
+	}
+
+	private void openConditionEditor(ConditionDisplayItem conditionItem) {
+		closeModifierPopups();
+		closeSelectionPopups();
+		conditionEditorPopup = new ConditionEditorPopup(this, conditionItem.modelIndex());
+		conditionEditorPopup.layout(conditionItem);
 	}
 
 	private void handleBodyClick(Click click, VariableDisplayItem variableItem) {
@@ -1408,9 +1602,21 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		return null;
 	}
 
+	@Nullable ConditionDisplayItem findConditionDisplayItem(int elementIndex) {
+		for (DisplayItem item : displayItems) {
+			if (item.modelIndex() == elementIndex && item instanceof ConditionDisplayItem conditionDisplayItem) {
+				return conditionDisplayItem;
+			}
+		}
+		return null;
+	}
+
 	List<Modifier<?, ?>> getCompatibleModifiers(ModuleContentEditorModel.VariableElement variableElement) {
 		List<Modifier<?, ?>> compatible = new ArrayList<>();
 		for (Modifier<?, ?> modifier : Modifiers.getAll()) {
+			if (modifier.key().equals("conditional")) {
+				continue;
+			}
 			List<Modifiers.ResolvedModifier<?, ?>> candidateModifiers = new ArrayList<>(variableElement.modifiers());
 			candidateModifiers.add(defaultResolvedModifier(modifier));
 			if (isCompatibleModifierChain(variableElement.variable(), candidateModifiers)) {
@@ -1469,6 +1675,10 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		return SIGNED_INTEGER_INPUT.matcher(text).matches();
 	}
 
+	static boolean isSignedDecimalInput(String text) {
+		return SIGNED_DECIMAL_INPUT.matcher(text).matches();
+	}
+
 	static boolean isSignedNonZeroIntegerInput(String text) {
 		return text.isEmpty()
 				|| text.equals("-")
@@ -1505,6 +1715,24 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		modifierEditorPopup = null;
 	}
 
+	void applyConditionChange(int elementIndex, CustomCondition.@Nullable Condition condition, @Nullable ModuleContentEditorModel content, boolean deleteCondition) {
+		if (elementIndex < 0 || elementIndex >= model.size() || !(model.get(elementIndex) instanceof ModuleContentEditorModel.ConditionElement)) {
+			return;
+		}
+
+		if (deleteCondition) {
+			applyMutation(() -> {
+				model.deleteRange(elementIndex, elementIndex + 1);
+				caretIndex = Math.clamp(elementIndex, 0, model.size());
+				selectionAnchor = caretIndex;
+			});
+		} else if (condition != null && content != null) {
+			applyMutation(() -> model.updateCondition(elementIndex, condition, content));
+		}
+
+		conditionEditorPopup = null;
+	}
+
 	@Override
 	protected void appendClickableNarrations(NarrationMessageBuilder builder) {
 	}
@@ -1535,12 +1763,28 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		return rawText;
 	}
 
+	public void setText(String text) {
+		rawText = text == null ? "" : text;
+		model = ModuleContentEditorModel.parse(rawText);
+		caretIndex = model.size();
+		selectionAnchor = caretIndex;
+		horizontalScroll = 0;
+		closeTransientPopups();
+		rebuildLayout();
+		changedListener.accept(rawText);
+	}
+
 	public void setMaxLength(int maxLength) {
 		this.maxLength = maxLength;
 	}
 
 	public void setChangedListener(Consumer<String> changedListener) {
 		this.changedListener = changedListener;
+	}
+
+	public void setStyleToolbarEnabled(boolean styleToolbarEnabled) {
+		this.styleToolbarEnabled = styleToolbarEnabled;
+		refreshOverlayLayout();
 	}
 
 	private enum ButtonState {
