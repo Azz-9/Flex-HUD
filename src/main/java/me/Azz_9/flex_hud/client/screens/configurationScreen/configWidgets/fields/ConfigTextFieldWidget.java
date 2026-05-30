@@ -1,20 +1,23 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.fields;
 
-import me.Azz_9.flex_hud.client.screens.TrackableChange;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigString;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
-import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
+import net.minecraft.util.ARGB;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
+
+import me.Azz_9.flex_hud.client.screens.TrackableChange;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.Observer;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configVariables.ConfigString;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.DataGetter;
+import me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.ResetAware;
 
 public class ConfigTextFieldWidget extends EditBox implements TrackableChange, DataGetter<String>, ResetAware {
 	private final String INITIAL_VALUE;
@@ -39,7 +42,7 @@ public class ConfigTextFieldWidget extends EditBox implements TrackableChange, D
 				variable.setValue(text);
 				setTextColor(0xffffffff);
 			} else {
-				setTextColor((ChatFormatting.RED.getColor() != null ? ChatFormatting.RED.getColor() : 0xfc5454) | 0xff000000);
+				setTextColor(ARGB.color(0xff, TextColor.RED.getValue()));
 			}
 
 			for (Observer observer : observers) {

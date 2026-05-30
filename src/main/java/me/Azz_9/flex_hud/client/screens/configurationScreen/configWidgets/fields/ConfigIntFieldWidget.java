@@ -1,10 +1,10 @@
 package me.Azz_9.flex_hud.client.screens.configurationScreen.configWidgets.fields;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.util.ARGB;
 
 import org.jetbrains.annotations.Nullable;
@@ -62,7 +62,7 @@ public class ConfigIntFieldWidget extends FilteredEditBox implements TrackableCh
 					variable.setValue(getInputValue());
 				}
 			} else {
-				setTextColor(ARGB.color(255, ChatFormatting.RED.getColor() != null ? ChatFormatting.RED.getColor() : 0xfc5454));
+				setTextColor(ARGB.color(0xff, TextColor.RED.getValue()));
 			}
 
 			for (Observer observer : observers) {

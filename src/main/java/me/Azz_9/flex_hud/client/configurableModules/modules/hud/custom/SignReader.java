@@ -8,7 +8,6 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.blockentity.AbstractSignRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -75,24 +74,23 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 		if (data.texture == null) return;
 
 		float textureScale; // used to make the texture bigger by default
+		int textureWidth, textureHeight;
 		if (data.isHangingSign) {
 			textureScale = 4.5f;
 			setWidth(Math.round(14 * textureScale));
 			setHeight(Math.round(10 * textureScale));
+			textureWidth = Math.round(16 * textureScale);
+			textureHeight = Math.round(16 * textureScale);
 		} else {
 			textureScale = 4;
 			setWidth(Math.round(24 * textureScale));
 			setHeight(Math.round(12 * textureScale));
+			textureWidth = Math.round(24 * textureScale);
+			textureHeight = Math.round(26 * textureScale);
 		}
 
-		int textureWidth = Math.round(64 * textureScale);
-		int textureHeight = Math.round(32 * textureScale);
-
-		float offsetX = 2 * textureScale;
-		if (!data.playerFacingFront) {
-			offsetX += getWidth() + 2 * textureScale;
-		}
-		float offsetY = data.isHangingSign ? 14 * textureScale : 2 * textureScale;
+		float offsetX = data.isHangingSign ? 1 * textureScale : 0;
+		float offsetY = data.isHangingSign ? 6 * textureScale : 0;
 
 		Matrix3x2fStack matrices = graphics.pose();
 		matrices.pushMatrix();
@@ -216,7 +214,8 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 
 	private @NotNull RenderData getPlaceholderRenderData() {
 		RenderData data = new RenderData();
-		data.texture = Sheets.getSignSprite(WoodType.OAK).texture().withPrefix("textures/").withSuffix(".png");
+
+		data.texture = Identifier.withDefaultNamespace("gui/signs/" + WoodType.OAK.name());
 		data.content = new Component[]{
 				Component.literal(""),
 				Component.translatable("flex_hud.sign_reader.placeholder_content"),
@@ -284,9 +283,9 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 		data.textColor = signText.getColor().getTextColor();
 		data.glowColor = AbstractSignRenderer.getDarkColor(signText);
 		data.isGlowing = signText.hasGlowingText();
-		data.texture = (data.isHangingSign
-				? Sheets.getHangingSignSprite(woodType)
-				: Sheets.getSignSprite(woodType)).texture();
+		data.texture = data.isHangingSign
+				? Identifier.withDefaultNamespace("gui/hanging_signs/" + woodType.name())
+				: Identifier.withDefaultNamespace("gui/signs/" + woodType.name());
 
 		return data;
 	}
@@ -300,7 +299,7 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 		int textColor = DyeColor.BLACK.getTextColor();
 		boolean isGlowing;
 		int glowColor = AbstractSignRenderer.getDarkColor(
-				new SignText(null, null, DyeColor.BLACK, true)
+				new SignText(new Component[]{}, new Component[]{}, DyeColor.BLACK, true)
 		);
 		boolean isHangingSign;
 	}

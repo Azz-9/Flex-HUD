@@ -94,11 +94,8 @@ public class Scoreboard extends AbstractMovableModule {
 		} else {
 			net.minecraft.world.scores.Scoreboard scoreboard = MINECRAFT.level.getScoreboard();
 			PlayerTeam playerTeam = scoreboard.getPlayersTeam(MINECRAFT.player.getScoreboardName());
-			if (playerTeam != null) {
-				DisplaySlot displaySlot = DisplaySlot.teamColorToSlot(playerTeam.getColor());
-				if (displaySlot != null) {
-					objective = scoreboard.getDisplayObjective(displaySlot);
-				}
+			if (playerTeam != null && playerTeam.getColor().isPresent()) {
+				objective = scoreboard.getDisplayObjective(playerTeam.getColor().get().displaySlot());
 			}
 
 			objective = objective != null ? objective : scoreboard.getDisplayObjective(DisplaySlot.SIDEBAR);
