@@ -84,7 +84,6 @@ public class Variables {
 		register("world.time.hour_12", SafeSupplier.create(() -> (requireNonNull(CLIENT.world).getTimeOfDay() / 1000 + 6) % 24, 18L), TICK);
 		register("world.time.ampm", SafeSupplier.create(() -> (requireNonNull(CLIENT.world).getTimeOfDay() / 1000 + 6) % 24 < 12 ? "AM" : "PM", "AM"), TICK);
 		register("world.day", SafeSupplier.create(() -> requireNonNull(CLIENT.world).getTimeOfDay() / 24000, 5), TICK);
-
 		// server
 		register("server.ip", SafeSupplier.create(() -> requireNonNull(CLIENT.getCurrentServerEntry()).address, "", "play.hypixel.net"), ON_JOIN_WORLD);
 		register("server.name", SafeSupplier.create(() -> requireNonNull(CLIENT.getCurrentServerEntry()).name, "", "Hypixel"), ON_JOIN_WORLD);

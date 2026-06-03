@@ -66,6 +66,7 @@ final class ConditionEditorPopup {
 
 		contentField.setText(conditionElement.content().serialize());
 		contentField.setMaxLength(256);
+		contentField.setRenderOverlaysInline(false);
 	}
 
 	int elementIndex() {
@@ -144,6 +145,11 @@ final class ConditionEditorPopup {
 		host.renderButtonCenterLabel(context, deleteBounds, Text.translatable("flex_hud.create_module_screen.editor.delete_condition"), deleteBounds.contains(mouseX, mouseY) ? ModuleContentField.BUTTON_HOVERED_BACKGROUND : ModuleContentField.BUTTON_BACKGROUND, ModuleContentField.BUTTON_TEXT_COLOR, mouseX, mouseY);
 		host.renderButtonCenterLabel(context, saveBounds, Text.translatable("flex_hud.create_module_screen.editor.apply"), saveBounds.contains(mouseX, mouseY) ? ModuleContentField.BUTTON_HOVERED_BACKGROUND : ModuleContentField.BUTTON_BACKGROUND, ModuleContentField.BUTTON_TEXT_COLOR, mouseX, mouseY);
 		host.renderButtonCenterLabel(context, cancelBounds, Text.translatable("flex_hud.global.config.cancel"), cancelBounds.contains(mouseX, mouseY) ? ModuleContentField.BUTTON_HOVERED_BACKGROUND : ModuleContentField.BUTTON_BACKGROUND, ModuleContentField.BUTTON_TEXT_COLOR, mouseX, mouseY);
+
+		for (ConditionRow row : rows) {
+			row.renderOverlays(context, mouseX, mouseY, deltaTicks);
+		}
+		contentField.renderOverlays(context, mouseX, mouseY, deltaTicks);
 	}
 
 	boolean mouseClicked(Click click, boolean doubled) {
@@ -372,6 +378,9 @@ final class ConditionEditorPopup {
 			this.connector = connector;
 			this.variableField = new ModuleContentField(0, 0, 120, FIELD_HEIGHT, wrapOperand(variable));
 			this.variableField.setMaxLength(128);
+			this.variableField.setPlaceholder(Text.empty());
+			this.variableField.setPlainTextInputEnabled(false);
+			this.variableField.setRenderOverlaysInline(false);
 			this.variableField.setStyleToolbarEnabled(false);
 			this.operator = operator;
 			this.thresholdField = new PopupTextFieldWidget(THRESHOLD_WIDTH, FIELD_HEIGHT);
@@ -407,6 +416,10 @@ final class ConditionEditorPopup {
 			host.renderButtonCenterLabel(context, operatorBounds, Text.literal(operator.primarySymbol()), operatorBounds.contains(mouseX, mouseY) ? ModuleContentField.BUTTON_HOVERED_BACKGROUND : ModuleContentField.BUTTON_BACKGROUND, ModuleContentField.BUTTON_TEXT_COLOR, mouseX, mouseY);
 			thresholdField.render(context, mouseX, mouseY, deltaTicks);
 			host.renderButtonCenterLabel(context, removeBounds, Text.literal("x"), removeBounds.contains(mouseX, mouseY) ? ModuleContentField.BUTTON_HOVERED_BACKGROUND : ModuleContentField.BUTTON_BACKGROUND, ModuleContentField.BUTTON_TEXT_COLOR, mouseX, mouseY);
+		}
+
+		private void renderOverlays(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+			variableField.renderOverlays(context, mouseX, mouseY, deltaTicks);
 		}
 
 		private boolean mouseClicked(Click click, boolean doubled) {

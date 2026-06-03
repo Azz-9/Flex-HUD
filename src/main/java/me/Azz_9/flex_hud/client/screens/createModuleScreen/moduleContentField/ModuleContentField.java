@@ -99,7 +99,10 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 	private static final Pattern SIGNED_NON_ZERO_INTEGER_INPUT = Pattern.compile("-?[1-9]\\d{0,8}");
 
 	private final @Nullable String initialContent;
+	private @Nullable Text placeholder = Text.translatable("flex_hud.create_module_screen.module_content.placeholder");
 	private boolean styleToolbarEnabled = true;
+	private boolean plainTextInputEnabled = true;
+	private boolean renderOverlaysInline = true;
 
 	ModuleContentEditorModel model;
 	private String rawText;
@@ -164,12 +167,18 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		renderCaret(context, innerLeft, contentTextY);
 		context.disableScissor();
 
-		if (rawText.isEmpty()) {
-			context.drawText(CLIENT.textRenderer, Text.translatable("flex_hud.create_module_screen.module_content.placeholder"), innerLeft, contentTextY, PLACEHOLDER_COLOR, false);
+		if (rawText.isEmpty() && placeholder != null && !placeholder.getString().isEmpty()) {
+			context.drawText(CLIENT.textRenderer, placeholder, innerLeft, contentTextY, PLACEHOLDER_COLOR, false);
 		}
 
 		setCursor(context);
 
+		if (renderOverlaysInline) {
+			renderOverlays(context, mouseX, mouseY, deltaTicks);
+		}
+	}
+
+	void renderOverlays(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
 		renderToolbar(context, mouseX, mouseY);
 		renderModifierPicker(context, mouseX, mouseY, deltaTicks);
 		renderModifierEditor(context, mouseX, mouseY, deltaTicks);
@@ -948,6 +957,9 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 	public void write(String text) {
 		ModuleContentEditorModel.StyleState insertionStyle = model.getInsertionStyle(Math.min(caretIndex, selectionAnchor));
 		ModuleContentEditorModel fragment = ModuleContentEditorModel.parse(text, insertionStyle);
+		if (!canInsertFragment(fragment)) {
+			return;
+		}
 		applyMutation(() -> {
 			if (hasSelection()) {
 				int start = Math.min(caretIndex, selectionAnchor);
@@ -1782,9 +1794,34 @@ public class ModuleContentField extends ClickableWidget implements TrackableChan
 		this.changedListener = changedListener;
 	}
 
+	public void setPlaceholder(@Nullable Text placeholder) {
+		this.placeholder = placeholder;
+	}
+
+	public void setPlainTextInputEnabled(boolean plainTextInputEnabled) {
+		this.plainTextInputEnabled = plainTextInputEnabled;
+	}
+
+	public void setRenderOverlaysInline(boolean renderOverlaysInline) {
+		this.renderOverlaysInline = renderOverlaysInline;
+	}
+
 	public void setStyleToolbarEnabled(boolean styleToolbarEnabled) {
 		this.styleToolbarEnabled = styleToolbarEnabled;
 		refreshOverlayLayout();
+	}
+
+	private boolean canInsertFragment(ModuleContentEditorModel fragment) {
+		if (plainTextInputEnabled) {
+			return true;
+		}
+
+		for (ModuleContentEditorModel.InlineElement element : fragment.elements()) {
+			if (!(element instanceof ModuleContentEditorModel.VariableElement)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private enum ButtonState {
