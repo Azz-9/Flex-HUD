@@ -26,8 +26,8 @@ repositories {
 		url = "https://maven.terraformersmc.com/"
 	}
 	maven {
-		name "Xaero's Maven"
-		url "https://chocolateminecraft.com/maven"
+		name = "Xaero's Maven"
+		url = "https://chocolateminecraft.com/maven"
 	}
 	maven {
 		name = "JourneyMap Maven"
