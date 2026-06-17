@@ -22,7 +22,7 @@ public abstract class KeyBindingMixin {
 	private static void onKeyPressed(InputConstants.Key key, CallbackInfo ci) {
 		// open option screen
 		if (Flex_hudClient.openOptionScreenKeyBind.isDown()) {
-			MINECRAFT.setScreenAndShow(new OptionsScreen());
+			MINECRAFT.gui.setScreen(new OptionsScreen());
 		}
 	}
 }

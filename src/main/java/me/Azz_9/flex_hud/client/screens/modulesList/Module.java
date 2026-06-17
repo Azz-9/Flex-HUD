@@ -32,7 +32,7 @@ public class Module {
 			this.configScreen = configScreen;
 			this.button = Button.builder(Component.literal(name), (btn) -> {
 						configScreen.setParentScrollAmount(parent.getModulesListWidget().scrollAmount());
-						MINECRAFT.setScreenAndShow(configScreen);
+						MINECRAFT.gui.setScreen(configScreen);
 					})
 					.size(buttonWidth, buttonHeight)
 					.build();
