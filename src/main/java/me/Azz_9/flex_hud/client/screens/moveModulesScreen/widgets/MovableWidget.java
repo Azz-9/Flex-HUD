@@ -96,6 +96,7 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 
 	@Override
 	protected void extractWidgetRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+		this.isHovered = (mouseX >= getX() && mouseY >= getY() && mouseX <= getRight() && mouseY <= getBottom()) || isScaleHandleHovered(mouseX, mouseY);
 		if (((CursorAccessor) graphics).getCursor() == CursorType.DEFAULT) {
 			if (this.isScaleHandleHovered(mouseX, mouseY) || isDraggingScalehandle) {
 				graphics.requestCursor(
@@ -514,12 +515,6 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		return this.active && this.visible && this.isHovered;
-	}
-
-	@Override
-	public void mouseMoved(double mouseX, double mouseY) {
-		boolean isScaleHandleHovered = isScaleHandleHovered(mouseX, mouseY);
-		this.isHovered = (mouseX >= getX() && mouseY >= getY() && mouseX <= getRight() && mouseY <= getBottom()) || isScaleHandleHovered;
 	}
 
 	@Override
