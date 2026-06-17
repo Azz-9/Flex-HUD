@@ -215,7 +215,7 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 	private @NotNull RenderData getPlaceholderRenderData() {
 		RenderData data = new RenderData();
 
-		data.texture = Identifier.withDefaultNamespace("gui/signs/" + WoodType.OAK.name());
+		data.texture = Identifier.withDefaultNamespace("textures/gui/signs/" + WoodType.OAK.name()).withSuffix(".png");
 		data.content = new Component[]{
 				Component.literal(""),
 				Component.translatable("flex_hud.sign_reader.placeholder_content"),

@@ -58,7 +58,7 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 		this.addRenderableWidget(enableModButton);
 
 		Button modsButton = Button.builder(Component.translatable("flex_hud.options_screen.modules"),
-						(btn) -> MINECRAFT.setScreenAndShow(new ModulesListScreen(this))
+						(btn) -> MINECRAFT.gui.setScreen(new ModulesListScreen(this))
 				).bounds((width - centralButtonWidth) / 2, (height - squareButtonSize) / 2, centralButtonWidth, squareButtonSize)
 				.build();
 		this.addRenderableWidget(modsButton);
@@ -69,7 +69,7 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 				squareButtonSize, squareButtonSize,
 				Identifier.fromNamespaceAndPath(MOD_ID, "widgets/buttons/options_menu_buttons/move.png"),
 				14, 14, (btn) -> {
-			MINECRAFT.setScreenAndShow(new MoveModulesScreen(this));
+			MINECRAFT.gui.setScreen(new MoveModulesScreen(this));
 			Flex_hudClient.isInMoveElementScreen = true;
 		});
 		this.addRenderableWidget(moveButton);
