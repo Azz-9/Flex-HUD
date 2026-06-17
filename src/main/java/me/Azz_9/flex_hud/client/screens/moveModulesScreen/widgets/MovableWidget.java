@@ -94,6 +94,7 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 
 	@Override
 	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+		this.hovered = (mouseX >= getX() && mouseY >= getY() && mouseX <= getRight() && mouseY <= getBottom()) || isScaleHandleHovered(mouseX, mouseY);
 		if (((CursorAccessor) context).getCursor() == Cursor.DEFAULT) {
 			if (this.isScaleHandleHovered(mouseX, mouseY) || isDraggingScalehandle) {
 				context.setCursor(
@@ -512,12 +513,6 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		return this.active && this.visible && this.hovered;
-	}
-
-	@Override
-	public void mouseMoved(double mouseX, double mouseY) {
-		boolean isScaleHandleHovered = isScaleHandleHovered(mouseX, mouseY);
-		this.hovered = (mouseX >= getX() && mouseY >= getY() && mouseX <= getRight() && mouseY <= getBottom()) || isScaleHandleHovered;
 	}
 
 	@Override
