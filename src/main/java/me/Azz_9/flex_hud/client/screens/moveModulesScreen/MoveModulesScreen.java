@@ -82,11 +82,11 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 			return;
 		}
 
-		ModulesHelper.getHudElements().forEach(hudElement -> {
+		ModulesHelper.getMovableModules().forEach(movableModule -> {
 			if (Flex_hudClient.isDebug()) {
-				hudElement.renderWithSpeedTest(context, RenderTickCounter.ZERO);
+				movableModule.renderWithSpeedTest(context, RenderTickCounter.ZERO);
 			} else {
-				hudElement.render(context, RenderTickCounter.ZERO);
+				movableModule.render(context, RenderTickCounter.ZERO);
 			}
 		});
 
@@ -126,11 +126,6 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 		super.enableAllChildren();
 		helpWidget.active = true;
 		movableWidgets.forEach(widget -> widget.active = true);
-	}
-
-	@Override
-	public void mouseMoved(double mouseX, double mouseY) {
-		movableWidgets.forEach(widget -> widget.mouseMoved(mouseX, mouseY));
 	}
 
 	@Override
