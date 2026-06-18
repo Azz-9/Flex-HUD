@@ -18,10 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.Translatable;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.Alignment;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.DimensionHud;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.DisplayMode;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.*;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable.MultiRenderable;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable.RenderableItem;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable.RenderableText;
@@ -139,12 +136,12 @@ public class ArmorStatus extends AbstractTextModule {
 		} else {
 
 			items = new ItemStack[6];
-			items[HELMET] = new ItemStack(Items.DIAMOND_HELMET);
-			items[CHEST] = new ItemStack(Items.DIAMOND_CHESTPLATE);
-			items[LEGS] = new ItemStack(Items.DIAMOND_LEGGINGS);
-			items[BOOTS] = new ItemStack(Items.DIAMOND_BOOTS);
-			items[HELD] = new ItemStack(Items.BOW);
-			items[OFFHAND] = new ItemStack(Items.SHIELD);
+			items[HELMET] = PlaceholderStacks.of(Items.DIAMOND_HELMET);
+			items[CHEST] = PlaceholderStacks.of(Items.DIAMOND_CHESTPLATE);
+			items[LEGS] = PlaceholderStacks.of(Items.DIAMOND_LEGGINGS);
+			items[BOOTS] = PlaceholderStacks.of(Items.DIAMOND_BOOTS);
+			items[HELD] = PlaceholderStacks.of(Items.BOW);
+			items[OFFHAND] = PlaceholderStacks.of(Items.SHIELD);
 		}
 
 		invertedLayout = getRoundedX() + (getWidth() * getScale()) / 2.0f > context.getScaledWindowWidth() / 2.0;
@@ -246,7 +243,7 @@ public class ArmorStatus extends AbstractTextModule {
 		String text;
 		int color;
 		// creating a new item to make "unbreakable" items display durability
-		if (new ItemStack(stack.getItem()).isDamageable()) {
+		if (PlaceholderStacks.of(stack.getItem()).isDamageable()) {
 			switch (this.durabilityType.getValue()) {
 				case PERCENTAGE -> {
 					text = Math.round(ItemUtils.getDurabilityPercentage(stack)) + "%";
@@ -298,7 +295,7 @@ public class ArmorStatus extends AbstractTextModule {
 				String text;
 
 				if (Flex_hudClient.isInMoveElementScreen || CLIENT.player == null) {
-					text = String.valueOf(new ItemStack(arrow).getMaxCount());
+					text = String.valueOf(PlaceholderStacks.of(arrow).getMaxCount());
 				} else {
 					text = String.valueOf(ItemUtils.getItemCount(arrow, CLIENT.player.getInventory()));
 				}
@@ -331,7 +328,7 @@ public class ArmorStatus extends AbstractTextModule {
 				}
 			}
 		} else {
-			ItemStack arrowStack = new ItemStack(Items.ARROW);
+			ItemStack arrowStack = PlaceholderStacks.of(Items.ARROW);
 
 			PlayerEntity player = CLIENT.player;
 			int totalCount;
