@@ -17,6 +17,7 @@ import org.joml.Matrix3x2fStack;
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.PlaceholderStacks;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
@@ -67,7 +68,7 @@ public class HeldItem extends AbstractTextModule {
 		if (Flex_hudClient.isInMoveElementScreen || MINECRAFT.player == null) {
 			// placeholder
 			label = "64/256";
-			stack = new ItemStack(Items.DIAMOND_BLOCK);
+			stack = PlaceholderStacks.of(Items.DIAMOND_BLOCK);
 			textColor = getColor();
 
 		} else {
