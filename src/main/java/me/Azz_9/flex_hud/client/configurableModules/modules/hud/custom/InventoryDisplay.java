@@ -21,6 +21,7 @@ import java.util.List;
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractMovableModule;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.PlaceholderStacks;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.IntSliderEntry;
@@ -72,7 +73,9 @@ public class InventoryDisplay extends AbstractMovableModule {
 			}
 		} else {
 			for (int i = 0; i < NUM_ROWS * NUM_COLS; i++) {
-				inventory.add(new ItemStack(Items.DIAMOND_BLOCK, 64));
+				ItemStack stack = PlaceholderStacks.of(Items.DIAMOND_BLOCK);
+				stack.setCount(64);
+				inventory.add(stack);
 			}
 		}
 
