@@ -1,11 +1,14 @@
 package me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable;
 
-import me.Azz_9.flex_hud.client.mixin.drawContext.DrawContextAccessor;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+
 import org.jetbrains.annotations.NotNull;
+
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.PlaceholderStacks;
+import me.Azz_9.flex_hud.client.mixin.drawContext.DrawContextAccessor;
 
 public class RenderableItem extends Renderable {
 	@NotNull
@@ -20,7 +23,7 @@ public class RenderableItem extends Renderable {
 
 	public RenderableItem(int x, int y, int width, @NotNull Item item, boolean drawItemBar) {
 		super(x, y, width);
-		this.stack = new ItemStack(item);
+		this.stack = PlaceholderStacks.of(item);
 		this.drawItemBar = drawItemBar;
 	}
 
