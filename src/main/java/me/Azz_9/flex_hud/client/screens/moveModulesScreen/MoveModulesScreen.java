@@ -98,7 +98,7 @@ public class MoveModulesScreen extends AbstractCallbackScreen {
 			firstFrame = false;
 		}
 
-		movableWidgets.forEach(widget -> widget.render(context, deltaTicks));
+		movableWidgets.forEach(widget -> widget.draw(context, mouseX, mouseY, deltaTicks));
 
 		helpWidget.render(context, mouseX, mouseY, deltaTicks);
 	}
