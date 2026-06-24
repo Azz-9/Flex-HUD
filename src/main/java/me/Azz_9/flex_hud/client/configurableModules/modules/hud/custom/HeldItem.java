@@ -17,6 +17,7 @@ import org.joml.Matrix3x2fStack;
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.PlaceholderStacks;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
@@ -62,13 +63,16 @@ public class HeldItem extends AbstractTextModule {
 		int gap = 2;
 
 		String label = "";
-		ItemStack stack;
-		int textColor;
+		ItemStack stack = null;
+		int textColor = getColor();
 		if (Flex_hudClient.isInMoveElementScreen || MINECRAFT.player == null) {
-			// placeholder
-			label = "64/256";
-			stack = new ItemStack(Items.DIAMOND_BLOCK);
-			textColor = getColor();
+			// we can no longer do new ItemStack outside a world since 26.1, here we just display the module name instead
+			if (MINECRAFT.level != null) {
+				// placeholder
+				label = "64/256";
+				stack = PlaceholderStacks.of(Items.DIAMOND_BLOCK);
+				textColor = getColor();
+			}
 
 		} else {
 			stack = MINECRAFT.player.getMainHandItem();
@@ -91,10 +95,15 @@ public class HeldItem extends AbstractTextModule {
 		}
 
 		// si on update pas la width ici ça fait bug le MovableWidget (il n'a pas la bonne width)
-		if (!label.isEmpty()) {
-			setWidth(label, ITEM_SIZE + gap);
+		if (MINECRAFT.level != null) {
+			if (!label.isEmpty()) {
+				setWidth(label, ITEM_SIZE + gap);
+			} else {
+				setWidth(ITEM_SIZE);
+			}
 		} else {
-			setWidth(ITEM_SIZE);
+			setWidth(54);
+			setHeight(16);
 		}
 
 		Matrix3x2fStack matrices = graphics.pose();
@@ -105,12 +114,16 @@ public class HeldItem extends AbstractTextModule {
 		drawBackground(graphics);
 
 		Font font = MINECRAFT.font;
-		if (getAnchorX() == AnchorPosition.END) {
-			graphics.text(font, label, 0, 4, getColor(), this.shadow.getValue());
-			graphics.item(stack, font.width(label) + gap, 0);
+		if (MINECRAFT.level != null && stack != null) {
+			if (getAnchorX() == AnchorPosition.END) {
+				graphics.text(font, label, 0, 4, getColor(), this.shadow.getValue());
+				graphics.item(stack, font.width(label) + gap, 0);
+			} else {
+				graphics.item(stack, 0, 0);
+				graphics.text(font, label, ITEM_SIZE + gap, 4, textColor, this.shadow.getValue());
+			}
 		} else {
-			graphics.item(stack, 0, 0);
-			graphics.text(font, label, ITEM_SIZE + gap, 4, textColor, this.shadow.getValue());
+			graphics.text(font, getName(), (getWidth() - font.width(getName())) / 2, 4, getColor(), this.shadow.getValue());
 		}
 
 		matrices.popMatrix();

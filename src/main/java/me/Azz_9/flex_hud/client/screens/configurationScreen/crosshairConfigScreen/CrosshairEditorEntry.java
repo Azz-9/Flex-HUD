@@ -36,7 +36,7 @@ public class CrosshairEditorEntry extends ScrollableConfigList.AbstractConfigEnt
 				variable,
 				observers,
 				(btn) -> {
-					if (MINECRAFT.screen instanceof AbstractCrosshairConfigScreen crosshairConfigScreen) {
+					if (MINECRAFT.gui.screen() instanceof AbstractCrosshairConfigScreen crosshairConfigScreen) {
 						CrosshairEditor crosshairEditor = crosshairConfigScreen.getCrosshairEditor();
 						if (crosshairEditor == null || !crosshairEditor.isFocused()) {
 							crosshairConfigScreen.openEditor(this.crosshairButtonWidget);
@@ -95,7 +95,7 @@ public class CrosshairEditorEntry extends ScrollableConfigList.AbstractConfigEnt
 
 		setActive(!shouldDisable);
 		// fermer l'éditeur si le button est désacitvé
-		AbstractCrosshairConfigScreen screen = (AbstractCrosshairConfigScreen) MINECRAFT.screen;
+		AbstractCrosshairConfigScreen screen = (AbstractCrosshairConfigScreen) MINECRAFT.gui.screen();
 		if (screen != null && shouldDisable) {
 			screen.closeEditor();
 		}

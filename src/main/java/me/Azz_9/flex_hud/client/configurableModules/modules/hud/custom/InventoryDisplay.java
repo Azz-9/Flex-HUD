@@ -21,6 +21,7 @@ import java.util.List;
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractMovableModule;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.PlaceholderStacks;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.CyclingButtonEntry;
 import me.Azz_9.flex_hud.client.screens.configurationScreen.configEntries.IntSliderEntry;
@@ -70,9 +71,12 @@ public class InventoryDisplay extends AbstractMovableModule {
 					inventory.add(MINECRAFT.player.getInventory().getItem(9 + i));
 				}
 			}
-		} else {
+		} else if (MINECRAFT.level != null) {
+			// we can no longer do new ItemStack outside a world since 26.1, we just display the module name above the inventory texture
 			for (int i = 0; i < NUM_ROWS * NUM_COLS; i++) {
-				inventory.add(new ItemStack(Items.DIAMOND_BLOCK, 64));
+				ItemStack stack = PlaceholderStacks.of(Items.DIAMOND_BLOCK);
+				stack.setCount(64);
+				inventory.add(stack);
 			}
 		}
 
@@ -85,14 +89,23 @@ public class InventoryDisplay extends AbstractMovableModule {
 			graphics.blit(RenderPipelines.GUI_TEXTURED, AbstractContainerScreen.INVENTORY_LOCATION, 0, 0, 6, 82, 164, 56, 256, 256, ARGB.color(backgroundOpacity.getValue(), 0xffffff));
 		}
 
-		for (int row = 0; row < NUM_ROWS; row++) {
-			for (int col = 0; col < NUM_COLS; col++) {
-				ItemStack stack = inventory.get(NUM_COLS * row + col);
-				int x = PADDING + col * ITEM_SIZE;
-				int y = PADDING + row * ITEM_SIZE;
-				graphics.item(stack, x, y);
-				graphics.itemDecorations(MINECRAFT.font, stack, x, y, stack.getCount() > 1 ? String.valueOf(stack.getCount()) : null);
+		if (MINECRAFT.level != null) {
+			for (int row = 0; row < NUM_ROWS; row++) {
+				for (int col = 0; col < NUM_COLS; col++) {
+					ItemStack stack = inventory.get(NUM_COLS * row + col);
+					int x = PADDING + col * ITEM_SIZE;
+					int y = PADDING + row * ITEM_SIZE;
+					graphics.item(stack, x, y);
+					graphics.itemDecorations(MINECRAFT.font, stack, x, y, stack.getCount() > 1 ? String.valueOf(stack.getCount()) : null);
+				}
 			}
+		} else {
+			graphics.text(
+					MINECRAFT.font, getName(),
+					(getWidth() - MINECRAFT.font.width(getName())) / 2,
+					(getHeight() - MINECRAFT.font.lineHeight) / 2,
+					0xffffffff, true
+			);
 		}
 
 		matrices.popMatrix();

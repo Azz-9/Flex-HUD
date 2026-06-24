@@ -26,8 +26,8 @@ repositories {
 		url = "https://maven.terraformersmc.com/"
 	}
 	maven {
-		name "Xaero's Maven"
-		url "https://chocolateminecraft.com/maven"
+		name = "Xaero's Maven"
+		url = "https://chocolateminecraft.com/maven"
 	}
 	maven {
 		name = "JourneyMap Maven"
@@ -57,8 +57,7 @@ dependencies {
 	if (includeXaero) {
 		implementation "xaero.minimap:xaerominimap-fabric-${project.minecraft_version}:${project.xaero_minimap_version}"
 	} else {
-		//compileOnly "xaero.minimap:xaerominimap-fabric-${project.minecraft_version}:${project.xaero_minimap_version}"
-		compileOnly "xaero.minimap:xaerominimap-fabric-1.21.11:${project.xaero_minimap_version}"
+		compileOnly "xaero.minimap:xaerominimap-fabric-${project.minecraft_version}:${project.xaero_minimap_version}"
 	}
 
 	//implementation files("libs/journeymap-fabric-${project.minecraft_version}-${project.journeymap_version}.jar")

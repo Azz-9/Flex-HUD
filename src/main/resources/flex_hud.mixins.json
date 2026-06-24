@@ -12,7 +12,7 @@
 		"CursorAccessor",
 		"bossBar.BossBarAccessor",
 		"bossBar.BossHealthOverlayMixin",
-		"compass.GuiMixin",
+		"compass.HudMixin",
 		"compass.LocatorBarRendererMixin",
 		"cps.KeyboardHandlerMixin",
 		"crosshair.CrosshairMixin",
@@ -22,8 +22,8 @@
 		"ping.ClientPlayNetworkHandlerMixin",
 		"potionEffect.PotionEffectMixin",
 		"reach.MultiPlayerGameModeMixin",
-		"scoreboard.GuiAccessor",
 		"scoreboard.GuiMixin",
+		"scoreboard.HudAccessor",
 		"toggleSprintSneak.KeyMappingAccessor"
 	],
 	"injectors": {

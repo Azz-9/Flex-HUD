@@ -7,6 +7,7 @@ import net.minecraft.world.item.ItemStack;
 
 import org.jetbrains.annotations.NotNull;
 
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.PlaceholderStacks;
 import me.Azz_9.flex_hud.client.mixin.drawContext.GuiGraphicsExtractorAccessor;
 
 public class RenderableItem extends Renderable {
@@ -22,7 +23,7 @@ public class RenderableItem extends Renderable {
 
 	public RenderableItem(int x, int y, int width, @NotNull Item item, boolean drawItemBar) {
 		super(x, y, width);
-		this.stack = new ItemStack(item);
+		this.stack = PlaceholderStacks.of(item);
 		this.drawItemBar = drawItemBar;
 	}
 

@@ -5,8 +5,7 @@ import static me.Azz_9.flex_hud.client.Flex_hudClient.MINECRAFT;
 import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.pipeline.ColorTargetState;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.platform.DestFactor;
-import com.mojang.blaze3d.platform.SourceFactor;
+import com.mojang.blaze3d.platform.BlendFactor;
 
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.AttackIndicatorStatus;
@@ -47,7 +46,7 @@ public class Crosshair extends AbstractModule implements HudElement {
 
 	private static final RenderPipeline CROSSHAIR_PIPELINE = RenderPipelines.register(RenderPipeline.builder(RenderPipelines.GUI_SNIPPET)
 			.withLocation("pipeline/crosshair_no_tex")
-			.withColorTargetState(new ColorTargetState(new BlendFunction(SourceFactor.ONE_MINUS_DST_COLOR, DestFactor.ONE_MINUS_SRC_COLOR, SourceFactor.ONE, DestFactor.ZERO)))
+			.withColorTargetState(new ColorTargetState(new BlendFunction(BlendFactor.ONE_MINUS_DST_COLOR, BlendFactor.ONE_MINUS_SRC_COLOR, BlendFactor.ONE, BlendFactor.ZERO)))
 			.build()
 	);
 

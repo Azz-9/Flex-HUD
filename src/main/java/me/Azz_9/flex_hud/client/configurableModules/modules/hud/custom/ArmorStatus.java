@@ -18,10 +18,7 @@ import org.joml.Matrix3x2fStack;
 import me.Azz_9.flex_hud.client.Flex_hudClient;
 import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.modules.Translatable;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.AbstractTextModule;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.Alignment;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.DimensionHud;
-import me.Azz_9.flex_hud.client.configurableModules.modules.hud.DisplayMode;
+import me.Azz_9.flex_hud.client.configurableModules.modules.hud.*;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable.MultiRenderable;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable.RenderableItem;
 import me.Azz_9.flex_hud.client.configurableModules.modules.hud.renderable.RenderableText;
@@ -60,6 +57,9 @@ public class ArmorStatus extends AbstractTextModule {
 	private static final int ARROWS = 6;
 	private static final int SPECTRAL = 7;
 	private static final int EFFECTS = 8;
+
+	private static final int PLACEHOLDER_ITEM_WIDTH = 40;
+	private static final int PLACEHOLDER_HEIGHT = 16;
 
 	public ArmorStatus(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
@@ -125,6 +125,13 @@ public class ArmorStatus extends AbstractTextModule {
 			return;
 		}
 
+		// since 26.1 we can no longer instantiate ItemStack without a Level,
+		// so when editing the HUD outside of a world we render labels instead of items
+		if (Flex_hudClient.isInMoveElementScreen && MINECRAFT.level == null) {
+			renderNoWorldPlaceholder(graphics, deltaTracker);
+			return;
+		}
+
 		ItemStack[] items;
 		if (!Flex_hudClient.isInMoveElementScreen) {
 			LocalPlayer player = MINECRAFT.player;
@@ -139,12 +146,12 @@ public class ArmorStatus extends AbstractTextModule {
 		} else {
 
 			items = new ItemStack[6];
-			items[HELMET] = new ItemStack(Items.DIAMOND_HELMET);
-			items[CHEST] = new ItemStack(Items.DIAMOND_CHESTPLATE);
-			items[LEGS] = new ItemStack(Items.DIAMOND_LEGGINGS);
-			items[BOOTS] = new ItemStack(Items.DIAMOND_BOOTS);
-			items[HELD] = new ItemStack(Items.BOW);
-			items[OFFHAND] = new ItemStack(Items.SHIELD);
+			items[HELMET] = PlaceholderStacks.of(Items.DIAMOND_HELMET);
+			items[CHEST] = PlaceholderStacks.of(Items.DIAMOND_CHESTPLATE);
+			items[LEGS] = PlaceholderStacks.of(Items.DIAMOND_LEGGINGS);
+			items[BOOTS] = PlaceholderStacks.of(Items.DIAMOND_BOOTS);
+			items[HELD] = PlaceholderStacks.of(Items.BOW);
+			items[OFFHAND] = PlaceholderStacks.of(Items.SHIELD);
 		}
 
 		invertedLayout = getRoundedX() + (getWidth() * getScale()) / 2.0f > graphics.guiWidth() / 2.0;
@@ -246,7 +253,7 @@ public class ArmorStatus extends AbstractTextModule {
 		String text;
 		int color;
 		// creating a new item to make "unbreakable" items display durability
-		if (new ItemStack(stack.getItem()).isDamageableItem()) {
+		if (PlaceholderStacks.of(stack.getItem()).isDamageableItem()) {
 			switch (this.durabilityType.getValue()) {
 				case PERCENTAGE -> {
 					text = Math.round(ItemUtils.getDurabilityPercentage(stack)) + "%";
@@ -298,7 +305,7 @@ public class ArmorStatus extends AbstractTextModule {
 				String text;
 
 				if (Flex_hudClient.isInMoveElementScreen || MINECRAFT.player == null) {
-					text = String.valueOf(new ItemStack(arrow).getMaxStackSize());
+					text = String.valueOf(PlaceholderStacks.of(arrow).getMaxStackSize());
 				} else {
 					text = String.valueOf(ItemUtils.getItemCount(arrow, MINECRAFT.player.getInventory()));
 				}
@@ -331,7 +338,7 @@ public class ArmorStatus extends AbstractTextModule {
 				}
 			}
 		} else {
-			ItemStack arrowStack = new ItemStack(Items.ARROW);
+			ItemStack arrowStack = PlaceholderStacks.of(Items.ARROW);
 
 			LocalPlayer player = MINECRAFT.player;
 			int totalCount;
@@ -371,6 +378,122 @@ public class ArmorStatus extends AbstractTextModule {
 				));
 			}
 		}
+	}
+
+	private void renderNoWorldPlaceholder(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+		for (DimensionHud dimensionHud : getDimensionHudList()) {
+			dimensionHud.clearMultiRenderables();
+		}
+
+		boolean[] booleans = new boolean[6];
+		booleans[HELMET] = showHelmet.getValue();
+		booleans[CHEST] = showChestplate.getValue();
+		booleans[LEGS] = showLeggings.getValue();
+		booleans[BOOTS] = showBoots.getValue();
+		booleans[HELD] = showHeldItem.getValue();
+		booleans[OFFHAND] = showOffHandItem.getValue();
+
+		boolean arrowsEnabled = showArrowsWhenBowInHand.getValue();
+		boolean separate = separateArrowTypes.getValue();
+
+		int horizontalGap = 4;
+		int verticalGap = 1;
+
+		if (moveEachPiecesIndependently.getValue()) {
+			for (int i = 0; i < 6; i++) {
+				DimensionHud dimensionHud = getDimensionHudList().get(i);
+				boolean displayed = booleans[i];
+				dimensionHud.setDisplayed(displayed);
+				if (displayed) {
+					setWidth(i, PLACEHOLDER_ITEM_WIDTH);
+					setHeight(i, PLACEHOLDER_HEIGHT);
+					addPlaceholderLabel(dimensionHud, i, PLACEHOLDER_ITEM_WIDTH, PLACEHOLDER_HEIGHT);
+				}
+			}
+
+			getDimensionHudList().get(ARROWS).setDisplayed(arrowsEnabled);
+			getDimensionHudList().get(SPECTRAL).setDisplayed(arrowsEnabled && separate);
+			getDimensionHudList().get(EFFECTS).setDisplayed(arrowsEnabled && separate);
+
+			if (arrowsEnabled) {
+				setWidth(ARROWS, PLACEHOLDER_ITEM_WIDTH);
+				setHeight(ARROWS, PLACEHOLDER_HEIGHT);
+				addPlaceholderLabel(getDimensionHudList().get(ARROWS), ARROWS, PLACEHOLDER_ITEM_WIDTH, PLACEHOLDER_HEIGHT);
+
+				if (separate) {
+					setWidth(SPECTRAL, PLACEHOLDER_ITEM_WIDTH);
+					setHeight(SPECTRAL, PLACEHOLDER_HEIGHT);
+					addPlaceholderLabel(getDimensionHudList().get(SPECTRAL), SPECTRAL, PLACEHOLDER_ITEM_WIDTH, PLACEHOLDER_HEIGHT);
+
+					setWidth(EFFECTS, PLACEHOLDER_ITEM_WIDTH);
+					setHeight(EFFECTS, PLACEHOLDER_HEIGHT);
+					addPlaceholderLabel(getDimensionHudList().get(EFFECTS), EFFECTS, PLACEHOLDER_ITEM_WIDTH, PLACEHOLDER_HEIGHT);
+				}
+			}
+		} else {
+			DimensionHud dimensionHud = getDimensionHudList().getFirst();
+			dimensionHud.setDisplayed(true);
+
+			int enabledCount = 0;
+			for (boolean b : booleans) {
+				if (b) enabledCount++;
+			}
+			int arrowSlots = arrowsEnabled ? (separate ? 3 : 1) : 0;
+			int totalSlots = Math.max(enabledCount + arrowSlots, 1);
+
+			int width;
+			int height;
+			if (displayMode.getValue() == DisplayMode.VERTICAL) {
+				width = PLACEHOLDER_ITEM_WIDTH;
+				height = totalSlots * PLACEHOLDER_HEIGHT + (totalSlots - 1) * verticalGap;
+			} else {
+				width = totalSlots * PLACEHOLDER_ITEM_WIDTH + (totalSlots - 1) * horizontalGap;
+				height = PLACEHOLDER_HEIGHT;
+			}
+
+			setWidth(width);
+			setHeight(height);
+
+			addPlaceholderLabel(dimensionHud, -1, width, height);
+		}
+
+		Matrix3x2fStack matrices = graphics.pose();
+		for (int i = 0; i < getDimensionHudList().size(); i++) {
+			DimensionHud dimensionHud = getDimensionHudList().get(i);
+			matrices.pushMatrix();
+			matrices.translate(dimensionHud.getRoundedX(), dimensionHud.getRoundedY());
+			matrices.scale(dimensionHud.getScale());
+
+			drawBackground(i, graphics);
+
+			dimensionHud.render(graphics, deltaTracker);
+
+			matrices.popMatrix();
+		}
+	}
+
+	// index == -1 means "combined module name" instead of a per-piece label
+	private void addPlaceholderLabel(DimensionHud dimensionHud, int index, int boxWidth, int boxHeight) {
+		Component label = index == -1 ? getName() : getPieceLabel(index);
+		int textWidth = MINECRAFT.font.width(label);
+		dimensionHud.addMultiRenderable(new MultiRenderable(0, boxWidth,
+				new RenderableText((boxWidth - textWidth) / 2, (boxHeight - 8) / 2, label, getColor(), shadow.getValue())
+		));
+	}
+
+	private Component getPieceLabel(int index) {
+		return switch (index) {
+			case HELMET -> Component.translatable("flex_hud.armor_status.piece.helmet");
+			case CHEST -> Component.translatable("flex_hud.armor_status.piece.chestplate");
+			case LEGS -> Component.translatable("flex_hud.armor_status.piece.leggings");
+			case BOOTS -> Component.translatable("flex_hud.armor_status.piece.boots");
+			case HELD -> Component.translatable("flex_hud.armor_status.piece.main_hand");
+			case OFFHAND -> Component.translatable("flex_hud.armor_status.piece.offhand");
+			case ARROWS -> Component.translatable("flex_hud.armor_status.piece.arrows");
+			case SPECTRAL -> Component.translatable("flex_hud.armor_status.piece.spectral_arrows");
+			case EFFECTS -> Component.translatable("flex_hud.armor_status.piece.tipped_arrows");
+			default -> Component.literal("?");
+		};
 	}
 
 
