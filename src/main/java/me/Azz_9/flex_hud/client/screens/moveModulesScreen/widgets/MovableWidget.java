@@ -81,9 +81,9 @@ public class MovableWidget extends ClickableWidget implements TrackableChange {
 		updateScaleHandle();
 	}
 
-	public void render(DrawContext context, float deltaTicks) {
+	public void draw(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
 		if (this.visible) {
-			this.renderWidget(context, 0, 0, deltaTicks);
+			this.renderWidget(context, mouseX, mouseY, deltaTicks);
 		}
 	}
 
