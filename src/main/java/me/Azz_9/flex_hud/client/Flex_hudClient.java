@@ -17,6 +17,7 @@ import net.minecraft.util.Identifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.Azz_9.flex_hud.client.configurableModules.ConfigLoader;
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 import me.Azz_9.flex_hud.client.configurableModules.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.configurableModules.modules.TickableModule;
@@ -106,13 +107,20 @@ public class Flex_hudClient implements ClientModInitializer {
 			);
 
 			CustomModulesPersistence.loadConfig();
+			if (!ModulesHelper.getCustomModules().isEmpty()) {
+				ConfigLoader.loadConfig();
+				ConfigLoader.saveConfig();
+			}
 		});
 
 		// init variables when the languages are loaded
 		ResourceLoader.get(ResourceType.CLIENT_RESOURCES).registerReloader(
 				Identifier.of(MOD_ID, "variables_init"),
 				(store, prepareExecutor, reloadSynchronizer, applyExecutor) ->
-						reloadSynchronizer.whenPrepared(null).thenRunAsync(Variables::init, applyExecutor)
+						reloadSynchronizer.whenPrepared(null).thenRunAsync(() -> {
+							Variables.init();
+							ModulesHelper.recompileCustomModules();
+						}, applyExecutor)
 		);
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {

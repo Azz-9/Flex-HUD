@@ -5,6 +5,7 @@ import org.jspecify.annotations.NonNull;
 import java.util.HashSet;
 import java.util.Set;
 
+import me.Azz_9.flex_hud.client.configurableModules.ConfigRegistry;
 import me.Azz_9.flex_hud.client.configurableModules.ModulesHelper;
 
 public class CustomModuleRegistry {
@@ -22,6 +23,7 @@ public class CustomModuleRegistry {
 	public static void unregister(CustomModule module) {
 		ModulesHelper.removeCustomModule(module);
 		registered.remove(module.getID());
+		ConfigRegistry.unregisterModule(module.getID());
 	}
 
 	public static void update(CustomModule module, @NonNull String name, @NonNull String text) throws IllegalStateException {

@@ -94,6 +94,10 @@ public class CustomModule extends AbstractTextModule {
 		return text;
 	}
 
+	public void recompile() {
+		this.compiledText = CompiledCustomText.compile(text);
+	}
+
 	@Override
 	public AbstractConfigurationScreen getConfigScreen(Screen parent) {
 		return new AbstractConfigurationScreen(getName(), parent) {

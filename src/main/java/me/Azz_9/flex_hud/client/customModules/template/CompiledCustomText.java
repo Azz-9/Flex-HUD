@@ -69,8 +69,8 @@ public final class CompiledCustomText {
 	}
 
 	private static Node compileNode(CustomTextParser.Node node, BuildContext buildContext) {
-		if (node instanceof CustomTextParser.LiteralNode literalNode) {
-			return new LiteralNode(literalNode.text());
+		if (node instanceof CustomTextParser.LiteralNode(String text)) {
+			return new LiteralNode(text);
 		}
 
 		if (node instanceof CustomTextParser.VariableNode variableNode) {
@@ -350,7 +350,7 @@ public final class CompiledCustomText {
 		}
 
 		private StyleState toggleColorSource(ColorSource toggledColorSource) {
-			if (!colorSources.isEmpty() && colorSources.get(colorSources.size() - 1).equals(toggledColorSource)) {
+			if (!colorSources.isEmpty() && colorSources.getLast().equals(toggledColorSource)) {
 				return new StyleState(
 						bold,
 						italic,
@@ -406,7 +406,7 @@ public final class CompiledCustomText {
 		}
 
 		private @Nullable ColorSource currentColorSource() {
-			return colorSources.isEmpty() ? null : colorSources.get(colorSources.size() - 1);
+			return colorSources.isEmpty() ? null : colorSources.getLast();
 		}
 	}
 

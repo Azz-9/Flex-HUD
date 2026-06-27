@@ -66,6 +66,7 @@ public class CustomModulesPersistence {
 		if (!CUSTOM_MODULES_FOLDER.exists()) {
 			return;
 		}
+		FlexHudLogger.info("Loading custom modules from files...");
 
 		try (Stream<Path> files = Files.list(CUSTOM_MODULES_FOLDER.toPath())) {
 			files.filter(Files::isRegularFile)

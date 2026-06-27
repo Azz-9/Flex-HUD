@@ -146,6 +146,16 @@ public class ModulesHelper {
 		getInstance().configurables.remove(module);
 	}
 
+	public static void recompileCustomModules() {
+		if (INSTANCE == null || INSTANCE.customModules == null) {
+			return;
+		}
+
+		for (CustomModule module : INSTANCE.customModules) {
+			module.recompile();
+		}
+	}
+
 	// Méthode pour obtenir l'instance de la configuration
 	public static ModulesHelper getInstance() {
 		return getInstance(true);

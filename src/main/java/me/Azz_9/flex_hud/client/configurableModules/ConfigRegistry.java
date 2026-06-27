@@ -17,6 +17,10 @@ public class ConfigRegistry {
 		MODULES.get(moduleName).remove(key);
 	}
 
+	public static void unregisterModule(String moduleName) {
+		MODULES.remove(moduleName);
+	}
+
 	public static void renameModule(String oldModuleName, String newModuleName) {
 		if (oldModuleName.equals(newModuleName)) {
 			return;
