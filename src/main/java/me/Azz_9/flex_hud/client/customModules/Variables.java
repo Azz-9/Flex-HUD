@@ -55,8 +55,24 @@ public class Variables {
 		register("player.x", SafeSupplier.create(() -> requireNonNull(CLIENT.player).getX(), 0.0), TICK);
 		register("player.y", SafeSupplier.create(() -> requireNonNull(CLIENT.player).getY(), 0.0), TICK);
 		register("player.z", SafeSupplier.create(() -> requireNonNull(CLIENT.player).getZ(), 0.0), TICK);
-		register("nether.player.x", SafeSupplier.create(() -> requireNonNull(CLIENT.player).getX() / 8, 0), TICK);
-		register("nether.player.z", SafeSupplier.create(() -> requireNonNull(CLIENT.player).getZ() / 8, 0), TICK);
+		register("nether.player.x", SafeSupplier.create(() -> {
+			if (requireNonNull(CLIENT.player).getEntityWorld().getRegistryKey().equals(World.OVERWORLD))
+				return CLIENT.player.getX() / 8;
+			else if (CLIENT.player.getEntityWorld().getRegistryKey().equals(World.NETHER)) {
+				return CLIENT.player.getX() * 8;
+			} else {
+				return CLIENT.player.getX();
+			}
+		}, 0), TICK);
+		register("nether.player.z", SafeSupplier.create(() -> {
+			if (requireNonNull(CLIENT.player).getEntityWorld().getRegistryKey().equals(World.OVERWORLD))
+				return CLIENT.player.getZ() / 8;
+			else if (CLIENT.player.getEntityWorld().getRegistryKey().equals(World.NETHER)) {
+				return CLIENT.player.getZ() * 8;
+			} else {
+				return CLIENT.player.getZ();
+			}
+		}, 0), TICK);
 		register("player.chunk.x", SafeSupplier.create(() -> requireNonNull(CLIENT.player).getChunkPos().x, 0), TICK);
 		register("player.chunk.z", SafeSupplier.create(() -> requireNonNull(CLIENT.player).getChunkPos().z, 0), TICK);
 		register("player.direction", () -> getDirection(CLIENT.player)[0], FRAME);
