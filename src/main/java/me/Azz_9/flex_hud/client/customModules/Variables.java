@@ -78,10 +78,13 @@ public class Variables {
 		register("world.biome", SafeSupplier.create(() -> requireNonNull(CLIENT.world).getBiome(requireNonNull(CLIENT.player).getBlockPos()).getKeyOrValue().map(key -> key.getValue().getPath(), value -> "[unregistered " + value + "]"), "", BiomeKeys.PLAINS.getValue().getPath()), TICK);
 		register("world.dimension", SafeSupplier.create(() -> requireNonNull(CLIENT.world).getRegistryKey().getValue().getPath(), "", World.OVERWORLD.getValue().getPath()), TICK);
 		register("world.time", SafeSupplier.create(() -> requireNonNull(CLIENT.world).getTimeOfDay() % 24000, 12000L), TICK);
-		register("world.time.hour_24", SafeSupplier.create(() -> (requireNonNull(CLIENT.world).getTimeOfDay() / 1000 + 6) % 24, 18L), TICK);
+		register("world.time.hour_24", SafeSupplier.create(() -> ((requireNonNull(CLIENT.world).getTimeOfDay() % 24000) / 1000 + 6) % 24, 18L), TICK);
+		register("world.time.hour_12", SafeSupplier.create(() -> {
+			long h = ((requireNonNull(CLIENT.world).getTimeOfDay() % 24000) / 1000 + 6) % 12;
+			return h == 0 ? 12 : h;
+		}, 18L), TICK);
 		register("world.time.minute", SafeSupplier.create(() -> (requireNonNull(CLIENT.world).getTimeOfDay() % 1000) * 60 / 1000, 0L), TICK);
-		register("world.time.second", SafeSupplier.create(() -> (requireNonNull(CLIENT.world).getTimeOfDay() % 1000) * 60 / 1000, 0L), TICK);
-		register("world.time.hour_12", SafeSupplier.create(() -> (requireNonNull(CLIENT.world).getTimeOfDay() / 1000 + 6) % 24, 18L), TICK);
+		register("world.time.second", SafeSupplier.create(() -> (requireNonNull(CLIENT.world).getTimeOfDay() % 1000) * 60 % 1000 * 60 / 1000, 0L), TICK);
 		register("world.time.ampm", SafeSupplier.create(() -> (requireNonNull(CLIENT.world).getTimeOfDay() / 1000 + 6) % 24 < 12 ? "AM" : "PM", "AM"), TICK);
 		register("world.day", SafeSupplier.create(() -> requireNonNull(CLIENT.world).getTimeOfDay() / 24000, 5), TICK);
 		// server
@@ -96,15 +99,15 @@ public class Variables {
 		register("cps.left", CpsUtils::getLeftCps, FRAME);
 		register("cps.right", CpsUtils::getRightCps, FRAME);
 		// pc
-		register("pc.memory_usage", MemoryUsageTickable::getUsedMemory, TICK);
-		register("pc.max_memory", MemoryUsageTickable::getMaxMemory, TICK);
+		register("pc.memory_usage", () -> MemoryUsageTickable.getUsedMemory() / 1024.0 / 1024.0, TICK);
+		register("pc.max_memory", () -> MemoryUsageTickable.getMaxMemory() / 1024.0 / 1024.0, TICK);
 		register("pc.memory_usage_percentage", MemoryUsageTickable::getUsedMemoryPercentage, TICK);
 		// time
 		register("time.hour_24", () -> LocalTime.now().getHour(), TICK);
+		register("time.hour_12", () -> LocalTime.now().get(ChronoField.CLOCK_HOUR_OF_AMPM), TICK);
 		register("time.minute", () -> LocalTime.now().getMinute(), TICK);
 		register("time.second", () -> LocalTime.now().getSecond(), TICK);
 		register("time.ms", () -> LocalTime.now().getNano() / 1_000_000, FRAME);
-		register("time.hour_12", () -> LocalTime.now().get(ChronoField.CLOCK_HOUR_OF_AMPM), TICK);
 		register("time.ampm", () -> LocalTime.now().get(ChronoField.AMPM_OF_DAY) == 0 ? "AM" : "PM", TICK);
 	}
 
