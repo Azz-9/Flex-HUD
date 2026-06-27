@@ -101,8 +101,8 @@ public class Variables {
 		register("pc.memory_usage_percentage", MemoryUsageTickable::getUsedMemoryPercentage, TICK);
 		// time
 		register("time.hour_24", () -> LocalTime.now().getHour(), TICK);
-		register("time.minutes", () -> LocalTime.now().getMinute(), TICK);
-		register("time.secondes", () -> LocalTime.now().getSecond(), TICK);
+		register("time.minute", () -> LocalTime.now().getMinute(), TICK);
+		register("time.second", () -> LocalTime.now().getSecond(), TICK);
 		register("time.ms", () -> LocalTime.now().getNano() / 1_000_000, FRAME);
 		register("time.hour_12", () -> LocalTime.now().get(ChronoField.CLOCK_HOUR_OF_AMPM), TICK);
 		register("time.ampm", () -> LocalTime.now().get(ChronoField.AMPM_OF_DAY) == 0 ? "AM" : "PM", TICK);

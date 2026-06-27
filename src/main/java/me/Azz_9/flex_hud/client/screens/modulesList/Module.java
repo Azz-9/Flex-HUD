@@ -49,6 +49,29 @@ public class Module {
 		this.width = buttonWidth;
 	}
 
+	public Module(
+			Configurable module,
+			int buttonWidth,
+			int buttonHeight,
+			ModulesListScreen parent,
+			Supplier<Tooltip> getTooltip,
+			ImmutableList<String> keywords,
+			Identifier icon) {
+
+		this.name = module.getName().getString();
+		this.id = module.getID();
+		this.icon = icon;
+		this.configScreen = module.getConfigScreen(parent);
+		this.button = createButton(buttonWidth, buttonHeight);
+
+		if (getTooltip != null) {
+			this.button.setTooltip(getTooltip.get());
+		}
+		this.keywords = keywords;
+		this.parent = parent;
+		this.width = buttonWidth;
+	}
+
 	protected ButtonWidget createButton(int buttonWidth, int buttonHeight) {
 		return ButtonWidget.builder(Text.literal(name), (btn) -> {
 					configScreen.setParentScrollAmount(parent.getModulesListWidget().getScrollY());

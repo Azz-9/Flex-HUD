@@ -40,7 +40,7 @@ public class CustomModuleElement extends Module {
 			ImmutableList<String> keywords,
 			Runnable onDelete) {
 
-		super(module, buttonWidth, buttonHeight, parent, getTooltip, keywords);
+		super(module, buttonWidth, buttonHeight, parent, getTooltip, keywords, Identifier.of(MOD_ID, "modules_icons/custom_module.png"));
 		this.module = module;
 		this.onDelete = onDelete;
 		editButton = createEditButton();

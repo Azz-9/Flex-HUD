@@ -337,90 +337,108 @@
 
 	"flex_hud.custom_modules.variable.name.player.gamemode": "Gamemode",
 	"flex_hud.custom_modules.variable.description.player.gamemode": "",
-
 	"flex_hud.custom_modules.variable.name.player.name": "Name",
 	"flex_hud.custom_modules.variable.description.player.name": "",
-
 	"flex_hud.custom_modules.variable.name.player.yaw": "Yaw",
 	"flex_hud.custom_modules.variable.description.player.yaw": "Rotation horizontale du joueur (en degrés).",
-
 	"flex_hud.custom_modules.variable.name.player.pitch": "Pitch",
 	"flex_hud.custom_modules.variable.description.player.pitch": "Rotation verticale du joueur (en degrés).",
-
 	"flex_hud.custom_modules.variable.name.player.x": "X",
 	"flex_hud.custom_modules.variable.description.player.x": "Coordonnée X du joueur dans la dimension actuelle.",
-
 	"flex_hud.custom_modules.variable.name.player.y": "Y",
 	"flex_hud.custom_modules.variable.description.player.y": "Coordonnée Y du joueur (hauteur).",
-
 	"flex_hud.custom_modules.variable.name.player.z": "Z",
 	"flex_hud.custom_modules.variable.description.player.z": "Coordonnée Z du joueur dans la dimension actuelle.",
-
 	"flex_hud.custom_modules.variable.name.nether.player.x": "X Nether",
 	"flex_hud.custom_modules.variable.description.nether.player.x": "Coordonnée X équivalente dans le Nether (Overworld ÷ 8).",
-
 	"flex_hud.custom_modules.variable.name.nether.player.z": "Z Nether",
 	"flex_hud.custom_modules.variable.description.nether.player.z": "Coordonnée Z équivalente dans le Nether (Overworld ÷ 8).",
-
 	"flex_hud.custom_modules.variable.name.player.chunk.x": "Chunk X",
 	"flex_hud.custom_modules.variable.description.player.chunk.x": "",
-
 	"flex_hud.custom_modules.variable.name.player.chunk.z": "Chunk Z",
 	"flex_hud.custom_modules.variable.description.player.chunk.z": "",
-
 	"flex_hud.custom_modules.variable.name.player.direction": "Direction",
 	"flex_hud.custom_modules.variable.description.player.direction": "",
-
 	"flex_hud.custom_modules.variable.name.player.direction_abbr": "Direction abbreviation",
 	"flex_hud.custom_modules.variable.description.player.direction_abbr": "",
-
 	"flex_hud.custom_modules.variable.name.player.direction.x": "Direction X",
 	"flex_hud.custom_modules.variable.description.player.direction.x": "",
-
 	"flex_hud.custom_modules.variable.name.player.direction.z": "Direction Z",
 	"flex_hud.custom_modules.variable.description.player.direction.z": "",
-
 	"flex_hud.custom_modules.variable.name.player.speed": "Speed",
 	"flex_hud.custom_modules.variable.description.player.speed": "",
-
 	"flex_hud.custom_modules.variable.name.player.health": "Health",
 	"flex_hud.custom_modules.variable.description.player.health": "",
-
 	"flex_hud.custom_modules.variable.name.player.health_max": "Max health",
 	"flex_hud.custom_modules.variable.description.player.health_max": "",
-
 	"flex_hud.custom_modules.variable.name.player.health_percent": "Health percent",
 	"flex_hud.custom_modules.variable.description.player.health_percent": "",
-
 	"flex_hud.custom_modules.variable.name.player.absorption": "Absorption",
 	"flex_hud.custom_modules.variable.description.player.absorption": "",
-
 	"flex_hud.custom_modules.variable.name.player.absorption_max": "Max absorption",
 	"flex_hud.custom_modules.variable.description.player.absorption_max": "",
-
 	"flex_hud.custom_modules.variable.name.player.absorption_percent": "Absorption percent",
 	"flex_hud.custom_modules.variable.description.player.absorption_percent": "",
-
 	"flex_hud.custom_modules.variable.name.player.food": "Food",
 	"flex_hud.custom_modules.variable.description.player.food": "",
-
 	"flex_hud.custom_modules.variable.name.player.saturation": "Saturation",
 	"flex_hud.custom_modules.variable.description.player.saturation": "",
-
 	"flex_hud.custom_modules.variable.name.player.armor": "Armor",
 	"flex_hud.custom_modules.variable.description.player.armor": "",
-
+	"flex_hud.custom_modules.variable.name.world.name": "World name",
+	"flex_hud.custom_modules.variable.description.world.name": "",
 	"flex_hud.custom_modules.variable.name.world.biome": "Biome",
 	"flex_hud.custom_modules.variable.description.world.biome": "Biome actuel dans lequel se trouve le joueur.",
-
+	"flex_hud.custom_modules.variable.name.world.dimension": "Dimension",
+	"flex_hud.custom_modules.variable.description.world.dimension": "",
+	"flex_hud.custom_modules.variable.name.world.time": "Game time",
+	"flex_hud.custom_modules.variable.description.world.time": "",
+	"flex_hud.custom_modules.variable.name.world.time.hour_24": "Game hour 24h format",
+	"flex_hud.custom_modules.variable.description.world.time.hour_24": "",
+	"flex_hud.custom_modules.variable.name.world.time.minute": "Game minutes",
+	"flex_hud.custom_modules.variable.description.world.time.minute": "",
+	"flex_hud.custom_modules.variable.name.world.time.second": "Game seconds",
+	"flex_hud.custom_modules.variable.description.world.time.second": "",
+	"flex_hud.custom_modules.variable.name.world.time.hour_12": "Game hour 12h format",
+	"flex_hud.custom_modules.variable.description.world.time.hour_12": "",
+	"flex_hud.custom_modules.variable.name.world.time.ampm": "Game time AM/PM",
+	"flex_hud.custom_modules.variable.description.world.time.ampm": "",
+	"flex_hud.custom_modules.variable.name.world.day": "Day",
+	"flex_hud.custom_modules.variable.description.world.day": "",
+	"flex_hud.custom_modules.variable.name.server.ip": "Server IP",
+	"flex_hud.custom_modules.variable.description.server.ip": "",
+	"flex_hud.custom_modules.variable.name.server.name": "Server name",
+	"flex_hud.custom_modules.variable.description.server.name": "",
+	"flex_hud.custom_modules.variable.name.server.ping": "Ping",
+	"flex_hud.custom_modules.variable.description.server.ping": "",
 	"flex_hud.custom_modules.variable.name.client.fps": "FPS",
 	"flex_hud.custom_modules.variable.description.client.fps": "Nombre d'images par seconde.",
-
 	"flex_hud.custom_modules.variable.name.client.version": "Version",
 	"flex_hud.custom_modules.variable.description.client.version": "",
-
 	"flex_hud.custom_modules.variable.name.client.render_distance": "Render distance",
 	"flex_hud.custom_modules.variable.description.client.render_distance": "",
+	"flex_hud.custom_modules.variable.name.cps.left": "Left CPS",
+	"flex_hud.custom_modules.variable.description.cps.left": "",
+	"flex_hud.custom_modules.variable.name.cps.right": "Right CPS",
+	"flex_hud.custom_modules.variable.description.cps.right": "",
+	"flex_hud.custom_modules.variable.name.pc.memory_usage": "Memory usage",
+	"flex_hud.custom_modules.variable.description.pc.memory_usage": "",
+	"flex_hud.custom_modules.variable.name.pc.max_memory": "Max memory",
+	"flex_hud.custom_modules.variable.description.pc.max_memory": "",
+	"flex_hud.custom_modules.variable.name.pc.memory_usage_percentage": "Memory usage percentage",
+	"flex_hud.custom_modules.variable.description.pc.memory_usage_percentage": "",
+	"flex_hud.custom_modules.variable.name.time.hour_24": "IRL hour 24h format",
+	"flex_hud.custom_modules.variable.description.time.hour_24": "",
+	"flex_hud.custom_modules.variable.name.time.minute": "IRL minutes",
+	"flex_hud.custom_modules.variable.description.time.minute": "",
+	"flex_hud.custom_modules.variable.name.time.second": "IRL seconds",
+	"flex_hud.custom_modules.variable.description.time.second": "",
+	"flex_hud.custom_modules.variable.name.time.ms": "IRL milliseconds",
+	"flex_hud.custom_modules.variable.description.time.ms": "",
+	"flex_hud.custom_modules.variable.name.time.hour_12": "IRL hour 12h format",
+	"flex_hud.custom_modules.variable.description.time.hour_12": "",
+	"flex_hud.custom_modules.variable.name.time.ampm": "IRL time AM/PM",
+	"flex_hud.custom_modules.variable.description.time.ampm": "",
 
 	"flex_hud.create_module_screen.module_content.placeholder": "Tape du texte, des styles ou insère des variables...",
 	"flex_hud.create_module_screen.editor.add_modifier": "Ajouter un modifier",
