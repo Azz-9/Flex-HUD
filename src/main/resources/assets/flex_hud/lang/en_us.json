@@ -393,7 +393,7 @@
 	"flex_hud.custom_modules.variable.description.world.dimension": "Current dimension the player is in (Overworld, Nether, End…).",
 	"flex_hud.custom_modules.variable.name.world.time": "Game time",
 	"flex_hud.custom_modules.variable.description.world.time": "Current in-game time in ticks.",
-	"flex_hud.custom_modules.variable.name.world.time.hour_24": "Game hour 24-hour format",
+	"flex_hud.custom_modules.variable.name.world.time.hour_24": "Game hour 24h format",
 	"flex_hud.custom_modules.variable.description.world.time.hour_24": "Current in-game hour in 24-hour format.",
 	"flex_hud.custom_modules.variable.name.world.time.minute": "Game minutes",
 	"flex_hud.custom_modules.variable.description.world.time.minute": "Current in-game minutes.",

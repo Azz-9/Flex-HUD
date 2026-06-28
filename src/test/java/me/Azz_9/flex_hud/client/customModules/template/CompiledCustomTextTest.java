@@ -174,6 +174,49 @@ public class CompiledCustomTextTest {
 	}
 
 	@Test
+	void generalConditionsCanCompareStringVariables() {
+		Modifiers.init();
+
+		AtomicReference<String> gamemode = new AtomicReference<>("survival && ready | stable");
+		Variable<String> gamemodeVariable = createVariable("player.gamemode", gamemode::get);
+
+		CompiledCustomText template = CompiledCustomText.compile(
+				"{if:player.gamemode=[survival && ready | stable]|OK}",
+				key -> "player.gamemode".equals(key) ? gamemodeVariable : null
+		);
+
+		assertEquals("OK", template.getRenderDataForTests().text().getString());
+
+		gamemode.set("creative");
+		gamemodeVariable.updateValue();
+		assertEquals("", template.getRenderDataForTests().text().getString());
+	}
+
+	@Test
+	void numericVariablesWithStringModifiersUseStringConditions() {
+		Modifiers.init();
+
+		AtomicReference<Integer> health = new AtomicReference<>(10);
+		Variable<Integer> healthVariable = createVariable("player.health", health::get);
+
+		CompiledCustomText template = CompiledCustomText.compile(
+				"{if:player.health:sign_str=[+10]|OK}",
+				key -> "player.health".equals(key) ? healthVariable : null
+		);
+
+		assertEquals("OK", template.getRenderDataForTests().text().getString());
+
+		health.set(-10);
+		healthVariable.updateValue();
+		assertEquals("", template.getRenderDataForTests().text().getString());
+
+		assertNull(CustomCondition.parse(
+				"player.health:sign_str>0",
+				key -> "player.health".equals(key) ? healthVariable : null
+		));
+	}
+
+	@Test
 	void conditionDisplayUsesReadableConnectorNames() {
 		Modifiers.init();
 

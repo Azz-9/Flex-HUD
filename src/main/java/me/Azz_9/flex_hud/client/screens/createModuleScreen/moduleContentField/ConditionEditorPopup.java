@@ -27,15 +27,20 @@ final class ConditionEditorPopup {
 	private static final int CONNECTOR_WIDTH = 40;
 	private static final int OPERATOR_WIDTH = 30;
 	private static final int THRESHOLD_WIDTH = 58;
+	private static final int STRING_THRESHOLD_WIDTH = 110;
 	private static final int REMOVE_WIDTH = 16;
 	private static final int MIN_WIDTH = 260;
 	private static final int MAX_WIDTH = 360;
-	private static final List<CustomCondition.Operator> OPERATOR_ORDER = List.of(
+	private static final List<CustomCondition.Operator> NUMERIC_OPERATOR_ORDER = List.of(
 			CustomCondition.Operator.GREATER_THAN,
 			CustomCondition.Operator.LOWER_THAN,
 			CustomCondition.Operator.EQUAL,
 			CustomCondition.Operator.GREATER_OR_EQUAL,
 			CustomCondition.Operator.LOWER_OR_EQUAL,
+			CustomCondition.Operator.NOT_EQUAL
+	);
+	private static final List<CustomCondition.Operator> STRING_OPERATOR_ORDER = List.of(
+			CustomCondition.Operator.EQUAL,
 			CustomCondition.Operator.NOT_EQUAL
 	);
 
@@ -58,7 +63,7 @@ final class ConditionEditorPopup {
 		ModuleContentEditorModel.ConditionElement conditionElement = (ModuleContentEditorModel.ConditionElement) host.model.get(elementIndex);
 		for (CustomCondition.Term term : conditionElement.condition().terms()) {
 			CustomCondition.Clause clause = term.clause();
-			rows.add(new ConditionRow(term.connector(), clause.operand().format(), clause.operator(), clause.threshold().toPlainString()));
+			rows.add(new ConditionRow(term.connector(), clause.operand().format(), clause.operator(), clause.threshold()));
 		}
 		if (rows.isEmpty()) {
 			rows.add(defaultRow());
@@ -385,11 +390,12 @@ final class ConditionEditorPopup {
 			this.operator = operator;
 			this.thresholdField = new PopupTextFieldWidget(THRESHOLD_WIDTH, FIELD_HEIGHT);
 			this.thresholdField.setText(threshold);
-			this.thresholdField.setMaxLength(32);
-			this.thresholdField.setTextPredicate(ModuleContentField::isSignedDecimalInput);
+			this.thresholdField.setMaxLength(128);
+			updateTypeState();
 		}
 
 		private void layout(int x, int y, int width, boolean showConnector) {
+			updateTypeState();
 			int variableX = x;
 			int rowWidth = width;
 			if (showConnector) {
@@ -400,10 +406,12 @@ final class ConditionEditorPopup {
 				connectorBounds = new Bounds(0, 0, 0, 0);
 			}
 
-			int variableWidth = rowWidth - OPERATOR_WIDTH - THRESHOLD_WIDTH - REMOVE_WIDTH - ModuleContentField.POPUP_GAP * 3;
+			int thresholdWidth = thresholdWidth();
+			int variableWidth = rowWidth - OPERATOR_WIDTH - thresholdWidth - REMOVE_WIDTH - ModuleContentField.POPUP_GAP * 3;
 			variableField.setPosition(variableX, y);
 			variableField.setWidth(Math.max(80, variableWidth));
 			operatorBounds = new Bounds(variableField.getRight() + ModuleContentField.POPUP_GAP, y, OPERATOR_WIDTH, FIELD_HEIGHT);
+			thresholdField.setWidth(thresholdWidth);
 			thresholdField.setPosition(operatorBounds.right() + ModuleContentField.POPUP_GAP, y);
 			removeBounds = new Bounds(x + width - REMOVE_WIDTH, y, REMOVE_WIDTH, FIELD_HEIGHT);
 		}
@@ -428,7 +436,7 @@ final class ConditionEditorPopup {
 				return true;
 			}
 			if (operatorBounds.contains(click.x(), click.y())) {
-				operator = nextOperator(operator);
+				operator = nextOperator(operator, valueKind());
 				return true;
 			}
 			if (removeBounds.contains(click.x(), click.y())) {
@@ -455,23 +463,35 @@ final class ConditionEditorPopup {
 		}
 
 		private boolean keyPressed(KeyInput input) {
-			return (variableField.isFocused() && variableField.keyPressed(input))
+			boolean handled = (variableField.isFocused() && variableField.keyPressed(input))
 					|| (thresholdField.isFocused() && thresholdField.keyPressed(input));
+			if (handled) {
+				updateTypeState();
+			}
+			return handled;
 		}
 
 		private boolean charTyped(CharInput input) {
-			return (variableField.isFocused() && variableField.charTyped(input))
+			boolean handled = (variableField.isFocused() && variableField.charTyped(input))
 					|| (thresholdField.isFocused() && thresholdField.charTyped(input));
+			if (handled) {
+				updateTypeState();
+			}
+			return handled;
 		}
 
 		private String rawClause() {
-			return variableField.getText().strip() + operator.primarySymbol() + thresholdField.getText().strip();
+			String threshold = valueKind() == CustomCondition.ValueKind.STRING
+					? CustomCondition.formatStringLiteral(thresholdField.getText())
+					: thresholdField.getText().strip();
+			return variableField.getText().strip() + operator.primarySymbol() + threshold;
 		}
 
 		private int desiredWidth(boolean showConnector) {
+			int thresholdWidth = thresholdWidth();
 			int width = CLIENT.textRenderer.getWidth(variableField.getText())
 					+ OPERATOR_WIDTH
-					+ THRESHOLD_WIDTH
+					+ thresholdWidth
 					+ REMOVE_WIDTH
 					+ ModuleContentField.POPUP_GAP * 3;
 			if (showConnector) {
@@ -495,11 +515,34 @@ final class ConditionEditorPopup {
 		private PopupTextFieldWidget thresholdField() {
 			return thresholdField;
 		}
+
+		private CustomCondition.ValueKind valueKind() {
+			CustomCondition.ValueKind valueKind = CustomCondition.resolveOperandValueKind(variableField.getText(), Variables::get);
+			return valueKind != null ? valueKind : CustomCondition.ValueKind.UNKNOWN;
+		}
+
+		private void updateTypeState() {
+			CustomCondition.ValueKind valueKind = valueKind();
+			if (valueKind == CustomCondition.ValueKind.STRING) {
+				if (!operator.supportsStringComparison()) {
+					operator = CustomCondition.Operator.EQUAL;
+				}
+				thresholdField.setTextPredicate(text -> true);
+				return;
+			}
+
+			thresholdField.setTextPredicate(ModuleContentField::isSignedDecimalInput);
+		}
+
+		private int thresholdWidth() {
+			return valueKind() == CustomCondition.ValueKind.STRING ? STRING_THRESHOLD_WIDTH : THRESHOLD_WIDTH;
+		}
 	}
 
-	private static CustomCondition.Operator nextOperator(CustomCondition.Operator operator) {
-		int index = OPERATOR_ORDER.indexOf(operator);
-		return OPERATOR_ORDER.get((index + 1) % OPERATOR_ORDER.size());
+	private static CustomCondition.Operator nextOperator(CustomCondition.Operator operator, CustomCondition.ValueKind valueKind) {
+		List<CustomCondition.Operator> operatorOrder = valueKind == CustomCondition.ValueKind.STRING ? STRING_OPERATOR_ORDER : NUMERIC_OPERATOR_ORDER;
+		int index = operatorOrder.indexOf(operator);
+		return operatorOrder.get((index + 1) % operatorOrder.size());
 	}
 
 	private static final class PopupTextFieldWidget extends TextFieldWidget {

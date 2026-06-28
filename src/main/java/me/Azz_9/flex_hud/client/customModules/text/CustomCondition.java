@@ -40,7 +40,26 @@ public final class CustomCondition {
 	}
 
 	public static Condition defaultCondition(Variable<?> variable) {
-		return new Condition(List.of(new Term(Connector.AND, new Clause(new Operand(variable.getKey(), variable, List.of()), Operator.GREATER_THAN, BigDecimal.ZERO))));
+		return new Condition(List.of(new Term(Connector.AND, new Clause(new Operand(variable.getKey(), variable, List.of()), Operator.GREATER_THAN, "0", ValueKind.NUMERIC))));
+	}
+
+	public static @Nullable ValueKind resolveOperandValueKind(String rawOperand, Function<String, @Nullable Variable<?>> variableResolver) {
+		Operand operand = parseOperand(rawOperand, variableResolver);
+		return operand != null ? operand.valueKind() : null;
+	}
+
+	public static String formatStringLiteral(String value) {
+		StringBuilder escaped = new StringBuilder(value.length() + 2);
+		escaped.append('[');
+		for (int i = 0; i < value.length(); i++) {
+			char character = value.charAt(i);
+			if (character == '\\' || character == '[' || character == ']' || character == '{' || character == '}') {
+				escaped.append('\\');
+			}
+			escaped.append(character);
+		}
+		escaped.append(']');
+		return escaped.toString();
 	}
 
 	private static @Nullable Clause parseClause(String rawClause, Function<String, @Nullable Variable<?>> variableResolver) {
@@ -60,11 +79,23 @@ public final class CustomCondition {
 		}
 
 		String thresholdText = clause.substring(operatorMatch.index() + operatorMatch.symbol().length()).trim();
-		if (!DECIMAL_LITERAL.matcher(thresholdText).matches()) {
-			return null;
+		ValueKind valueKind = operand.valueKind();
+		if (valueKind == ValueKind.NUMERIC) {
+			if (!DECIMAL_LITERAL.matcher(thresholdText).matches()) {
+				return null;
+			}
+			return new Clause(operand, operatorMatch.operator(), thresholdText, valueKind);
 		}
 
-		return new Clause(operand, operatorMatch.operator(), new BigDecimal(thresholdText));
+		if (valueKind == ValueKind.STRING) {
+			if (!operatorMatch.operator().supportsStringComparison()) {
+				return null;
+			}
+			String stringThreshold = parseStringThreshold(thresholdText);
+			return stringThreshold != null ? new Clause(operand, operatorMatch.operator(), stringThreshold, valueKind) : null;
+		}
+
+		return null;
 	}
 
 	private static @Nullable Operand parseOperand(String rawOperand, Function<String, @Nullable Variable<?>> variableResolver) {
@@ -103,6 +134,45 @@ public final class CustomCondition {
 		}
 
 		return operand;
+	}
+
+	private static @Nullable String parseStringThreshold(String thresholdText) {
+		if (thresholdText.startsWith("[")) {
+			int end = findMatchingDelimiter(thresholdText, 1, '[', ']');
+			if (end == thresholdText.length() - 1) {
+				return unescapeStringLiteral(thresholdText.substring(1, thresholdText.length() - 1));
+			}
+			return null;
+		}
+
+		return thresholdText;
+	}
+
+	private static String unescapeStringLiteral(String input) {
+		StringBuilder unescaped = new StringBuilder(input.length());
+		boolean escaped = false;
+
+		for (int i = 0; i < input.length(); i++) {
+			char character = input.charAt(i);
+			if (escaped) {
+				unescaped.append(character);
+				escaped = false;
+				continue;
+			}
+
+			if (character == '\\') {
+				escaped = true;
+				continue;
+			}
+
+			unescaped.append(character);
+		}
+
+		if (escaped) {
+			unescaped.append('\\');
+		}
+
+		return unescaped.toString();
 	}
 
 	private static @Nullable OperatorMatch findOperator(String clause) {
@@ -354,25 +424,39 @@ public final class CustomCondition {
 		}
 	}
 
-	public record Clause(Operand operand, Operator operator, BigDecimal threshold) {
+	public enum ValueKind {
+		NUMERIC,
+		STRING,
+		UNKNOWN
+	}
+
+	public record Clause(Operand operand, Operator operator, String threshold, ValueKind valueKind) {
 		public Clause {
 			requireNonNull(operand, "operand");
 			requireNonNull(operator, "operator");
 			requireNonNull(threshold, "threshold");
+			requireNonNull(valueKind, "valueKind");
 		}
 
 		public boolean test() {
 			Object value = Modifiers.applyValueModifiers(operand.variable().getValue(), operand.modifiers());
-			BigDecimal numericValue = toBigDecimal(value);
-			return numericValue != null && operator.test(numericValue, threshold);
+			if (valueKind == ValueKind.NUMERIC) {
+				BigDecimal numericValue = toBigDecimal(value);
+				return numericValue != null && operator.test(numericValue, new BigDecimal(threshold));
+			}
+			if (valueKind == ValueKind.STRING && value != null) {
+				return operator.test(String.valueOf(value), threshold);
+			}
+			return false;
 		}
 
 		public String format() {
-			return operand.format() + operator.primarySymbol() + threshold.toPlainString();
+			String formattedThreshold = valueKind == ValueKind.STRING ? formatStringLiteral(threshold) : threshold;
+			return operand.format() + operator.primarySymbol() + formattedThreshold;
 		}
 
 		public String displayText() {
-			return operand.displayText() + " " + operator.primarySymbol() + " " + threshold.toPlainString();
+			return operand.displayText() + " " + operator.primarySymbol() + " " + threshold;
 		}
 	}
 
@@ -396,6 +480,10 @@ public final class CustomCondition {
 				return key;
 			}
 			return format();
+		}
+
+		public ValueKind valueKind() {
+			return CustomCondition.valueKind(variable, modifiers);
 		}
 	}
 
@@ -454,6 +542,18 @@ public final class CustomCondition {
 		}
 
 		abstract boolean test(BigDecimal value, BigDecimal threshold);
+
+		public boolean supportsStringComparison() {
+			return this == EQUAL || this == NOT_EQUAL;
+		}
+
+		boolean test(String value, String threshold) {
+			return switch (this) {
+				case EQUAL -> value.equals(threshold);
+				case NOT_EQUAL -> !value.equals(threshold);
+				case GREATER_OR_EQUAL, LOWER_OR_EQUAL, GREATER_THAN, LOWER_THAN -> false;
+			};
+		}
 	}
 
 	public enum Connector {
@@ -513,6 +613,23 @@ public final class CustomCondition {
 		}
 	}
 
+	private static ValueKind valueKind(Variable<?> variable, List<Modifiers.ResolvedModifier<?, ?>> modifiers) {
+		Object value;
+		try {
+			value = Modifiers.applyValueModifiers(variable.getValue(), modifiers);
+		} catch (IllegalArgumentException e) {
+			return ValueKind.UNKNOWN;
+		}
+
+		if (value instanceof String) {
+			return ValueKind.STRING;
+		}
+		if (toBigDecimal(value) != null) {
+			return ValueKind.NUMERIC;
+		}
+		return ValueKind.UNKNOWN;
+	}
+
 	private static @Nullable BigDecimal toBigDecimal(@Nullable Object value) {
 		if (value == null) {
 			return null;
@@ -531,14 +648,6 @@ public final class CustomCondition {
 
 		if (value instanceof Number number) {
 			return BigDecimal.valueOf(number.doubleValue());
-		}
-
-		if (value instanceof String stringValue) {
-			try {
-				return new BigDecimal(stringValue);
-			} catch (NumberFormatException ignored) {
-				return null;
-			}
 		}
 
 		return null;
