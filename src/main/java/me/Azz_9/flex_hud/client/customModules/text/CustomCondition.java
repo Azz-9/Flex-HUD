@@ -10,8 +10,10 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
+import me.Azz_9.flex_hud.client.customModules.CustomModuleSyntax;
 import me.Azz_9.flex_hud.client.customModules.Variable;
 import me.Azz_9.flex_hud.client.customModules.modifiers.Modifiers;
+import me.Azz_9.flex_hud.client.customModules.modifiers.ValueCoercions;
 
 public final class CustomCondition {
 
@@ -49,17 +51,7 @@ public final class CustomCondition {
 	}
 
 	public static String formatStringLiteral(String value) {
-		StringBuilder escaped = new StringBuilder(value.length() + 2);
-		escaped.append('[');
-		for (int i = 0; i < value.length(); i++) {
-			char character = value.charAt(i);
-			if (character == '\\' || character == '[' || character == ']' || character == '{' || character == '}') {
-				escaped.append('\\');
-			}
-			escaped.append(character);
-		}
-		escaped.append(']');
-		return escaped.toString();
+		return "[" + CustomModuleSyntax.escape(value, "[]{}") + "]";
 	}
 
 	private static @Nullable Clause parseClause(String rawClause, Function<String, @Nullable Variable<?>> variableResolver) {
@@ -104,7 +96,7 @@ public final class CustomCondition {
 			return null;
 		}
 
-		List<String> parts = Modifiers.splitUnescaped(operand, ':');
+		List<String> parts = CustomModuleSyntax.splitUnescaped(operand, ':');
 		String key = parts.getFirst().trim();
 		Variable<?> variable = variableResolver.apply(key);
 		if (variable == null) {
@@ -128,7 +120,7 @@ public final class CustomCondition {
 			return operand;
 		}
 
-		int end = findMatchingDelimiter(operand, 1, '{', '}');
+		int end = CustomModuleSyntax.findMatchingDelimiter(operand, 1, '{', '}');
 		if (end == operand.length() - 1) {
 			return operand.substring(1, operand.length() - 1);
 		}
@@ -138,41 +130,14 @@ public final class CustomCondition {
 
 	private static @Nullable String parseStringThreshold(String thresholdText) {
 		if (thresholdText.startsWith("[")) {
-			int end = findMatchingDelimiter(thresholdText, 1, '[', ']');
+			int end = CustomModuleSyntax.findMatchingDelimiter(thresholdText, 1, '[', ']');
 			if (end == thresholdText.length() - 1) {
-				return unescapeStringLiteral(thresholdText.substring(1, thresholdText.length() - 1));
+				return CustomModuleSyntax.unescape(thresholdText.substring(1, thresholdText.length() - 1));
 			}
 			return null;
 		}
 
 		return thresholdText;
-	}
-
-	private static String unescapeStringLiteral(String input) {
-		StringBuilder unescaped = new StringBuilder(input.length());
-		boolean escaped = false;
-
-		for (int i = 0; i < input.length(); i++) {
-			char character = input.charAt(i);
-			if (escaped) {
-				unescaped.append(character);
-				escaped = false;
-				continue;
-			}
-
-			if (character == '\\') {
-				escaped = true;
-				continue;
-			}
-
-			unescaped.append(character);
-		}
-
-		if (escaped) {
-			unescaped.append('\\');
-		}
-
-		return unescaped.toString();
 	}
 
 	private static @Nullable OperatorMatch findOperator(String clause) {
@@ -315,35 +280,6 @@ public final class CustomCondition {
 		return index < 0 || index >= source.length() || Character.isWhitespace(source.charAt(index));
 	}
 
-	private static int findMatchingDelimiter(String source, int start, char open, char close) {
-		int depth = 0;
-		boolean escaped = false;
-
-		for (int cursor = start; cursor < source.length(); cursor++) {
-			char current = source.charAt(cursor);
-			if (escaped) {
-				escaped = false;
-				continue;
-			}
-
-			if (current == '\\') {
-				escaped = true;
-				continue;
-			}
-
-			if (current == open) {
-				depth++;
-			} else if (current == close) {
-				if (depth == 0) {
-					return cursor;
-				}
-				depth--;
-			}
-		}
-
-		return -1;
-	}
-
 	public record Condition(List<Term> terms) {
 		public Condition {
 			terms = List.copyOf(terms);
@@ -441,7 +377,7 @@ public final class CustomCondition {
 		public boolean test() {
 			Object value = Modifiers.applyValueModifiers(operand.variable().getValue(), operand.modifiers());
 			if (valueKind == ValueKind.NUMERIC) {
-				BigDecimal numericValue = toBigDecimal(value);
+				BigDecimal numericValue = ValueCoercions.toBigDecimalIfNumber(value);
 				return numericValue != null && operator.test(numericValue, new BigDecimal(threshold));
 			}
 			if (valueKind == ValueKind.STRING && value != null) {
@@ -614,42 +550,14 @@ public final class CustomCondition {
 	}
 
 	private static ValueKind valueKind(Variable<?> variable, List<Modifiers.ResolvedModifier<?, ?>> modifiers) {
-		Object value;
-		try {
-			value = Modifiers.applyValueModifiers(variable.getValue(), modifiers);
-		} catch (IllegalArgumentException e) {
-			return ValueKind.UNKNOWN;
-		}
-
-		if (value instanceof String) {
+		Object value = variable.getValue();
+		Class<?> outputType = Modifiers.resolveOutputType(value != null ? value.getClass() : null, modifiers);
+		if (outputType == String.class) {
 			return ValueKind.STRING;
 		}
-		if (toBigDecimal(value) != null) {
+		if (outputType != null && ValueCoercions.isNumericType(outputType)) {
 			return ValueKind.NUMERIC;
 		}
 		return ValueKind.UNKNOWN;
-	}
-
-	private static @Nullable BigDecimal toBigDecimal(@Nullable Object value) {
-		if (value == null) {
-			return null;
-		}
-
-		if (value instanceof BigDecimal bigDecimal) {
-			return bigDecimal;
-		}
-
-		if (value instanceof Byte
-				|| value instanceof Short
-				|| value instanceof Integer
-				|| value instanceof Long) {
-			return BigDecimal.valueOf(((Number) value).longValue());
-		}
-
-		if (value instanceof Number number) {
-			return BigDecimal.valueOf(number.doubleValue());
-		}
-
-		return null;
 	}
 }

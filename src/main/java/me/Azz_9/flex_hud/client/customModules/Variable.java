@@ -5,7 +5,7 @@ import net.minecraft.text.Text;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public class Variable<T> {
+public final class Variable<T> {
 	private final Text name;
 	private final Text description;
 	private final String key;
@@ -14,11 +14,10 @@ public class Variable<T> {
 	private long version;
 
 	public Variable(Text name, Text description, String key, Supplier<T> supplier) {
-		this.name = name;
-		this.description = description;
-		this.key = key;
-		this.supplier = supplier;
-
+		this.name = Objects.requireNonNull(name, "name");
+		this.description = Objects.requireNonNull(description, "description");
+		this.key = Objects.requireNonNull(key, "key");
+		this.supplier = Objects.requireNonNull(supplier, "supplier");
 	}
 
 	public Text getName() {

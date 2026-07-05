@@ -64,6 +64,19 @@ public class ModifiersTest {
 	}
 
 	@Test
+	void modifierChainsExposeTheirFinalOutputType() {
+		Modifiers.init();
+
+		Modifiers.ResolvedModifier<?, ?> roundModifier = Modifiers.get("round.2");
+		Modifiers.ResolvedModifier<?, ?> signStringModifier = Modifiers.get("sign_str");
+		assertNotNull(roundModifier);
+		assertNotNull(signStringModifier);
+
+		assertEquals(java.math.BigDecimal.class, Modifiers.resolveOutputType(Double.class, List.of(roundModifier)));
+		assertEquals(String.class, Modifiers.resolveOutputType(Double.class, List.of(roundModifier, signStringModifier)));
+	}
+
+	@Test
 	void numericModifiersAreRejectedForStringInputs() {
 		Modifiers.init();
 

@@ -15,15 +15,23 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import me.Azz_9.flex_hud.client.customModules.CustomModuleSyntax;
+
 public class Modifiers {
 
-	private static final int IMPOSSIBLE_COST = Integer.MAX_VALUE / 4;
 	private static final List<Modifier<?, ?>> MODIFIERS = new ArrayList<>();
 
 	public static void init() {
 		MODIFIERS.clear();
+		registerBigDecimalModifiers();
+		registerBigDecimalStringModifiers();
+		registerIntegerStringModifiers();
+		registerBooleanStringModifiers();
+		registerStringModifiers();
+		registerConditionalModifiers();
+	}
 
-		// BigDecimal -> BigDecimal
+	private static void registerBigDecimalModifiers() {
 		register(BigDecimal.class, BigDecimal.class, "abs", BigDecimal::abs);
 		registerRegex(
 				BigDecimal.class, BigDecimal.class,
@@ -74,18 +82,22 @@ public class Modifiers {
 		registerRegex(BigDecimal.class, BigDecimal.class, "pow", Pattern.compile("pow\\.(\\d+)"), (val, arguments) -> val.pow(Integer.parseInt(arguments.getFirst())), uiFixed("pow", List.of(parameter("value", Modifier.ParameterKind.INTEGER)), arguments -> formatFixedRaw("pow", List.of(parameter("value", Modifier.ParameterKind.INTEGER)), arguments)));
 		register(BigDecimal.class, BigDecimal.class, "sqrt", val -> val.sqrt(new MathContext(15)));
 		register(BigDecimal.class, Integer.class, "sign", BigDecimal::signum);
+	}
 
-		// BigDecimal -> String
+	private static void registerBigDecimalStringModifiers() {
 		register(BigDecimal.class, String.class, "sign_str", val -> val.compareTo(BigDecimal.ZERO) < 0 ? val.toString() : "+" + val);
 		registerRegex(BigDecimal.class, String.class, "percent", Pattern.compile("percent\\.(\\d{1,2})"), (val, arguments) -> val.multiply(BigDecimal.valueOf(100)).setScale(Integer.parseInt(arguments.getFirst()), RoundingMode.HALF_UP) + "%", uiFixed("percent", List.of(parameter("digits", Modifier.ParameterKind.INTEGER)), arguments -> formatFixedRaw("percent", List.of(parameter("digits", Modifier.ParameterKind.INTEGER)), arguments)));
+	}
 
-		// Integer -> String
+	private static void registerIntegerStringModifiers() {
 		register(Integer.class, String.class, "roman", Modifiers::intToRoman);
+	}
 
-		// Boolean -> String
+	private static void registerBooleanStringModifiers() {
 		registerCustom(Boolean.class, String.class, "bool", Modifiers::parseBooleanArguments, (val, arguments) -> val ? arguments.getFirst() : arguments.get(1), uiFixed("bool", List.of(parameter("true_value", Modifier.ParameterKind.TEXT), parameter("false_value", Modifier.ParameterKind.TEXT)), arguments -> formatFixedRaw("bool", List.of(parameter("true_value", Modifier.ParameterKind.TEXT), parameter("false_value", Modifier.ParameterKind.TEXT)), arguments)));
+	}
 
-		// String -> String
+	private static void registerStringModifiers() {
 		register(String.class, String.class, "upper", String::toUpperCase);
 		register(String.class, String.class, "lower", String::toLowerCase);
 		register(String.class, String.class, "title", val -> val.isEmpty() ? val : Character.toUpperCase(val.charAt(0)) + val.substring(1));
@@ -94,8 +106,9 @@ public class Modifiers {
 		registerCustom(String.class, String.class, "pad_center", raw -> parseWidthAndCharArguments(raw, "pad_center"), (val, arguments) -> StringUtils.center(val, Integer.parseInt(arguments.getFirst()), arguments.get(1).charAt(0)), uiFixed("pad_center", List.of(parameter("width", Modifier.ParameterKind.INTEGER), parameter("character", Modifier.ParameterKind.CHARACTER)), arguments -> formatFixedRaw("pad_center", List.of(parameter("width", Modifier.ParameterKind.INTEGER), parameter("character", Modifier.ParameterKind.CHARACTER)), arguments)));
 		registerRegex(String.class, String.class, "truncate", Pattern.compile("truncate\\.(\\d{1,2})"), (val, arguments) -> StringHelper.truncate(val, Integer.parseInt(arguments.getFirst()), true), uiFixed("truncate", List.of(parameter("length", Modifier.ParameterKind.INTEGER)), arguments -> formatFixedRaw("truncate", List.of(parameter("length", Modifier.ParameterKind.INTEGER)), arguments)));
 		registerCustom(String.class, String.class, "replace", Modifiers::parseReplaceArguments, (val, arguments) -> val.replace(arguments.getFirst(), arguments.get(1)), uiFixed("replace", List.of(parameter("from", Modifier.ParameterKind.CHARACTER), parameter("to", Modifier.ParameterKind.CHARACTER)), arguments -> formatFixedRaw("replace", List.of(parameter("from", Modifier.ParameterKind.CHARACTER), parameter("to", Modifier.ParameterKind.CHARACTER)), arguments)));
+	}
 
-		// conditional
+	private static void registerConditionalModifiers() {
 		registerCustom(String.class, String.class, "if_empty", raw -> parseTextAfterPrefix(raw, "if_empty"), (val, arguments) -> val == null || val.isEmpty() ? arguments.getFirst() : val, uiFixed("if_empty", List.of(parameter("value", Modifier.ParameterKind.TEXT)), arguments -> formatFixedRaw("if_empty", List.of(parameter("value", Modifier.ParameterKind.TEXT)), arguments)));
 		registerCustom(BigDecimal.class, String.class, "conditional", Modifiers::parseConditionalBranches, Modifiers::applyConditionalBranches, uiConditional());
 	}
@@ -165,41 +178,6 @@ public class Modifiers {
 		return sb.toString();
 	}
 
-	public static List<String> splitUnescaped(String input, char delimiter) {
-		List<String> parts = new ArrayList<>();
-		StringBuilder current = new StringBuilder();
-		boolean escaped = false;
-
-		for (int i = 0; i < input.length(); i++) {
-			char character = input.charAt(i);
-			if (escaped) {
-				current.append('\\').append(character);
-				escaped = false;
-				continue;
-			}
-
-			if (character == '\\') {
-				escaped = true;
-				continue;
-			}
-
-			if (character == delimiter) {
-				parts.add(current.toString());
-				current.setLength(0);
-				continue;
-			}
-
-			current.append(character);
-		}
-
-		if (escaped) {
-			current.append('\\');
-		}
-
-		parts.add(current.toString());
-		return parts;
-	}
-
 	public static @Nullable ResolvedModifier<?, ?> get(String input) {
 		for (Modifier<?, ?> modifier : MODIFIERS) {
 			List<String> arguments = modifier.resolveArguments(input);
@@ -216,52 +194,15 @@ public class Modifiers {
 	}
 
 	public static @Nullable CompiledFormatter compileFormatter(@Nullable Class<?> inputType, List<ResolvedModifier<?, ?>> modifiers) {
-		if (modifiers.isEmpty()) {
-			return String::valueOf;
-		}
-
-		if (inputType == null) {
-			return null;
-		}
-
-		List<ResolvedModifier<?, ?>> orderedModifiers = orderForInputType(inputType, List.copyOf(modifiers));
-		if (orderedModifiers == null) {
-			return null;
-		}
-
-		return value -> {
-			Object current = value;
-			if (current == null) {
-				return "null";
-			}
-
-			for (ResolvedModifier<?, ?> resolvedModifier : orderedModifiers) {
-				current = applyResolvedModifier(current, resolvedModifier);
-			}
-
-			return (String) coerce(current, String.class);
-		};
+		return ModifierChains.compileFormatter(inputType, modifiers);
 	}
 
 	public static @Nullable Object applyValueModifiers(@Nullable Object value, List<ResolvedModifier<?, ?>> modifiers) {
-		if (modifiers.isEmpty()) {
-			return value;
-		}
+		return ModifierChains.applyValueModifiers(value, modifiers);
+	}
 
-		if (value == null) {
-			return null;
-		}
-
-		List<ResolvedModifier<?, ?>> orderedModifiers = orderForInputType(value.getClass(), List.copyOf(modifiers));
-		if (orderedModifiers == null) {
-			return null;
-		}
-
-		Object current = value;
-		for (ResolvedModifier<?, ?> resolvedModifier : orderedModifiers) {
-			current = applyResolvedModifier(current, resolvedModifier);
-		}
-		return current;
+	public static @Nullable Class<?> resolveOutputType(@Nullable Class<?> inputType, List<ResolvedModifier<?, ?>> modifiers) {
+		return ModifierChains.resolveOutputType(inputType, modifiers);
 	}
 
 	public static <T> Function<T, String> formatterFromModifiers(List<ResolvedModifier<?, ?>> modifiers) {
@@ -277,190 +218,13 @@ public class Modifiers {
 		};
 	}
 
-	private static @Nullable List<ResolvedModifier<?, ?>> orderForInputType(Class<?> inputType, List<ResolvedModifier<?, ?>> modifiers) {
-		BestOrder bestOrder = new BestOrder();
-		searchBestOrder(inputType, new ArrayList<>(modifiers), new ArrayList<>(modifiers.size()), 0, bestOrder);
-
-		if (bestOrder.cost == IMPOSSIBLE_COST) {
-			return null;
-		}
-
-		return bestOrder.modifiers;
-	}
-
-	private static void searchBestOrder(Class<?> currentType,
-	                                    List<ResolvedModifier<?, ?>> remaining,
-	                                    List<ResolvedModifier<?, ?>> path,
-	                                    int currentCost,
-	                                    BestOrder bestOrder) {
-		if (currentCost >= bestOrder.cost) {
-			return;
-		}
-
-		if (remaining.isEmpty()) {
-			int totalCost = currentCost + transitionCost(currentType, String.class);
-			if (totalCost < bestOrder.cost) {
-				bestOrder.cost = totalCost;
-				bestOrder.modifiers = List.copyOf(path);
-			}
-			return;
-		}
-
-		for (int i = 0; i < remaining.size(); i++) {
-			ResolvedModifier<?, ?> candidate = remaining.remove(i);
-			Class<?> candidateInputType = candidate.modifier().inputType();
-			int transitionCost = transitionCost(currentType, candidateInputType);
-
-			if (transitionCost < IMPOSSIBLE_COST) {
-				path.add(candidate);
-				searchBestOrder(candidate.modifier().outputType(), remaining, path, currentCost + transitionCost, bestOrder);
-				path.removeLast();
-			}
-
-			remaining.add(i, candidate);
-		}
-	}
-
-	private static int transitionCost(Class<?> fromType, Class<?> toType) {
-		if (toType.isAssignableFrom(fromType)) {
-			return 0;
-		}
-
-		if (canCoerce(fromType, toType)) {
-			return 1;
-		}
-
-		return IMPOSSIBLE_COST;
-	}
-
-	private static boolean canCoerce(Class<?> fromType, Class<?> toType) {
-		if (toType == String.class) {
-			return true;
-		}
-
-		if (isNumericType(toType)) {
-			return Number.class.isAssignableFrom(fromType);
-		}
-
-		return false;
-	}
-
-	private static boolean isNumericType(Class<?> type) {
-		return type == Byte.class
-				|| type == Short.class
-				|| type == Integer.class
-				|| type == Long.class
-				|| type == Float.class
-				|| type == Double.class
-				|| type == BigDecimal.class;
-	}
-
-	private static Object applyResolvedModifier(Object input, ResolvedModifier<?, ?> resolvedModifier) {
-		Modifier<?, ?> modifier = resolvedModifier.modifier();
-		Object adaptedInput = coerce(input, modifier.inputType());
-		return modifier.applyUnchecked(adaptedInput, resolvedModifier.arguments());
-	}
-
-	private static Object coerce(Object value, Class<?> targetType) {
-		Objects.requireNonNull(targetType, "targetType");
-
-		if (value == null) {
-			return targetType == String.class ? "null" : null;
-		}
-
-		if (targetType.isInstance(value)) {
-			return value;
-		}
-
-		if (targetType == String.class) {
-			return String.valueOf(value);
-		}
-
-		if (isNumericType(targetType)) {
-			if (targetType == BigDecimal.class) {
-				return toBigDecimal(value);
-			}
-
-			double numericValue = toDouble(value);
-			return castDoubleToTarget(numericValue, targetType);
-		}
-
-		throw new IllegalArgumentException("Cannot coerce " + value.getClass().getSimpleName() + " to " + targetType.getSimpleName());
-	}
-
-	private static double toDouble(Object value) {
-		if (value instanceof Number number) {
-			return number.doubleValue();
-		}
-
-		if (value instanceof String stringValue) {
-			try {
-				return Double.parseDouble(stringValue);
-			} catch (NumberFormatException e) {
-				throw new IllegalArgumentException("Cannot parse number from \"" + stringValue + "\"", e);
-			}
-		}
-
-		throw new IllegalArgumentException("Cannot coerce " + value.getClass().getSimpleName() + " to a numeric type");
-	}
-
-	private static BigDecimal toBigDecimal(Object value) {
-		if (value instanceof BigDecimal bigDecimal) {
-			return bigDecimal;
-		}
-
-		if (value instanceof Byte
-				|| value instanceof Short
-				|| value instanceof Integer
-				|| value instanceof Long) {
-			return BigDecimal.valueOf(((Number) value).longValue());
-		}
-
-		if (value instanceof Number number) {
-			return BigDecimal.valueOf(number.doubleValue());
-		}
-
-		if (value instanceof String stringValue) {
-			try {
-				return new BigDecimal(stringValue);
-			} catch (NumberFormatException e) {
-				throw new IllegalArgumentException("Cannot parse BigDecimal from \"" + stringValue + "\"", e);
-			}
-		}
-
-		throw new IllegalArgumentException("Cannot coerce " + value.getClass().getSimpleName() + " to BigDecimal");
-	}
-
-	private static Object castDoubleToTarget(double value, Class<?> targetType) {
-		if (targetType == Double.class) {
-			return value;
-		}
-		if (targetType == Float.class) {
-			return (float) value;
-		}
-		if (targetType == Long.class) {
-			return (long) value;
-		}
-		if (targetType == Integer.class) {
-			return (int) value;
-		}
-		if (targetType == Short.class) {
-			return (short) value;
-		}
-		if (targetType == Byte.class) {
-			return (byte) value;
-		}
-
-		throw new IllegalArgumentException("Unsupported numeric target type: " + targetType.getSimpleName());
-	}
-
 	private static @Nullable List<String> parseWidthAndCharArguments(String rawInput, String key) {
 		if (!rawInput.startsWith(key + ".")) {
 			return null;
 		}
 
 		int widthStart = key.length() + 1;
-		int widthEnd = findNextUnescaped(rawInput, widthStart, '.');
+		int widthEnd = CustomModuleSyntax.findNextUnescaped(rawInput, widthStart, '.');
 		if (widthEnd == -1) {
 			return null;
 		}
@@ -502,13 +266,13 @@ public class Modifiers {
 			return null;
 		}
 
-		int separator = findNextUnescaped(rawInput, "bool.".length(), '.');
+		int separator = CustomModuleSyntax.findNextUnescaped(rawInput, "bool.".length(), '.');
 		if (separator == -1) {
 			return null;
 		}
 
-		String trueText = unescape(rawInput.substring("bool.".length(), separator));
-		String falseText = unescape(rawInput.substring(separator + 1));
+		String trueText = CustomModuleSyntax.unescape(rawInput.substring("bool.".length(), separator));
+		String falseText = CustomModuleSyntax.unescape(rawInput.substring(separator + 1));
 		return List.of(trueText, falseText);
 	}
 
@@ -517,7 +281,7 @@ public class Modifiers {
 			return null;
 		}
 
-		return List.of(unescape(rawInput.substring(key.length() + 1)));
+		return List.of(CustomModuleSyntax.unescape(rawInput.substring(key.length() + 1)));
 	}
 
 	private static @Nullable List<String> parseConditionalBranches(String rawInput) {
@@ -536,7 +300,7 @@ public class Modifiers {
 			}
 
 			cursor++;
-			int thresholdEnd = findNextUnescaped(rawInput, cursor, '.');
+			int thresholdEnd = CustomModuleSyntax.findNextUnescaped(rawInput, cursor, '.');
 			if (thresholdEnd == -1) {
 				return null;
 			}
@@ -554,7 +318,7 @@ public class Modifiers {
 
 			arguments.add(operator.key);
 			arguments.add(threshold);
-			arguments.add(unescape(resultText));
+			arguments.add(CustomModuleSyntax.unescape(resultText));
 
 			if (nextBranchStart == -1) {
 				break;
@@ -621,15 +385,7 @@ public class Modifiers {
 	}
 
 	private static String escapeText(String value) {
-		StringBuilder escaped = new StringBuilder(value.length());
-		for (int i = 0; i < value.length(); i++) {
-			char character = value.charAt(i);
-			if (character == '\\' || character == '.') {
-				escaped.append('\\');
-			}
-			escaped.append(character);
-		}
-		return escaped.toString();
+		return CustomModuleSyntax.escape(value, ".");
 	}
 
 	private static String escapeCharacter(String value) {
@@ -728,7 +484,7 @@ public class Modifiers {
 			}
 
 			int thresholdStart = afterKey + 1;
-			int thresholdEnd = findNextUnescaped(input, thresholdStart, '.');
+			int thresholdEnd = CustomModuleSyntax.findNextUnescaped(input, thresholdStart, '.');
 			if (thresholdEnd == -1) {
 				continue;
 			}
@@ -764,60 +520,6 @@ public class Modifiers {
 		}
 
 		return token.value();
-	}
-
-	private static String unescape(String input) {
-		StringBuilder unescaped = new StringBuilder(input.length());
-		boolean escaped = false;
-
-		for (int i = 0; i < input.length(); i++) {
-			char character = input.charAt(i);
-			if (escaped) {
-				unescaped.append(character);
-				escaped = false;
-				continue;
-			}
-
-			if (character == '\\') {
-				escaped = true;
-				continue;
-			}
-
-			unescaped.append(character);
-		}
-
-		if (escaped) {
-			unescaped.append('\\');
-		}
-
-		return unescaped.toString();
-	}
-
-	private static int findNextUnescaped(String input, int start, char target) {
-		boolean escaped = false;
-		for (int i = start; i < input.length(); i++) {
-			char character = input.charAt(i);
-			if (escaped) {
-				escaped = false;
-				continue;
-			}
-
-			if (character == '\\') {
-				escaped = true;
-				continue;
-			}
-
-			if (character == target) {
-				return i;
-			}
-		}
-
-		return -1;
-	}
-
-	private static final class BestOrder {
-		private int cost = IMPOSSIBLE_COST;
-		private List<ResolvedModifier<?, ?>> modifiers = List.of();
 	}
 
 	private record SingleCharacterToken(String value, int nextIndex) {

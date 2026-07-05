@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import me.Azz_9.flex_hud.client.customModules.CustomModuleSyntax;
 import me.Azz_9.flex_hud.client.customModules.Variable;
 import me.Azz_9.flex_hud.client.customModules.Variables;
 import me.Azz_9.flex_hud.client.customModules.modifiers.Modifiers;
@@ -350,15 +351,7 @@ public final class ModuleContentEditorModel {
 	}
 
 	private static String escapeLiteral(String text) {
-		StringBuilder escaped = new StringBuilder(text.length());
-		for (int i = 0; i < text.length(); i++) {
-			char character = text.charAt(i);
-			if (character == '\\' || character == '{' || character == '}' || character == '[' || character == ']' || character == '&') {
-				escaped.append('\\');
-			}
-			escaped.append(character);
-		}
-		return escaped.toString();
+		return CustomModuleSyntax.escape(text, "{}[]&");
 	}
 
 	private static String openColorLayer(ColorLayer colorLayer) {

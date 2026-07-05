@@ -7,6 +7,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.*;
 import java.util.function.Function;
 
+import me.Azz_9.flex_hud.client.customModules.CustomModuleSyntax;
 import me.Azz_9.flex_hud.client.customModules.Variable;
 import me.Azz_9.flex_hud.client.customModules.modifiers.Modifiers;
 
@@ -233,7 +234,7 @@ public final class CustomTextParser {
 
 		private Node parseVariable() {
 			int start = index;
-			int end = findMatchingDelimiter(start + 1, '{', '}');
+			int end = CustomModuleSyntax.findMatchingDelimiter(source, start + 1, '{', '}');
 			if (end == -1) {
 				String raw = source.substring(start);
 				index = source.length();
@@ -248,7 +249,7 @@ public final class CustomTextParser {
 				return parseCondition(rawPlaceholder, inner);
 			}
 
-			List<String> parts = Modifiers.splitUnescaped(inner, ':');
+			List<String> parts = CustomModuleSyntax.splitUnescaped(inner, ':');
 			if (parts.isEmpty()) {
 				return new LiteralNode(rawPlaceholder);
 			}
@@ -379,7 +380,7 @@ public final class CustomTextParser {
 		private Node parseGradient() {
 			int start = index;
 			int commaIndex = findGradientHeaderSeparator(start + 1);
-			int gradientEnd = findMatchingDelimiter(start + 1, '[', ']');
+			int gradientEnd = CustomModuleSyntax.findMatchingDelimiter(source, start + 1, '[', ']');
 
 			if (commaIndex == -1 || gradientEnd == -1 || commaIndex > gradientEnd) {
 				index = gradientEnd == -1 ? source.length() : gradientEnd + 1;
@@ -438,35 +439,6 @@ public final class CustomTextParser {
 
 				if (current == ']') {
 					return -1;
-				}
-			}
-
-			return -1;
-		}
-
-		private int findMatchingDelimiter(int start, char open, char close) {
-			int depth = 0;
-			boolean escaped = false;
-
-			for (int cursor = start; cursor < source.length(); cursor++) {
-				char current = source.charAt(cursor);
-				if (escaped) {
-					escaped = false;
-					continue;
-				}
-
-				if (current == '\\') {
-					escaped = true;
-					continue;
-				}
-
-				if (current == open) {
-					depth++;
-				} else if (current == close) {
-					if (depth == 0) {
-						return cursor;
-					}
-					depth--;
 				}
 			}
 

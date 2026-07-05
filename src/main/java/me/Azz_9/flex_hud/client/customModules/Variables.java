@@ -10,15 +10,11 @@ import net.minecraft.text.Text;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeKeys;
 
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.time.LocalTime;
 import java.time.temporal.ChronoField;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Supplier;
 
 import me.Azz_9.flex_hud.client.tickables.MemoryUsageTickable;
@@ -31,9 +27,7 @@ public class Variables {
 	private static final String VARIABLE_NAME_BASE_KEY = "flex_hud.custom_modules.variable.name";
 	private static final String VARIABLE_DESCRIPTION_BASE_KEY = "flex_hud.custom_modules.variable.description";
 	private static final Map<String, Variable<?>> VARIABLES = new LinkedHashMap<>();
-	private static final List<Variable<?>> TICK_UPDATE_VARIABLES = new ArrayList<>();
-	private static final List<Variable<?>> FRAME_UPDATE_VARIABLES = new ArrayList<>();
-	private static final List<Variable<?>> ON_JOIN_WORLD_UPDATE_VARIABLES = new ArrayList<>();
+	private static final Map<UpdateFrequency, List<Variable<?>>> UPDATE_VARIABLES = new EnumMap<>(UpdateFrequency.class);
 
 	enum UpdateFrequency {
 		FRAME,
@@ -42,12 +36,26 @@ public class Variables {
 	}
 
 	public static void init() {
-		VARIABLES.clear();
-		TICK_UPDATE_VARIABLES.clear();
-		FRAME_UPDATE_VARIABLES.clear();
-		ON_JOIN_WORLD_UPDATE_VARIABLES.clear();
+		resetRegistry();
 
-		// player
+		registerPlayerVariables();
+		registerWorldVariables();
+		registerServerVariables();
+		registerClientVariables();
+		registerCpsVariables();
+		registerPcVariables();
+		registerClockVariables();
+	}
+
+	private static void resetRegistry() {
+		VARIABLES.clear();
+		UPDATE_VARIABLES.clear();
+		for (UpdateFrequency frequency : UpdateFrequency.values()) {
+			UPDATE_VARIABLES.put(frequency, new ArrayList<>());
+		}
+	}
+
+	private static void registerPlayerVariables() {
 		register("player.gamemode", SafeSupplier.create(() -> requireNonNull(requireNonNull(CLIENT.player).getGameMode()).getSimpleTranslatableName().getString(), Text.translatable("selectWorld.gameMode.survival").getString()), TICK);
 		register("player.name", () -> CLIENT.getSession().getUsername(), ON_JOIN_WORLD);
 		register("player.yaw", SafeSupplier.create(() -> (requireNonNull(CLIENT.player).getYaw() % 360 + 360) % 360 - 180, 180f), FRAME);
@@ -55,30 +63,14 @@ public class Variables {
 		register("player.x", SafeSupplier.create(() -> requireNonNull(CLIENT.player).getX(), 0.0), TICK);
 		register("player.y", SafeSupplier.create(() -> requireNonNull(CLIENT.player).getY(), 0.0), TICK);
 		register("player.z", SafeSupplier.create(() -> requireNonNull(CLIENT.player).getZ(), 0.0), TICK);
-		register("nether.player.x", SafeSupplier.create(() -> {
-			if (requireNonNull(CLIENT.player).getEntityWorld().getRegistryKey().equals(World.OVERWORLD))
-				return CLIENT.player.getX() / 8;
-			else if (CLIENT.player.getEntityWorld().getRegistryKey().equals(World.NETHER)) {
-				return CLIENT.player.getX() * 8;
-			} else {
-				return CLIENT.player.getX();
-			}
-		}, 0), TICK);
-		register("nether.player.z", SafeSupplier.create(() -> {
-			if (requireNonNull(CLIENT.player).getEntityWorld().getRegistryKey().equals(World.OVERWORLD))
-				return CLIENT.player.getZ() / 8;
-			else if (CLIENT.player.getEntityWorld().getRegistryKey().equals(World.NETHER)) {
-				return CLIENT.player.getZ() * 8;
-			} else {
-				return CLIENT.player.getZ();
-			}
-		}, 0), TICK);
+		register("nether.player.x", SafeSupplier.create(() -> scaledNetherCoordinate(requireNonNull(CLIENT.player).getX()), 0), TICK);
+		register("nether.player.z", SafeSupplier.create(() -> scaledNetherCoordinate(requireNonNull(CLIENT.player).getZ()), 0), TICK);
 		register("player.chunk.x", SafeSupplier.create(() -> requireNonNull(CLIENT.player).getChunkPos().x, 0), TICK);
 		register("player.chunk.z", SafeSupplier.create(() -> requireNonNull(CLIENT.player).getChunkPos().z, 0), TICK);
-		register("player.direction", () -> getDirection(CLIENT.player)[0], FRAME);
-		register("player.direction_abbr", () -> getDirection(CLIENT.player)[1], FRAME);
-		register("player.direction.x", () -> getDirection(CLIENT.player)[2], FRAME);
-		register("player.direction.z", () -> getDirection(CLIENT.player)[3], FRAME);
+		register("player.direction", () -> getDirection(CLIENT.player).name(), FRAME);
+		register("player.direction_abbr", () -> getDirection(CLIENT.player).abbreviation(), FRAME);
+		register("player.direction.x", () -> getDirection(CLIENT.player).xSign(), FRAME);
+		register("player.direction.z", () -> getDirection(CLIENT.player).zSign(), FRAME);
 		register("player.speed", SpeedTickable::getSpeed, TICK);
 		register("player.health", SafeSupplier.create(() -> requireNonNull(CLIENT.player).getHealth(), 20), TICK);
 		register("player.health_max", SafeSupplier.create(() -> requireNonNull(CLIENT.player).getMaxHealth(), 20), TICK);
@@ -89,7 +81,9 @@ public class Variables {
 		register("player.food", SafeSupplier.create(() -> requireNonNull(CLIENT.player).getHungerManager().getFoodLevel(), 20), TICK);
 		register("player.saturation", SafeSupplier.create(() -> requireNonNull(CLIENT.player).getHungerManager().getSaturationLevel(), 20), TICK);
 		register("player.armor", SafeSupplier.create(() -> requireNonNull(CLIENT.player).getArmor(), 20), TICK);
-		// world
+	}
+
+	private static void registerWorldVariables() {
 		register("world.name", SafeSupplier.create(() -> requireNonNull(CLIENT.getServer()).getSaveProperties().getLevelName(), "", "World name"), ON_JOIN_WORLD);
 		register("world.biome", SafeSupplier.create(() -> requireNonNull(CLIENT.world).getBiome(requireNonNull(CLIENT.player).getBlockPos()).getKeyOrValue().map(key -> key.getValue().getPath(), value -> "[unregistered " + value + "]"), "", BiomeKeys.PLAINS.getValue().getPath()), TICK);
 		register("world.dimension", SafeSupplier.create(() -> requireNonNull(CLIENT.world).getRegistryKey().getValue().getPath(), "", World.OVERWORLD.getValue().getPath()), TICK);
@@ -103,22 +97,32 @@ public class Variables {
 		register("world.time.second", SafeSupplier.create(() -> (requireNonNull(CLIENT.world).getTimeOfDay() % 1000) * 60 % 1000 * 60 / 1000, 0L), TICK);
 		register("world.time.ampm", SafeSupplier.create(() -> (requireNonNull(CLIENT.world).getTimeOfDay() / 1000 + 6) % 24 < 12 ? "AM" : "PM", "AM"), TICK);
 		register("world.day", SafeSupplier.create(() -> requireNonNull(CLIENT.world).getTimeOfDay() / 24000, 5), TICK);
-		// server
+	}
+
+	private static void registerServerVariables() {
 		register("server.ip", SafeSupplier.create(() -> requireNonNull(CLIENT.getCurrentServerEntry()).address, "", "play.hypixel.net"), ON_JOIN_WORLD);
 		register("server.name", SafeSupplier.create(() -> requireNonNull(CLIENT.getCurrentServerEntry()).name, "", "Hypixel"), ON_JOIN_WORLD);
 		register("server.ping", PingUtils::getPing, TICK);
-		// client
+	}
+
+	private static void registerClientVariables() {
 		register("client.fps", CLIENT::getCurrentFps, TICK);
 		register("client.version", () -> SharedConstants.getGameVersion().id(), ON_JOIN_WORLD);
 		register("client.render_distance", () -> CLIENT.options.getViewDistance().getValue(), TICK);
-		// cps
+	}
+
+	private static void registerCpsVariables() {
 		register("cps.left", CpsUtils::getLeftCps, FRAME);
 		register("cps.right", CpsUtils::getRightCps, FRAME);
-		// pc
+	}
+
+	private static void registerPcVariables() {
 		register("pc.memory_usage", () -> MemoryUsageTickable.getUsedMemory() / 1024.0 / 1024.0, TICK);
 		register("pc.max_memory", () -> MemoryUsageTickable.getMaxMemory() / 1024.0 / 1024.0, TICK);
 		register("pc.memory_usage_percentage", MemoryUsageTickable::getUsedMemoryPercentage, TICK);
-		// time
+	}
+
+	private static void registerClockVariables() {
 		register("time.hour_24", () -> LocalTime.now().getHour(), TICK);
 		register("time.hour_12", () -> LocalTime.now().get(ChronoField.CLOCK_HOUR_OF_AMPM), TICK);
 		register("time.minute", () -> LocalTime.now().getMinute(), TICK);
@@ -128,7 +132,7 @@ public class Variables {
 	}
 
 	public static Map<String, Variable<?>> getAllVariables() {
-		return VARIABLES;
+		return Collections.unmodifiableMap(VARIABLES);
 	}
 
 	public static Variable<?> get(String key) {
@@ -143,60 +147,71 @@ public class Variables {
 				supplier
 		);
 		VARIABLES.put(key, variable);
-		switch (updateFrequency) {
-			case TICK -> TICK_UPDATE_VARIABLES.add(variable);
-			case FRAME -> FRAME_UPDATE_VARIABLES.add(variable);
-			case ON_JOIN_WORLD -> ON_JOIN_WORLD_UPDATE_VARIABLES.add(variable);
-		}
+		UPDATE_VARIABLES.get(updateFrequency).add(variable);
 
 		variable.updateValue();
 	}
 
 	public static void tick() {
-		for (Variable<?> variable : TICK_UPDATE_VARIABLES) {
-			variable.updateValue();
-		}
+		update(TICK);
 	}
 
 	public static void frame() {
-		for (Variable<?> variable : FRAME_UPDATE_VARIABLES) {
-			variable.updateValue();
-		}
+		update(FRAME);
 	}
 
 	public static void onJoinWorld() {
-		for (Variable<?> variable : ON_JOIN_WORLD_UPDATE_VARIABLES) {
+		update(ON_JOIN_WORLD);
+	}
+
+	private static void update(UpdateFrequency frequency) {
+		for (Variable<?> variable : UPDATE_VARIABLES.getOrDefault(frequency, List.of())) {
 			variable.updateValue();
 		}
 	}
 
-	private static @NonNull String[] getDirection(@Nullable PlayerEntity player) {
+	private static double scaledNetherCoordinate(double coordinate) {
+		World world = requireNonNull(CLIENT.player).getEntityWorld();
+		if (world.getRegistryKey().equals(World.OVERWORLD)) {
+			return coordinate / 8;
+		}
+		if (world.getRegistryKey().equals(World.NETHER)) {
+			return coordinate * 8;
+		}
+		return coordinate;
+	}
+
+	private static PlayerDirection getDirection(@Nullable PlayerEntity player) {
 		float yaw = player != null ? (player.getYaw() % 360 + 360) % 360 : 0;
 
 		if (337.5 < yaw || yaw < 22.5) {
-			return new String[]{Text.translatable("flex_hud.coordinates.hud.direction.south").getString(),
-					Text.translatable("flex_hud.coordinates.hud.direction_abbr.south").getString(), "", "+"};
+			return direction("south", "", "+");
 		} else if (22.5 <= yaw && yaw < 67.5) {
-			return new String[]{Text.translatable("flex_hud.coordinates.hud.direction.south_west").getString(),
-					Text.translatable("flex_hud.coordinates.hud.direction_abbr.south_west").getString(), "-", "+"};
+			return direction("south_west", "-", "+");
 		} else if (67.5 <= yaw && yaw < 112.5) {
-			return new String[]{Text.translatable("flex_hud.coordinates.hud.direction.west").getString(),
-					Text.translatable("flex_hud.coordinates.hud.direction_abbr.west").getString(), "-", ""};
+			return direction("west", "-", "");
 		} else if (112.5 <= yaw && yaw < 157.5) {
-			return new String[]{Text.translatable("flex_hud.coordinates.hud.direction.north_west").getString(),
-					Text.translatable("flex_hud.coordinates.hud.direction_abbr.north_west").getString(), "-", "-"};
+			return direction("north_west", "-", "-");
 		} else if (157.5 <= yaw && yaw < 202.5) {
-			return new String[]{Text.translatable("flex_hud.coordinates.hud.direction.north").getString(),
-					Text.translatable("flex_hud.coordinates.hud.direction_abbr.north").getString(), "", "-"};
+			return direction("north", "", "-");
 		} else if (202.5 <= yaw && yaw < 247.5) {
-			return new String[]{Text.translatable("flex_hud.coordinates.hud.direction.north_east").getString(),
-					Text.translatable("flex_hud.coordinates.hud.direction_abbr.north_east").getString(), "+", "-"};
+			return direction("north_east", "+", "-");
 		} else if (247.5 <= yaw && yaw < 292.5) {
-			return new String[]{Text.translatable("flex_hud.coordinates.hud.direction.east").getString(),
-					Text.translatable("flex_hud.coordinates.hud.direction_abbr.east").getString(), "+", ""};
+			return direction("east", "+", "");
 		} else {
-			return new String[]{Text.translatable("flex_hud.coordinates.hud.direction.south_east").getString(),
-					Text.translatable("flex_hud.coordinates.hud.direction_abbr.south_east").getString(), "+", "+"};
+			return direction("south_east", "+", "+");
 		}
+	}
+
+	private static PlayerDirection direction(String key, String xSign, String zSign) {
+		return new PlayerDirection(
+				Text.translatable("flex_hud.coordinates.hud.direction." + key).getString(),
+				Text.translatable("flex_hud.coordinates.hud.direction_abbr." + key).getString(),
+				xSign,
+				zSign
+		);
+	}
+
+	private record PlayerDirection(String name, String abbreviation, String xSign, String zSign) {
 	}
 }

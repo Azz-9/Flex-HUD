@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import me.Azz_9.flex_hud.client.customModules.CustomModuleSyntax;
 import me.Azz_9.flex_hud.client.customModules.Variable;
 import me.Azz_9.flex_hud.client.customModules.Variables;
 import me.Azz_9.flex_hud.client.customModules.modifiers.Modifiers;
@@ -33,7 +34,7 @@ public class TokenParser {
 				}
 			}
 
-			List<String> parts = Modifiers.splitUnescaped(matcher.group(1), DELIMITER.charAt(0));
+			List<String> parts = CustomModuleSyntax.splitUnescaped(matcher.group(1), DELIMITER.charAt(0));
 			String variableKey = parts.getFirst().trim();
 			Variable<?> variable = Variables.get(variableKey);
 
