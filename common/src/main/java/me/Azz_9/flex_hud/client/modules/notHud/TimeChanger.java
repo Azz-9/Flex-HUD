@@ -1,0 +1,85 @@
+package me.Azz_9.flex_hud.client.modules.notHud;
+
+import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
+
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+
+import java.time.LocalTime;
+
+import me.Azz_9.flex_hud.client.config.ConfigRegistry;
+import me.Azz_9.flex_hud.client.config.option.ConfigBoolean;
+import me.Azz_9.flex_hud.client.config.option.ConfigInteger;
+import me.Azz_9.flex_hud.client.gui.components.config.entries.IntSliderEntry;
+import me.Azz_9.flex_hud.client.gui.components.config.entries.ToggleButtonEntry;
+import me.Azz_9.flex_hud.client.gui.screens.AbstractConfigurationScreen;
+import me.Azz_9.flex_hud.client.modules.AbstractModule;
+
+public class TimeChanger extends AbstractModule {
+	public final ConfigInteger selectedTime = new ConfigInteger(6000, "flex_hud.time_changer.config.selected_time", 0, 24000);
+	public final ConfigBoolean useRealTime = new ConfigBoolean(false, "flex_hud.time_changer.config.use_real_time");
+
+	public TimeChanger() {
+		super("time_changer");
+		this.enabled.setConfigTextTranslationKey("flex_hud.time_changer.config.enable");
+
+		ConfigRegistry.register(getID(), "selectedTime", selectedTime);
+		ConfigRegistry.register(getID(), "useRealTime", useRealTime);
+	}
+
+	@Override
+	public Component getName() {
+		return Component.translatable("flex_hud.time_changer");
+	}
+
+	public static long getRealTimeAsMinecraftTime() {
+		LocalTime realTime = LocalTime.now();
+
+		// Dans Minecraft, un jour dure 24000 ticks
+		// Minuit est à 18000, midi est à 6000
+		int hour = realTime.getHour();
+		int minute = realTime.getMinute();
+
+		// Convertir l'heure réelle en ticks Minecraft
+		long minecraftTime = ((hour + 18) % 24) * 1000; // +18 pour aligner minuit à 18000
+		minecraftTime += (long) (minute / 60.0 * 1000);
+
+		return minecraftTime;
+	}
+
+	@Override
+	public AbstractConfigurationScreen getConfigScreen(Screen parent) {
+		return new AbstractConfigurationScreen(getName(), parent) {
+			@Override
+			protected void initContent() {
+				if (MINECRAFT.getLanguageManager().getSelected().equals("fr_fr")) {
+					buttonWidth = 200;
+				} else {
+					buttonWidth = 155;
+				}
+
+				super.initContent();
+
+				this.addAllEntries(
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(enabled)
+								.build()
+				);
+				this.addAllEntries(
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(useRealTime)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build(),
+						new IntSliderEntry.Builder()
+								.setIntSliderWidth(80)
+								.setVariable(selectedTime)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.setStep(1000)
+								.build()
+				);
+			}
+		};
+	}
+}

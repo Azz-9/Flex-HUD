@@ -1,0 +1,205 @@
+package me.Azz_9.flex_hud.client.gui.components.config.buttons;
+
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.ARGB;
+import net.minecraft.util.Ease;
+
+import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.lwjgl.glfw.GLFW;
+
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
+
+import me.Azz_9.flex_hud.client.config.option.ConfigInteger;
+import me.Azz_9.flex_hud.client.gui.Cursors;
+import me.Azz_9.flex_hud.client.gui.components.TrackableChange;
+import me.Azz_9.flex_hud.client.gui.components.config.DataGetter;
+import me.Azz_9.flex_hud.client.gui.components.config.Observer;
+import me.Azz_9.flex_hud.client.gui.components.config.ResetAware;
+import me.Azz_9.flex_hud.client.gui.components.config.colorSelector.ColorBindable;
+
+public class ConfigColorButtonWidget extends AbstractWidget.WithInactiveMessage implements TrackableChange, DataGetter<Integer>, ResetAware, ColorBindable {
+	private final ConfigInteger variable;
+	private final int INITIAL_COLOR;
+	private final List<Observer> observers;
+	private final Consumer<ConfigColorButtonWidget> onClickAction;
+	@Nullable
+	private final Function<Integer, Tooltip> getTooltip;
+
+	private long transitionStartTime = -1;
+	private boolean hovering = false;
+	private boolean transitioningIn = false;
+	private boolean transitioningOut = false;
+	private static final int TRANSITION_DURATION = 300;
+
+	public ConfigColorButtonWidget(int x, int y, int width, int height, ConfigInteger variable, List<Observer> observers, Consumer<ConfigColorButtonWidget> onClickAction, @Nullable Function<Integer, Tooltip> getTooltip) {
+		super(x, y, width, height, Component.empty());
+		this.variable = variable;
+		this.INITIAL_COLOR = variable.getValue();
+		this.observers = observers;
+		this.onClickAction = onClickAction;
+		this.getTooltip = getTooltip;
+
+		if (getTooltip != null) {
+			this.setTooltip(getTooltip.apply(variable.getValue()));
+		}
+	}
+
+	public ConfigColorButtonWidget(int width, int height, ConfigInteger variable, List<Observer> observers, Consumer<ConfigColorButtonWidget> onClickAction, @Nullable Function<Integer, Tooltip> getTooltip) {
+		this(0, 0, width, height, variable, observers, onClickAction, getTooltip);
+	}
+
+	@Override
+	protected void extractWidgetRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+
+		if (this.active) {
+			if (this.isHovered()) graphics.requestCursor(Cursors.POINTING_HAND);
+
+			drawSelectedTexture(graphics);
+
+			if (this.isHoveredOrFocused()) {
+				graphics.outline(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+			}
+			graphics.outline(getRight() - getHeight(), getY(), getHeight(), getHeight(), (this.isHovered() ? 0xffd0d0d0 : 0xff404040));
+		}
+		graphics.fill(getRight() - getHeight() + 1, getY() + 1, getRight() - 1, getBottom() - 1, variable.getValue() | 0xff000000);
+
+		if (!this.active) {
+			if (this.isHovered()) graphics.requestCursor(Cursors.NOT_ALLOWED);
+
+			graphics.fill(getRight() - getHeight(), getY(), getRight(), getBottom(), 0xcf4e4e4e);
+		}
+	}
+
+	private void drawSelectedTexture(GuiGraphicsExtractor graphics) {
+		boolean currentlyHovered = this.isHovered();
+
+		// Handle transition triggers
+		if (currentlyHovered && !hovering) {
+			hovering = true;
+			transitioningIn = true;
+			transitioningOut = false;
+			transitionStartTime = System.currentTimeMillis();
+		} else if (!currentlyHovered && hovering) {
+			hovering = false;
+			transitioningOut = true;
+			transitioningIn = false;
+			transitionStartTime = System.currentTimeMillis();
+		}
+
+		// Calculate alpha
+		int alpha = 0;
+		if (transitioningIn || transitioningOut) {
+			int elapsed = (int) (System.currentTimeMillis() - transitionStartTime);
+			if (elapsed <= TRANSITION_DURATION) {
+				float progress = (float) elapsed / TRANSITION_DURATION;
+				float eased = Ease.outQuad(progress);
+				if (transitioningOut) eased = 1 - eased;
+				alpha = (int) (0xFF * eased);
+			} else {
+				alpha = transitioningIn ? 0xFF : 0x00;
+				transitioningIn = false;
+				transitioningOut = false;
+			}
+		} else if (hovering) {
+			alpha = 0xFF;
+		}
+
+		if (alpha > 0) {
+			graphics.fill(getX(), getY(), getRight(), getBottom(), ARGB.color(alpha / 3, 0xC5C5C5));
+		}
+	}
+
+	@Override
+	public void onClick(@NonNull MouseButtonEvent click, boolean bl) {
+		onClickAction.accept(this);
+	}
+
+	@Override
+	public boolean keyPressed(KeyEvent input) {
+		if (input.key() == GLFW.GLFW_KEY_ENTER || input.key() == GLFW.GLFW_KEY_KP_ENTER) {
+			onClickAction.accept(this);
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void setToDefaultState() {
+		this.onReceiveColor(variable.getDefaultValue());
+	}
+
+	@Override
+	public boolean hasChanged() {
+		return this.variable.getValue() != this.INITIAL_COLOR;
+	}
+
+	@Override
+	public void revertChanges() {
+		variable.setValue(INITIAL_COLOR);
+	}
+
+	@Override
+	public Integer getData() {
+		return getColor();
+	}
+
+	@Override
+	public boolean isHoveredOrFocused() {
+		return this.isFocused();
+	}
+
+	@Override
+	public void onReceiveColor(int color) {
+		if (this.variable.getValue() != color) {
+			this.variable.setValue(color);
+
+			for (Observer observer : observers) {
+				observer.onChange(this);
+			}
+
+			if (this.getTooltip != null) this.setTooltip(this.getTooltip.apply(color));
+		}
+	}
+
+	@Override
+	public int getColor() {
+		return variable.getValue();
+	}
+
+	@Override
+	protected void updateWidgetNarration(@NonNull NarrationElementOutput output) {
+	}
+
+	@Override
+	public boolean isCurrentValueDefault() {
+		return variable.getValue().equals(variable.getDefaultValue());
+	}
+
+	public void addObserver(Observer observer) {
+		observers.add(observer);
+	}
+
+	@Override
+	public int getBottom() {
+		return this.getY() + this.getHeight();
+	}
+
+	@Override
+	public int getRight() {
+		return this.getX() + this.getWidth();
+	}
+
+	@Override
+	public int getY() {
+		return super.getY();
+	}
+}

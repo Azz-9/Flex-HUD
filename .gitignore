@@ -1,9 +1,25 @@
-.gradle/
-.idea/
-libs
-gradle/wrapper/gradle-wrapper.jar
-build/
-gradlew
-gradlew.bat
-run/
-logs/
+# eclipse
+bin
+*.launch
+.settings
+.metadata
+.classpath
+.project
+
+# idea
+out
+*.ipr
+*.iws
+*.iml
+.idea/*
+!.idea/scopes
+
+# gradle
+build
+.gradle
+
+# other
+eclipse
+run
+runs
+common/logs
