@@ -298,7 +298,7 @@ public class CrosshairPresetsList extends AbstractSmoothScrollableList<Crosshair
 
 		@Override
 		public void extractContent(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
-			if (this.isMouseOver(mouseX, mouseY)) {
+			if (this.isMouseOver(mouseX, mouseY) && parent.isMouseOver(mouseX, mouseY)) {
 				graphics.requestCursor(Cursors.POINTING_HAND);
 				graphics.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), 0x10000000);
 			} else {
