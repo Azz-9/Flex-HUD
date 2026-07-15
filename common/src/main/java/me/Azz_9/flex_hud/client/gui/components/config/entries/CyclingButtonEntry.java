@@ -1,0 +1,160 @@
+package me.Azz_9.flex_hud.client.gui.components.config.entries;
+
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.network.chat.Component;
+
+import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
+
+import me.Azz_9.flex_hud.client.Translatable;
+import me.Azz_9.flex_hud.client.config.option.ConfigEnum;
+import me.Azz_9.flex_hud.client.gui.components.TrackableChange;
+import me.Azz_9.flex_hud.client.gui.components.config.DataGetter;
+import me.Azz_9.flex_hud.client.gui.components.config.Observer;
+import me.Azz_9.flex_hud.client.gui.components.config.ScrollableConfigList;
+import me.Azz_9.flex_hud.client.gui.components.config.buttons.ConfigCyclingButtonWidget;
+
+public class CyclingButtonEntry<E extends Enum<E> & Translatable> extends ScrollableConfigList.AbstractConfigEntry {
+	private final ConfigCyclingButtonWidget<?, E> cyclingButtonWidget;
+
+	private final List<Dependency<?>> dependencies = new ArrayList<>();
+
+	private CyclingButtonEntry(
+			int cyclingButtonWidth,
+			int cyclingButtonHeight,
+			ConfigEnum<E> variable,
+			int resetButtonSize,
+			@Nullable Function<E, Tooltip> getTooltip
+	) {
+		super(resetButtonSize, Component.translatable(Objects.requireNonNull(variable.getConfigTextTranslationKey())));
+		cyclingButtonWidget = new ConfigCyclingButtonWidget<>(cyclingButtonWidth, cyclingButtonHeight, variable, observers, getTooltip);
+		setResetButtonPressAction((btn) -> cyclingButtonWidget.setToDefaultState());
+
+		cyclingButtonWidget.addObserver(this.resetButtonWidget);
+		this.resetButtonWidget.onChange(cyclingButtonWidget);
+	}
+
+	@Override
+	public void setX(int x) {
+		super.setX(x);
+		cyclingButtonWidget.setX(x + getWidth() - resetButtonWidget.getWidth() - 10 - cyclingButtonWidget.getWidth());
+	}
+
+	@Override
+	public void setY(int y) {
+		super.setY(y);
+		cyclingButtonWidget.setY(y);
+	}
+
+	@Override
+	public void extractContent(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+		super.extractContent(graphics, mouseX, mouseY, hovered, deltaTicks);
+
+		cyclingButtonWidget.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+	}
+
+	@Override
+	public @NonNull List<? extends NarratableEntry> narratables() {
+		return List.of(cyclingButtonWidget, resetButtonWidget);
+	}
+
+	@Override
+	public @NonNull List<? extends GuiEventListener> children() {
+		return List.of(cyclingButtonWidget, resetButtonWidget);
+	}
+
+	@Override
+	public TrackableChange getTrackableChangeWidget() {
+		return this.cyclingButtonWidget;
+	}
+
+	@Override
+	public DataGetter<?> getDataGetter() {
+		return this.cyclingButtonWidget;
+	}
+
+	@Override
+	public void onChange(DataGetter<?> dataGetter) {
+		boolean shouldDisable = false;
+
+		for (Dependency<?> dependency : dependencies) {
+			Object value = dependency.entry().getDataGetter().getData();
+			if (Objects.equals(value, dependency.disableWhen())) {
+				shouldDisable = true;
+				break;
+			}
+		}
+
+		setActive(!shouldDisable);
+	}
+
+	@Override
+	public void setActive(boolean active) {
+		cyclingButtonWidget.active = active;
+		super.setActive(active);
+		resetButtonWidget.active = active && !cyclingButtonWidget.isCurrentValueDefault();
+	}
+
+	public <T> void addDependency(ScrollableConfigList.AbstractConfigEntry entry, T disableWhen) {
+		dependencies.add(new Dependency<>(entry, disableWhen));
+	}
+
+	// Builder
+	public static class Builder<E extends Enum<E> & Translatable> extends AbstractBuilder<E> {
+		private int cyclingButtonWidth;
+		private int cyclingButtonHeight = 20;
+		private ConfigEnum<E> variable;
+		private final List<Dependency<?>> dependencies = new ArrayList<>();
+
+		public Builder<E> setCyclingButtonWidth(int width) {
+			this.cyclingButtonWidth = width;
+			return this;
+		}
+
+		public Builder<E> setCyclingButtonSize(int width, int height) {
+			this.cyclingButtonWidth = width;
+			this.cyclingButtonHeight = height;
+			return this;
+		}
+
+		public Builder<E> setVariable(ConfigEnum<E> variable) {
+			this.variable = variable;
+			return this;
+		}
+
+		public <T> Builder<E> addDependency(ScrollableConfigList.AbstractConfigEntry entry, T disableWhen) {
+			dependencies.add(new Dependency<>(entry, disableWhen));
+			return this;
+		}
+
+		@Override
+		public CyclingButtonEntry<E> build() {
+			if (variable == null)
+				throw new IllegalArgumentException("CyclingButtonEntry requires a variable to be set using setVariable()!");
+
+			CyclingButtonEntry<E> entry = new CyclingButtonEntry<>(
+					cyclingButtonWidth, cyclingButtonHeight,
+					variable,
+					resetButtonSize,
+					getTooltip
+			);
+			for (Observer observer : observers) {
+				entry.addObserver(observer);
+			}
+			for (Dependency<?> dependency : dependencies) {
+				entry.addDependency(dependency.entry(), dependency.disableWhen());
+				dependency.entry().addObserver(entry);
+				entry.onChange(dependency.entry().getDataGetter());
+			}
+			return entry;
+		}
+	}
+}

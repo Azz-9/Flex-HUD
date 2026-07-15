@@ -1,0 +1,165 @@
+package me.Azz_9.flex_hud.client.modules.hud.custom;
+
+import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
+
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.LightLayer;
+
+import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix3x2fStack;
+
+import me.Azz_9.flex_hud.CommonClass;
+import me.Azz_9.flex_hud.client.config.ConfigRegistry;
+import me.Azz_9.flex_hud.client.config.option.ConfigBoolean;
+import me.Azz_9.flex_hud.client.gui.components.config.entries.ColorButtonEntry;
+import me.Azz_9.flex_hud.client.gui.components.config.entries.CyclingButtonEntry;
+import me.Azz_9.flex_hud.client.gui.components.config.entries.ToggleButtonEntry;
+import me.Azz_9.flex_hud.client.gui.screens.AbstractConfigurationScreen;
+import me.Azz_9.flex_hud.client.modules.hud.AbstractTextModule;
+
+public class LightLevel extends AbstractTextModule {
+
+	private final ConfigBoolean colorDependsOnLightLevel = new ConfigBoolean(true, "flex_hud.light_level.color_depends_on_light_level");
+
+	public LightLevel(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
+		super("light_level", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		this.enabled.setConfigTextTranslationKey("flex_hud.light_level.config.enable");
+
+		ConfigRegistry.register(getID(), "colorDependsOnLightLevel", colorDependsOnLightLevel);
+	}
+
+	@Override
+	public void init() {
+		setHeight(MINECRAFT.font.lineHeight);
+	}
+
+	@Override
+	public Component getName() {
+		return Component.translatable("flex_hud.light_level");
+	}
+
+	@Override
+	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+		if (shouldNotRender() || !CommonClass.isEditingLayout && (MINECRAFT.level == null || MINECRAFT.player == null)) {
+			return;
+		}
+
+		int lightLevel;
+		if (CommonClass.isEditingLayout) {
+			lightLevel = 7;
+		} else {
+			lightLevel = MINECRAFT.level.getBrightness(LightLayer.BLOCK, MINECRAFT.player.blockPosition());
+		}
+
+		int color;
+		if (colorDependsOnLightLevel.getValue()) {
+			if (lightLevel <= 0) {
+				color = 0xffff0000;
+			} else if (lightLevel <= 7) {
+				color = 0xffff7f00;
+			} else if (lightLevel <= 11) {
+				color = 0xffffff00;
+			} else {
+				color = 0xffffffff;
+			}
+		} else {
+			color = getColor();
+		}
+
+		Component text = Component.translatable("flex_hud.light_level").append(": ").append(String.valueOf(lightLevel));
+
+		setWidth(text.getString());
+
+		Matrix3x2fStack matrices = graphics.pose();
+		matrices.pushMatrix();
+		matrices.translate(getRoundedX(), getRoundedY());
+		matrices.scale(getScale());
+
+		drawBackground(graphics);
+
+		graphics.text(MINECRAFT.font, text, 0, 0, color, shadow.getValue());
+
+		matrices.popMatrix();
+	}
+
+	@Override
+	public AbstractConfigurationScreen getConfigScreen(Screen parent) {
+		return new AbstractConfigurationScreen(getName(), parent) {
+			@Override
+			protected void initContent() {
+				if (MINECRAFT.getLanguageManager().getSelected().equals("fr_fr")) {
+					buttonWidth = 260;
+				} else {
+					buttonWidth = 170;
+				}
+
+				super.initContent();
+
+				this.addAllEntries(
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(enabled)
+								.build()
+				);
+				this.addAllEntries(
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(shadow)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(colorDependsOnLightLevel)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(chromaColor)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build()
+				);
+				this.addAllEntries(
+						new ColorButtonEntry.Builder()
+								.setColorButtonWidth(buttonWidth)
+								.setVariable(color)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), true)
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(drawBackground)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build()
+				);
+				this.addAllEntries(
+						new ColorButtonEntry.Builder()
+								.setColorButtonWidth(buttonWidth)
+								.setVariable(backgroundColor)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), false)
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(hideInF3)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeX)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeX(anchorModeX.getValue()))
+								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeY)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeY(anchorModeY.getValue()))
+								.build()
+				);
+			}
+		};
+	}
+}

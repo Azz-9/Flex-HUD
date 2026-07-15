@@ -1,0 +1,16 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "me.Azz_9.flex_hud.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"mixins": [],
+	"client": [
+	],
+	"server": [],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}
