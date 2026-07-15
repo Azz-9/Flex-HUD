@@ -36,7 +36,7 @@ import me.Azz_9.flex_hud.client.gui.Colors;
  *   <li><b>Quit and discard changes</b> — revert all options and close the screen.</li>
  * </ul>
  */
-public final class UnsavedChangesOverlay extends AbstractWidget {
+public final class UnsavedChangesOverlay extends AbstractWidget implements Popup {
 
 	// -------------------------------------------------------------------------
 	// Layout
