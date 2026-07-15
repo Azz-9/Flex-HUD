@@ -14,6 +14,7 @@ import java.util.List;
 
 import me.Azz_9.flex_hud.client.config.ConfigLoader;
 import me.Azz_9.flex_hud.client.debug.SpeedTester;
+import me.Azz_9.flex_hud.client.gui.screens.OptionsScreen;
 import me.Azz_9.flex_hud.client.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.modules.Modules;
 import me.Azz_9.flex_hud.client.modules.TickableModule;
@@ -62,27 +63,7 @@ public class CommonClass {
 
 		initCollectors();
 
-		for (HudElement hudElement : Modules.getHudElements()) {
-			Services.PLATFORM.registerHudElement(
-					hudElement.getLayer(),
-					Identifier.fromNamespaceAndPath(MOD_ID, hudElement.getID()),
-					DEBUG ? hudElement::renderWithSpeedTest : hudElement::render
-			);
-		}
-
-		Services.PLATFORM.registerHudElement(
-				Services.PLATFORM.getChatIdentifier(),
-				Identifier.fromNamespaceAndPath(MOD_ID, "custom_modules"),
-				(graphics, deltaTracker) -> {
-					for (CustomModule module : Modules.getCustomModules()) {
-						if (DEBUG) {
-							module.renderWithSpeedTest(graphics, deltaTracker);
-						} else {
-							module.render(graphics, deltaTracker);
-						}
-					}
-				}
-		);
+		initHudElements();
 
 		Services.PLATFORM.registerClientStartEvent(() -> {
 			MINECRAFT = Minecraft.getInstance();
@@ -165,6 +146,36 @@ public class CommonClass {
 		}
 
 		waypointCollectors.forEach(Collector::initCompassList);
+	}
+
+	private static void initHudElements() {
+		for (HudElement hudElement : Modules.getHudElements()) {
+			Services.PLATFORM.registerHudElement(
+					hudElement.getLayer(),
+					Identifier.fromNamespaceAndPath(MOD_ID, hudElement.getID()),
+					DEBUG ? hudElement::renderWithSpeedTest : hudElement::render
+			);
+		}
+
+		Services.PLATFORM.registerHudElement(
+				Services.PLATFORM.getChatIdentifier(),
+				Identifier.fromNamespaceAndPath(MOD_ID, "custom_modules"),
+				(graphics, deltaTracker) -> {
+					for (CustomModule module : Modules.getCustomModules()) {
+						if (DEBUG) {
+							module.renderWithSpeedTest(graphics, deltaTracker);
+						} else {
+							module.render(graphics, deltaTracker);
+						}
+					}
+				}
+		);
+	}
+
+	public static void handleKeybindsHook() {
+		while (openOptionScreenKeyBind.consumeClick()) {
+			MINECRAFT.gui.setScreen(new OptionsScreen());
+		}
 	}
 
 	public static long getLaunchTime() {

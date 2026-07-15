@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import me.Azz_9.flex_hud.client.modules.Modules;
 
 @Mixin(LocatorBar.class)
-public abstract class LocatorBarRendererMixin {
+public abstract class LocatorBarMixin {
 
 	@Inject(method = "extractBackground", at = @At("HEAD"), cancellable = true)
 	private void extractBackground(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
