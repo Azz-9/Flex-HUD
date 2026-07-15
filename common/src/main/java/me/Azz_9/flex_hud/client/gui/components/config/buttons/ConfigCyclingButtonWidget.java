@@ -1,0 +1,119 @@
+package me.Azz_9.flex_hud.client.gui.components.config.buttons;
+
+import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
+
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.Component;
+
+import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+
+import java.util.List;
+import java.util.function.Function;
+
+import me.Azz_9.flex_hud.client.Translatable;
+import me.Azz_9.flex_hud.client.config.option.ConfigEnum;
+import me.Azz_9.flex_hud.client.gui.components.TrackableChange;
+import me.Azz_9.flex_hud.client.gui.components.config.DataGetter;
+import me.Azz_9.flex_hud.client.gui.components.config.Observer;
+import me.Azz_9.flex_hud.client.gui.components.config.ResetAware;
+
+public class ConfigCyclingButtonWidget<T, E extends Enum<E> & Translatable> extends Button implements TrackableChange, DataGetter<E>, ResetAware {
+	private final E INITIAL_STATE;
+	private final List<Observer> observers;
+	private final E[] values;
+	private final ConfigEnum<E> variable;
+	@Nullable
+	private final Function<E, Tooltip> getTooltip;
+
+	public ConfigCyclingButtonWidget(int width, int height, ConfigEnum<E> variable, List<Observer> observers, @Nullable Function<E, Tooltip> getTooltip) {
+		super(0, 0, width, height, Component.translatable(variable.getValue().getTranslationKey()), (btn) -> {
+		}, DEFAULT_NARRATION);
+		this.INITIAL_STATE = variable.getValue();
+		this.observers = observers;
+		this.variable = variable;
+		this.values = variable.getValue().getDeclaringClass().getEnumConstants();
+		this.getTooltip = getTooltip;
+
+		if (getTooltip != null) {
+			this.setTooltip(getTooltip.apply(variable.getValue()));
+		}
+	}
+
+	@Override
+	protected void extractContents(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+		super.extractDefaultSprite(graphics);
+		super.extractDefaultLabel(graphics.textRenderer());
+
+		if (!this.active) {
+			graphics.fill(getX(), getY(), getRight(), getBottom(), 0xcf4e4e4e);
+		}
+	}
+
+	@Override
+	public void onClick(@NonNull MouseButtonEvent click, boolean bl) {
+		super.onClick(click, bl);
+
+		// shift click to go backward
+		onPress(MINECRAFT.hasShiftDown() ? -1 : 1);
+	}
+
+	@Override
+	public boolean keyPressed(KeyEvent input) {
+		if (input.isConfirmation()) {
+			onPress(input.hasShiftDown() ? -1 : 1);
+			this.playDownSound(MINECRAFT.getSoundManager());
+			return true;
+		}
+		return super.keyPressed(input);
+	}
+
+	private void onPress(int offset) {
+		int index = (variable.getValue().ordinal() + offset + values.length) % values.length;
+
+		setValue(values[index]);
+	}
+
+	@Override
+	public void setToDefaultState() {
+		setValue(variable.getDefaultValue());
+	}
+
+	@Override
+	public boolean hasChanged() {
+		return !variable.getValue().equals(INITIAL_STATE);
+	}
+
+	@Override
+	public void revertChanges() {
+		variable.setValue(INITIAL_STATE);
+	}
+
+	@Override
+	public E getData() {
+		return variable.getValue();
+	}
+
+	public void setValue(E value) {
+		variable.setValue(value);
+		setMessage(Component.translatable(value.getTranslationKey()));
+		if (getTooltip != null) setTooltip(getTooltip.apply(value));
+
+		for (Observer observer : observers) {
+			observer.onChange(this);
+		}
+	}
+
+	@Override
+	public boolean isCurrentValueDefault() {
+		return variable.getValue().equals(variable.getDefaultValue());
+	}
+
+	public void addObserver(Observer observer) {
+		observers.add(observer);
+	}
+}

@@ -1,0 +1,111 @@
+package me.Azz_9.flex_hud.platform;
+
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
+import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.nio.file.Path;
+import java.util.function.BiConsumer;
+
+import me.Azz_9.flex_hud.platform.services.IPlatformHelper;
+
+public class FabricPlatformHelper implements IPlatformHelper {
+
+	@Override
+	public @NotNull String getPlatformName() {
+		return "Fabric";
+	}
+
+	@Override
+	public boolean isModLoaded(@NotNull String modId) {
+		return FabricLoader.getInstance().isModLoaded(modId);
+	}
+
+	@Override
+	public boolean isDevelopmentEnvironment() {
+		return FabricLoader.getInstance().isDevelopmentEnvironment();
+	}
+
+	@Override
+	public @NotNull Path getConfigDir() {
+		return FabricLoader.getInstance().getConfigDir();
+	}
+
+	@Override
+	public void registerClientStartEvent(@NotNull Runnable runnable) {
+		ClientLifecycleEvents.CLIENT_STARTED.register(client -> runnable.run());
+	}
+
+	@Override
+	public void registerEndClientTickEvent(@NotNull Runnable runnable) {
+		ClientTickEvents.END_CLIENT_TICK.register(client -> runnable.run());
+	}
+
+	@Override
+	public void registerJoinEvent(@NotNull Runnable runnable) {
+		ClientPlayConnectionEvents.JOIN.register((listener, sender, minecraft) -> runnable.run());
+	}
+
+	@Override
+	public void registerDisconnectEvent(@NotNull Runnable runnable) {
+		ClientPlayConnectionEvents.DISCONNECT.register((listener, minecraft) -> runnable.run());
+	}
+
+	@Override
+	public void registerHudElement(@NotNull Identifier beforeThis, @NotNull Identifier identifier, @NotNull BiConsumer<GuiGraphicsExtractor, DeltaTracker> hudElement) {
+		HudElementRegistry.attachElementBefore(
+				beforeThis,
+				identifier,
+				hudElement::accept
+		);
+	}
+
+	@Override
+	public void registerReloadListener(@NotNull Identifier id, @NotNull PreparableReloadListener listener) {
+		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(id, listener);
+	}
+
+	@Override
+	public @NotNull Identifier getChatIdentifier() {
+		return VanillaHudElements.CHAT;
+	}
+
+	@Override
+	public @NotNull Identifier getBossBarIdentifier() {
+		return VanillaHudElements.BOSS_BAR;
+	}
+
+	@Override
+	public @NotNull Identifier getCrosshairIdentifier() {
+		return VanillaHudElements.CROSSHAIR;
+	}
+
+	@Override
+	public @NotNull Identifier getScoreboardIdentifier() {
+		return VanillaHudElements.SCOREBOARD;
+	}
+
+	@Override
+	public @NotNull KeyMapping registerKeyMapping(@NotNull KeyMapping keyMapping) {
+		return KeyMappingHelper.registerKeyMapping(keyMapping);
+	}
+
+	@Override
+	public ScreenRectangle scissorStackPeek(@NotNull GuiGraphicsExtractor graphics) {
+		return graphics.scissorStack.peek();
+	}
+}
