@@ -4,22 +4,20 @@
 	"package": "me.Azz_9.flex_hud.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"mixins": [
-		"ClientWorldPropertiesMixin"
+		"LevelMixin"
 	],
 	"client": [
-		"BossBarAccessor",
+		"BossHealthOverlayAccessor",
 		"BossHealthOverlayMixin",
-		"ClientPlayNetworkHandlerMixin",
-		"ClientWorldMixin",
-		"CrosshairMixin",
+		"ClientLevelMixin",
+		"ClientPacketListenerMixin",
 		"GuiGraphicsExtractorAccessor",
-		"GuiMixin",
 		"HudAccessor",
 		"HudMixin",
-		"KeyBindingMixin",
 		"KeyboardHandlerMixin",
 		"KeyMappingAccessor",
-		"LocatorBarRendererMixin",
+		"LocatorBarMixin",
+		"MinecraftMixin",
 		"MouseHandlerMixin",
 		"MultiPlayerGameModeMixin",
 		"PotionEffectMixin",
