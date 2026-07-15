@@ -232,7 +232,7 @@ public abstract class AbstractSavableScreen extends AbstractPopupScreen {
 				width, height,
 				() -> {
 					unsavedOverlay = null;
-					setPopupWidget(null);
+					closePopup();
 				},
 				() -> {
 					trackedItems.forEach(TrackableChange::revertChanges);

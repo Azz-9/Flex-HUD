@@ -1,7 +1,6 @@
 package me.Azz_9.flex_hud.client.gui.screens;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
@@ -11,9 +10,11 @@ import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import me.Azz_9.flex_hud.client.gui.components.config.Popup;
+
 public abstract class AbstractPopupScreen extends AbstractBackNavigableScreen {
 
-	private @Nullable AbstractWidget popupWidget;
+	private @Nullable Popup popupWidget;
 
 	protected AbstractPopupScreen(@NotNull Component title, @Nullable Screen parent) {
 		super(title, parent);
@@ -23,8 +24,13 @@ public abstract class AbstractPopupScreen extends AbstractBackNavigableScreen {
 		super(title);
 	}
 
-	public void setPopupWidget(@Nullable AbstractWidget popupWidget) {
+	public void setPopupWidget(@Nullable Popup popupWidget) {
 		this.popupWidget = popupWidget;
+	}
+
+	public void closePopup() {
+		if (popupWidget != null) popupWidget.onClose();
+		setPopupWidget(null);
 	}
 
 	@Override
@@ -78,7 +84,7 @@ public abstract class AbstractPopupScreen extends AbstractBackNavigableScreen {
 	public boolean keyPressed(@NotNull KeyEvent event) {
 		if (popupWidget != null) {
 			if (event.isEscape()) {
-				setPopupWidget(null);
+				closePopup();
 				return true;
 			}
 			return popupWidget.keyPressed(event);
