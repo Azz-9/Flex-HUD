@@ -1,0 +1,57 @@
+package me.Azz_9.flex_hud.client.modules.hud;
+
+import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
+
+import net.minecraft.util.ARGB;
+
+import org.jetbrains.annotations.NotNull;
+
+import me.Azz_9.flex_hud.client.config.ConfigRegistry;
+import me.Azz_9.flex_hud.client.config.option.ConfigBoolean;
+import me.Azz_9.flex_hud.client.config.option.ConfigInteger;
+import me.Azz_9.flex_hud.client.tickables.ChromaColorTickable;
+
+public abstract class AbstractTextModule extends AbstractBackgroundModule {
+
+	public ConfigBoolean shadow = new ConfigBoolean(true, "flex_hud.global.config.text_shadow");
+	public ConfigBoolean chromaColor = new ConfigBoolean(false, "flex_hud.global.config.chroma_text_color");
+	public ConfigInteger color = new ConfigInteger(0xffffff, "flex_hud.global.config.text_color");
+
+	public AbstractTextModule(@NotNull String id, double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
+		super(id, defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+
+		ConfigRegistry.register(getID(), "shadow", shadow);
+		ConfigRegistry.register(getID(), "chroma_color", chromaColor);
+		ConfigRegistry.register(getID(), "color", color);
+	}
+
+	protected void updateWidth(String text) {
+		int textWidth = MINECRAFT.font.width(text);
+		if (textWidth > getWidth()) {
+			setWidth(textWidth);
+		}
+	}
+
+	protected void updateWidth(String text, int startX) {
+		int textWidth = MINECRAFT.font.width(text);
+		if (startX + textWidth > getWidth()) {
+			setWidth(startX + textWidth);
+		}
+	}
+
+	protected void setWidth(String text) {
+		setWidth(MINECRAFT.font.width(text));
+	}
+
+	protected void setWidth(String text, int startX) {
+		int textWidth = MINECRAFT.font.width(text);
+		setWidth(startX + textWidth);
+	}
+
+	protected int getColor() {
+		if (chromaColor.getValue()) {
+			return ChromaColorTickable.getColor();
+		}
+		return ARGB.color(255, color.getValue());
+	}
+}

@@ -1,0 +1,204 @@
+package me.Azz_9.flex_hud.client.modules.hud.custom;
+
+import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
+
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.ARGB;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+
+import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix3x2fStack;
+
+import me.Azz_9.flex_hud.CommonClass;
+import me.Azz_9.flex_hud.client.config.ConfigRegistry;
+import me.Azz_9.flex_hud.client.config.option.ConfigEnum;
+import me.Azz_9.flex_hud.client.gui.components.config.entries.ColorButtonEntry;
+import me.Azz_9.flex_hud.client.gui.components.config.entries.CyclingButtonEntry;
+import me.Azz_9.flex_hud.client.gui.components.config.entries.ToggleButtonEntry;
+import me.Azz_9.flex_hud.client.gui.screens.AbstractConfigurationScreen;
+import me.Azz_9.flex_hud.client.modules.hud.AbstractTextModule;
+import me.Azz_9.flex_hud.client.modules.hud.PlaceholderStacks;
+import me.Azz_9.flex_hud.utils.ItemUtils;
+
+public class HeldItem extends AbstractTextModule {
+
+	private final ConfigEnum<ArmorStatus.DurabilityType> durabilityType = new ConfigEnum<>(ArmorStatus.DurabilityType.class, ArmorStatus.DurabilityType.PERCENTAGE, "flex_hud.held_item.config.show_durability");
+
+	private final int ITEM_SIZE = 16;
+
+	public HeldItem(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
+		super("held_item", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		this.enabled.setConfigTextTranslationKey("flex_hud.held_item.config.enable");
+
+		ConfigRegistry.register(getID(), "durabilityType", durabilityType);
+	}
+
+	@Override
+	public void init() {
+		setHeight(ITEM_SIZE);
+	}
+
+	@Override
+	public Component getName() {
+		return Component.translatable("flex_hud.held_item");
+	}
+
+
+	@Override
+	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+		if (shouldNotRender()) {
+			return;
+		}
+
+		int gap = 2;
+
+		String label = "";
+		ItemStack stack = null;
+		int textColor = getColor();
+		if (CommonClass.isEditingLayout || MINECRAFT.player == null) {
+			// we can no longer do new ItemStack outside a world since 26.1, here we just display the module name instead
+			if (MINECRAFT.level != null) {
+				// placeholder
+				label = "64/256";
+				stack = PlaceholderStacks.of(Items.DIAMOND_BLOCK);
+				textColor = getColor();
+			}
+
+		} else {
+			stack = MINECRAFT.player.getMainHandItem();
+
+			if (stack.isEmpty() || stack.is(Items.AIR)) {
+				return;
+			}
+
+			if (stack.isDamageableItem()) {
+				if (durabilityType.getValue() == ArmorStatus.DurabilityType.PERCENTAGE) {
+					label = Math.round(ItemUtils.getDurabilityPercentage(stack)) + "%";
+				} else if (durabilityType.getValue() == ArmorStatus.DurabilityType.VALUE) {
+					label = ItemUtils.getDurabilityValue(stack) + "/" + stack.getMaxDamage();
+				}
+				textColor = ARGB.color(255, stack.getBarColor());
+			} else {
+				label = stack.getCount() + "/" + ItemUtils.getStackCount(stack, MINECRAFT.player.getInventory());
+				textColor = getColor();
+			}
+		}
+
+		// si on update pas la width ici ça fait bug le MovableWidget (il n'a pas la bonne width)
+		if (MINECRAFT.level != null) {
+			if (!label.isEmpty()) {
+				setWidth(label, ITEM_SIZE + gap);
+			} else {
+				setWidth(ITEM_SIZE);
+			}
+		} else {
+			setWidth(54);
+			setHeight(16);
+		}
+
+		Matrix3x2fStack matrices = graphics.pose();
+		matrices.pushMatrix();
+		matrices.translate(getRoundedX(), getRoundedY());
+		matrices.scale(getScale());
+
+		drawBackground(graphics);
+
+		Font font = MINECRAFT.font;
+		if (MINECRAFT.level != null && stack != null) {
+			if (getAnchorX() == AnchorPosition.END) {
+				graphics.text(font, label, 0, 4, getColor(), this.shadow.getValue());
+				graphics.item(stack, font.width(label) + gap, 0);
+			} else {
+				graphics.item(stack, 0, 0);
+				graphics.text(font, label, ITEM_SIZE + gap, 4, textColor, this.shadow.getValue());
+			}
+		} else {
+			graphics.text(font, getName(), (getWidth() - font.width(getName())) / 2, 4, getColor(), this.shadow.getValue());
+		}
+
+		matrices.popMatrix();
+	}
+
+	@Override
+	public AbstractConfigurationScreen getConfigScreen(Screen parent) {
+		return new AbstractConfigurationScreen(getName(), parent) {
+			@Override
+			protected void initContent() {
+				if (MINECRAFT.getLanguageManager().getSelected().equals("fr_fr")) {
+					buttonWidth = 210;
+				} else {
+					buttonWidth = 170;
+				}
+
+				super.initContent();
+
+				this.addAllEntries(
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(enabled)
+								.build()
+				);
+				this.addAllEntries(
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(shadow)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(chromaColor)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build()
+				);
+				this.addAllEntries(
+						new ColorButtonEntry.Builder()
+								.setColorButtonWidth(buttonWidth)
+								.setVariable(color)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), true)
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(drawBackground)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build()
+				);
+				this.addAllEntries(
+						new ColorButtonEntry.Builder()
+								.setColorButtonWidth(buttonWidth)
+								.setVariable(backgroundColor)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), false)
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(hideInF3)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeX)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeX(anchorModeX.getValue()))
+								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeY)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeY(anchorModeY.getValue()))
+								.build(),
+						new CyclingButtonEntry.Builder<ArmorStatus.DurabilityType>()
+								.setCyclingButtonWidth(80)
+								.setVariable(durabilityType)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build()
+				);
+			}
+		};
+	}
+}

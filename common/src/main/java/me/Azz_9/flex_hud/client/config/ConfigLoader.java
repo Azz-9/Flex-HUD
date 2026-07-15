@@ -1,0 +1,216 @@
+package me.Azz_9.flex_hud.client.config;
+
+import static me.Azz_9.flex_hud.Constants.MOD_ID;
+
+import com.google.gson.*;
+
+import java.io.File;
+import java.io.Reader;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.util.Map;
+
+import me.Azz_9.flex_hud.FlexHudLogger;
+import me.Azz_9.flex_hud.client.config.option.AbstractConfigObject;
+import me.Azz_9.flex_hud.platform.Services;
+
+public class ConfigLoader {
+	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+	private final static File CONFIG_FILE = Services.PLATFORM.getConfigDir().resolve(MOD_ID).resolve(MOD_ID + ".json").toFile();
+	private final static File OLD_CONFIG_FILE = Services.PLATFORM.getConfigDir().resolve(MOD_ID + ".json").toFile();
+
+	public static void loadConfig() {
+
+		if (CONFIG_FILE.exists()) {
+			FlexHudLogger.info("Loading config from new location...");
+			loadFromFile(CONFIG_FILE);
+			return;
+		}
+
+		if (OLD_CONFIG_FILE.exists()) {
+			FlexHudLogger.info("Old config location detected, migrating...");
+
+			try (Reader reader = Files.newBufferedReader(OLD_CONFIG_FILE.toPath())) {
+
+				JsonObject root = JsonParser.parseReader(reader).getAsJsonObject();
+
+				// vérifier ancien format
+				if (containsOldFormat(root)) {
+					FlexHudLogger.info("Detected old config format, converting...");
+					root = convertOldFormat(root);
+					FlexHudLogger.info("Old format converted!");
+				}
+
+				// sauvegarde au nouvel emplacement
+				saveJsonToNewLocation(root);
+
+				// suppression ancien fichier
+				Files.deleteIfExists(OLD_CONFIG_FILE.toPath());
+				FlexHudLogger.info("Old config file deleted after migration.");
+
+				// appliquer config
+				applyConfig(root);
+
+				return;
+
+			} catch (Exception e) {
+				FlexHudLogger.error("Failed to migrate old config: {}", e.getMessage());
+			}
+		}
+
+		FlexHudLogger.info("No config found, creating default config...");
+		saveConfig();
+	}
+
+	private static void loadFromFile(File file) {
+		try (Reader reader = Files.newBufferedReader(file.toPath())) {
+
+			JsonObject root = JsonParser.parseReader(reader).getAsJsonObject();
+
+			// detect old format
+			if (containsOldFormat(root)) {
+				FlexHudLogger.info("Detected old config format, migrating...");
+				root = convertOldFormat(root);
+				saveJsonToNewLocation(root);
+				FlexHudLogger.info("Old format converted!");
+			}
+
+			applyConfig(root);
+
+		} catch (Exception e) {
+			FlexHudLogger.error("Failed to load config: {}, using default", e.getMessage());
+		}
+	}
+
+	private static void saveJsonToNewLocation(JsonObject root) {
+
+		try {
+			// s'assurer que le dossier existe
+			Files.createDirectories(CONFIG_FILE.getParentFile().toPath());
+
+			try (Writer writer = Files.newBufferedWriter(CONFIG_FILE.toPath())) {
+				GSON.toJson(root, writer);
+			}
+
+			FlexHudLogger.info("Config successfully saved to new location!");
+
+		} catch (Exception e) {
+			FlexHudLogger.error("Failed to save migrated config: {}", e.getMessage());
+		}
+	}
+
+	public static void saveConfig() {
+		FlexHudLogger.info("Saving config...");
+		JsonObject root = new JsonObject();
+
+		for (String moduleName : ConfigRegistry.getModuleNames()) {
+			JsonObject moduleJson = new JsonObject();
+
+			Map<String, AbstractConfigObject<?>> module = ConfigRegistry.getModule(moduleName);
+			if (module == null) continue;
+
+			for (Map.Entry<String, AbstractConfigObject<?>> entry : module.entrySet()) {
+				moduleJson.add(entry.getKey(), entry.getValue().toJsonValue());
+			}
+
+			root.add(moduleName, moduleJson);
+		}
+
+		try {
+			Files.createDirectories(CONFIG_FILE.getParentFile().toPath());
+
+			try (Writer writer = Files.newBufferedWriter(CONFIG_FILE.toPath())) {
+				GSON.toJson(root, writer);
+			}
+
+			FlexHudLogger.info("Config saved!");
+		} catch (Exception e) {
+			FlexHudLogger.error("Failed to save config: {}", e.getMessage());
+		}
+	}
+
+	private static void applyConfig(JsonObject root) {
+		for (String moduleName : ConfigRegistry.getModuleNames()) {
+			JsonObject moduleJson = root.getAsJsonObject(moduleName);
+			if (moduleJson == null) continue;
+
+			Map<String, AbstractConfigObject<?>> module = ConfigRegistry.getModule(moduleName);
+			if (module == null) continue;
+
+			for (Map.Entry<String, JsonElement> entry : moduleJson.entrySet()) {
+				AbstractConfigObject<?> configObject = module.get(entry.getKey());
+				if (configObject != null) {
+					configObject.applyFromJsonElement(entry.getValue());
+				}
+			}
+		}
+	}
+
+
+	// old format :
+
+	/**
+	 * Vérifie récursivement si le JSON contient au moins une clé "configTextTranslationKey"
+	 */
+	private static boolean containsOldFormat(JsonObject obj) {
+		for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
+			JsonElement element = entry.getValue();
+			if (element.isJsonObject()) {
+				JsonObject sub = element.getAsJsonObject();
+				if (sub.has("configTextTranslationKey")) {
+					return true; // found -> old format
+				}
+				if (containsOldFormat(sub)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private static JsonObject convertOldFormat(JsonObject oldRoot) {
+		JsonObject newRoot = new JsonObject();
+
+		for (Map.Entry<String, JsonElement> moduleEntry : oldRoot.entrySet()) {
+			String moduleName = moduleEntry.getKey();
+			JsonElement moduleElement = moduleEntry.getValue();
+
+			if (moduleElement.isJsonObject()) {
+				JsonObject oldModule = moduleElement.getAsJsonObject();
+				JsonObject newModule = new JsonObject();
+
+				for (Map.Entry<String, JsonElement> configEntry : oldModule.entrySet()) {
+					JsonElement valueElem = configEntry.getValue();
+					if (valueElem.isJsonObject()) {
+						JsonObject inner = valueElem.getAsJsonObject();
+						if (inner.has("value")) {
+							newModule.add(configEntry.getKey(), inner.get("value"));
+						}
+					} else {
+						newModule.add(configEntry.getKey(), valueElem);
+					}
+				}
+
+				newRoot.add(moduleName.replaceAll("([A-Z])", "_$1").toLowerCase(), newModule);
+			} else {
+				JsonObject global = newRoot.has("global")
+						? newRoot.getAsJsonObject("global")
+						: new JsonObject();
+
+				global.add(moduleName, moduleElement);
+				newRoot.add("global", global);
+			}
+		}
+
+		return newRoot;
+	}
+
+	private static void saveConverted(JsonObject root) {
+		try (Writer writer = Files.newBufferedWriter(CONFIG_FILE.toPath())) {
+			GSON.toJson(root, writer);
+			FlexHudLogger.info("Migrated config successfully saved!");
+		} catch (Exception e) {
+			FlexHudLogger.error("Failed to save migrated config: {}", e.getMessage());
+		}
+	}
+}
