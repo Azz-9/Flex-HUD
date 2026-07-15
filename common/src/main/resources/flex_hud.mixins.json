@@ -1,0 +1,36 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "me.Azz_9.flex_hud.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"mixins": [
+		"ClientWorldPropertiesMixin"
+	],
+	"client": [
+		"BossBarAccessor",
+		"BossHealthOverlayMixin",
+		"ClientPlayNetworkHandlerMixin",
+		"ClientWorldMixin",
+		"CrosshairMixin",
+		"GuiGraphicsExtractorAccessor",
+		"GuiMixin",
+		"HudAccessor",
+		"HudMixin",
+		"KeyBindingMixin",
+		"KeyboardHandlerMixin",
+		"KeyMappingAccessor",
+		"LocatorBarRendererMixin",
+		"MouseHandlerMixin",
+		"MultiPlayerGameModeMixin",
+		"PotionEffectMixin",
+		"RenderPipelinesAccessor"
+	],
+	"server": [],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}
+

@@ -1,0 +1,541 @@
+package me.Azz_9.flex_hud.client.gui.components;
+
+import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
+
+import com.mojang.blaze3d.platform.cursor.CursorType;
+
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.Component;
+
+import org.joml.Matrix3x2fStack;
+import org.jspecify.annotations.NonNull;
+import org.lwjgl.glfw.GLFW;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import me.Azz_9.flex_hud.client.gui.Cursors;
+import me.Azz_9.flex_hud.client.gui.screens.EditLayoutScreen;
+import me.Azz_9.flex_hud.client.gui.undoManager.MoveAction;
+import me.Azz_9.flex_hud.client.gui.undoManager.ScaleAction;
+import me.Azz_9.flex_hud.client.modules.hud.AbstractMovableModule;
+import me.Azz_9.flex_hud.client.modules.hud.DimensionHud;
+import me.Azz_9.flex_hud.client.modules.hud.MovableModule;
+import me.Azz_9.flex_hud.mixin.GuiGraphicsExtractorAccessor;
+
+public class MovableWidget extends AbstractWidget.WithInactiveMessage implements TrackableChange {
+	private final EditLayoutScreen PARENT;
+	private final MovableModule HUD_ELEMENT;
+	private double offsetX, offsetY;
+	private boolean isMoving;
+	private int onKeyPressX;
+	private int onKeyPressY;
+
+	private final Set<Integer> pressedKeys = new HashSet<>();
+
+	private final float INITIAL_SCALE;
+	private final double INITIAL_OFFSET_X, INITIAL_OFFSET_Y;
+	private final AbstractMovableModule.AnchorPosition INITIAL_ANCHOR_X, INITIAL_ANCHOR_Y;
+
+	// snap
+	private static final int SNAP_DISTANCE = 3;
+	private static final int CENTERED_LINES_SNAP_DISTANCE = 10;
+	private int snapLineX = 0;
+	private int snapLineY = 0;
+	private boolean shouldDrawVerticalSnapLine = false;
+	private boolean shouldDrawHorizontalSnapLine = false;
+
+	// scale
+	public static final float MAX_SCALE = 3.0f;
+	public static final float MIN_SCALE = 0.5f;
+	private final int HANDLE_SIZE = 4;
+	private int handleX = getX() - HANDLE_SIZE / 2;
+	private int handleY = getY() - HANDLE_SIZE / 2;
+	private HandlePosition handlePosition;
+	private boolean isDraggingScalehandle = false;
+	private int onClickRight;
+	private int onClickBottom;
+	private int onClickX;
+	private int onClickY;
+	private float onClickScale;
+	private boolean shouldDrawScaleValue = false;
+	private final float STEP = 0.25f;
+
+	private final AbstractMovableModule.AnchorMode anchorModeX, anchorModeY;
+
+	public MovableWidget(DimensionHud hudElement, AbstractMovableModule.AnchorMode anchorModeX, AbstractMovableModule.AnchorMode anchorModeY, EditLayoutScreen parent) {
+		super(
+				hudElement.getRoundedX(),
+				hudElement.getRoundedY(),
+				hudElement.getWidth(), hudElement.getHeight(), Component.empty()
+		);
+		this.PARENT = parent;
+		this.HUD_ELEMENT = hudElement;
+		this.INITIAL_SCALE = hudElement.getScale();
+		this.INITIAL_OFFSET_X = hudElement.getOffsetX();
+		this.INITIAL_OFFSET_Y = hudElement.getOffsetY();
+		this.INITIAL_ANCHOR_X = hudElement.getAnchorX();
+		this.INITIAL_ANCHOR_Y = hudElement.getAnchorY();
+		this.anchorModeX = anchorModeX;
+		this.anchorModeY = anchorModeY;
+
+		updateScaleHandle();
+	}
+
+	// i don't want to use the render method that already exists in ClickableWidget because it sets the value of hovered, and here, i'm setting this in the method mouseMove
+	public void draw(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+		if (this.visible) {
+			this.extractWidgetRenderState(graphics, mouseX, mouseY, deltaTicks);
+		}
+	}
+
+	@Override
+	protected void extractWidgetRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+		this.isHovered = (mouseX >= getX() && mouseY >= getY() && mouseX <= getRight() && mouseY <= getBottom()) || isScaleHandleHovered(mouseX, mouseY);
+		if (((GuiGraphicsExtractorAccessor) graphics).getCursor() == CursorType.DEFAULT) {
+			if (this.isScaleHandleHovered(mouseX, mouseY) || isDraggingScalehandle) {
+				graphics.requestCursor(
+						switch (handlePosition) {
+							case BOTTOM_RIGHT, TOP_LEFT -> Cursors.RESIZE_NWSE;
+							case BOTTOM_LEFT, TOP_RIGHT -> Cursors.RESIZE_NESW;
+						}
+				);
+			} else if (this.isHovered()) {
+				graphics.requestCursor(Cursors.RESIZE_ALL);
+			}
+		}
+
+		graphics.fill(getX(), getY(), getRight(), getBottom(), 0x4f88888c);
+		int color;
+		if (this.isHovered() || this.isFocused()) {
+			color = 0x7ff8f8fc;
+		} else {
+			color = 0x7fa8a8ac;
+		}
+
+		graphics.outline(getX(), getY(), getWidth(), getHeight(), color);
+
+		if (shouldDrawHorizontalSnapLine) {
+			graphics.horizontalLine(0, graphics.guiWidth(), snapLineY, 0x7fff0000);
+		}
+		if (shouldDrawVerticalSnapLine) {
+			graphics.verticalLine(snapLineX, 0, graphics.guiHeight(), 0x7fff0000);
+		}
+
+		renderScaleHandler(graphics);
+	}
+
+	public void renderScaleHandler(GuiGraphicsExtractor graphics) {
+		graphics.fill(handleX, handleY, handleX + HANDLE_SIZE, handleY + HANDLE_SIZE, 0xffF8F8FC);
+
+		if (shouldDrawScaleValue) {
+			String text = "×" + HUD_ELEMENT.getScale();
+			int valueX;
+			if (handlePosition == HandlePosition.TOP_RIGHT || handlePosition == HandlePosition.BOTTOM_RIGHT) {
+				// text to the right of the handle
+				valueX = handleX + HANDLE_SIZE + HANDLE_SIZE / 2;
+			} else {
+				// text to the left of the handle
+				valueX = handleX + HANDLE_SIZE - MINECRAFT.font.width(text);
+			}
+			int valueY = handleY;
+
+			Matrix3x2fStack matrices = graphics.pose();
+			matrices.pushMatrix();
+			matrices.translate(valueX, valueY);
+			matrices.scale(0.75f, 0.75f);
+
+			graphics.text(MINECRAFT.font, text, 0, 0, 0xffffffff, true);
+
+			matrices.popMatrix();
+		}
+	}
+
+	public void updateScaleHandle() {
+		double screenCenterX = MINECRAFT.getWindow().getGuiScaledWidth() / 2.0;
+		double screenCenterY = MINECRAFT.getWindow().getGuiScaledHeight() / 2.0;
+		double centerX = getX() + getWidth() / 2.0;
+		double centerY = getY() + getHeight() / 2.0;
+
+		if (centerX < screenCenterX) {
+			if (centerY < screenCenterY) {
+				handlePosition = HandlePosition.BOTTOM_RIGHT;
+			} else {
+				handlePosition = HandlePosition.TOP_RIGHT;
+			}
+		} else {
+			if (centerY < screenCenterY) {
+				handlePosition = HandlePosition.BOTTOM_LEFT;
+			} else {
+				handlePosition = HandlePosition.TOP_LEFT;
+			}
+		}
+
+		refreshScaleHandleCoords();
+	}
+
+	public void refreshScaleHandleCoords() {
+		switch (handlePosition) {
+			case TOP_LEFT -> {
+				handleX = getX() - HANDLE_SIZE / 2;
+				handleY = getY() - HANDLE_SIZE / 2;
+			}
+			case TOP_RIGHT -> {
+				handleX = getRight() - HANDLE_SIZE / 2;
+				handleY = getY() - HANDLE_SIZE / 2;
+			}
+			case BOTTOM_LEFT -> {
+				handleX = getX() - HANDLE_SIZE / 2;
+				handleY = getBottom() - HANDLE_SIZE / 2;
+			}
+			case BOTTOM_RIGHT -> {
+				handleX = getRight() - HANDLE_SIZE / 2;
+				handleY = getBottom() - HANDLE_SIZE / 2;
+			}
+		}
+	}
+
+	public void updateDimensionAndPosition() {
+		setRectangle(
+				(int) Math.ceil(HUD_ELEMENT.getScaledWidth()), (int) Math.ceil(HUD_ELEMENT.getScaledHeight()),
+				HUD_ELEMENT.getRoundedX(), HUD_ELEMENT.getRoundedY()
+		);
+	}
+
+	@Override
+	public void onClick(MouseButtonEvent click, boolean bl) {
+		if (isScaleHandleHovered(click.x(), click.y())) {
+			isDraggingScalehandle = true;
+			onClickRight = HUD_ELEMENT.getWidth() + getX();
+			onClickBottom = HUD_ELEMENT.getHeight() + getY();
+		} else {
+			offsetX = click.x() - getX();
+			offsetY = click.y() - getY();
+		}
+		onClickX = HUD_ELEMENT.getRoundedX();
+		onClickY = HUD_ELEMENT.getRoundedY();
+		onClickScale = HUD_ELEMENT.getScale();
+	}
+
+	@Override
+	protected void onDrag(@NonNull MouseButtonEvent click, double d, double e) {
+		if (!isDraggingScalehandle) {
+			isMoving = true;
+			double x = click.x() - offsetX;
+			double y = click.y() - offsetY;
+			snapElement(x, y);
+		} else {
+			double oppositeCornerX;
+			double oppositeCornerY;
+
+			// Vecteur direction de la droite
+			double dx;
+			double dy;
+			switch (handlePosition) {
+				case TOP_LEFT -> {
+					dx = onClickX - onClickRight;
+					dy = onClickY - onClickBottom;
+					oppositeCornerX = getX() + HUD_ELEMENT.getScaledWidth();
+					oppositeCornerY = getY() + HUD_ELEMENT.getScaledHeight();
+				}
+				case TOP_RIGHT -> {
+					dx = onClickRight - onClickX;
+					dy = onClickY - onClickBottom;
+					oppositeCornerX = getX();
+					oppositeCornerY = getY() + HUD_ELEMENT.getScaledHeight();
+				}
+				case BOTTOM_LEFT -> {
+					dx = onClickX - onClickRight;
+					dy = onClickBottom - onClickY;
+					oppositeCornerX = getX() + HUD_ELEMENT.getScaledWidth();
+					oppositeCornerY = getY();
+				}
+				default -> {
+					dx = onClickRight - onClickX;
+					dy = onClickBottom - onClickY;
+					oppositeCornerX = getX();
+					oppositeCornerY = getY();
+				}
+			}
+
+			// Calcul du paramètre t (projection du point de la souris sur la droite)
+			double denom = dx * dx + dy * dy;
+			double t = (denom == 0) ? 0 : ((click.x() - oppositeCornerX) * dx + (click.y() - oppositeCornerY) * dy) / denom;
+
+			// Clamping de t pour rester dans les limites du segment
+			t = Math.clamp(t, MIN_SCALE, MAX_SCALE);
+
+			// Coordonnées du point projeté sur le segment
+			double closestX = oppositeCornerX + t * dx;
+			double closestY = oppositeCornerY + t * dy;
+
+			// Calcul de l'échelle en fonction de la distance projetée
+			float newScale = (float) (Math.sqrt(Math.pow((closestX - oppositeCornerX), 2) + Math.pow((closestY - oppositeCornerY), 2))
+					/ Math.sqrt(dx * dx + dy * dy));
+
+			// Arrondi à STEP près si Maj est enfoncé
+			if (MINECRAFT.hasShiftDown()) {
+				newScale = Math.round(newScale / STEP) * STEP;
+				shouldDrawScaleValue = true;
+			}
+
+			setScale(newScale);
+		}
+	}
+
+	@Override
+	public void onRelease(@NonNull MouseButtonEvent click) {
+		if (isDraggingScalehandle) {
+			updateScaleHandle();
+
+			PARENT.undoManager.addAction(new ScaleAction(this, onClickScale, HUD_ELEMENT.getScale()));
+
+			isDraggingScalehandle = false;
+			shouldDrawScaleValue = false;
+		} else if (isMoving && (onClickX != getX() || onClickY != getY())) {
+			PARENT.undoManager.addAction(new MoveAction(this, onClickX, onClickY, getX(), getY()));
+
+			isMoving = false;
+		}
+
+		shouldDrawHorizontalSnapLine = false;
+		shouldDrawVerticalSnapLine = false;
+	}
+
+	@Override
+	public boolean keyPressed(@NonNull KeyEvent input) {
+		if (isDraggingScalehandle) {
+			return true; // so pressing a key won't do anything
+		}
+		if (this.isFocused() && input.key() >= 262 && input.key() <= 265) { // check if the key is one of the arrow keys
+			if (pressedKeys.isEmpty()) {
+				onKeyPressX = getX();
+				onKeyPressY = getY();
+			}
+			pressedKeys.add(input.key());
+			if (pressedKeys.contains(GLFW.GLFW_KEY_UP)) {
+				moveTo(getX(), getY() - 1);
+			}
+			if (pressedKeys.contains(GLFW.GLFW_KEY_DOWN)) {
+				moveTo(getX(), getY() + 1);
+			}
+			if (pressedKeys.contains(GLFW.GLFW_KEY_LEFT)) {
+				moveTo(getX() - 1, getY());
+			}
+			if (pressedKeys.contains(GLFW.GLFW_KEY_RIGHT)) {
+				moveTo(getX() + 1, getY());
+			}
+			updateScaleHandle();
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean keyReleased(KeyEvent input) {
+		shouldDrawScaleValue = false;
+
+		if (input.key() >= 262 && input.key() <= 265) { // the key released is one of the arrow keys
+			pressedKeys.remove(input.key());
+			if (pressedKeys.isEmpty() && (onKeyPressX != getX() || onKeyPressY != getY())) {
+				PARENT.undoManager.addAction(new MoveAction(this, onKeyPressX, onKeyPressY, getX(), getY()));
+			}
+		}
+
+		return false;
+	}
+
+	private void snapElement(double x, double y) {
+		int screenW = MINECRAFT.getWindow().getGuiScaledWidth();
+		int screenH = MINECRAFT.getWindow().getGuiScaledHeight();
+
+		x = Math.clamp(x, 0, screenW - this.getWidth());
+		y = Math.clamp(y, 0, screenH - this.getHeight());
+
+		double centerX = screenW / 2.0;
+		double centerY = screenH / 2.0;
+
+		shouldDrawHorizontalSnapLine = false;
+		shouldDrawVerticalSnapLine = false;
+
+		double snappedX = x;
+		double snappedY = y;
+
+		double minXDistance = SNAP_DISTANCE;
+		double minYDistance = SNAP_DISTANCE;
+
+		// These are the GUIDELINE coordinates (aligned edge), not the element's top-left
+		Integer guideX = null;
+		Integer guideY = null;
+
+		// Use scaled sizes to match getX()/getY() coordinate space
+		double thisW = this.HUD_ELEMENT.getScaledWidth();
+		double thisH = this.HUD_ELEMENT.getScaledHeight();
+
+		if (!MINECRAFT.hasShiftDown()) {
+			// ---- Center snapping (screen center) ----
+			double dxCenter = Math.abs((x + thisW / 2.0) - centerX);
+			if (dxCenter < CENTERED_LINES_SNAP_DISTANCE) {
+				snappedX = centerX - thisW / 2.0;   // position (left of current) to center it
+				guideX = (int) Math.round(centerX); // guideline at the center line
+				shouldDrawVerticalSnapLine = true;
+				minXDistance = dxCenter;
+			}
+
+			double dyCenter = Math.abs((y + thisH / 2.0) - centerY);
+			if (dyCenter < CENTERED_LINES_SNAP_DISTANCE) {
+				snappedY = centerY - thisH / 2.0;
+				guideY = (int) Math.round(centerY);
+				shouldDrawHorizontalSnapLine = true;
+				minYDistance = dyCenter;
+			}
+
+			// ---------- Screen edge snapping (NO guideline) ----------
+			double[] screenXEdges = new double[]{0, screenW - thisW};
+
+			for (double posX : screenXEdges) {
+				double dx = Math.abs(x - posX);
+				if (dx < minXDistance && dx < SNAP_DISTANCE) {
+					minXDistance = dx;
+					snappedX = posX;
+				}
+			}
+
+			double[] screenYEdges = new double[]{0, screenH - thisH};
+
+			for (double posY : screenYEdges) {
+				double dy = Math.abs(y - posY);
+				if (dy < minYDistance && dy < SNAP_DISTANCE) {
+					minYDistance = dy;
+					snappedY = posY;
+				}
+			}
+
+			if (!MINECRAFT.hasControlDown()) {
+				for (MovableWidget widget : PARENT.getMovableWidgets()) {
+					if (widget.HUD_ELEMENT != this.HUD_ELEMENT) {
+						double otherX = widget.getX();
+						double otherY = widget.getY();
+						double otherRight = widget.getRight();
+						double otherBottom = widget.getBottom();
+
+						// ---------- Horizontal snapping (align tops/bottoms) ----------
+						// Build candidate pairs: (posYToApply, guideLineYToDraw)
+						double[][] yPairs = new double[][]{
+								{otherY, otherY},          // top-to-top
+								{otherBottom, otherBottom},      // top-to-bottom
+								{otherY - thisH, otherY},           // bottom(current)-to-top(other)
+								{otherBottom - thisH, otherBottom}       // bottom-to-bottom
+						};
+						for (double[] pair : yPairs) {
+							double posY = pair[0];
+							double lineY = pair[1];
+							double dy = Math.abs(y - posY); // distance in top-left space
+							if (dy < minYDistance && dy < SNAP_DISTANCE) {
+								minYDistance = dy;
+								snappedY = posY;                 // apply position
+								guideY = (int) Math.round(lineY); // draw line at aligned edge
+								shouldDrawHorizontalSnapLine = true;
+							}
+						}
+
+						// ---------- Vertical snapping (align lefts/rights) ----------
+						// Build candidate pairs: (posXToApply, guideLineXToDraw)
+						double[][] xPairs = new double[][]{
+								{otherX, otherX},                 // left-to-left
+								{otherRight, otherRight},            // left-to-right
+								{otherX - thisW, otherX},                // right(current)-to-left(other)
+								{otherRight - thisW, otherRight}             // right-to-right
+						};
+						for (double[] pair : xPairs) {
+							double posX = pair[0];
+							double lineX = pair[1];
+							double dx = Math.abs(x - posX);
+							if (dx < minXDistance && dx < SNAP_DISTANCE) {
+								minXDistance = dx;
+								snappedX = posX;                 // apply position
+								guideX = (int) Math.round(lineX); // draw line at aligned edge
+								shouldDrawVerticalSnapLine = true;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		if (guideX != null) snapLineX = guideX;
+		if (guideY != null) snapLineY = guideY;
+
+		moveTo(snappedX, snappedY);
+	}
+
+
+	public void moveTo(double x, double y) {
+		x = Math.clamp(x, 0, MINECRAFT.getWindow().getGuiScaledWidth() - this.getWidth());
+		y = Math.clamp(y, 0, MINECRAFT.getWindow().getGuiScaledHeight() - this.getHeight());
+
+		HUD_ELEMENT.setX(x, anchorModeX);
+		HUD_ELEMENT.setY(y, anchorModeY);
+		this.setPosition(HUD_ELEMENT.getRoundedX(), HUD_ELEMENT.getRoundedY());
+		updateScaleHandle();
+	}
+
+	public void setScale(float scale) {
+		scale = Math.clamp(scale, MIN_SCALE, MAX_SCALE);
+
+		if (scale != HUD_ELEMENT.getScale()) {
+
+			float maxScale = HUD_ELEMENT.computeMaxScale();
+
+			if (scale > maxScale) {
+				if (shouldDrawScaleValue) { // is snapping
+					scale = (float) (Math.floor(maxScale / STEP) * STEP);
+				} else {
+					scale = maxScale;
+				}
+			}
+
+			HUD_ELEMENT.setScale(scale);
+			updateDimensionAndPosition();
+			refreshScaleHandleCoords();
+		}
+	}
+
+	private boolean isScaleHandleHovered(double mouseX, double mouseY) {
+		return mouseX >= handleX && mouseX < handleX + HANDLE_SIZE && mouseY >= handleY && mouseY < handleY + HANDLE_SIZE;
+	}
+
+	@Override
+	public boolean isMouseOver(double mouseX, double mouseY) {
+		return this.active && this.visible && this.isHovered;
+	}
+
+	@Override
+	public boolean hasChanged() {
+		return Math.round(INITIAL_OFFSET_X) != Math.round(HUD_ELEMENT.getOffsetX()) || // x coord
+				Math.round(INITIAL_OFFSET_Y) != Math.round(HUD_ELEMENT.getOffsetY()) || // y coord
+				INITIAL_ANCHOR_X != HUD_ELEMENT.getAnchorX() || INITIAL_ANCHOR_Y != HUD_ELEMENT.getAnchorY() || // anchors
+				INITIAL_SCALE != HUD_ELEMENT.getScale(); // scale
+	}
+
+	@Override
+	public void revertChanges() {
+		HUD_ELEMENT.setPos(INITIAL_OFFSET_X, INITIAL_OFFSET_Y, INITIAL_ANCHOR_X, INITIAL_ANCHOR_Y);
+		HUD_ELEMENT.setScale(INITIAL_SCALE);
+	}
+
+	@Override
+	protected void updateWidgetNarration(@NonNull NarrationElementOutput output) {
+	}
+
+	private enum HandlePosition {
+		TOP_LEFT,
+		TOP_RIGHT,
+		BOTTOM_LEFT,
+		BOTTOM_RIGHT
+	}
+}
