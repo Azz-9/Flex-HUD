@@ -45,6 +45,7 @@ public class CrosshairEditorEntry extends ScrollableConfigList.AbstractConfigEnt
 						if (crosshairEditor == null) {
 							crosshairEditor = new CrosshairEditor(crosshairButtonWidget);
 						}
+
 						if (!crosshairEditor.isFocused()) {
 							openEditor(popupScreen);
 						} else {
@@ -130,7 +131,7 @@ public class CrosshairEditorEntry extends ScrollableConfigList.AbstractConfigEnt
 	}
 
 	private void closeEditor(AbstractPopupScreen screen) {
-		screen.setPopupWidget(null);
+		screen.closePopup();
 		if (crosshairEditor != null) crosshairEditor.setFocused(false);
 	}
 

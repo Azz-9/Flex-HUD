@@ -10,45 +10,56 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
 import org.jetbrains.annotations.NotNull;
-import org.jspecify.annotations.NonNull;
 
 import java.util.Arrays;
 import java.util.function.Consumer;
 
+import me.Azz_9.flex_hud.client.gui.Colors;
 import me.Azz_9.flex_hud.client.gui.Cursors;
 import me.Azz_9.flex_hud.client.gui.components.HelpWidget;
+import me.Azz_9.flex_hud.client.gui.components.config.Popup;
 import me.Azz_9.flex_hud.client.gui.components.config.buttons.CrosshairButtonWidget;
 import me.Azz_9.flex_hud.client.gui.components.config.colorSelector.ColorSelector;
+import me.Azz_9.flex_hud.client.gui.screens.AbstractPopupScreen;
 import me.Azz_9.flex_hud.client.gui.undoManager.TextureAction;
 import me.Azz_9.flex_hud.client.gui.undoManager.UndoManager;
 
-public class CrosshairEditor extends AbstractWidget {
+public class CrosshairEditor extends AbstractWidget implements Popup {
 	private static final int PADDING = 4;
+	private static final int DONE_BUTTON_WIDTH = 200;
+	private static final int DONE_BUTTON_HEIGHT = 20;
+	private static final int DONE_BUTTON_MARGIN = 10;
+	private static final int ASIDE_WIDTH = 60;
 
 	// help widget
 	private static final int HELP_WIDGET_PADDING = 4;
 	private static final int HELP_WIDGET_SIZE = 20;
-	private HelpWidget helpWidget;
+	private final HelpWidget helpWidget;
 
 	private final Pixel[][] pixels;
 	private final CrosshairButtonWidget<?> crosshairButtonWidget;
 	private boolean isOpened;
 
 	// color button
+	private static final int COLOR_BUTTON_SIZE = 20;
 	private final StringWidget colorText;
 	private final ColorButton colorButton;
 	private ColorSelector colorSelector;
 	private boolean isDraggingCursor = false;
 
 	// clear button
+	private static final int CLEAR_BUTTON_HEIGHT = 20;
 	private final Button clearButton;
 
 	// presets list
-	private final StringWidget presetText;
+	private static final int PRESETS_LIST_MIN_HEIGHT = 32;
 	private final CrosshairPresetsList crosshairPresetsList;
+
+	private final Button done;
 
 	private boolean clicked = false;
 	private int[][] onClickTexture;
@@ -59,19 +70,25 @@ public class CrosshairEditor extends AbstractWidget {
 		super(0, 0, 0, 0, Component.empty());
 		this.crosshairButtonWidget = crosshairButtonWidget;
 
-		helpWidget = new HelpWidget(HELP_WIDGET_PADDING, this.height - HELP_WIDGET_PADDING - HELP_WIDGET_SIZE, HELP_WIDGET_SIZE, HELP_WIDGET_SIZE, new Component[]{
-				Component.translatable("flex_hud.crosshair_editor.help_widget.line1"),
-				Component.translatable("flex_hud.crosshair_editor.help_widget.line2"),
-				Component.translatable("flex_hud.crosshair_editor.help_widget.line3"),
-				Component.translatable("flex_hud.crosshair_editor.help_widget.line4"),
-		});
+		helpWidget = new HelpWidget(
+				HELP_WIDGET_PADDING,
+				MINECRAFT.getWindow().getGuiScaledHeight() - HELP_WIDGET_PADDING - HELP_WIDGET_SIZE,
+				HELP_WIDGET_SIZE,
+				HELP_WIDGET_SIZE,
+				new Component[]{
+						Component.translatable("flex_hud.crosshair_editor.help_widget.line1"),
+						Component.translatable("flex_hud.crosshair_editor.help_widget.line2"),
+						Component.translatable("flex_hud.crosshair_editor.help_widget.line3"),
+						Component.translatable("flex_hud.crosshair_editor.help_widget.line4"),
+				}
+		);
 
 		int textureSize = crosshairButtonWidget.getData().length;
 		this.pixels = new Pixel[textureSize][textureSize];
 		int pixelSize = (MINECRAFT.getWindow().getGuiScaledHeight() - 100) / textureSize;
 
-		setWidth(textureSize * pixelSize + PADDING * 2);
-		setHeight(textureSize * pixelSize + PADDING * 2);
+		setWidth(textureSize * pixelSize + PADDING * 2 + ASIDE_WIDTH + PADDING);
+		setHeight(textureSize * pixelSize + PADDING * 2 + DONE_BUTTON_HEIGHT + DONE_BUTTON_MARGIN * 2);
 
 		setX((MINECRAFT.getWindow().getGuiScaledWidth() - width) / 2);
 		setY((MINECRAFT.getWindow().getGuiScaledHeight() - height) / 2);
@@ -84,50 +101,59 @@ public class CrosshairEditor extends AbstractWidget {
 		}
 
 		int asideX = this.getX() + PADDING * 2 + textureSize * pixelSize;
-		int asideWidth = 60;
 
 		// color button
 		int colorButtonBlockMargin = 20;
-		int colorButtonSize = 20;
 
 		colorText = new StringWidget(Component.translatable("flex_hud.crosshair_editor.color"), MINECRAFT.font);
-		colorText.setPosition(asideX, getY() + colorButtonBlockMargin + (colorButtonSize - MINECRAFT.font.lineHeight) / 2);
+		colorText.setPosition(asideX, getY() + colorButtonBlockMargin + (COLOR_BUTTON_SIZE - MINECRAFT.font.lineHeight) / 2);
 
 		this.colorButton = new ColorButton(
 				colorText.getRight() + 2, getY() + colorButtonBlockMargin,
-				colorButtonSize, colorButtonSize,
+				COLOR_BUTTON_SIZE, COLOR_BUTTON_SIZE,
 				() -> colorSelector.setFocused(!colorSelector.isFocused())
 		);
 		this.colorSelector = new ColorSelector(this.colorButton);
 		this.colorSelector.setPosition(colorButton.getX(), colorButton.getBottom());
 		this.colorSelector.setFocused(false);
 
-		this.width += asideWidth + PADDING;
-
 		// clear button
-		clearButton = Button.builder(Component.translatable("flex_hud.crosshair_editor.clear"), (btn) -> this.clearTexture())
+		clearButton = Button.builder(Component.translatable("flex_hud.crosshair_editor.clear"), (_) -> this.clearTexture())
 				.pos(asideX, colorButton.getBottom() + colorButtonBlockMargin)
-				.size(asideWidth, 20)
+				.size(ASIDE_WIDTH, CLEAR_BUTTON_HEIGHT)
 				.build();
 
 		// presets list
 		int listY = colorSelector.getBottom() + 10;
-		int listHeight = Math.max(16, this.getBottom() - listY - PADDING);
+		int listHeight = Math.max(PRESETS_LIST_MIN_HEIGHT, this.getBottom() - listY - PADDING);
 		crosshairPresetsList = new CrosshairPresetsList(
-				asideWidth - 6, listHeight,
+				ASIDE_WIDTH - 6, listHeight,
 				this.getBottom() - PADDING - listHeight, asideX, this
 		);
-		this.presetText = new StringWidget(Component.translatable("flex_hud.crosshair_editor.presets"), MINECRAFT.font);
-		this.presetText.setPosition(crosshairPresetsList.getX(), crosshairPresetsList.getY() - MINECRAFT.font.lineHeight - 2);
+
+		done = Button.builder(CommonComponents.GUI_DONE, _ -> {
+					if (MINECRAFT.gui.screen() instanceof AbstractPopupScreen screen) {
+						screen.closePopup();
+					}
+				})
+				.bounds(
+						getX() + ((pixelSize * textureSize + PADDING * 2) - DONE_BUTTON_WIDTH) / 2,
+						getY() + height - DONE_BUTTON_MARGIN - DONE_BUTTON_HEIGHT,
+						DONE_BUTTON_WIDTH, DONE_BUTTON_HEIGHT
+				)
+				.build();
 	}
 
 	@Override
 	protected void extractWidgetRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
-		helpWidget.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+		//overlay
+		graphics.fill(0, 0, graphics.guiWidth(), graphics.guiHeight(), Colors.BLACK_TRANSPARENT);
 
 		if (this.isMouseOver(mouseX, mouseY)) {
 			graphics.requestCursor(Cursors.DEFAULT);
 		}
+
+		helpWidget.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
 
 		graphics.fill(getX(), getY(), getRight(), getBottom(), 0xff4a4a4a);
 
@@ -142,12 +168,14 @@ public class CrosshairEditor extends AbstractWidget {
 
 		clearButton.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
 
-		presetText.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+		graphics.text(MINECRAFT.font, Component.translatable("flex_hud.crosshair_editor.presets"), crosshairPresetsList.getX(), crosshairPresetsList.getY() - MINECRAFT.font.lineHeight - 2, Colors.WHITE);
 		crosshairPresetsList.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
 
 		if (colorSelector.isFocused()) {
 			colorSelector.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
 		}
+
+		done.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
 	}
 
 	public void onTextureChange(int x, int y) {
@@ -190,7 +218,7 @@ public class CrosshairEditor extends AbstractWidget {
 	}
 
 	@Override
-	public boolean mouseClicked(@NonNull MouseButtonEvent click, boolean doubled) {
+	public boolean mouseClicked(@NotNull MouseButtonEvent click, boolean doubled) {
 		helpWidget.handleOutsideClick(click, doubled);
 		if (colorSelector.isFocused() && colorSelector.mouseClicked(click, doubled)) {
 			isDraggingCursor = true;
@@ -203,7 +231,9 @@ public class CrosshairEditor extends AbstractWidget {
 			if (colorButton.mouseClicked(click, doubled)) {
 				return true;
 			}
-			if (clearButton.mouseClicked(click, doubled) || crosshairPresetsList.mouseClicked(click, doubled)) {
+			if (clearButton.mouseClicked(click, doubled)
+					|| crosshairPresetsList.isMouseOver(click.x(), click.y()) && crosshairPresetsList.mouseClicked(click, doubled)
+					|| done.mouseClicked(click, doubled)) {
 				colorSelector.setFocused(false);
 				return true;
 			}
@@ -291,7 +321,7 @@ public class CrosshairEditor extends AbstractWidget {
 	}
 
 	@Override
-	public boolean charTyped(@NonNull CharacterEvent input) {
+	public boolean charTyped(@NotNull CharacterEvent input) {
 		return colorSelector.charTyped(input);
 	}
 
@@ -322,11 +352,17 @@ public class CrosshairEditor extends AbstractWidget {
 	}
 
 	@Override
+	public void onClose() {
+		colorSelector.setFocused(false);
+		setFocused(false);
+	}
+
+	@Override
 	protected void updateWidgetNarration(@NotNull NarrationElementOutput narrationElementOutput) {
 	}
 
 	@Override
-	public void visitWidgets(@NonNull Consumer<AbstractWidget> widgetVisitor) {
+	public void visitWidgets(@NotNull Consumer<AbstractWidget> widgetVisitor) {
 		for (int y = 0; y < pixels.length; y++) {
 			for (int x = 0; x < pixels[y].length; x++) {
 				widgetVisitor.accept(pixels[y][x]);
