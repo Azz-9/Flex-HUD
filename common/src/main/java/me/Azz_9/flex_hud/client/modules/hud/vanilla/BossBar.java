@@ -27,7 +27,7 @@ import me.Azz_9.flex_hud.client.gui.components.config.entries.CyclingButtonEntry
 import me.Azz_9.flex_hud.client.gui.components.config.entries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.gui.screens.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.modules.hud.AbstractMovableModule;
-import me.Azz_9.flex_hud.mixin.BossBarAccessor;
+import me.Azz_9.flex_hud.mixin.BossHealthOverlayAccessor;
 import me.Azz_9.flex_hud.platform.Services;
 
 public class BossBar extends AbstractMovableModule {
@@ -152,7 +152,7 @@ public class BossBar extends AbstractMovableModule {
 	}
 
 	private void updateBossBars() {
-		events = ((BossBarAccessor) MINECRAFT.gui.hud.getBossOverlay()).getBossBars();
+		events = ((BossHealthOverlayAccessor) MINECRAFT.gui.hud.getBossOverlay()).getBossBars();
 	}
 
 	@Override

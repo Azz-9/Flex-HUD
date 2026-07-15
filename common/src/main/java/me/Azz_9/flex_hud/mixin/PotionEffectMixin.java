@@ -16,8 +16,7 @@ public abstract class PotionEffectMixin {
 
 	@Inject(method = "extractEffects", at = @At("HEAD"), cancellable = true)
 	private void renderStatusEffectOverlay(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
-		if (Modules.getInstance().isEnabled.getValue() &&
-				Modules.getInstance().potionEffect.enabled.getValue()) {
+		if (Modules.getInstance().isEnabled.getValue() && Modules.getInstance().potionEffect.enabled.getValue()) {
 			ci.cancel();
 		}
 	}
