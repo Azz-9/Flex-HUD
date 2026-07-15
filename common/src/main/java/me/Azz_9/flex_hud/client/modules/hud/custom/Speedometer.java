@@ -1,0 +1,208 @@
+package me.Azz_9.flex_hud.client.modules.hud.custom;
+
+import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
+
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.vehicle.boat.Boat;
+
+import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix3x2fStack;
+
+import me.Azz_9.flex_hud.CommonClass;
+import me.Azz_9.flex_hud.client.Translatable;
+import me.Azz_9.flex_hud.client.config.ConfigRegistry;
+import me.Azz_9.flex_hud.client.config.option.ConfigBoolean;
+import me.Azz_9.flex_hud.client.config.option.ConfigEnum;
+import me.Azz_9.flex_hud.client.config.option.ConfigInteger;
+import me.Azz_9.flex_hud.client.gui.components.config.entries.ColorButtonEntry;
+import me.Azz_9.flex_hud.client.gui.components.config.entries.CyclingButtonEntry;
+import me.Azz_9.flex_hud.client.gui.components.config.entries.IntFieldEntry;
+import me.Azz_9.flex_hud.client.gui.components.config.entries.ToggleButtonEntry;
+import me.Azz_9.flex_hud.client.gui.screens.AbstractConfigurationScreen;
+import me.Azz_9.flex_hud.client.modules.TickableModule;
+import me.Azz_9.flex_hud.client.modules.hud.AbstractTextModule;
+import me.Azz_9.flex_hud.client.tickables.SpeedTickable;
+
+public class Speedometer extends AbstractTextModule implements TickableModule {
+	public ConfigInteger digits = new ConfigInteger(1, "flex_hud.speedometer.config.number_of_digits", 0, 16);
+	public ConfigEnum<SpeedometerUnits> units = new ConfigEnum<>(SpeedometerUnits.class, SpeedometerUnits.MPS, "flex_hud.speedometer.config.selected_unit");
+	public ConfigBoolean useKnotInBoat = new ConfigBoolean(false, "flex_hud.speedometer.config.use_knot_when_in_boat");
+
+	private String formattedSpeed = "";
+
+	public Speedometer(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
+		super("speedometer", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		this.enabled.setConfigTextTranslationKey("flex_hud.speedometer.config.enable");
+
+		ConfigRegistry.register(getID(), "digits", digits);
+		ConfigRegistry.register(getID(), "units", units);
+		ConfigRegistry.register(getID(), "useKnotInBoat", useKnotInBoat);
+	}
+
+	@Override
+	public void init() {
+		setHeight(MINECRAFT.font.lineHeight);
+	}
+
+	@Override
+	public Component getName() {
+		return Component.translatable("flex_hud.speedometer");
+	}
+
+	@Override
+	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+		if (shouldNotRender()) {
+			return;
+		}
+
+		setWidth(formattedSpeed);
+
+		Matrix3x2fStack matrices = graphics.pose();
+		matrices.pushMatrix();
+		matrices.translate(getRoundedX(), getRoundedY());
+		matrices.scale(getScale());
+
+		drawBackground(graphics);
+
+		graphics.text(MINECRAFT.font, formattedSpeed, 0, 0, getColor(), this.shadow.getValue());
+
+		matrices.popMatrix();
+	}
+
+	@Override
+	public AbstractConfigurationScreen getConfigScreen(Screen parent) {
+		return new AbstractConfigurationScreen(getName(), parent) {
+			@Override
+			protected void initContent() {
+				if (MINECRAFT.getLanguageManager().getSelected().equals("fr_fr")) {
+					buttonWidth = 250;
+				} else {
+					buttonWidth = 170;
+				}
+
+				super.initContent();
+
+				this.addAllEntries(
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(enabled)
+								.build()
+				);
+				this.addAllEntries(
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(shadow)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(chromaColor)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build()
+				);
+				this.addAllEntries(
+						new ColorButtonEntry.Builder()
+								.setColorButtonWidth(buttonWidth)
+								.setVariable(color)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), true)
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(drawBackground)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build()
+				);
+				this.addAllEntries(
+						new ColorButtonEntry.Builder()
+								.setColorButtonWidth(buttonWidth)
+								.setVariable(backgroundColor)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addDependency(this.getConfigList().getLastEntry(), false)
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(hideInF3)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeX)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeX(anchorModeX.getValue()))
+								.build(),
+						new CyclingButtonEntry.Builder<AnchorMode>()
+								.setCyclingButtonWidth(80)
+								.setVariable(anchorModeY)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver((getter) -> setAnchorModeY(anchorModeY.getValue()))
+								.build(),
+						new IntFieldEntry.Builder()
+								.setIntFieldWidth(20)
+								.setVariable(digits)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(useKnotInBoat)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build(),
+						new CyclingButtonEntry.Builder<SpeedometerUnits>()
+								.setCyclingButtonWidth(80)
+								.setVariable(units)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.setGetTooltip(
+										value -> switch (value) {
+											case KPH ->
+													Tooltip.create(Component.translatable("flex_hud.speedometer.config.tooltip.kph"));
+											case MPH ->
+													Tooltip.create(Component.translatable("flex_hud.speedometer.config.tooltip.mph"));
+											case MPS ->
+													Tooltip.create(Component.translatable("flex_hud.speedometer.config.tooltip.mps"));
+											default -> null;
+										}
+								)
+								.build()
+				);
+			}
+		};
+	}
+
+	@Override
+	public void tick() {
+		LocalPlayer player = MINECRAFT.player;
+
+		String format = "%." + this.digits.getValue() + "f";
+		String speed = String.format(format, CommonClass.isEditingLayout ? 0 : SpeedTickable.getSpeed());
+
+		if (this.units.getValue() == Speedometer.SpeedometerUnits.KNOT || (this.useKnotInBoat.getValue() && player != null && player.getVehicle() instanceof Boat)) {
+			formattedSpeed = speed + " " + Component.translatable(Speedometer.SpeedometerUnits.KNOT.getTranslationKey()).getString();
+		} else {
+			formattedSpeed = speed + " " + Component.translatable(this.units.getValue().getTranslationKey()).getString();
+		}
+	}
+
+
+	public enum SpeedometerUnits implements Translatable {
+		MPS("flex_hud.enum.speedometer.units.mps"),
+		KPH("flex_hud.enum.speedometer.units.kph"),
+		MPH("flex_hud.enum.speedometer.units.mph"),
+		KNOT("flex_hud.enum.speedometer.units.knots");
+
+		private final String translationKey;
+
+		SpeedometerUnits(String translationKey) {
+			this.translationKey = translationKey;
+		}
+
+		@Override
+		public String getTranslationKey() {
+			return translationKey;
+		}
+	}
+}
