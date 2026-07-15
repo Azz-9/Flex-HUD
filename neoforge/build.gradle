@@ -1,0 +1,61 @@
+plugins {
+	id 'multiloader-loader'
+	id 'net.neoforged.moddev'
+}
+
+final def includeXaero = project.hasProperty("launch_with_xaero_worldmap") && project.launch_with_xaero_minimap.toBoolean()
+
+dependencies {
+	if (includeXaero) {
+		implementation "xaero.minimap:xaerominimap-neoforge-${project.xaero_minimap_version}"
+	} else {
+		compileOnly "xaero.minimap:xaerominimap-neoforge-${project.xaero_minimap_version}"
+	}
+
+	compileOnly "info.journeymap:journeymap-api-neoforge:${project.journeymap_api_version}"
+}
+
+neoForge {
+	version = neoforge_version
+	// Automatically enable neoforge AccessTransformers if the file exists
+	def at = project(':common').file('src/main/resources/META-INF/accesstransformer.cfg')
+	if (at.exists()) {
+		accessTransformers.from(at.absolutePath)
+	}
+	runs {
+		configureEach {
+			systemProperty('neoforge.enabledGameTestNamespaces', mod_id)
+			ideName = "NeoForge ${it.name.capitalize()} (${project.path})" // Unify the run config names with fabric
+		}
+		client {
+			client()
+			gameDirectory = this.mkdir(this.file('runs/client'))
+		}
+	}
+	mods {
+		"${mod_id}" {
+			sourceSet sourceSets.main
+		}
+	}
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+// Implement mcgradleconventions loader attribute
+def loaderAttribute = Attribute.of('io.github.mcgradleconventions.loader', String)
+['apiElements', 'runtimeElements', 'sourcesElements', 'javadocElements'].each { variant ->
+	configurations.named(variant) {
+		attributes {
+			attribute(loaderAttribute, 'neoforge')
+		}
+	}
+}
+sourceSets.configureEach {
+	[it.compileClasspathConfigurationName, it.runtimeClasspathConfigurationName, it.getTaskName(null, 'jarJar')].each { variant ->
+		configurations.named(variant) {
+			attributes {
+				attribute(loaderAttribute, 'neoforge')
+			}
+		}
+	}
+}
