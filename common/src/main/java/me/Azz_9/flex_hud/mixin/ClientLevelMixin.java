@@ -14,9 +14,9 @@ import me.Azz_9.flex_hud.client.modules.Modules;
 import me.Azz_9.flex_hud.client.modules.notHud.WeatherChanger;
 
 @Mixin(ClientLevel.class)
-public abstract class ClientWorldMixin extends Level {
+public abstract class ClientLevelMixin extends Level {
 
-	protected ClientWorldMixin(WritableLevelData levelData, ResourceKey<Level> dimension, RegistryAccess registryAccess, Holder<DimensionType> dimensionTypeRegistration, boolean isClientSide, boolean isDebug, long biomeZoomSeed, int maxChainedNeighborUpdates) {
+	protected ClientLevelMixin(WritableLevelData levelData, ResourceKey<Level> dimension, RegistryAccess registryAccess, Holder<DimensionType> dimensionTypeRegistration, boolean isClientSide, boolean isDebug, long biomeZoomSeed, int maxChainedNeighborUpdates) {
 		super(levelData, dimension, registryAccess, dimensionTypeRegistration, isClientSide, isDebug, biomeZoomSeed, maxChainedNeighborUpdates);
 	}
 

@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Mixin(BossHealthOverlay.class)
-public interface BossBarAccessor {
+public interface BossHealthOverlayAccessor {
 
 	@Accessor("events")
 	Map<UUID, LerpingBossEvent> getBossBars();
