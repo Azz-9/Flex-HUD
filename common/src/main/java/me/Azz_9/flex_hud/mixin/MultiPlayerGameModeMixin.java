@@ -18,15 +18,15 @@ import me.Azz_9.flex_hud.client.tickables.ReachTickable;
 public abstract class MultiPlayerGameModeMixin {
 
 	@Inject(method = "attack", at = @At("HEAD"))
-	private void onAttack(Player player, Entity target, CallbackInfo ci) {
+	private void onAttack(Player player, Entity entity, CallbackInfo ci) {
 		if (!Modules.getInstance().isEnabled.getValue() || !Modules.getInstance().reach.enabled.getValue()) {
 			return;
 		}
 
-		if (target.isAttackable()) {
-			if (!target.skipAttackInteraction(player)) {
+		if (entity.isAttackable()) {
+			if (!entity.skipAttackInteraction(player)) {
 				if (MINECRAFT.player != null && player.getUUID().equals(MINECRAFT.player.getUUID())) {
-					ReachTickable.calculateReach(player, target);
+					ReachTickable.calculateReach(player, entity);
 				}
 			}
 		}
