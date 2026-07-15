@@ -14,7 +14,7 @@ import me.Azz_9.flex_hud.utils.PingUtils;
 
 
 @Mixin(ClientPacketListener.class)
-public abstract class ClientPlayNetworkHandlerMixin {
+public abstract class ClientPacketListenerMixin {
 	@Inject(method = "handlePongResponse", at = @At("HEAD"))
 	private void onPingResult(ClientboundPongResponsePacket packet, CallbackInfo ci) {
 		PingUtils.addPingValue(Util.getMillis() - packet.time());
