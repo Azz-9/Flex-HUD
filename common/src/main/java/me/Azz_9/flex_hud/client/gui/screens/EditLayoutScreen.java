@@ -1,5 +1,8 @@
 package me.Azz_9.flex_hud.client.gui.screens;
 
+import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
+
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
@@ -13,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.Azz_9.flex_hud.CommonClass;
+import me.Azz_9.flex_hud.Constants;
 import me.Azz_9.flex_hud.client.gui.components.HelpWidget;
 import me.Azz_9.flex_hud.client.gui.components.MovableWidget;
 import me.Azz_9.flex_hud.client.gui.undoManager.UndoManager;
@@ -79,6 +83,16 @@ public class EditLayoutScreen extends AbstractSavableScreen {
 
 	@Override
 	public void renderBeforeOtherElements(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+		if (MINECRAFT.level == null) {
+			Modules.getMovableModules().forEach(movableModule -> {
+				if (Constants.DEBUG) {
+					movableModule.renderWithSpeedTest(graphics, DeltaTracker.ZERO);
+				} else {
+					movableModule.render(graphics, DeltaTracker.ZERO);
+				}
+			});
+		}
+
 		if (firstFrame) {
 			getMovableWidgets().forEach((movableWidget) -> {
 				movableWidget.updateDimensionAndPosition();
