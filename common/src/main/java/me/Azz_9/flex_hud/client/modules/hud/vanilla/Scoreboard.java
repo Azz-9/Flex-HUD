@@ -6,20 +6,11 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.numbers.NumberFormat;
-import net.minecraft.network.chat.numbers.StyledFormat;
-import net.minecraft.resources.Identifier;
-import net.minecraft.util.ARGB;
-import net.minecraft.util.CommonColors;
-import net.minecraft.world.scores.DisplaySlot;
 import net.minecraft.world.scores.Objective;
-import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
-import me.Azz_9.flex_hud.CommonClass;
 import me.Azz_9.flex_hud.client.config.ConfigRegistry;
 import me.Azz_9.flex_hud.client.config.option.ConfigBoolean;
 import me.Azz_9.flex_hud.client.config.option.ConfigInteger;
@@ -28,19 +19,16 @@ import me.Azz_9.flex_hud.client.gui.components.config.entries.CyclingButtonEntry
 import me.Azz_9.flex_hud.client.gui.components.config.entries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.gui.screens.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.modules.hud.AbstractMovableModule;
-import me.Azz_9.flex_hud.mixin.HudAccessor;
-import me.Azz_9.flex_hud.platform.Services;
 
 public class Scoreboard extends AbstractMovableModule {
 
 	public final ConfigBoolean showScoreboard = new ConfigBoolean(true, "flex_hud.scoreboard.config.show_scoreboard");
-	private final ConfigBoolean showScore = new ConfigBoolean(true, "flex_hud.scoreboard.config.show_score");
-	private final ConfigBoolean drawBackground = new ConfigBoolean(true, "flex_hud.global.config.show_background");
-	private final ConfigInteger backgroundColor = new ConfigInteger(0x000000, "flex_hud.global.config.background_color");
-	private final ConfigBoolean shadow = new ConfigBoolean(false, "flex_hud.global.config.text_shadow");
+	public final ConfigBoolean showScore = new ConfigBoolean(true, "flex_hud.scoreboard.config.show_score");
+	public final ConfigBoolean drawBackground = new ConfigBoolean(true, "flex_hud.global.config.show_background");
+	public final ConfigInteger backgroundColor = new ConfigInteger(0x000000, "flex_hud.global.config.background_color");
+	public final ConfigBoolean shadow = new ConfigBoolean(false, "flex_hud.global.config.text_shadow");
 
-	private Objective placeholderObjective;
-	private static final int PADDING = 2;
+	public static Objective placeholderObjective;
 
 	public Scoreboard(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super("scoreboard", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
@@ -77,107 +65,7 @@ public class Scoreboard extends AbstractMovableModule {
 
 	@Override
 	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
-		if (shouldNotRender() || !CommonClass.isEditingLayout && (MINECRAFT.level == null || MINECRAFT.player == null)) {
-			return;
-		}
-
-		Objective objective = null;
-		if (CommonClass.isEditingLayout) {
-			objective = placeholderObjective;
-		} else {
-			net.minecraft.world.scores.Scoreboard scoreboard = MINECRAFT.level.getScoreboard();
-			PlayerTeam playerTeam = scoreboard.getPlayersTeam(MINECRAFT.player.getScoreboardName());
-			if (playerTeam != null && playerTeam.getColor().isPresent()) {
-				objective = scoreboard.getDisplayObjective(playerTeam.getColor().get().displaySlot());
-			}
-
-			objective = objective != null ? objective : scoreboard.getDisplayObjective(DisplaySlot.SIDEBAR);
-		}
-
-		if (objective != null) {
-			graphics.nextStratum();
-			this.renderScoreboardSidebar(graphics, objective);
-		}
-	}
-
-	private void renderScoreboardSidebar(GuiGraphicsExtractor graphics, Objective objective) {
-		net.minecraft.world.scores.Scoreboard scoreboard = objective.getScoreboard();
-		NumberFormat objectiveScoreFormat = objective.numberFormatOrDefault(StyledFormat.SIDEBAR_DEFAULT);
-
-		record DisplayEntry(Component name, Component score, int scoreWidth) {
-		}
-
-		DisplayEntry[] entriesToDisplay = scoreboard.listPlayerScores(objective)
-				.stream()
-				.filter((input) -> !input.isHidden())
-				.sorted(((HudAccessor) MINECRAFT.gui.hud).getScoreDisplayOrder())
-				.limit(15L)
-				.map((score) -> {
-					PlayerTeam team = scoreboard.getPlayersTeam(score.owner());
-					Component ownerName = score.ownerName();
-					Component name = PlayerTeam.formatNameForTeam(team, ownerName);
-					Component scoreString = Component.empty();
-					int scoreWidth = 0;
-					if (showScore.getValue()) {
-						scoreString = score.formatValue(objectiveScoreFormat);
-						scoreWidth = MINECRAFT.font.width(scoreString);
-					}
-					return new DisplayEntry(name, scoreString, scoreWidth);
-				}).toArray(DisplayEntry[]::new);
-
-
-		Component text = objective.getDisplayName();
-		int textWidth = MINECRAFT.font.width(text);
-		int width = textWidth;
-
-		for (DisplayEntry displayEntry : entriesToDisplay) {
-			width = Math.max(
-					width, MINECRAFT.font.width(displayEntry.name) +
-							(displayEntry.scoreWidth > 0
-									? MINECRAFT.font.width(": ") + displayEntry.scoreWidth
-									: 0)
-			);
-		}
-
-		int contentHeight = entriesToDisplay.length * MINECRAFT.font.lineHeight;
-		int contentBackground = ARGB.color(0.3f, backgroundColor.getValue());
-		int titleBackground = ARGB.color(0.4f, backgroundColor.getValue());
-		int height = 1 + MINECRAFT.font.lineHeight + contentHeight;
-
-		setWidth(width + PADDING * 2);
-		setHeight(height);
-
-		Matrix3x2fStack matrices = graphics.pose();
-		matrices.pushMatrix();
-		matrices.translate(getRoundedX(), getRoundedY());
-		matrices.scale(getScale());
-
-		if (drawBackground.getValue()) {
-			graphics.fill(0, 0, getWidth(), MINECRAFT.font.lineHeight, titleBackground);
-			graphics.fill(0, MINECRAFT.font.lineHeight, getWidth(), getHeight(), contentBackground);
-		}
-		graphics.text(MINECRAFT.font, text, (getWidth() - textWidth) / 2, 1, CommonColors.WHITE, shadow.getValue());
-
-		for (int i = 0; i < entriesToDisplay.length; i++) {
-			DisplayEntry displayEntry = entriesToDisplay[i];
-			int y = getHeight() - (entriesToDisplay.length - i) * MINECRAFT.font.lineHeight;
-			graphics.text(MINECRAFT.font, displayEntry.name, PADDING, y, CommonColors.WHITE, shadow.getValue());
-			if (showScore.getValue()) {
-				graphics.text(MINECRAFT.font, displayEntry.score, getWidth() - displayEntry.scoreWidth - PADDING, y, CommonColors.WHITE, shadow.getValue());
-			}
-		}
-
-		matrices.popMatrix();
-	}
-
-	@Override
-	public boolean shouldNotRender() {
-		return super.shouldNotRender() || !this.showScoreboard.getValue();
-	}
-
-	@Override
-	public Identifier getLayer() {
-		return Services.PLATFORM.getScoreboardIdentifier();
+		// render is handled in HudMixin
 	}
 
 	@Override
