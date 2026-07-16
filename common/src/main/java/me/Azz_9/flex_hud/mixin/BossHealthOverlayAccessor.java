@@ -14,4 +14,14 @@ public interface BossHealthOverlayAccessor {
 
 	@Accessor("events")
 	Map<UUID, LerpingBossEvent> getBossBars();
+
+	@Accessor("BAR_WIDTH")
+	static int getBarWidth() {
+		throw new AssertionError();
+	}
+
+	@Accessor("BAR_HEIGHT")
+	static int getBarHeight() {
+		throw new AssertionError();
+	}
 }
