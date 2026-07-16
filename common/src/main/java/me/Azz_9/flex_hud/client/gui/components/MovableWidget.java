@@ -18,6 +18,7 @@ import org.lwjgl.glfw.GLFW;
 import java.util.HashSet;
 import java.util.Set;
 
+import me.Azz_9.flex_hud.client.gui.Colors;
 import me.Azz_9.flex_hud.client.gui.Cursors;
 import me.Azz_9.flex_hud.client.gui.screens.EditLayoutScreen;
 import me.Azz_9.flex_hud.client.gui.undoManager.MoveAction;
@@ -37,6 +38,8 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 
 	private final Set<Integer> pressedKeys = new HashSet<>();
 
+	private static final float SCALE_EPSILON = 0.0001f;
+	private final int INITIAL_X, INITIAL_Y;
 	private final float INITIAL_SCALE;
 	private final double INITIAL_OFFSET_X, INITIAL_OFFSET_Y;
 	private final AbstractMovableModule.AnchorPosition INITIAL_ANCHOR_X, INITIAL_ANCHOR_Y;
@@ -56,7 +59,7 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 	private int handleX = getX() - HANDLE_SIZE / 2;
 	private int handleY = getY() - HANDLE_SIZE / 2;
 	private HandlePosition handlePosition;
-	private boolean isDraggingScalehandle = false;
+	private boolean isDraggingScaleHandle = false;
 	private int onClickRight;
 	private int onClickBottom;
 	private int onClickX;
@@ -75,6 +78,8 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 		);
 		this.PARENT = parent;
 		this.HUD_ELEMENT = hudElement;
+		this.INITIAL_X = hudElement.getRoundedX();
+		this.INITIAL_Y = hudElement.getRoundedY();
 		this.INITIAL_SCALE = hudElement.getScale();
 		this.INITIAL_OFFSET_X = hudElement.getOffsetX();
 		this.INITIAL_OFFSET_Y = hudElement.getOffsetY();
@@ -97,7 +102,7 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 	protected void extractWidgetRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
 		this.isHovered = (mouseX >= getX() && mouseY >= getY() && mouseX <= getRight() && mouseY <= getBottom()) || isScaleHandleHovered(mouseX, mouseY);
 		if (((GuiGraphicsExtractorAccessor) graphics).getCursor() == CursorType.DEFAULT) {
-			if (this.isScaleHandleHovered(mouseX, mouseY) || isDraggingScalehandle) {
+			if (this.isScaleHandleHovered(mouseX, mouseY) || isDraggingScaleHandle) {
 				graphics.requestCursor(
 						switch (handlePosition) {
 							case BOTTOM_RIGHT, TOP_LEFT -> Cursors.RESIZE_NWSE;
@@ -149,7 +154,7 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 			matrices.translate(valueX, valueY);
 			matrices.scale(0.75f, 0.75f);
 
-			graphics.text(MINECRAFT.font, text, 0, 0, 0xffffffff, true);
+			graphics.text(MINECRAFT.font, text, 0, 0, Colors.WHITE, true);
 
 			matrices.popMatrix();
 		}
@@ -209,7 +214,7 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 	@Override
 	public void onClick(MouseButtonEvent click, boolean bl) {
 		if (isScaleHandleHovered(click.x(), click.y())) {
-			isDraggingScalehandle = true;
+			isDraggingScaleHandle = true;
 			onClickRight = HUD_ELEMENT.getWidth() + getX();
 			onClickBottom = HUD_ELEMENT.getHeight() + getY();
 		} else {
@@ -223,7 +228,7 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 
 	@Override
 	protected void onDrag(@NonNull MouseButtonEvent click, double d, double e) {
-		if (!isDraggingScalehandle) {
+		if (!isDraggingScaleHandle) {
 			isMoving = true;
 			double x = click.x() - offsetX;
 			double y = click.y() - offsetY;
@@ -289,12 +294,12 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 
 	@Override
 	public void onRelease(@NonNull MouseButtonEvent click) {
-		if (isDraggingScalehandle) {
+		if (isDraggingScaleHandle) {
 			updateScaleHandle();
 
 			PARENT.undoManager.addAction(new ScaleAction(this, onClickScale, HUD_ELEMENT.getScale()));
 
-			isDraggingScalehandle = false;
+			isDraggingScaleHandle = false;
 			shouldDrawScaleValue = false;
 		} else if (isMoving && (onClickX != getX() || onClickY != getY())) {
 			PARENT.undoManager.addAction(new MoveAction(this, onClickX, onClickY, getX(), getY()));
@@ -308,7 +313,7 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 
 	@Override
 	public boolean keyPressed(@NonNull KeyEvent input) {
-		if (isDraggingScalehandle) {
+		if (isDraggingScaleHandle) {
 			return true; // so pressing a key won't do anything
 		}
 		if (this.isFocused() && input.key() >= 262 && input.key() <= 265) { // check if the key is one of the arrow keys
@@ -516,10 +521,10 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 
 	@Override
 	public boolean hasChanged() {
-		return Math.round(INITIAL_OFFSET_X) != Math.round(HUD_ELEMENT.getOffsetX()) || // x coord
-				Math.round(INITIAL_OFFSET_Y) != Math.round(HUD_ELEMENT.getOffsetY()) || // y coord
+		return INITIAL_X != HUD_ELEMENT.getRoundedX() || // x coord
+				INITIAL_Y != HUD_ELEMENT.getRoundedY() || // y coord
 				INITIAL_ANCHOR_X != HUD_ELEMENT.getAnchorX() || INITIAL_ANCHOR_Y != HUD_ELEMENT.getAnchorY() || // anchors
-				INITIAL_SCALE != HUD_ELEMENT.getScale(); // scale
+				Math.abs(INITIAL_SCALE - HUD_ELEMENT.getScale()) > SCALE_EPSILON; // scale
 	}
 
 	@Override
