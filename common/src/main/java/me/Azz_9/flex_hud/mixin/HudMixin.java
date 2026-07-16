@@ -53,7 +53,7 @@ public abstract class HudMixin {
 	@Inject(method = "willPrioritizeExperienceInfo", at = @At("RETURN"), cancellable = true)
 	private void willPrioritizeExperienceInfo(CallbackInfoReturnable<Boolean> cir) {
 		if (Modules.getInstance().isEnabled.getValue() &&
-				Modules.getInstance().compass.enabled.getValue() &&
+				Modules.getInstance().compass.isEnabled() &&
 				Modules.getInstance().compass.overrideLocatorBar.getValue()) {
 			cir.setReturnValue(true);
 		}
@@ -140,8 +140,8 @@ public abstract class HudMixin {
 	private void extractScoreboardSidebar(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
 		if (Modules.getInstance().isEnabled.getValue()
 				&& Modules.getInstance().scoreboard.enabled.getValue()
-				&& (!Modules.getInstance().scoreboard.showScoreboard.getValue() && !CommonClass.isEditingLayout
-				|| Modules.getInstance().scoreboard.hideInF3.getValue() && MINECRAFT.debugEntries.isOverlayVisible())) { //
+				&& (!Modules.getInstance().scoreboard.showScoreboard.getValue()
+				|| Modules.getInstance().scoreboard.hideInF3.getValue() && MINECRAFT.debugEntries.isOverlayVisible())) {
 			ci.cancel();
 		}
 	}
@@ -152,7 +152,9 @@ public abstract class HudMixin {
 			name = "displayObjective"
 	)
 	private Objective modifyDisplayedObjective(Objective displayObjective) {
-		if (Modules.getInstance().isEnabled.getValue() && Modules.getInstance().scoreboard.enabled.getValue() && CommonClass.isEditingLayout) {
+		if (Modules.getInstance().isEnabled.getValue()
+				&& Modules.getInstance().scoreboard.enabled.getValue()
+				&& CommonClass.isEditingLayout) {
 			return Scoreboard.placeholderObjective;
 		}
 		return displayObjective;
