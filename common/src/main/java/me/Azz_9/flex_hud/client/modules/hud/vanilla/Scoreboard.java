@@ -10,6 +10,7 @@ import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import me.Azz_9.flex_hud.client.config.ConfigRegistry;
 import me.Azz_9.flex_hud.client.config.option.ConfigBoolean;
@@ -22,17 +23,21 @@ import me.Azz_9.flex_hud.client.modules.hud.AbstractMovableModule;
 
 public class Scoreboard extends AbstractMovableModule {
 
-	public final ConfigBoolean showScoreboard = new ConfigBoolean(true, "flex_hud.scoreboard.config.show_scoreboard");
-	public final ConfigBoolean showScore = new ConfigBoolean(true, "flex_hud.scoreboard.config.show_score");
-	public final ConfigBoolean drawBackground = new ConfigBoolean(true, "flex_hud.global.config.show_background");
-	public final ConfigInteger backgroundColor = new ConfigInteger(0x000000, "flex_hud.global.config.background_color");
-	public final ConfigBoolean shadow = new ConfigBoolean(false, "flex_hud.global.config.text_shadow");
+	public final @NotNull ConfigBoolean showScoreboard = new ConfigBoolean(true, "flex_hud.scoreboard.config.show_scoreboard");
+	public final @NotNull ConfigBoolean showScore = new ConfigBoolean(true, "flex_hud.scoreboard.config.show_score");
+	public final @NotNull ConfigBoolean drawBackground = new ConfigBoolean(true, "flex_hud.global.config.show_background");
+	public final @NotNull ConfigInteger backgroundColor = new ConfigInteger(0x000000, "flex_hud.global.config.background_color");
+	public final @NotNull ConfigBoolean shadow = new ConfigBoolean(false, "flex_hud.global.config.text_shadow");
 
-	public static Objective placeholderObjective;
+	public static @Nullable Objective placeholderObjective;
 
 	public Scoreboard(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super("scoreboard", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.scoreboard.config.enable");
+
+		// show scoreboard in f3, same behavior as minecraft scoreboard
+		this.hideInF3.setValue(false);
+		this.hideInF3.setDefaultValue(false);
 
 		ConfigRegistry.register(getID(), "showScoreboard", showScoreboard);
 		ConfigRegistry.register(getID(), "showScore", showScore);
@@ -66,6 +71,11 @@ public class Scoreboard extends AbstractMovableModule {
 	@Override
 	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 		// render is handled in HudMixin
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return super.isEnabled() && showScoreboard.getValue();
 	}
 
 	@Override
