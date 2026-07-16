@@ -2,7 +2,6 @@ package me.Azz_9.flex_hud.compat.waypointsCollectors;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +11,6 @@ import java.util.List;
 
 import journeymap.api.v2.client.IClientAPI;
 import journeymap.api.v2.common.waypoint.Waypoint;
-import me.Azz_9.flex_hud.client.DimensionTracker;
 import me.Azz_9.flex_hud.client.modules.Modules;
 import me.Azz_9.flex_hud.client.modules.hud.custom.Compass;
 import me.Azz_9.flex_hud.client.tickables.TickRegistry;
@@ -22,12 +20,12 @@ import me.Azz_9.flex_hud.compat.CompatManager;
 public class JourneyMapWaypointCollector extends Collector<Compass.JourneyMapWaypoint> implements Tickable {
 
 	private final List<Compass.JourneyMapWaypoint> waypoints = new ArrayList<>();
-	public boolean available = false;
 
 	public JourneyMapWaypointCollector() {
 		TickRegistry.register(this);
 	}
 
+	@Override
 	public void init() {
 		try {
 			available = JourneyMapIntegration.getAPI() != null;
@@ -96,16 +94,5 @@ public class JourneyMapWaypointCollector extends Collector<Compass.JourneyMapWay
 		return CompatManager.isJourneyMapLoaded() &&
 				Modules.getInstance().compass.isEnabled() &&
 				Modules.getInstance().compass.showJourneyMapWaypoints.getValue();
-	}
-
-	@Override
-	public void tick(Minecraft minecraft) {
-		if ((isJoinedWorld() && !available) || DimensionTracker.shouldInit) {
-			init();
-		} else {
-			DimensionTracker.check();
-		}
-
-		updateWaypoints();
 	}
 }
