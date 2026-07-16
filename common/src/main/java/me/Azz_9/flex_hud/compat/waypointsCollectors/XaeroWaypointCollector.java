@@ -1,13 +1,10 @@
 package me.Azz_9.flex_hud.compat.waypointsCollectors;
 
-import net.minecraft.client.Minecraft;
-
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import me.Azz_9.flex_hud.client.DimensionTracker;
 import me.Azz_9.flex_hud.client.modules.Modules;
 import me.Azz_9.flex_hud.client.modules.hud.custom.Compass;
 import me.Azz_9.flex_hud.client.tickables.TickRegistry;
@@ -23,12 +20,11 @@ public class XaeroWaypointCollector extends Collector<Compass.XaeroWaypoint> imp
 	private MinimapWorld minimapWorld;
 	private final List<Compass.XaeroWaypoint> waypoints = new ArrayList<>();
 
-	public boolean available = false;
-
 	public XaeroWaypointCollector() {
 		TickRegistry.register(this);
 	}
 
+	@Override
 	public void init() {
 		try {
 			MinimapSession session = BuiltInHudModules.MINIMAP.getCurrentSession();
@@ -93,16 +89,5 @@ public class XaeroWaypointCollector extends Collector<Compass.XaeroWaypoint> imp
 		return CompatManager.isXaeroMinimapLoaded() &&
 				Modules.getInstance().compass.isEnabled() &&
 				Modules.getInstance().compass.showXaerosMapWaypoints.getValue();
-	}
-
-	@Override
-	public void tick(Minecraft minecraft) {
-		if ((isJoinedWorld() && !available) || DimensionTracker.shouldInit) {
-			init();
-		} else {
-			DimensionTracker.check();
-		}
-
-		updateWaypoints();
 	}
 }
