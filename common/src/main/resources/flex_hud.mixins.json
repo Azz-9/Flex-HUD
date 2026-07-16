@@ -12,6 +12,7 @@
 		"ClientLevelMixin",
 		"ClientPacketListenerMixin",
 		"GuiGraphicsExtractorAccessor",
+		"HudAccessor",
 		"HudMixin",
 		"KeyboardHandlerMixin",
 		"KeyMappingAccessor",
