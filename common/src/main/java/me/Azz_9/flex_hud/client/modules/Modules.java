@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.modules;
 
+import static me.Azz_9.flex_hud.client.modules.hud.AbstractMovableModule.AnchorPosition.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +17,7 @@ import me.Azz_9.flex_hud.client.modules.hud.custom.*;
 import me.Azz_9.flex_hud.client.modules.hud.vanilla.BossBar;
 import me.Azz_9.flex_hud.client.modules.hud.vanilla.Crosshair;
 import me.Azz_9.flex_hud.client.modules.hud.vanilla.Scoreboard;
+import me.Azz_9.flex_hud.client.modules.hud.vanilla.Titles;
 import me.Azz_9.flex_hud.client.modules.notHud.DurabilityPing;
 import me.Azz_9.flex_hud.client.modules.notHud.TimeChanger;
 import me.Azz_9.flex_hud.client.modules.notHud.TntCountdown;
@@ -23,39 +26,40 @@ import me.Azz_9.flex_hud.client.modules.notHud.WeatherChanger;
 public class Modules {
 	public ConfigBoolean isEnabled = new ConfigBoolean(true);
 	//hud
-	public ArmorStatus armorStatus = new ArmorStatus(2, -30, AbstractMovableModule.AnchorPosition.START, AbstractMovableModule.AnchorPosition.CENTER);
-	public Cps cps = new Cps(-80, 2, AbstractMovableModule.AnchorPosition.END, AbstractMovableModule.AnchorPosition.START);
-	public Clock clock = new Clock(-204, 2, AbstractMovableModule.AnchorPosition.END, AbstractMovableModule.AnchorPosition.START);
-	public Fps fps = new Fps(2, 2, AbstractMovableModule.AnchorPosition.START, AbstractMovableModule.AnchorPosition.START);
-	public Coordinates coordinates = new Coordinates(2, 15, AbstractMovableModule.AnchorPosition.START, AbstractMovableModule.AnchorPosition.START);
-	public BiomeDisplay biomeDisplay = new BiomeDisplay(2, 45, AbstractMovableModule.AnchorPosition.START, AbstractMovableModule.AnchorPosition.START);
-	public NetherCoordinates netherCoordinates = new NetherCoordinates(2, 60, AbstractMovableModule.AnchorPosition.START, AbstractMovableModule.AnchorPosition.START);
-	public Compass compass = new Compass(0, 0, AbstractMovableModule.AnchorPosition.CENTER, AbstractMovableModule.AnchorPosition.START);
-	public PitchDisplay pitchDisplay = new PitchDisplay(0, 0, AbstractMovableModule.AnchorPosition.END, AbstractMovableModule.AnchorPosition.CENTER);
-	public DayCounter dayCounter = new DayCounter(148, 2, AbstractMovableModule.AnchorPosition.CENTER, AbstractMovableModule.AnchorPosition.START);
-	public Ping ping = new Ping(-129, 2, AbstractMovableModule.AnchorPosition.END, AbstractMovableModule.AnchorPosition.START);
-	public ServerAddress serverAddress = new ServerAddress(200, 2, AbstractMovableModule.AnchorPosition.START, AbstractMovableModule.AnchorPosition.START);
-	public MemoryUsage memoryUsage = new MemoryUsage(75, 2, AbstractMovableModule.AnchorPosition.START, AbstractMovableModule.AnchorPosition.START);
-	public Speedometer speedometer = new Speedometer(2, 70, AbstractMovableModule.AnchorPosition.START, AbstractMovableModule.AnchorPosition.START);
-	public Reach reach = new Reach(2, 120, AbstractMovableModule.AnchorPosition.START, AbstractMovableModule.AnchorPosition.START);
-	public Playtime playtime = new Playtime(2, 100, AbstractMovableModule.AnchorPosition.START, AbstractMovableModule.AnchorPosition.START);
+	public ArmorStatus armorStatus = new ArmorStatus(2, -30, START, CENTER);
+	public Cps cps = new Cps(-80, 2, END, START);
+	public Clock clock = new Clock(-204, 2, END, START);
+	public Fps fps = new Fps(2, 2, START, START);
+	public Coordinates coordinates = new Coordinates(2, 15, START, START);
+	public BiomeDisplay biomeDisplay = new BiomeDisplay(2, 45, START, START);
+	public NetherCoordinates netherCoordinates = new NetherCoordinates(2, 60, START, START);
+	public Compass compass = new Compass(0, 0, CENTER, START);
+	public PitchDisplay pitchDisplay = new PitchDisplay(0, 0, END, CENTER);
+	public DayCounter dayCounter = new DayCounter(148, 2, CENTER, START);
+	public Ping ping = new Ping(-129, 2, END, START);
+	public ServerAddress serverAddress = new ServerAddress(200, 2, START, START);
+	public MemoryUsage memoryUsage = new MemoryUsage(75, 2, START, START);
+	public Speedometer speedometer = new Speedometer(2, 70, START, START);
+	public Reach reach = new Reach(2, 120, START, START);
+	public Playtime playtime = new Playtime(2, 100, START, START);
 	//public ResourcePack resourcePack = new ResourcePack(0, 100, AbstractHudElement.AnchorPosition.END, AbstractHudElement.AnchorPosition.START);
-	public PotionEffect potionEffect = new PotionEffect(0, 20, AbstractMovableModule.AnchorPosition.END, AbstractMovableModule.AnchorPosition.START);
+	public PotionEffect potionEffect = new PotionEffect(0, 20, END, START);
 	public Crosshair crosshair = new Crosshair();
-	public BossBar bossBar = new BossBar(0, 35, AbstractMovableModule.AnchorPosition.CENTER, AbstractMovableModule.AnchorPosition.START);
-	public WeatherDisplay weatherDisplay = new WeatherDisplay(-4, -4, AbstractMovableModule.AnchorPosition.END, AbstractMovableModule.AnchorPosition.END);
-	public KeyStrokes keyStrokes = new KeyStrokes(-5, 68, AbstractMovableModule.AnchorPosition.END, AbstractMovableModule.AnchorPosition.START);
-	public SignReader signReader = new SignReader(2, 60, AbstractMovableModule.AnchorPosition.START, AbstractMovableModule.AnchorPosition.CENTER);
-	public FullInventoryIndicator fullInventoryIndicator = new FullInventoryIndicator(2, 96, AbstractMovableModule.AnchorPosition.START, AbstractMovableModule.AnchorPosition.CENTER);
-	public LightLevel lightLevel = new LightLevel(2, 112, AbstractMovableModule.AnchorPosition.START, AbstractMovableModule.AnchorPosition.START);
-	public InGameTime inGameTime = new InGameTime(-5, 2, AbstractMovableModule.AnchorPosition.END, AbstractMovableModule.AnchorPosition.START);
-	public Distance distance = new Distance(0, 50, AbstractMovableModule.AnchorPosition.CENTER, AbstractMovableModule.AnchorPosition.START);
-	public HeldItem heldItem = new HeldItem(0, -80, AbstractMovableModule.AnchorPosition.CENTER, AbstractMovableModule.AnchorPosition.END);
-	public EntityCount entityCount = new EntityCount(0, -65, AbstractMovableModule.AnchorPosition.CENTER, AbstractMovableModule.AnchorPosition.END);
-	public ToggleSprint toggleSprint = new ToggleSprint(-60, 12, AbstractMovableModule.AnchorPosition.END, AbstractMovableModule.AnchorPosition.START);
-	public ToggleSneak toggleSneak = new ToggleSneak(-60, 22, AbstractMovableModule.AnchorPosition.END, AbstractMovableModule.AnchorPosition.START);
-	public Scoreboard scoreboard = new Scoreboard(0, 0, AbstractMovableModule.AnchorPosition.END, AbstractMovableModule.AnchorPosition.CENTER);
-	public InventoryDisplay inventoryDisplay = new InventoryDisplay(0, -50, AbstractMovableModule.AnchorPosition.CENTER, AbstractMovableModule.AnchorPosition.END);
+	public BossBar bossBar = new BossBar(0, 35, CENTER, START);
+	public WeatherDisplay weatherDisplay = new WeatherDisplay(-4, -4, END, END);
+	public KeyStrokes keyStrokes = new KeyStrokes(-5, 68, END, START);
+	public SignReader signReader = new SignReader(2, 60, START, CENTER);
+	public FullInventoryIndicator fullInventoryIndicator = new FullInventoryIndicator(2, 96, START, CENTER);
+	public LightLevel lightLevel = new LightLevel(2, 112, START, START);
+	public InGameTime inGameTime = new InGameTime(-5, 2, END, START);
+	public Distance distance = new Distance(0, 50, CENTER, START);
+	public HeldItem heldItem = new HeldItem(0, -80, CENTER, END);
+	public EntityCount entityCount = new EntityCount(0, -65, CENTER, END);
+	public ToggleSprint toggleSprint = new ToggleSprint(-60, 12, END, START);
+	public ToggleSneak toggleSneak = new ToggleSneak(-60, 22, END, START);
+	public Scoreboard scoreboard = new Scoreboard(0, 0, END, CENTER);
+	public InventoryDisplay inventoryDisplay = new InventoryDisplay(0, -50, CENTER, END);
+	public Titles titles = new Titles(0, -22.5, CENTER, CENTER);
 	//others
 	public WeatherChanger weatherChanger = new WeatherChanger();
 	public TimeChanger timeChanger = new TimeChanger();
@@ -118,6 +122,7 @@ public class Modules {
 				getInstance().toggleSneak,
 				getInstance().scoreboard,
 				getInstance().inventoryDisplay,
+				getInstance().titles,
 				getInstance().weatherChanger,
 				getInstance().timeChanger,
 				getInstance().crosshair,

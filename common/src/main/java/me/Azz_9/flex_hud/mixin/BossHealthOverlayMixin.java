@@ -87,7 +87,7 @@ public abstract class BossHealthOverlayMixin {
 			)
 	)
 	private boolean modifyIsEmpty(boolean original) {
-		if (CommonClass.isEditingLayout) {
+		if (Modules.getInstance().bossBar.shouldShowInEditLayoutScreen() && CommonClass.isEditingLayout) {
 			return false;
 		}
 		return original;
@@ -101,7 +101,7 @@ public abstract class BossHealthOverlayMixin {
 			)
 	)
 	private Collection<LerpingBossEvent> modifyEvents(Collection<LerpingBossEvent> original) {
-		if (CommonClass.isEditingLayout) {
+		if (Modules.getInstance().bossBar.shouldShowInEditLayoutScreen() && CommonClass.isEditingLayout) {
 			return List.of(BossBar.placeholderEvent);
 		}
 

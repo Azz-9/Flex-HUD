@@ -12,7 +12,7 @@ public interface HudElement extends Configurable {
 	void render(GuiGraphicsExtractor graphics, DeltaTracker tickCounter);
 
 	default void renderWithSpeedTest(GuiGraphicsExtractor graphics, DeltaTracker tickCounter) {
-		if (!isEnabled()) {
+		if (!shouldRunSpeedTest()) {
 			return;
 		}
 
@@ -21,6 +21,10 @@ public interface HudElement extends Configurable {
 		this.render(graphics, tickCounter);
 
 		SpeedTester.end(getID());
+	}
+
+	default boolean shouldRunSpeedTest() {
+		return isEnabled();
 	}
 
 	boolean shouldNotRender();

@@ -139,6 +139,12 @@ public class DimensionHud implements MovableModule {
 	}
 
 	public static void register(String id, List<DimensionHud> dimensionHuds) {
+		ConfigRegistry.unregister(id, "offsetX");
+		ConfigRegistry.unregister(id, "offsetY");
+		ConfigRegistry.unregister(id, "anchorX");
+		ConfigRegistry.unregister(id, "anchorY");
+		ConfigRegistry.unregister(id, "scale");
+
 		if (dimensionHuds.size() == 1) {
 			DimensionHud dimensionHud = dimensionHuds.getFirst();
 			ConfigRegistry.register(id, "offsetX", dimensionHud.offsetX);

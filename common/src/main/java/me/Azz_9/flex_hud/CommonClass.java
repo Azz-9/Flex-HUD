@@ -102,7 +102,7 @@ public class CommonClass {
 				TickRegistry.tickAll(MINECRAFT);
 
 				for (TickableModule tickableModule : Modules.getTickables()) {
-					if (tickableModule.isEnabled()) {
+					if (tickableModule.shouldTick()) {
 						tickableModule.tick();
 					}
 				}
