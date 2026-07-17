@@ -70,7 +70,7 @@ public class ToggleSprint extends AbstractTextModule {
 			boolean sprintToggled = MINECRAFT.options.toggleSprint().get();
 
 			if (sprintToggled) {
-				if (InputConstants.isKeyDown(MINECRAFT.getWindow(), ((KeyMappingAccessor) MINECRAFT.options.keySprint).getBoundKey().getValue())) {
+				if (InputConstants.isKeyDown(((KeyMappingAccessor) MINECRAFT.options.keySprint).getBoundKey().getValue())) {
 					statusMessage = "Sprinting (Held)";
 				} else if (sprintKeyPressed) {
 					statusMessage = "Sprinting (Toggled)";

@@ -17,10 +17,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.HangingSignBlockEntity;
-import net.minecraft.world.level.block.entity.SignBlockEntity;
-import net.minecraft.world.level.block.entity.SignText;
+import net.minecraft.world.level.block.entity.*;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -28,6 +25,9 @@ import net.minecraft.world.phys.HitResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2fStack;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import me.Azz_9.flex_hud.CommonClass;
 import me.Azz_9.flex_hud.client.gui.Colors;
@@ -111,8 +111,8 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 		Font font = MINECRAFT.font;
 
 		for (int i = 0; i < 4; i++) {
-			if (i >= data.content.length) continue;
-			Component line = data.content[i];
+			if (i >= data.content.size()) continue;
+			Component line = data.content.get(i);
 			int x = (getWidth() - font.width(line)) / 2;
 			int y = data.isHangingSign ? 5 + 9 * i : 4 + 10 * i;
 
@@ -208,12 +208,12 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 		RenderData data = new RenderData();
 
 		data.texture = Identifier.withDefaultNamespace("textures/gui/signs/" + WoodType.OAK.name() + ".png");
-		data.content = new Component[]{
+		data.content = List.of(
 				Component.literal(""),
 				Component.translatable("flex_hud.sign_reader.placeholder_content"),
 				Component.literal(""),
 				Component.literal("")
-		};
+		);
 		data.textColor = DyeColor.BLACK.getTextColor();
 		data.isHangingSign = false;
 		return data;
@@ -268,8 +268,8 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 
 		if (signEntity == null) return data;
 
-		data.playerFacingFront = signEntity.isFacingFrontText(player);
-		SignText signText = signEntity.getText(data.playerFacingFront);
+		data.facingSignTextSlot = signEntity.getSlotPlayerIsFacing(player);
+		SignText signText = signEntity.getText(data.facingSignTextSlot);
 
 		data.content = signText.getMessages(false);
 		data.textColor = signText.getColor().getTextColor();
@@ -285,13 +285,13 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 	private static class RenderData {
 		@Nullable
 		Identifier texture = null;
-		boolean playerFacingFront;
+		SignTextSlot facingSignTextSlot;
 		@NotNull
-		Component[] content = new Component[0];
+		List<Component> content = new ArrayList<>();
 		int textColor = DyeColor.BLACK.getTextColor();
 		boolean isGlowing;
 		int glowColor = AbstractSignRenderer.getDarkColor(
-				new SignText(new Component[]{}, new Component[]{}, DyeColor.BLACK, true)
+				new SignText(List.of(), List.of(), DyeColor.BLACK, true)
 		);
 		boolean isHangingSign;
 	}

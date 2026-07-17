@@ -224,7 +224,7 @@ public final class CompiledCustomText {
 		}
 	}
 
-	private static int interpolateRgb(int startColor, int endColor, float progress) {
+	public static int interpolateRgb(int startColor, int endColor, float progress) {
 		float clampedProgress = Math.clamp(progress, 0.0f, 1.0f);
 
 		int startRed = (startColor >> 16) & 0xff;

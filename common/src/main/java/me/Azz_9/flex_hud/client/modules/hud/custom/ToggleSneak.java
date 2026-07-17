@@ -70,7 +70,7 @@ public class ToggleSneak extends AbstractTextModule {
 			boolean sneakToggled = MINECRAFT.options.toggleCrouch().get();
 
 			if (sneakToggled) {
-				if (InputConstants.isKeyDown(MINECRAFT.getWindow(), ((KeyMappingAccessor) MINECRAFT.options.keyShift).getBoundKey().getValue())) {
+				if (InputConstants.isKeyDown(((KeyMappingAccessor) MINECRAFT.options.keyShift).getBoundKey().getValue())) {
 					statusMessage = "Sneaking (Held)";
 				} else if (sneakKeyPressed) {
 					statusMessage = "Sneaking (Toggled)";

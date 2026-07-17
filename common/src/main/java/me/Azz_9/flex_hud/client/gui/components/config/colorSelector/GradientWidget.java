@@ -1,6 +1,5 @@
 package me.Azz_9.flex_hud.client.gui.components.config.colorSelector;
 
-import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 import static me.Azz_9.flex_hud.Constants.MOD_ID;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -13,7 +12,7 @@ import net.minecraft.resources.Identifier;
 
 import org.joml.Matrix3x2fStack;
 import org.jspecify.annotations.NonNull;
-import org.lwjgl.glfw.GLFW;
+import org.lwjgl.sdl.SDLMouse;
 
 import java.awt.*;
 
@@ -75,8 +74,7 @@ public class GradientWidget extends AbstractWidget.WithInactiveMessage {
 
 	@Override
 	public void onClick(MouseButtonEvent click, boolean bl) {
-		long window = MINECRAFT.getWindow().handle();
-		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);
+		SDLMouse.SDL_HideCursor();
 		moveCursor(click.x(), click.y());
 		isDraggingCursor = true;
 	}
@@ -104,8 +102,7 @@ public class GradientWidget extends AbstractWidget.WithInactiveMessage {
 
 	@Override
 	public void onRelease(@NonNull MouseButtonEvent click) {
-		long window = MINECRAFT.getWindow().handle();
-		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
+		SDLMouse.SDL_ShowCursor();
 		isDraggingCursor = false;
 	}
 

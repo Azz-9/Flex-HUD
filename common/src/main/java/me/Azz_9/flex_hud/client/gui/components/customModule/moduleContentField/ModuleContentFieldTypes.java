@@ -6,6 +6,7 @@ import java.util.List;
 
 import me.Azz_9.flex_hud.client.gui.components.customModule.ModuleContentEditorModel;
 import me.Azz_9.flex_hud.client.modules.customModules.modifiers.Modifier;
+import me.Azz_9.flex_hud.client.modules.customModules.template.CompiledCustomText;
 
 sealed interface DisplayItem permits TextDisplayItem, VariableDisplayItem, ConditionDisplayItem {
 	int modelIndex();
@@ -123,7 +124,7 @@ record GradientRegion(ModuleContentEditorModel.GradientColorLayer gradient,
 			int width = elementWidths[index - startIndex];
 			if (index == elementIndex) {
 				float progress = totalWidth <= 0 ? 0.0f : (float) ((currentX + width / 2.0) / totalWidth);
-				return ModuleContentField.interpolateRgb(gradient.startColor(), gradient.endColor(), progress);
+				return CompiledCustomText.interpolateRgb(gradient.startColor(), gradient.endColor(), progress);
 			}
 			currentX += width;
 		}

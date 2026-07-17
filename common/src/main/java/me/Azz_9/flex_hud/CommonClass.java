@@ -133,7 +133,7 @@ public class CommonClass {
 		final KeyMapping.Category FLEX_HUD = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MOD_ID, "flex-hud"));
 
 		// see KeyBindingMixin
-		openOptionScreenKeyBind = Services.PLATFORM.registerKeyMapping(new KeyMapping("flex_hud.controls.open_menu", InputConstants.Type.KEYSYM, InputConstants.KEY_RSHIFT, FLEX_HUD));
+		openOptionScreenKeyBind = Services.PLATFORM.registerKeyMapping(new KeyMapping("flex_hud.controls.open_menu", InputConstants.Type.KEYBOARD, InputConstants.KEY_RSHIFT, FLEX_HUD));
 	}
 
 	private static void initCollectors() {

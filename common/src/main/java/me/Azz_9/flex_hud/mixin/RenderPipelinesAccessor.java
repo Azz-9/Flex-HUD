@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.mixin;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 
 import net.minecraft.client.renderer.RenderPipelines;
 

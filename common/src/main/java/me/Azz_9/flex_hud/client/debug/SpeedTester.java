@@ -51,7 +51,7 @@ public class SpeedTester {
 	public static void tick() {
 		if (times.isEmpty()) return;
 
-		boolean keyPressed = InputConstants.isKeyDown(MINECRAFT.getWindow(), InputConstants.KEY_O);
+		boolean keyPressed = InputConstants.isKeyDown(InputConstants.KEY_I);
 
 		if (keyPressed && !wasKeyPressed) {
 			for (String module : times.keySet()) {

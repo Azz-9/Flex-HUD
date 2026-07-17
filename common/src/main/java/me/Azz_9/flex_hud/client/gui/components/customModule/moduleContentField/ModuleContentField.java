@@ -102,7 +102,7 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 	ModuleContentEditorModel model;
 	private String rawText;
 	private int maxLength = 200;
-	private Consumer<String> changedListener = text -> {
+	private Consumer<String> changedListener = _ -> {
 	};
 	private int caretIndex;
 	private int selectionAnchor;
@@ -137,9 +137,15 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 	@Override
 	public void setFocused(boolean focused) {
 		super.setFocused(focused);
+		MINECRAFT.onTextInputFocusChange(this, focused);
 		if (!focused) {
 			draggingSelection = false;
 		}
+	}
+
+	@Override
+	public boolean capturesInput() {
+		return active && isFocused();
 	}
 
 	@Override
@@ -1878,23 +1884,5 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 				case NORMAL -> BUTTON_BACKGROUND;
 			};
 		}
-	}
-
-	static int interpolateRgb(int startColor, int endColor, float progress) {
-		float clampedProgress = Math.clamp(progress, 0.0f, 1.0f);
-
-		int startRed = (startColor >> 16) & 0xff;
-		int startGreen = (startColor >> 8) & 0xff;
-		int startBlue = startColor & 0xff;
-
-		int endRed = (endColor >> 16) & 0xff;
-		int endGreen = (endColor >> 8) & 0xff;
-		int endBlue = endColor & 0xff;
-
-		int red = Math.round(startRed + (endRed - startRed) * clampedProgress);
-		int green = Math.round(startGreen + (endGreen - startGreen) * clampedProgress);
-		int blue = Math.round(startBlue + (endBlue - startBlue) * clampedProgress);
-
-		return red << 16 | green << 8 | blue;
 	}
 }
