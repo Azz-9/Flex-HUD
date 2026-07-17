@@ -72,12 +72,6 @@ public class ArmorStatus extends AbstractTextModule {
 			getDimensionHudList().add(new DimensionHud(defaultOffsetX, defaultOffsetY + i * 17, defaultAnchorX, defaultAnchorY));
 		}
 
-		ConfigRegistry.unregister(getID(), "offsetX");
-		ConfigRegistry.unregister(getID(), "offsetY");
-		ConfigRegistry.unregister(getID(), "anchorX");
-		ConfigRegistry.unregister(getID(), "anchorY");
-		ConfigRegistry.unregister(getID(), "scale");
-
 		DimensionHud.register(getID(), getDimensionHudList());
 
 		ConfigRegistry.register(getID(), "showHelmet", showHelmet);
