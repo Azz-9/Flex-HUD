@@ -2,6 +2,8 @@ package me.Azz_9.flex_hud.client.gui.components.customModule.moduleContentField;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
+import com.mojang.blaze3d.platform.InputConstants;
+
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.WidgetSprites;
@@ -19,7 +21,6 @@ import net.minecraft.resources.Identifier;
 
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -509,7 +510,7 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 		}
 
 		int clickedIndex = getClosestCaretIndex(event.x());
-		if ((event.modifiers() & GLFW.GLFW_MOD_SHIFT) != 0) {
+		if ((event.modifiers() & InputConstants.MOD_SHIFT) != 0) {
 			caretIndex = clickedIndex;
 		} else {
 			caretIndex = clickedIndex;
@@ -612,7 +613,7 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 			return false;
 		}
 
-		write(event.codepointAsString());
+		insertText(event.codepointAsString());
 		return true;
 	}
 
@@ -622,7 +623,7 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 			return false;
 		}
 
-		if (event.key() == GLFW.GLFW_KEY_ESCAPE) {
+		if (event.isEscape()) {
 			if (gradientPopup != null) {
 				closeGradientPopup();
 				return true;
@@ -674,7 +675,7 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 			return true;
 		}
 		if (event.isPaste()) {
-			write(MINECRAFT.keyboardHandler.getClipboard());
+			insertText(MINECRAFT.keyboardHandler.getClipboard());
 			return true;
 		}
 		if (event.isCut()) {
@@ -683,35 +684,35 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 		}
 
 		switch (event.key()) {
-			case GLFW.GLFW_KEY_BACKSPACE -> {
-				erase(-1, event.hasControlDown());
+			case InputConstants.KEY_BACKSPACE -> {
+				erase(-1, event.hasControlDownWithQuirk());
 				return true;
 			}
-			case GLFW.GLFW_KEY_DELETE -> {
-				erase(1, event.hasControlDown());
+			case InputConstants.KEY_DELETE -> {
+				erase(1, event.hasControlDownWithQuirk());
 				return true;
 			}
-			case GLFW.GLFW_KEY_LEFT -> {
-				if (event.hasControlDown()) {
+			case InputConstants.KEY_LEFT -> {
+				if (event.hasControlDownWithQuirk()) {
 					setCaret(getWordSkipPosition(-1), event.hasShiftDown());
 				} else {
 					moveCaret(-1, event.hasShiftDown());
 				}
 				return true;
 			}
-			case GLFW.GLFW_KEY_RIGHT -> {
-				if (event.hasControlDown()) {
+			case InputConstants.KEY_RIGHT -> {
+				if (event.hasControlDownWithQuirk()) {
 					setCaret(getWordSkipPosition(1), event.hasShiftDown());
 				} else {
 					moveCaret(1, event.hasShiftDown());
 				}
 				return true;
 			}
-			case GLFW.GLFW_KEY_HOME -> {
+			case InputConstants.KEY_HOME -> {
 				setCaret(0, event.hasShiftDown());
 				return true;
 			}
-			case GLFW.GLFW_KEY_END -> {
+			case InputConstants.KEY_END -> {
 				setCaret(model.size(), event.hasShiftDown());
 				return true;
 			}
@@ -952,7 +953,7 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 		});
 	}
 
-	public void write(String text) {
+	public void insertText(String text) {
 		ModuleContentEditorModel.StyleState insertionStyle = model.getInsertionStyle(Math.min(caretIndex, selectionAnchor));
 		ModuleContentEditorModel fragment = ModuleContentEditorModel.parse(text, insertionStyle);
 		if (!canInsertFragment(fragment)) {
@@ -977,7 +978,7 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 		if (conditionEditorPopup != null && conditionEditorPopup.insertVariable(variable)) {
 			return;
 		}
-		write("{" + variable.getKey() + "}");
+		insertText("{" + variable.getKey() + "}");
 	}
 
 	public void insertCondition() {
@@ -1611,7 +1612,7 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 		closeSelectionPopups();
 		int drawX = getX() + TEXT_PADDING_X + variableItem.x() - horizontalScroll;
 		int clickedIndex = event.x() < drawX + variableItem.width() / 2.0 ? variableItem.modelIndex() : variableItem.modelIndex() + 1;
-		if ((event.modifiers() & GLFW.GLFW_MOD_SHIFT) != 0) {
+		if ((event.modifiers() & InputConstants.MOD_SHIFT) != 0) {
 			caretIndex = clickedIndex;
 		} else {
 			caretIndex = clickedIndex;
