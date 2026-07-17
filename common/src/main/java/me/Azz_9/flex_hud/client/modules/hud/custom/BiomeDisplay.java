@@ -235,8 +235,7 @@ public class BiomeDisplay extends AbstractTextModule {
 				entry(Biomes.END_MIDLANDS, 0xff6d00a3),
 				entry(Biomes.SMALL_END_ISLANDS, 0xff6d00a3),
 				entry(Biomes.END_BARRENS, 0xff6d00a3),
-				entry(Biomes.PALE_GARDEN, 0xff979f96),
-				entry(Biomes.SULFUR_CAVES, 0xffbdaf66)
+				entry(Biomes.PALE_GARDEN, 0xff979f96)
 		);
 	}
 }
