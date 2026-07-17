@@ -48,7 +48,7 @@ public abstract class AbstractTextModule extends AbstractBackgroundModule {
 		setWidth(startX + textWidth);
 	}
 
-	protected int getColor() {
+	public int getColor() {
 		if (chromaColor.getValue()) {
 			return ChromaColorTickable.getColor();
 		}

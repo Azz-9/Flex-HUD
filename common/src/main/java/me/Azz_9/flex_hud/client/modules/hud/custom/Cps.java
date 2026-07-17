@@ -51,18 +51,14 @@ public class Cps extends AbstractTextModule {
 		}
 
 		String text = "";
-		if (CommonClass.isEditingLayout) {
-			text = "0 | 0";
-		} else {
-			if (this.showLeftClick.getValue()) {
-				text = String.valueOf(CpsUtils.getLeftCps());
-			}
-			if (this.showLeftClick.getValue() && this.showRightClick.getValue()) {
-				text += " | ";
-			}
-			if (this.showRightClick.getValue()) {
-				text += String.valueOf(CpsUtils.getRightCps());
-			}
+		if (this.showLeftClick.getValue()) {
+			text = String.valueOf(CpsUtils.getLeftCps());
+		}
+		if (this.showLeftClick.getValue() && this.showRightClick.getValue()) {
+			text += " | ";
+		}
+		if (this.showRightClick.getValue()) {
+			text += String.valueOf(CpsUtils.getRightCps());
 		}
 
 		if (showSuffix.getValue()) {
@@ -81,6 +77,11 @@ public class Cps extends AbstractTextModule {
 		graphics.text(MINECRAFT.font, text, 0, 0, getColor(), this.shadow.getValue());
 
 		matrices.popMatrix();
+	}
+
+	@Override
+	public boolean shouldShowInEditLayoutScreen() {
+		return super.shouldShowInEditLayoutScreen() && showLeftClick.getValue() && showRightClick.getValue();
 	}
 
 	@Override
