@@ -92,7 +92,7 @@ final class ConditionEditorPopup {
 
 		int preferredX = host.getX() + ModuleContentField.TEXT_PADDING_X + conditionItem.x() - host.horizontalScroll;
 		int preferredY = host.getBottom() + ModuleContentField.OVERLAY_GAP;
-		Screen screen = MINECRAFT.gui.screen();
+		Screen screen = MINECRAFT.screen;
 		if (screen != null && preferredY + height > screen.height - 4) {
 			preferredY = host.getY() - height - ModuleContentField.OVERLAY_GAP;
 		}

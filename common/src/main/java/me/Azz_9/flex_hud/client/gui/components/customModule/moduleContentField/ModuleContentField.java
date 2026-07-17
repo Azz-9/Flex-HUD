@@ -290,7 +290,7 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 
 		int x = mouseX + 8;
 		int y = mouseY + 8;
-		Screen screen = MINECRAFT.gui.screen();
+		Screen screen = MINECRAFT.screen;
 		if (screen != null) {
 			if (x + width > screen.width) {
 				x = mouseX - width - 8;
@@ -1509,7 +1509,7 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 	}
 
 	int clampX(int x, int width) {
-		Screen screen = MINECRAFT.gui.screen();
+		Screen screen = MINECRAFT.screen;
 		if (screen == null) {
 			return x;
 		}
@@ -1517,7 +1517,7 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 	}
 
 	int clampY(int y, int height) {
-		Screen screen = MINECRAFT.gui.screen();
+		Screen screen = MINECRAFT.screen;
 		if (screen == null) {
 			return y;
 		}

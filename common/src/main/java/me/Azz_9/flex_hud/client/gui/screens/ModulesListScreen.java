@@ -58,7 +58,7 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 		Button createModuleButton = Button.builder(Component.translatable("flex_hud.configuration_screen.create_module"), (button) -> {
 					CreateModuleScreen createModuleScreen = new CreateModuleScreen(this);
 					createModuleScreen.setParentScrollAmount(getModulesListWidget().scrollAmount());
-					MINECRAFT.gui.setScreen(createModuleScreen);
+					MINECRAFT.setScreen(createModuleScreen);
 				}).bounds(Math.clamp(
 						this.width / 2 - 105 - (int) (this.width / 100.0F * 5),
 						Math.min(105, this.width / 2 - 105),
