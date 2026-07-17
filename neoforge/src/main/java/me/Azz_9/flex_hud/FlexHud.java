@@ -3,7 +3,6 @@ package me.Azz_9.flex_hud;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
 import me.Azz_9.flex_hud.client.gui.screens.OptionsScreen;
@@ -21,8 +20,6 @@ public class FlexHud {
 		// Use NeoForge to bootstrap the Common mod.
 
 		NeoForgePlatformHelper.eventBus = eventBus;
-
-		eventBus.addListener((RegisterGuiLayersEvent event) -> System.out.println("too late"));
 
 		CommonClass.init();
 		ModLoadingContext.get().registerExtensionPoint(
