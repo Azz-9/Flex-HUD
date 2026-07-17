@@ -562,7 +562,7 @@ public class Compass extends AbstractTextModule {
 
 	@Override
 	public List<String> getKeywords() {
-		List<String> keywords = new ArrayList<>(super.getKeywords());
+		List<String> keywords = super.getKeywords();
 		keywords.add("yaw");
 		return keywords;
 	}

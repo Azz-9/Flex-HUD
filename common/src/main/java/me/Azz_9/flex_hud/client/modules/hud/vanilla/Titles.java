@@ -6,84 +6,67 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.scores.Objective;
-import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 import me.Azz_9.flex_hud.client.config.ConfigRegistry;
 import me.Azz_9.flex_hud.client.config.option.ConfigBoolean;
-import me.Azz_9.flex_hud.client.config.option.ConfigInteger;
 import me.Azz_9.flex_hud.client.gui.components.config.entries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.gui.components.config.entries.CyclingButtonEntry;
 import me.Azz_9.flex_hud.client.gui.components.config.entries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.gui.screens.AbstractConfigurationScreen;
-import me.Azz_9.flex_hud.client.modules.hud.AbstractMovableModule;
+import me.Azz_9.flex_hud.client.modules.hud.AbstractTextModule;
+import me.Azz_9.flex_hud.client.modules.hud.DimensionHud;
 import me.Azz_9.flex_hud.mixin.HudAccessor;
 
-public class Scoreboard extends AbstractMovableModule {
+public class Titles extends AbstractTextModule {
 
-	public final @NotNull ConfigBoolean showScoreboard = new ConfigBoolean(true, "flex_hud.scoreboard.config.show_scoreboard");
-	public final @NotNull ConfigBoolean showScore = new ConfigBoolean(true, "flex_hud.scoreboard.config.show_score");
-	public final @NotNull ConfigBoolean drawBackground = new ConfigBoolean(true, "flex_hud.global.config.show_background");
-	public final @NotNull ConfigInteger backgroundColor = new ConfigInteger(0x000000, "flex_hud.global.config.background_color");
-	public final @NotNull ConfigBoolean shadow = new ConfigBoolean(false, "flex_hud.global.config.text_shadow");
+	public final @NotNull ConfigBoolean showTitle = new ConfigBoolean(true, "flex_hud.titles.config.show_title");
+	public final @NotNull ConfigBoolean showSubtitle = new ConfigBoolean(true, "flex_hud.titles.config.show_subtitle");
 
-	public static Objective placeholderObjective;
+	public static Component placeholderTitle;
+	public static Component placeholderSubtitle;
 
-	public Scoreboard(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super("scoreboard", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
-		this.enabled.setConfigTextTranslationKey("flex_hud.scoreboard.config.enable");
+	public Titles(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
+		super("titles", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		enabled.setConfigTextTranslationKey("flex_hud.titles.config.enable");
 
-		// show scoreboard in f3, same behavior as minecraft scoreboard
-		this.hideInF3.setValue(false);
-		this.hideInF3.setDefaultValue(false);
+		hideInF3.setDefaultValue(false);
+		hideInF3.setValue(false);
 
-		ConfigRegistry.register(getID(), "showScoreboard", showScoreboard);
-		ConfigRegistry.register(getID(), "showScore", showScore);
-		ConfigRegistry.register(getID(), "drawBackground", drawBackground);
-		ConfigRegistry.register(getID(), "backgroundColor", backgroundColor);
-		ConfigRegistry.register(getID(), "shadow", shadow);
+		// subtitle
+		getDimensionHudList().add(new DimensionHud(defaultOffsetX, defaultOffsetY + 41, defaultAnchorX, defaultAnchorY));
+
+		DimensionHud.register(getID(), getDimensionHudList());
+
+		ConfigRegistry.register(getID(), "showTitle", showTitle);
+		ConfigRegistry.register(getID(), "showSubtitle", showSubtitle);
 	}
 
 	@Override
 	public void init() {
-		net.minecraft.world.scores.Scoreboard scoreboard = new net.minecraft.world.scores.Scoreboard();
-		placeholderObjective = new Objective(
-				scoreboard,
-				"health",
-				ObjectiveCriteria.HEALTH,
-				Component.literal("Health"),
-				ObjectiveCriteria.HEALTH.getDefaultRenderType(),
-				false,
-				null
-		);
-		scoreboard.getOrCreatePlayerScore(() -> "Player1", placeholderObjective);
-		scoreboard.getOrCreatePlayerScore(() -> "Player2", placeholderObjective);
-		scoreboard.getOrCreatePlayerScore(() -> "Player3", placeholderObjective);
+		placeholderTitle = Component.translatable("flex_hud.titles.placeholder.title");
+		placeholderSubtitle = Component.translatable("flex_hud.titles.placeholder.subtitle");
 	}
 
 	@Override
-	public Component getName() {
-		return Component.translatable("flex_hud.scoreboard");
-	}
-
-	@Override
-	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+	public void render(GuiGraphicsExtractor graphics, DeltaTracker tickCounter) {
 		// render is handled in HudMixin
 		if (MINECRAFT.level == null) {
-			((HudAccessor) MINECRAFT.gui.hud).invokeDisplayScoreboardSidebar(graphics, placeholderObjective);
+			((HudAccessor) MINECRAFT.gui.hud).invokeExtractTitle(graphics, tickCounter);
 		}
 	}
 
 	@Override
-	public boolean shouldRunSpeedTest() {
-		return MINECRAFT.level == null;
+	public Component getName() {
+		return Component.translatable("flex_hud.titles");
 	}
 
 	@Override
-	public boolean isEnabled() {
-		return super.isEnabled() && showScoreboard.getValue();
+	public boolean shouldShowInEditLayoutScreen() {
+		return super.shouldShowInEditLayoutScreen() && (showTitle.getValue() || showSubtitle.getValue());
 	}
 
 	@Override
@@ -92,9 +75,7 @@ public class Scoreboard extends AbstractMovableModule {
 			@Override
 			protected void initContent() {
 				if (MINECRAFT.getLanguageManager().getSelected().equals("fr_fr")) {
-					buttonWidth = 195;
-				} else {
-					buttonWidth = 170;
+					buttonWidth = 180;
 				}
 
 				super.initContent();
@@ -108,7 +89,12 @@ public class Scoreboard extends AbstractMovableModule {
 				this.addAllEntries(
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
-								.setVariable(showScoreboard)
+								.setVariable(showTitle)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(showSubtitle)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
 						new ToggleButtonEntry.Builder()
@@ -145,14 +131,16 @@ public class Scoreboard extends AbstractMovableModule {
 								.setVariable(anchorModeY)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.addObserver((getter) -> setAnchorModeY(anchorModeY.getValue()))
-								.build(),
-						new ToggleButtonEntry.Builder()
-								.setToggleButtonWidth(buttonWidth)
-								.setVariable(showScore)
-								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 			}
 		};
+	}
+
+	@Override
+	public List<String> getKeywords() {
+		List<String> keywords = super.getKeywords();
+		keywords.add("subtitles");
+		return keywords;
 	}
 }
