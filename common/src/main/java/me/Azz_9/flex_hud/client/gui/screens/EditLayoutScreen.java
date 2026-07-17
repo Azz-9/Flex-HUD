@@ -57,10 +57,10 @@ public class EditLayoutScreen extends AbstractSavableScreen {
 		this.addRenderableWidget(helpWidget);
 
 		for (AbstractMovableModule movableModule : Modules.getMovableModules()) {
-			if (movableModule.isEnabled()) {
+			if (movableModule.shouldShowInEditLayoutScreen()) {
 				// certains modules utilisent des placeholder, pour ces modules il faut forcer le tick pour que
 				// les données utilisées soient les placeholders et que la taille du MovableWidget soit la bonne
-				if (movableModule instanceof TickableModule tickable) tickable.tick();
+				if (movableModule instanceof TickableModule tickable && tickable.shouldTick()) tickable.tick();
 
 				for (DimensionHud dimensionHud : movableModule.getDimensionHudList()) {
 					if (dimensionHud.isEnabled()) {
@@ -85,10 +85,12 @@ public class EditLayoutScreen extends AbstractSavableScreen {
 	public void renderBeforeOtherElements(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (MINECRAFT.level == null) {
 			Modules.getMovableModules().forEach(movableModule -> {
-				if (Constants.DEBUG) {
-					movableModule.renderWithSpeedTest(graphics, DeltaTracker.ZERO);
-				} else {
-					movableModule.render(graphics, DeltaTracker.ZERO);
+				if (movableModule.shouldShowInEditLayoutScreen()) {
+					if (Constants.DEBUG) {
+						movableModule.renderWithSpeedTest(graphics, DeltaTracker.ZERO);
+					} else {
+						movableModule.render(graphics, DeltaTracker.ZERO);
+					}
 				}
 			});
 		}

@@ -16,4 +16,7 @@ public interface HudAccessor {
 
 	@Invoker("displayScoreboardSidebar")
 	void invokeDisplayScoreboardSidebar(GuiGraphicsExtractor graphics, Objective objective);
+
+	@Invoker("extractTitle")
+	void invokeExtractTitle(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker);
 }
