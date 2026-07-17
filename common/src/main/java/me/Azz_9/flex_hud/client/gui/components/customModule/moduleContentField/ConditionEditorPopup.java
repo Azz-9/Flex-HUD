@@ -2,6 +2,8 @@ package me.Azz_9.flex_hud.client.gui.components.customModule.moduleContentField;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
+import com.mojang.blaze3d.platform.InputConstants;
+
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
@@ -9,8 +11,6 @@ import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-
-import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -223,11 +223,11 @@ final class ConditionEditorPopup {
 		if (contentField.isFocused() && contentField.keyPressed(event)) {
 			return true;
 		}
-		if (event.key() == GLFW.GLFW_KEY_ENTER || event.key() == GLFW.GLFW_KEY_KP_ENTER) {
+		if (event.isConfirmation()) {
 			save();
 			return true;
 		}
-		if (event.key() == GLFW.GLFW_KEY_TAB) {
+		if (event.keycode() == InputConstants.KEYCODE_TAB) {
 			focusNextField();
 			return true;
 		}

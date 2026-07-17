@@ -4,8 +4,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 
 import net.minecraft.client.input.KeyEvent;
 
-import org.lwjgl.glfw.GLFW;
-
 import java.util.ArrayDeque;
 import java.util.Deque;
 
@@ -35,14 +33,19 @@ public class UndoManager {
 	}
 
 	public boolean handleKeyPressed(KeyEvent input) {
-		String keyName = GLFW.glfwGetKeyName(input.key(), input.scancode());
-		if (keyName != null && keyName.equalsIgnoreCase("z") && input.modifiers() == InputConstants.MOD_CONTROL) { // CTRL + Z
+		boolean control = (input.modifiers() & InputConstants.MOD_CONTROL) != 0;
+		boolean shift = (input.modifiers() & InputConstants.MOD_SHIFT) != 0;
+
+		if (!control) {
+			return false;
+		}
+
+		if (input.keycode() == InputConstants.KEYCODE_Z && !shift) { // ctrl + z
 			undo();
 			return true;
-		} else if (
-				(keyName != null && keyName.equalsIgnoreCase("y") && input.modifiers() == InputConstants.MOD_CONTROL) || // CTRL + Y
-						(keyName != null && keyName.equalsIgnoreCase("z") && input.modifiers() == (InputConstants.MOD_SHIFT + InputConstants.MOD_CONTROL)) // CTRL + SHIFT + Z
-		) {
+		}
+
+		if (input.keycode() == InputConstants.KEYCODE_Y || input.keycode() == InputConstants.KEYCODE_Z) { // ctrl + y or ctrl + shift + z
 			redo();
 			return true;
 		}
