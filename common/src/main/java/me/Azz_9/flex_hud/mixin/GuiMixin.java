@@ -12,8 +12,8 @@ import com.mojang.blaze3d.pipeline.RenderPipeline;
 
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.Hud;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -38,8 +38,8 @@ import me.Azz_9.flex_hud.client.modules.hud.vanilla.Crosshair;
 import me.Azz_9.flex_hud.client.modules.hud.vanilla.Scoreboard;
 import me.Azz_9.flex_hud.client.modules.hud.vanilla.Titles;
 
-@Mixin(Hud.class)
-public abstract class HudMixin {
+@Mixin(Gui.class)
+public abstract class GuiMixin {
 
 	@Shadow
 	private @Nullable Component title;
@@ -75,6 +75,14 @@ public abstract class HudMixin {
 				Modules.getInstance().compass.isEnabled() &&
 				Modules.getInstance().compass.overrideLocatorBar.getValue()) {
 			cir.setReturnValue(true);
+		}
+	}
+
+	// potion effect
+	@Inject(method = "extractEffects", at = @At("HEAD"), cancellable = true)
+	private void renderStatusEffectOverlay(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+		if (Modules.getInstance().isEnabled.getValue() && Modules.getInstance().potionEffect.enabled.getValue()) {
+			ci.cancel();
 		}
 	}
 

@@ -1,10 +1,10 @@
 package me.Azz_9.flex_hud.client.gui.components.config.fields;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextColor;
 import net.minecraft.util.ARGB;
 
 import org.jetbrains.annotations.Nullable;
@@ -42,7 +42,7 @@ public class ConfigTextFieldWidget extends EditBox implements TrackableChange, D
 				variable.setValue(text);
 				setTextColor(0xffffffff);
 			} else {
-				setTextColor(ARGB.color(0xff, TextColor.RED.getValue()));
+				setTextColor(ARGB.color(0xff, ChatFormatting.RED.getColor() != null ? ChatFormatting.RED.getColor() : 0xfc5454));
 			}
 
 			for (Observer observer : observers) {

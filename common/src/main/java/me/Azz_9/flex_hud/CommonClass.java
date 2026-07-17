@@ -174,7 +174,7 @@ public class CommonClass {
 
 	public static void handleKeybindsHook() {
 		while (openOptionScreenKeyBind.consumeClick()) {
-			MINECRAFT.gui.setScreen(new OptionsScreen());
+			MINECRAFT.setScreen(new OptionsScreen());
 		}
 	}
 

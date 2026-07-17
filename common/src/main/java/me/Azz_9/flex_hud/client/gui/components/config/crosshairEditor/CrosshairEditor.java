@@ -132,7 +132,7 @@ public class CrosshairEditor extends AbstractWidget implements Popup {
 		);
 
 		done = Button.builder(CommonComponents.GUI_DONE, _ -> {
-					if (MINECRAFT.gui.screen() instanceof AbstractPopupScreen screen) {
+					if (MINECRAFT.screen instanceof AbstractPopupScreen screen) {
 						screen.closePopup();
 					}
 				})

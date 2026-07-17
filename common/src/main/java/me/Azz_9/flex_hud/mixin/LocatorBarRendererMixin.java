@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.mixin;
 
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.contextualbar.LocatorBar;
+import net.minecraft.client.gui.contextualbar.LocatorBarRenderer;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -11,8 +11,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import me.Azz_9.flex_hud.client.modules.Modules;
 
-@Mixin(LocatorBar.class)
-public abstract class LocatorBarMixin {
+@Mixin(LocatorBarRenderer.class)
+public abstract class LocatorBarRendererMixin {
 
 	@Inject(method = "extractBackground", at = @At("HEAD"), cancellable = true)
 	private void extractBackground(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
