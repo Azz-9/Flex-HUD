@@ -20,7 +20,6 @@
 		"MinecraftMixin",
 		"MouseHandlerMixin",
 		"MultiPlayerGameModeMixin",
-		"PotionEffectMixin",
 		"RenderPipelinesAccessor"
 	],
 	"server": [],
