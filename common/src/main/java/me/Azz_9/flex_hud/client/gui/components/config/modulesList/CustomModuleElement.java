@@ -61,7 +61,7 @@ public class CustomModuleElement extends ModuleElement {
 						(btn) -> {
 							CreateModuleScreen createModuleScreen = new CreateModuleScreen(parent, module);
 							createModuleScreen.setParentScrollAmount(parent.getModulesListWidget().scrollAmount());
-							MINECRAFT.gui.setScreen(createModuleScreen);
+							MINECRAFT.setScreen(createModuleScreen);
 						},
 						true
 				)

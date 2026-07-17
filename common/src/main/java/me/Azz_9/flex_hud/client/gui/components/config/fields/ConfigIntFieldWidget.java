@@ -1,11 +1,11 @@
 package me.Azz_9.flex_hud.client.gui.components.config.fields;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextColor;
 import net.minecraft.util.ARGB;
 
 import org.jetbrains.annotations.Nullable;
@@ -63,7 +63,7 @@ public class ConfigIntFieldWidget extends CustomEditBox implements TrackableChan
 					variable.setValue(getInputValue());
 				}
 			} else {
-				setTextColor(ARGB.color(0xff, TextColor.RED.getValue()));
+				setTextColor(ARGB.color(0xff, ChatFormatting.RED.getColor() != null ? ChatFormatting.RED.getColor() : 0xfc5454));
 			}
 
 			for (Observer observer : observers) {
