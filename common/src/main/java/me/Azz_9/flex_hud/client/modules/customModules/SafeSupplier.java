@@ -33,7 +33,7 @@ public class SafeSupplier<T> implements Supplier<T> {
 		try {
 			return supplier.get();
 		} catch (Exception e) {
-			if (MINECRAFT.gui.screen() instanceof CreateModuleScreen) {
+			if (MINECRAFT.screen instanceof CreateModuleScreen) {
 				return placeholderValue;
 			}
 			return fallbackValue;

@@ -76,7 +76,7 @@ public class ModuleElement {
 	protected Button createButton(int buttonWidth, int buttonHeight) {
 		return Button.builder(Component.literal(name), (btn) -> {
 					configScreen.setParentScrollAmount(parent.getModulesListWidget().scrollAmount());
-					MINECRAFT.gui.setScreen(configScreen);
+					MINECRAFT.setScreen(configScreen);
 				})
 				.size(buttonWidth, buttonHeight)
 				.build();
