@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.utils;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 
 import me.Azz_9.flex_hud.client.modules.Modules;
 import me.Azz_9.flex_hud.mixin.KeyMappingAccessor;
@@ -22,7 +22,7 @@ public class KeyHandler {
 		int keyAttackValue = ((KeyMappingAccessor) MINECRAFT.options.keyAttack).getBoundKey().getValue();
 		int keyUseValue = ((KeyMappingAccessor) MINECRAFT.options.keyUse).getBoundKey().getValue();
 
-		if (action == GLFW.GLFW_PRESS) {
+		if (action == InputConstants.PRESS) {
 			if (!isAttackKeyPressed && button == keyAttackValue) {
 				isAttackKeyPressed = true;
 				CpsUtils.onAttackKeyPress();
