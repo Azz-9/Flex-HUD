@@ -12,7 +12,6 @@ import net.minecraft.util.Ease;
 
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -125,7 +124,7 @@ public class ConfigColorButtonWidget extends AbstractWidget.WithInactiveMessage 
 
 	@Override
 	public boolean keyPressed(KeyEvent input) {
-		if (input.key() == GLFW.GLFW_KEY_ENTER || input.key() == GLFW.GLFW_KEY_KP_ENTER) {
+		if (input.isConfirmation()) {
 			onClickAction.accept(this);
 			return true;
 		}

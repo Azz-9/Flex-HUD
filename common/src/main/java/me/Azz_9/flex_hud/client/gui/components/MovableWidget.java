@@ -2,6 +2,7 @@ package me.Azz_9.flex_hud.client.gui.components;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.cursor.CursorType;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -11,9 +12,9 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 import org.jspecify.annotations.NonNull;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -313,22 +314,22 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 		if (isDraggingScaleHandle) {
 			return true; // so pressing a key won't do anything
 		}
-		if (this.isFocused() && input.key() >= 262 && input.key() <= 265) { // check if the key is one of the arrow keys
+		if (this.isFocused() && isArrowKey(input)) {
 			if (pressedKeys.isEmpty()) {
 				onKeyPressX = getX();
 				onKeyPressY = getY();
 			}
 			pressedKeys.add(input.key());
-			if (pressedKeys.contains(GLFW.GLFW_KEY_UP)) {
+			if (pressedKeys.contains(InputConstants.KEY_UP)) {
 				moveTo(getX(), getY() - 1);
 			}
-			if (pressedKeys.contains(GLFW.GLFW_KEY_DOWN)) {
+			if (pressedKeys.contains(InputConstants.KEY_DOWN)) {
 				moveTo(getX(), getY() + 1);
 			}
-			if (pressedKeys.contains(GLFW.GLFW_KEY_LEFT)) {
+			if (pressedKeys.contains(InputConstants.KEY_LEFT)) {
 				moveTo(getX() - 1, getY());
 			}
-			if (pressedKeys.contains(GLFW.GLFW_KEY_RIGHT)) {
+			if (pressedKeys.contains(InputConstants.KEY_RIGHT)) {
 				moveTo(getX() + 1, getY());
 			}
 			updateScaleHandle();
@@ -337,11 +338,15 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 		return false;
 	}
 
+	private boolean isArrowKey(@NotNull KeyEvent input) {
+		return input.isUp() || input.isDown() || input.isLeft() || input.isRight();
+	}
+
 	@Override
-	public boolean keyReleased(KeyEvent input) {
+	public boolean keyReleased(@NotNull KeyEvent input) {
 		shouldDrawScaleValue = false;
 
-		if (input.key() >= 262 && input.key() <= 265) { // the key released is one of the arrow keys
+		if (isArrowKey(input)) {
 			pressedKeys.remove(input.key());
 			if (pressedKeys.isEmpty() && (onKeyPressX != getX() || onKeyPressY != getY())) {
 				PARENT.undoManager.addAction(new MoveAction(this, onKeyPressX, onKeyPressY, getX(), getY()));
