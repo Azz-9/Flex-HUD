@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.config;
 
+import com.google.common.collect.Lists;
+
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -22,7 +24,7 @@ public interface Configurable extends Activable {
 	AbstractConfigurationScreen getConfigScreen(Screen parent);
 
 	default List<String> getKeywords() {
-		return List.of(
+		return Lists.newArrayList(
 				getName().getString().toLowerCase(),
 				getID().toLowerCase()
 		);

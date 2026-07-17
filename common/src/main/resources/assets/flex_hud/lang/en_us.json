@@ -303,6 +303,11 @@
 	"flex_hud.inventory_display.config.enable": "Show inventory",
 	"flex_hud.inventory_display.config.background_opacity": "Background opacity",
 
+	"flex_hud.titles": "Titles",
+	"flex_hud.titles.config.enable": "Enable custom titles",
+	"flex_hud.titles.config.show_title": "Show title",
+	"flex_hud.titles.config.show_subtitle": "Show subtitle",
+
 	"flex_hud.coordinates.hud.direction.south": "South",
 	"flex_hud.coordinates.hud.direction.south_west": "South-West",
 	"flex_hud.coordinates.hud.direction.west": "West",
@@ -351,6 +356,9 @@
 	"flex_hud.entity_count.text.entities.different_y": "Entity count: %d (r%d y%d)",
 	"flex_hud.entity_count.text.mobs.different_y": "Mobs count: %d (r%d y%d)",
 	"flex_hud.entity_count.text.items.different_y": "Items count: %d (r%d y%d)",
+
+	"flex_hud.titles.placeholder.title": "Title",
+	"flex_hud.titles.placeholder.subtitle": "Subtitle",
 
 	"flex_hud.custom_modules.variable.name.player.gamemode": "Gamemode",
 	"flex_hud.custom_modules.variable.description.player.gamemode": "The player's current game mode (Survival, Creative, Adventure or Spectator).",

@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.Azz_9.flex_hud.CommonClass;
+import me.Azz_9.flex_hud.client.config.ConfigLoader;
 import me.Azz_9.flex_hud.client.gui.Colors;
 import me.Azz_9.flex_hud.client.gui.components.DynamicSpriteIconButton;
 import me.Azz_9.flex_hud.client.modules.Modules;
@@ -168,5 +169,11 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 			return true;
 		}
 		return super.mouseClicked(click, doubled);
+	}
+
+	@Override
+	public void onClose() {
+		ConfigLoader.saveConfig();
+		super.onClose();
 	}
 }

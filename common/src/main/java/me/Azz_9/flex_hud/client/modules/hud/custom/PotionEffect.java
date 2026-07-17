@@ -215,7 +215,7 @@ public class PotionEffect extends AbstractTextModule {
 
 	@Override
 	public List<String> getKeywords() {
-		List<String> keywords = new ArrayList<>(super.getKeywords());
+		List<String> keywords = super.getKeywords();
 		keywords.add("buffs & debuffs");
 		keywords.add("buffs and debuffs");
 		return keywords;
