@@ -5,7 +5,8 @@ import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.pipeline.ColorTargetState;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.platform.BlendFactor;
+import com.mojang.blaze3d.platform.DestFactor;
+import com.mojang.blaze3d.platform.SourceFactor;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
@@ -65,7 +66,7 @@ public class Crosshair extends AbstractModule {
 	public void init() {
 		crosshairPipeline = RenderPipelinesAccessor.invokeRegister(RenderPipeline.builder(RenderPipelinesAccessor.getGuiSnippet())
 				.withLocation("pipeline/crosshair_no_tex")
-				.withColorTargetState(new ColorTargetState(new BlendFunction(BlendFactor.ONE_MINUS_DST_COLOR, BlendFactor.ONE_MINUS_SRC_COLOR, BlendFactor.ONE, BlendFactor.ZERO)))
+				.withColorTargetState(new ColorTargetState(new BlendFunction(SourceFactor.ONE_MINUS_DST_COLOR, DestFactor.ONE_MINUS_SRC_COLOR, SourceFactor.ONE, DestFactor.ZERO)))
 				.build()
 		);
 	}

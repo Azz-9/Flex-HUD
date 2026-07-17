@@ -102,7 +102,7 @@ final class ModifierPickerPopup {
 
 		int preferredX = host.getX() + ModuleContentField.TEXT_PADDING_X + variableItem.x() - host.horizontalScroll;
 		int preferredY = host.getBottom() + ModuleContentField.OVERLAY_GAP;
-		Screen screen = MINECRAFT.gui.screen();
+		Screen screen = MINECRAFT.screen;
 		if (screen != null && preferredY + totalHeight > screen.height - 4) {
 			preferredY = host.getY() - totalHeight - ModuleContentField.OVERLAY_GAP;
 		}

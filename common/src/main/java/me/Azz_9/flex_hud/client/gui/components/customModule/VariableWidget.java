@@ -96,7 +96,7 @@ public class VariableWidget implements Renderable, LayoutElement {
 				width - DESCRIPTION_PADDING * 2
 		) + DESCRIPTION_PADDING * 2;
 
-		Screen screen = MINECRAFT.gui.screen();
+		Screen screen = MINECRAFT.screen;
 		if (screen != null) {
 			if (getRight() + DESCRIPTION_GAP + width > screen.width) {
 				x = getX() - DESCRIPTION_GAP - width;

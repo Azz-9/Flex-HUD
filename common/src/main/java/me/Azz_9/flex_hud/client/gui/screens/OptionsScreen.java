@@ -73,7 +73,7 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 
 		// modules button
 		Button modulesButton = Button.builder(Component.translatable("flex_hud.options_screen.modules"),
-						(btn) -> MINECRAFT.gui.setScreen(new ModulesListScreen(this))
+						(btn) -> MINECRAFT.setScreen(new ModulesListScreen(this))
 				).bounds((width - CENTRAL_BUTTON_WIDTH) / 2, (height - SQUARE_BUTTONS_SIZE) / 2, CENTRAL_BUTTON_WIDTH, SQUARE_BUTTONS_SIZE)
 				.build();
 
@@ -81,7 +81,7 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 		SpriteIconButton editLayoutButton = SpriteIconButton.TextAndIcon.builder(
 						Component.empty(),
 						(btn) -> {
-							MINECRAFT.gui.setScreen(new EditLayoutScreen(this));
+							MINECRAFT.setScreen(new EditLayoutScreen(this));
 							CommonClass.isEditingLayout = true;
 						},
 						true

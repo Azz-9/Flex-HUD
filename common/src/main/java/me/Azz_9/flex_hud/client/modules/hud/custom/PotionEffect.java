@@ -5,8 +5,8 @@ import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 import com.google.common.collect.Ordering;
 
 import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.Hud;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -88,7 +88,7 @@ public class PotionEffect extends AbstractTextModule {
 
 			String effectString = Component.translatable(effect.getDescriptionId()).getString() + " " + (effect.getAmplifier() + 1);
 			String durationString = effect.isInfiniteDuration() ? "∞" : getDurationString(effect.getDuration() / 20);
-			Identifier icon = Hud.getMobEffectSprite(effect.getEffect());
+			Identifier icon = Gui.getMobEffectSprite(effect.getEffect());
 
 			textWidth = Math.max(
 					MINECRAFT.font.width(effectString),
