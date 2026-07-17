@@ -73,7 +73,6 @@ public class NeoForgePlatformHelper implements IPlatformHelper {
 			@NotNull Identifier identifier,
 			@NotNull BiConsumer<GuiGraphicsExtractor, DeltaTracker> hudElement
 	) {
-		System.out.println("registering element");
 		eventBus.addListener((RegisterGuiLayersEvent event) -> event.registerBelow(beforeThis, identifier, hudElement::accept));
 	}
 
