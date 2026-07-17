@@ -22,7 +22,7 @@ public class ReachTickable implements Tickable {
 				MINECRAFT.hitResult != null && MINECRAFT.hitResult.getType() == HitResult.Type.ENTITY &&
 				MINECRAFT.getCameraEntity() != null) {
 
-			Vec3 lerpedPos = MINECRAFT.getCameraEntity().getPosition(0);
+			Vec3 lerpedPos = MINECRAFT.getCameraEntity().getPosition(1);
 			float eyeHeight = MINECRAFT.getCameraEntity().getEyeHeight(playerAttacking.getPose());
 			Vec3 cameraPos = new Vec3(lerpedPos.x(), lerpedPos.y() + eyeHeight, lerpedPos.z());
 
