@@ -10,7 +10,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.BossEvent;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
@@ -30,7 +29,7 @@ public class BossBar extends AbstractMovableModule {
 
 	public final @NotNull ConfigBoolean showBossBar = new ConfigBoolean(true, "flex_hud.bossbar.config.show_bossbar");
 
-	public static @Nullable LerpingBossEvent placeholderEvent;
+	public static LerpingBossEvent placeholderEvent;
 
 	public BossBar(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super("boss_bar", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
@@ -64,6 +63,11 @@ public class BossBar extends AbstractMovableModule {
 		if (MINECRAFT.level == null) {
 			((HudAccessor) MINECRAFT.gui.hud).invokeExtractBossOverlay(graphics, deltaTracker);
 		}
+	}
+
+	@Override
+	public boolean shouldRunSpeedTest() {
+		return MINECRAFT.level == null;
 	}
 
 	@Override

@@ -40,6 +40,10 @@ public abstract class AbstractMovableModule extends AbstractModule implements Hu
 		return !Modules.getInstance().isEnabled.getValue() || !this.enabled.getValue() || (!CommonClass.isEditingLayout && this.hideInF3.getValue() && MINECRAFT.debugEntries.isOverlayVisible());
 	}
 
+	public boolean shouldShowInEditLayoutScreen() {
+		return Modules.getInstance().isEnabled.getValue() && isEnabled();
+	}
+
 	public int getHeight() {
 		return this.getHeight(0);
 	}

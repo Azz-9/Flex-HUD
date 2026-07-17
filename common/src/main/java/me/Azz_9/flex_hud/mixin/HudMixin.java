@@ -22,26 +22,45 @@ import net.minecraft.util.ARGB;
 import net.minecraft.world.scores.Objective;
 
 import org.joml.Matrix3x2fStack;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import me.Azz_9.flex_hud.CommonClass;
 import me.Azz_9.flex_hud.client.modules.Modules;
 import me.Azz_9.flex_hud.client.modules.customModules.Variables;
 import me.Azz_9.flex_hud.client.modules.hud.vanilla.Crosshair;
 import me.Azz_9.flex_hud.client.modules.hud.vanilla.Scoreboard;
+import me.Azz_9.flex_hud.client.modules.hud.vanilla.Titles;
 
 @Mixin(Hud.class)
 public abstract class HudMixin {
 
+	@Shadow
+	private @Nullable Component title;
+	@Shadow
+	private @Nullable Component subtitle;
+	@Shadow
+	private int titleTime;
+	@Shadow
+	private int titleFadeInTime;
+	@Shadow
+	private int titleStayTime;
+	@Shadow
+	private int titleFadeOutTime;
+
+	@Shadow
+	public abstract Font getFont();
+
 	@Unique
-	private static final int flex_hud$PADDING = 2;
+	private TitleState flex_hud$savedTitleState;
+	@Unique
+	private static final int flex_hud$SCOREBOARD_PADDING = 2;
 
 	// trigger variables frame update on hud render
 	@Inject(method = "extractRenderState", at = @At("HEAD"))
@@ -138,10 +157,11 @@ public abstract class HudMixin {
 	// ------------------- Scoreboard -------------------
 	@Inject(method = "extractScoreboardSidebar", at = @At("HEAD"), cancellable = true)
 	private void extractScoreboardSidebar(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+		Scoreboard scoreboard = Modules.getInstance().scoreboard;
 		if (Modules.getInstance().isEnabled.getValue()
-				&& Modules.getInstance().scoreboard.enabled.getValue()
-				&& (!Modules.getInstance().scoreboard.showScoreboard.getValue()
-				|| Modules.getInstance().scoreboard.hideInF3.getValue() && MINECRAFT.debugEntries.isOverlayVisible())) {
+				&& scoreboard.enabled.getValue()
+				&& (!scoreboard.showScoreboard.getValue()
+				|| scoreboard.hideInF3.getValue() && MINECRAFT.debugEntries.isOverlayVisible())) {
 			ci.cancel();
 		}
 	}
@@ -152,9 +172,7 @@ public abstract class HudMixin {
 			name = "displayObjective"
 	)
 	private Objective modifyDisplayedObjective(Objective displayObjective) {
-		if (Modules.getInstance().isEnabled.getValue()
-				&& Modules.getInstance().scoreboard.enabled.getValue()
-				&& CommonClass.isEditingLayout) {
+		if (Modules.getInstance().scoreboard.shouldShowInEditLayoutScreen() && CommonClass.isEditingLayout) {
 			return Scoreboard.placeholderObjective;
 		}
 		return displayObjective;
@@ -215,11 +233,11 @@ public abstract class HudMixin {
 			return headerY;
 		}
 
-		scoreboard.setWidth(biggestWidth + flex_hud$PADDING * 2);
+		scoreboard.setWidth(biggestWidth + flex_hud$SCOREBOARD_PADDING * 2);
 		scoreboard.setHeight(MINECRAFT.font.lineHeight + 1 + height);
 
 		bottom.set(scoreboard.getHeight());
-		left.set(flex_hud$PADDING);
+		left.set(flex_hud$SCOREBOARD_PADDING);
 		right.set(scoreboard.getWidth());
 		backgroundColor.set(ARGB.color(0.3f, scoreboard.backgroundColor.getValue()));
 		headerBackgroundColor.set(ARGB.color(0.4f, scoreboard.backgroundColor.getValue()));
@@ -265,5 +283,213 @@ public abstract class HudMixin {
 		if (Modules.getInstance().isEnabled.getValue() && Modules.getInstance().scoreboard.enabled.getValue()) {
 			graphics.pose().popMatrix();
 		}
+	}
+
+	// ------------------- Title -------------------
+	// title
+	@ModifyArgs(
+			method = "extractTitle",
+			at = @At(
+					value = "INVOKE",
+					target = "Lorg/joml/Matrix3x2fStack;translate(FF)Lorg/joml/Matrix3x2f;",
+					ordinal = 0
+			)
+	)
+	private void removeVanillaTranslation(Args args) {
+		if (Modules.getInstance().isEnabled.getValue() && Modules.getInstance().titles.enabled.getValue()) {
+			args.set(0, 0.0F);
+			args.set(1, 0.0F);
+		}
+	}
+
+	@ModifyArgs(
+			method = "extractTitle",
+			at = @At(
+					value = "INVOKE",
+					target = "Lorg/joml/Matrix3x2fStack;scale(FF)Lorg/joml/Matrix3x2f;",
+					ordinal = 0
+			)
+	)
+	private void scaleAndTranslateTitle(Args args, GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+		Titles titles = Modules.getInstance().titles;
+
+		if (!Modules.getInstance().isEnabled.getValue() || !titles.enabled.getValue()) {
+			return;
+		}
+
+		float vanillaScaleX = args.get(0);
+		float vanillaScaleY = args.get(1);
+
+		if (title != null) {
+			titles.setWidth(0, Math.round(getFont().width(title) * vanillaScaleX));
+			titles.setHeight(0, Math.round(getFont().lineHeight * vanillaScaleY));
+		} else {
+			titles.setWidth(0, 0);
+			titles.setHeight(0, 0);
+		}
+
+		graphics.pose().translate(
+				titles.getRoundedX(0),
+				titles.getRoundedY(0)
+		);
+
+		args.set(0, vanillaScaleX * titles.getScale(0));
+		args.set(1, vanillaScaleY * titles.getScale(0));
+	}
+
+	@WrapOperation(
+			method = "extractTitle",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;textWithBackdrop(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIII)V",
+					ordinal = 0
+			)
+	)
+	private void modifyTitle(
+			GuiGraphicsExtractor instance,
+			Font font,
+			Component str,
+			int textX,
+			int textY,
+			int textWidth,
+			int textColor,
+			Operation<Void> original,
+			@Local(name = "alpha") int alpha
+	) {
+		Titles titles = Modules.getInstance().titles;
+		if (Modules.getInstance().isEnabled.getValue() && titles.enabled.getValue()) {
+			if (titles.showTitle.getValue()) {
+				titles.drawBackground(1, instance, textWidth, getFont().lineHeight, alpha / 255.0f);
+				instance.text(font, str, 0, 0, ARGB.color(alpha, titles.getColor()), titles.shadow.getValue());
+			}
+		} else {
+			original.call(instance, font, str, textX, textY, textWidth, textColor);
+		}
+	}
+
+	// subtitle
+
+	@ModifyArgs(
+			method = "extractTitle",
+			at = @At(
+					value = "INVOKE",
+					target = "Lorg/joml/Matrix3x2fStack;scale(FF)Lorg/joml/Matrix3x2f;",
+					ordinal = 1
+			)
+	)
+	private void scaleAndTranslateSubtitle(Args args, GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+		Titles titles = Modules.getInstance().titles;
+
+		if (!Modules.getInstance().isEnabled.getValue() || !titles.enabled.getValue()) {
+			return;
+		}
+
+		float vanillaScaleX = args.get(0);
+		float vanillaScaleY = args.get(1);
+
+		if (subtitle != null) {
+			titles.setWidth(1, Math.round(getFont().width(subtitle) * vanillaScaleX));
+			titles.setHeight(1, Math.round(getFont().lineHeight * vanillaScaleY));
+		} else {
+			titles.setWidth(1, 0);
+			titles.setHeight(1, 0);
+		}
+
+		graphics.pose().translate(
+				titles.getRoundedX(1),
+				titles.getRoundedY(1)
+		);
+
+		args.set(0, vanillaScaleX * titles.getScale(1));
+		args.set(1, vanillaScaleY * titles.getScale(1));
+	}
+
+	@WrapOperation(
+			method = "extractTitle",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;textWithBackdrop(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIII)V",
+					ordinal = 1
+			)
+	)
+	private void modifySubtitle(
+			GuiGraphicsExtractor instance,
+			Font font,
+			Component str,
+			int textX,
+			int textY,
+			int textWidth,
+			int textColor,
+			Operation<Void> original,
+			@Local(name = "alpha") int alpha
+	) {
+		Titles titles = Modules.getInstance().titles;
+		if (Modules.getInstance().isEnabled.getValue() && titles.enabled.getValue()) {
+			if (titles.showSubtitle.getValue()) {
+				titles.drawBackground(1, instance, textWidth, getFont().lineHeight, alpha / 255.0f);
+				instance.text(font, str, 0, 0, ARGB.color(alpha, titles.getColor()), titles.shadow.getValue());
+			}
+		} else {
+			original.call(instance, font, str, textX, textY, textWidth, textColor);
+		}
+	}
+
+	// placeholder
+	@Inject(method = "extractTitle", at = @At("HEAD"), cancellable = true)
+	private void beforeExtractTitle(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+		Titles titles = Modules.getInstance().titles;
+		if (Modules.getInstance().isEnabled.getValue()
+				&& titles.enabled.getValue()
+				&& (!titles.showTitle.getValue() && !titles.showSubtitle.getValue()
+				|| titles.hideInF3.getValue() && MINECRAFT.debugEntries.isOverlayVisible())) {
+			ci.cancel();
+			return;
+		}
+
+		if (titles.shouldShowInEditLayoutScreen() && CommonClass.isEditingLayout) {
+			flex_hud$savedTitleState = new TitleState(
+					title,
+					subtitle,
+					titleTime,
+					titleFadeInTime,
+					titleStayTime,
+					titleFadeOutTime
+			);
+
+			title = Titles.placeholderTitle;
+			subtitle = Titles.placeholderSubtitle;
+
+			titleFadeInTime = 0;
+			titleStayTime = Integer.MAX_VALUE;
+			titleFadeOutTime = 0;
+			titleTime = Integer.MAX_VALUE;
+		}
+	}
+
+	@Inject(method = "extractTitle", at = @At("RETURN"))
+	private void restoreRealTitle(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+		if (flex_hud$savedTitleState == null) {
+			return;
+		}
+
+		title = flex_hud$savedTitleState.title();
+		subtitle = flex_hud$savedTitleState.subtitle();
+		titleTime = flex_hud$savedTitleState.titleTime();
+		titleFadeInTime = flex_hud$savedTitleState.fadeInTime();
+		titleStayTime = flex_hud$savedTitleState.stayTime();
+		titleFadeOutTime = flex_hud$savedTitleState.fadeOutTime();
+
+		flex_hud$savedTitleState = null;
+	}
+
+	@Unique
+	private record TitleState(
+			@Nullable Component title,
+			@Nullable Component subtitle,
+			int titleTime,
+			int fadeInTime,
+			int stayTime,
+			int fadeOutTime
+	) {
 	}
 }
