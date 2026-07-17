@@ -39,7 +39,6 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 	private final Set<Integer> pressedKeys = new HashSet<>();
 
 	private static final float SCALE_EPSILON = 0.0001f;
-	private final int INITIAL_X, INITIAL_Y;
 	private final float INITIAL_SCALE;
 	private final double INITIAL_OFFSET_X, INITIAL_OFFSET_Y;
 	private final AbstractMovableModule.AnchorPosition INITIAL_ANCHOR_X, INITIAL_ANCHOR_Y;
@@ -78,8 +77,6 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 		);
 		this.PARENT = parent;
 		this.HUD_ELEMENT = hudElement;
-		this.INITIAL_X = hudElement.getRoundedX();
-		this.INITIAL_Y = hudElement.getRoundedY();
 		this.INITIAL_SCALE = hudElement.getScale();
 		this.INITIAL_OFFSET_X = hudElement.getOffsetX();
 		this.INITIAL_OFFSET_Y = hudElement.getOffsetY();
@@ -521,10 +518,27 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 
 	@Override
 	public boolean hasChanged() {
-		return INITIAL_X != HUD_ELEMENT.getRoundedX() || // x coord
-				INITIAL_Y != HUD_ELEMENT.getRoundedY() || // y coord
-				INITIAL_ANCHOR_X != HUD_ELEMENT.getAnchorX() || INITIAL_ANCHOR_Y != HUD_ELEMENT.getAnchorY() || // anchors
+		return getInitialRoundedX() != HUD_ELEMENT.getRoundedX() ||
+				getInitialRoundedY() != HUD_ELEMENT.getRoundedY() ||
 				Math.abs(INITIAL_SCALE - HUD_ELEMENT.getScale()) > SCALE_EPSILON; // scale
+	}
+
+	private int getInitialRoundedX() {
+		return Math.round(MovableModule.calculateClampedPosition(
+				INITIAL_OFFSET_X,
+				INITIAL_ANCHOR_X,
+				HUD_ELEMENT.getWidth() * INITIAL_SCALE,
+				MINECRAFT.getWindow().getGuiScaledWidth()
+		));
+	}
+
+	private int getInitialRoundedY() {
+		return Math.round(MovableModule.calculateClampedPosition(
+				INITIAL_OFFSET_Y,
+				INITIAL_ANCHOR_Y,
+				HUD_ELEMENT.getHeight() * INITIAL_SCALE,
+				MINECRAFT.getWindow().getGuiScaledHeight()
+		));
 	}
 
 	@Override
