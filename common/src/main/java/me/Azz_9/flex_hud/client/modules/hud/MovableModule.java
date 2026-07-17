@@ -26,51 +26,43 @@ public interface MovableModule {
 	AbstractMovableModule.AnchorPosition getAnchorY();
 
 	default float getX() {
-		int screenWidth = MINECRAFT.getWindow().getGuiScaledWidth();
-
-		if (getAnchorX() == AbstractMovableModule.AnchorPosition.START) {
-			return (float) Math.clamp(getOffsetX(), 0, Math.max(screenWidth - getScaledWidth(), 0));
-		} else if (getAnchorX() == AbstractMovableModule.AnchorPosition.CENTER) {
-			return (float) Math.clamp((screenWidth - getScaledWidth()) / 2.0 + getOffsetX(), 0, Math.max(screenWidth - getScaledWidth(), 0));
-		} else {
-			return (float) Math.clamp(screenWidth - getScaledWidth() + getOffsetX(), 0, Math.max(screenWidth - getScaledWidth(), 0));
-		}
+		return calculateClampedPosition(
+				getOffsetX(), getAnchorX(), getScaledWidth(), MINECRAFT.getWindow().getGuiScaledWidth()
+		);
 	}
 
 	default float getY() {
-		int screenHeight = MINECRAFT.getWindow().getGuiScaledHeight();
-
-		if (getAnchorY() == AbstractMovableModule.AnchorPosition.START) {
-			return (float) Math.clamp(getOffsetY(), 0, Math.max(screenHeight - getScaledHeight(), 0));
-		} else if (getAnchorY() == AbstractMovableModule.AnchorPosition.CENTER) {
-			return (float) Math.clamp((screenHeight - getScaledHeight()) / 2.0 + getOffsetY(), 0, Math.max(screenHeight - getScaledHeight(), 0));
-		} else {
-			return (float) Math.clamp(screenHeight - getScaledHeight() + getOffsetY(), 0, Math.max(screenHeight - getScaledHeight(), 0));
-		}
+		return calculateClampedPosition(
+				getOffsetY(), getAnchorY(), getScaledHeight(), MINECRAFT.getWindow().getGuiScaledHeight()
+		);
 	}
 
 	default float getXWithScale(float scale) {
-		int screenWidth = MINECRAFT.getWindow().getGuiScaledWidth();
-
-		if (getAnchorX() == AbstractMovableModule.AnchorPosition.START) {
-			return (float) getOffsetX();
-		} else if (getAnchorX() == AbstractMovableModule.AnchorPosition.CENTER) {
-			return (float) ((screenWidth - getWidth() * scale) / 2.0 + getOffsetX());
-		} else {
-			return (float) (screenWidth - getWidth() * scale + getOffsetX());
-		}
+		return (float) calculatePosition(
+				getOffsetX(), getAnchorX(), getWidth() * scale, MINECRAFT.getWindow().getGuiScaledWidth()
+		);
 	}
 
 	default float getYWithScale(float scale) {
-		int screenHeight = MINECRAFT.getWindow().getGuiScaledHeight();
+		return (float) calculatePosition(
+				getOffsetY(), getAnchorY(), getHeight() * scale, MINECRAFT.getWindow().getGuiScaledHeight()
+		);
+	}
 
-		if (getAnchorY() == AbstractMovableModule.AnchorPosition.START) {
-			return (float) getOffsetY();
-		} else if (getAnchorY() == AbstractMovableModule.AnchorPosition.CENTER) {
-			return (float) ((screenHeight - getHeight() * scale) / 2.0 + getOffsetY());
-		} else {
-			return (float) (screenHeight - getHeight() * scale + getOffsetY());
-		}
+	static double calculatePosition(double offset, AbstractMovableModule.AnchorPosition anchor, double scaledSize, int screenSize) {
+		return switch (anchor) {
+			case START -> offset;
+			case CENTER -> (screenSize - scaledSize) / 2.0 + offset;
+			case END -> screenSize - scaledSize + offset;
+		};
+	}
+
+	static float calculateClampedPosition(double offset, AbstractMovableModule.AnchorPosition anchor, double scaledSize, int screenSize) {
+		return (float) Math.clamp(
+				calculatePosition(offset, anchor, scaledSize, screenSize),
+				0,
+				Math.max(screenSize - scaledSize, 0)
+		);
 	}
 
 	default void setX(double x, AbstractMovableModule.AnchorMode modeX) {

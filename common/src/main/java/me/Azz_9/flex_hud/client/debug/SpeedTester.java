@@ -17,8 +17,8 @@ import java.util.Map;
 import me.Azz_9.flex_hud.FlexHudLogger;
 
 public class SpeedTester {
-	private static Map<String, List<Long>> times = new HashMap<>();
-	private static Map<String, Long> starts = new HashMap<>();
+	private static final Map<String, List<Long>> times = new HashMap<>();
+	private static final Map<String, Long> starts = new HashMap<>();
 	private static boolean wasKeyPressed = false;
 	private static final int MAX_SAMPLES = 200;
 
