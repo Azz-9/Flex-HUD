@@ -17,7 +17,14 @@ import me.Azz_9.flex_hud.client.tickables.ReachTickable;
 @Mixin(MultiPlayerGameMode.class)
 public abstract class MultiPlayerGameModeMixin {
 
-	@Inject(method = "attack", at = @At("HEAD"))
+	@Inject(
+			method = "attack",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/client/multiplayer/ClientPacketListener;send(Lnet/minecraft/network/protocol/Packet;)V",
+					ordinal = 0
+			)
+	)
 	private void onAttack(Player player, Entity entity, CallbackInfo ci) {
 		if (!Modules.getInstance().isEnabled.getValue() || !Modules.getInstance().reach.enabled.getValue()) {
 			return;
