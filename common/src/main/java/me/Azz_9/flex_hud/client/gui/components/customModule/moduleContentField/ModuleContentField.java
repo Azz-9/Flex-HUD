@@ -116,7 +116,6 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 	private @Nullable VariableHit hoveredVariableHit;
 	private @Nullable ConditionDisplayItem hoveredConditionItem;
 	private long hoverStartTime;
-	private @Nullable SelectionBounds selectionBounds;
 	private List<ToolbarButton> toolbarButtons = List.of();
 	@Nullable ModifierPickerPopup modifierPickerPopup;
 	@Nullable ModifierEditorPopup modifierEditorPopup;
@@ -1213,7 +1212,7 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 	}
 
 	private void refreshOverlayLayout() {
-		selectionBounds = computeSelectionBounds();
+		SelectionBounds selectionBounds = computeSelectionBounds();
 		toolbarButtons = buildToolbarButtons(selectionBounds);
 
 		if (modifierPickerPopup != null) {

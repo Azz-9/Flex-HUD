@@ -24,8 +24,6 @@ public class ConfigTextFieldWidget extends EditBox implements TrackableChange, D
 	private final ConfigString variable;
 	private final Predicate<String> IS_VALID;
 	private final List<Observer> observers;
-	@Nullable
-	private final Function<String, Tooltip> getTooltip;
 
 	public ConfigTextFieldWidget(Font font, int width, int height, ConfigString variable, List<Observer> observers, Predicate<String> isValid, @Nullable Function<String, Tooltip> getTooltip) {
 		super(font, width, height, Component.translatable("flex_hud.text_field"));
@@ -33,7 +31,6 @@ public class ConfigTextFieldWidget extends EditBox implements TrackableChange, D
 		this.variable = variable;
 		this.IS_VALID = isValid;
 		this.observers = observers;
-		this.getTooltip = getTooltip;
 
 		setValue(variable.getValue());
 
