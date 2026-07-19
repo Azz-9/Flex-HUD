@@ -87,7 +87,7 @@ public class EditLayoutScreen extends AbstractSavableScreen {
 			Modules.getMovableModules().forEach(movableModule -> {
 				if (movableModule.shouldShowInEditLayoutScreen()) {
 					if (Constants.DEBUG) {
-						movableModule.renderWithSpeedTest(graphics, DeltaTracker.ZERO);
+						movableModule.renderWithPerfTest(graphics, DeltaTracker.ZERO);
 					} else {
 						movableModule.render(graphics, DeltaTracker.ZERO);
 					}
