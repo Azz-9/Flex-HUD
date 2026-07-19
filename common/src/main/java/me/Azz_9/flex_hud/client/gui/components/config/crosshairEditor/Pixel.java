@@ -11,10 +11,10 @@ import org.jetbrains.annotations.NotNull;
 import me.Azz_9.flex_hud.client.gui.Cursors;
 
 public class Pixel extends AbstractWidget.WithInactiveMessage {
-	private CrosshairEditor crosshairEditor;
+	private final CrosshairEditor crosshairEditor;
 	private int color;
-	private int pixelX, pixelY;
-	private boolean isCenter;
+	private final int pixelX, pixelY;
+	private final boolean isCenter;
 
 	public Pixel(int x, int y, int width, int height, int color, int pixelX, int pixelY, boolean isCenter, CrosshairEditor crosshairEditor) {
 		super(x, y, width, height, Component.empty());
