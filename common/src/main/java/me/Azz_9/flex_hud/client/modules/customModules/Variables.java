@@ -18,8 +18,8 @@ import java.time.temporal.ChronoField;
 import java.util.*;
 import java.util.function.Supplier;
 
+import me.Azz_9.flex_hud.client.modules.hud.custom.Speedometer;
 import me.Azz_9.flex_hud.client.tickables.MemoryUsageTickable;
-import me.Azz_9.flex_hud.client.tickables.SpeedTickable;
 import me.Azz_9.flex_hud.utils.CpsUtils;
 import me.Azz_9.flex_hud.utils.PingUtils;
 
@@ -72,7 +72,8 @@ public class Variables {
 		register("player.direction_abbr", () -> getDirection(MINECRAFT.player).abbreviation(), FRAME);
 		register("player.direction.x", () -> getDirection(MINECRAFT.player).xSign(), FRAME);
 		register("player.direction.z", () -> getDirection(MINECRAFT.player).zSign(), FRAME);
-		register("player.speed", SpeedTickable::getSpeed, TICK);
+		register("player.speed", SafeSupplier.create(() -> Speedometer.SpeedometerUnits.MPS.convert(requireNonNull(MINECRAFT.player).getKnownSpeed().length()), 0), TICK);
+		register("player.horizontal_speed", SafeSupplier.create(() -> Speedometer.SpeedometerUnits.MPS.convert(requireNonNull(MINECRAFT.player).getKnownSpeed().horizontalDistance()), 0), TICK);
 		register("player.health", SafeSupplier.create(() -> requireNonNull(MINECRAFT.player).getHealth(), 20), TICK);
 		register("player.health_max", SafeSupplier.create(() -> requireNonNull(MINECRAFT.player).getMaxHealth(), 20), TICK);
 		register("player.health_percent", SafeSupplier.create(() -> requireNonNull(MINECRAFT.player).getMaxHealth() == 0 ? 0 : MINECRAFT.player.getHealth() / MINECRAFT.player.getMaxHealth(), 100), TICK);
