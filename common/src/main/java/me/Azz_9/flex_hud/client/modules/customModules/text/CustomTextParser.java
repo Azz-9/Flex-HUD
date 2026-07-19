@@ -363,10 +363,9 @@ public final class CustomTextParser {
 			}
 
 			if (source.charAt(cursor) == '#') {
-				cursor++;
-				while (cursor < source.length() && isHexCharacter(source.charAt(cursor))) {
+				do {
 					cursor++;
-				}
+				} while (cursor < source.length() && isHexCharacter(source.charAt(cursor)));
 				return cursor;
 			}
 

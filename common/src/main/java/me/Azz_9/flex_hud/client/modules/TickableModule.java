@@ -12,10 +12,6 @@ public interface TickableModule extends Activable {
 	void tick();
 
 	default void tickWithPerfTest() {
-		PerfTester.startTick(getClass().getSimpleName());
-
-		tick();
-
-		PerfTester.endTick(getClass().getSimpleName());
+		PerfTester.testTick(getClass().getSimpleName(), this::tick);
 	}
 }
