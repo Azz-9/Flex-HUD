@@ -9,11 +9,13 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import me.Azz_9.flex_hud.client.config.ConfigLoader;
-import me.Azz_9.flex_hud.client.debug.SpeedTester;
+import me.Azz_9.flex_hud.client.debug.PerfTester;
 import me.Azz_9.flex_hud.client.gui.screens.OptionsScreen;
 import me.Azz_9.flex_hud.client.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.modules.Modules;
@@ -41,6 +43,7 @@ public class CommonClass {
 	public static Minecraft MINECRAFT;
 
 	public static KeyMapping openOptionScreenKeyBind;
+	public static @Nullable KeyMapping printPerfTesterTimesKeyBind;
 
 	public static boolean isEditingLayout;
 
@@ -95,15 +98,22 @@ public class CommonClass {
 
 		Services.PLATFORM.registerEndClientTickEvent(() -> {
 			if (Modules.getInstance().isEnabled.getValue()) {
-				SpeedTester.tick();
-
 				Variables.tick();
 
-				TickRegistry.tickAll(MINECRAFT);
+				if (DEBUG) {
+					TickRegistry.tickAllWithPerfTest(MINECRAFT);
+				} else {
+					TickRegistry.tickAll(MINECRAFT);
+				}
+
 
 				for (TickableModule tickableModule : Modules.getTickables()) {
 					if (tickableModule.shouldTick()) {
-						tickableModule.tick();
+						if (DEBUG) {
+							tickableModule.tickWithPerfTest();
+						} else {
+							tickableModule.tick();
+						}
 					}
 				}
 			}
@@ -134,6 +144,9 @@ public class CommonClass {
 
 		// see KeyBindingMixin
 		openOptionScreenKeyBind = Services.PLATFORM.registerKeyMapping(new KeyMapping("flex_hud.controls.open_menu", InputConstants.Type.KEYSYM, InputConstants.KEY_RSHIFT, FLEX_HUD));
+		if (DEBUG) {
+			printPerfTesterTimesKeyBind = Services.PLATFORM.registerKeyMapping(new KeyMapping("Perf tester", InputConstants.Type.KEYSYM, InputConstants.KEY_I, FLEX_HUD));
+		}
 	}
 
 	private static void initCollectors() {
@@ -153,7 +166,7 @@ public class CommonClass {
 			Services.PLATFORM.registerHudElement(
 					hudElement.getLayer(),
 					Identifier.fromNamespaceAndPath(MOD_ID, hudElement.getID()),
-					DEBUG ? hudElement::renderWithSpeedTest : hudElement::render
+					DEBUG ? hudElement::renderWithPerfTest : hudElement::render
 			);
 		}
 
@@ -163,7 +176,7 @@ public class CommonClass {
 				(graphics, deltaTracker) -> {
 					for (CustomModule module : Modules.getCustomModules()) {
 						if (DEBUG) {
-							module.renderWithSpeedTest(graphics, deltaTracker);
+							module.renderWithPerfTest(graphics, deltaTracker);
 						} else {
 							module.render(graphics, deltaTracker);
 						}
@@ -175,6 +188,12 @@ public class CommonClass {
 	public static void handleKeybindsHook() {
 		while (openOptionScreenKeyBind.consumeClick()) {
 			MINECRAFT.setScreen(new OptionsScreen());
+		}
+
+		if (printPerfTesterTimesKeyBind != null) {
+			while (printPerfTesterTimesKeyBind.consumeClick()) {
+				PerfTester.print();
+			}
 		}
 	}
 
