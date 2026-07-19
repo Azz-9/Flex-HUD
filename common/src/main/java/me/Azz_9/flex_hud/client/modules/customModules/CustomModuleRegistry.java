@@ -24,6 +24,7 @@ public class CustomModuleRegistry {
 		Modules.removeCustomModule(module);
 		registered.remove(module.getID());
 		ConfigRegistry.unregisterModule(module.getID());
+		module.unload();
 	}
 
 	public static void update(CustomModule module, @NotNull String name, @NotNull String text) throws IllegalStateException {

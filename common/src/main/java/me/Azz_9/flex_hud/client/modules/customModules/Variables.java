@@ -152,8 +152,6 @@ public class Variables {
 		);
 		VARIABLES.put(key, variable);
 		UPDATE_VARIABLES.get(updateFrequency).add(variable);
-
-		variable.updateValue();
 	}
 
 	public static void tick() {
@@ -178,7 +176,9 @@ public class Variables {
 
 	private static void update(UpdateFrequency frequency) {
 		for (Variable<?> variable : UPDATE_VARIABLES.getOrDefault(frequency, List.of())) {
-			variable.updateValue();
+			if (variable.isUsed()) {
+				variable.updateValue();
+			}
 		}
 	}
 
