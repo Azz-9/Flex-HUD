@@ -32,16 +32,13 @@ public final class Variable<T> {
 		return key;
 	}
 
-	public boolean updateValue() {
+	public void updateValue() {
 		T newValue = supplier.get();
 		if (!Objects.equals(value, newValue)) {
-			value = newValue;
 			version++;
-			return true;
 		}
 
 		value = newValue;
-		return false;
 	}
 
 	public T getValue() {

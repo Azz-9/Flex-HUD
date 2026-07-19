@@ -26,10 +26,16 @@ public class PerfTester {
 	private static final double FRAME_BUDGET_NS = 1_000_000_000.0 / 60.0;
 	private static final double TICK_BUDGET_NS = 50_000_000.0;
 
-	private static List<String> getModules() {
-		List<String> modules = new ArrayList<>(frameTimes.keySet());
-		modules.addAll(tickTimes.keySet());
-		return modules;
+	public static void testFrame(String module, Runnable runnable) {
+		startFrame(module);
+		runnable.run();
+		endFrame(module);
+	}
+
+	public static void testTick(String module, Runnable runnable) {
+		startTick(module);
+		runnable.run();
+		endTick(module);
 	}
 
 	// start
@@ -72,7 +78,7 @@ public class PerfTester {
 		List<PerfResult> tickResults = createResults(tickTimes, TICK_BUDGET_NS, MAX_TICK_TIME);
 
 		if (!frameResults.isEmpty()) {
-			printHeader("Frames");
+			printHeader("Frames", frameResults.stream().mapToDouble(PerfResult::averageNs).sum(), FRAME_BUDGET_NS);
 
 			frameResults.stream()
 					.sorted(Comparator.comparingDouble(PerfResult::averageNs))
@@ -80,7 +86,7 @@ public class PerfTester {
 		}
 
 		if (!tickResults.isEmpty()) {
-			printHeader("Ticks");
+			printHeader("Ticks", tickResults.stream().mapToDouble(PerfResult::averageNs).sum(), TICK_BUDGET_NS);
 
 			tickResults.stream()
 					.sorted(Comparator.comparingDouble(PerfResult::averageNs))
@@ -115,8 +121,20 @@ public class PerfTester {
 		return results;
 	}
 
-	private static void printHeader(String name) {
-		Component text = Component.literal("=== " + name + " ===");
+	private static void printHeader(String name, double totalAverageNs, double budgetNs) {
+		double totalAverageUs = totalAverageNs / 1_000.0;
+		double totalAverageMs = totalAverageNs / 1_000_000.0;
+		double percentage = totalAverageNs / budgetNs * 100.0;
+
+		int color = getColor(percentage, 1);
+
+		Component text = Component.literal("=== " + name + ": ")
+				.append(Component.literal(String.format("%.2fµs", totalAverageUs)).withColor(color))
+				.append(", ")
+				.append(Component.literal(String.format("%.4fms", totalAverageMs)).withColor(color))
+				.append(" - ")
+				.append(Component.literal(String.format("%.4f%%", percentage)).withColor(color))
+				.append(" ===");
 
 		if (MINECRAFT.player != null) {
 			MINECRAFT.player.sendSystemMessage(text);
