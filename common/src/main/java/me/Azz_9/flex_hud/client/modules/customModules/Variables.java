@@ -18,6 +18,8 @@ import java.time.temporal.ChronoField;
 import java.util.*;
 import java.util.function.Supplier;
 
+import me.Azz_9.flex_hud.Constants;
+import me.Azz_9.flex_hud.client.debug.PerfTester;
 import me.Azz_9.flex_hud.client.modules.hud.custom.Speedometer;
 import me.Azz_9.flex_hud.client.tickables.MemoryUsageTickable;
 import me.Azz_9.flex_hud.utils.CpsUtils;
@@ -155,11 +157,19 @@ public class Variables {
 	}
 
 	public static void tick() {
-		update(TICK);
+		if (Constants.DEBUG) {
+			PerfTester.testTick("Variables", () -> update(TICK));
+		} else {
+			update(TICK);
+		}
 	}
 
 	public static void frame() {
-		update(FRAME);
+		if (Constants.DEBUG) {
+			PerfTester.testFrame("Variables", () -> update(FRAME));
+		} else {
+			update(FRAME);
+		}
 	}
 
 	public static void onJoinWorld() {
