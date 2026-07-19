@@ -38,7 +38,7 @@ public class CustomModule extends AbstractTextModule {
 	public static CustomModule fromText(@NonNull String id, @NonNull String text) {
 		CustomModule module = new CustomModule(id, text);
 
-		module.compiledText = CompiledCustomText.compile(text);
+		module.replaceCompiledText(CompiledCustomText.compile(text));
 
 		module.init();
 		return module;
@@ -90,7 +90,7 @@ public class CustomModule extends AbstractTextModule {
 
 		this.name = name;
 		this.text = text;
-		this.compiledText = CompiledCustomText.compile(text);
+		replaceCompiledText(CompiledCustomText.compile(text));
 		init();
 	}
 
@@ -99,7 +99,17 @@ public class CustomModule extends AbstractTextModule {
 	}
 
 	public void recompile() {
-		this.compiledText = CompiledCustomText.compile(text);
+		replaceCompiledText(CompiledCustomText.compile(text));
+	}
+
+	public void unload() {
+		compiledText.close();
+	}
+
+	private void replaceCompiledText(CompiledCustomText newCompiledText) {
+		CompiledCustomText oldCompiledText = compiledText;
+		compiledText = newCompiledText;
+		oldCompiledText.close();
 	}
 
 	@Override
