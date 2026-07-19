@@ -114,10 +114,18 @@ public class ArmorStatus extends AbstractTextModule {
 			return;
 		}
 
+		boolean[] booleans = new boolean[6];
+		booleans[HELMET] = showHelmet.getValue();
+		booleans[CHEST] = showChestplate.getValue();
+		booleans[LEGS] = showLeggings.getValue();
+		booleans[BOOTS] = showBoots.getValue();
+		booleans[HELD] = showHeldItem.getValue();
+		booleans[OFFHAND] = showOffHandItem.getValue();
+
 		// since 26.1 we can no longer instantiate ItemStack without a Level,
 		// so when editing the HUD outside of a world we render labels instead of items
 		if (CommonClass.isEditingLayout && MINECRAFT.level == null) {
-			renderNoWorldPlaceholder(graphics, deltaTracker);
+			renderNoWorldPlaceholder(graphics, deltaTracker, booleans);
 			return;
 		}
 
@@ -148,14 +156,6 @@ public class ArmorStatus extends AbstractTextModule {
 		// reset height and width
 		setHeight((displayMode.getValue() == DisplayMode.HORIZONTAL) ? 16 : 0);
 		setWidth(0);
-
-		boolean[] booleans = new boolean[6];
-		booleans[HELMET] = showHelmet.getValue();
-		booleans[CHEST] = showChestplate.getValue();
-		booleans[LEGS] = showLeggings.getValue();
-		booleans[BOOTS] = showBoots.getValue();
-		booleans[HELD] = showHeldItem.getValue();
-		booleans[OFFHAND] = showOffHandItem.getValue();
 
 		int hudX = 0;
 		int hudY = 0;
@@ -369,18 +369,10 @@ public class ArmorStatus extends AbstractTextModule {
 		}
 	}
 
-	private void renderNoWorldPlaceholder(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+	private void renderNoWorldPlaceholder(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, boolean[] booleans) {
 		for (DimensionHud dimensionHud : getDimensionHudList()) {
 			dimensionHud.clearMultiRenderables();
 		}
-
-		boolean[] booleans = new boolean[6];
-		booleans[HELMET] = showHelmet.getValue();
-		booleans[CHEST] = showChestplate.getValue();
-		booleans[LEGS] = showLeggings.getValue();
-		booleans[BOOTS] = showBoots.getValue();
-		booleans[HELD] = showHeldItem.getValue();
-		booleans[OFFHAND] = showOffHandItem.getValue();
 
 		boolean arrowsEnabled = showArrowsWhenBowInHand.getValue();
 		boolean separate = separateArrowTypes.getValue();
