@@ -100,12 +100,7 @@ public class CommonClass {
 			if (Modules.getInstance().isEnabled.getValue()) {
 				Variables.tick();
 
-				if (DEBUG) {
-					TickRegistry.tickAllWithPerfTest(MINECRAFT);
-				} else {
-					TickRegistry.tickAll(MINECRAFT);
-				}
-
+				TickRegistry.tickAll(MINECRAFT);
 
 				for (TickableModule tickableModule : Modules.getTickables()) {
 					if (tickableModule.shouldTick()) {

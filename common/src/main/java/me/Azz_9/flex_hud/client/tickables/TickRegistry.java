@@ -20,24 +20,14 @@ public class TickRegistry {
 	public static void tickAll(@NotNull Minecraft minecraft) {
 		for (Tickable tickable : tickables) {
 			if (tickable.shouldTick())
-				tickable.tick(minecraft);
-		}
-	}
-
-	public static void tickAllWithPerfTest(@NotNull Minecraft minecraft) {
-		for (Tickable tickable : tickables) {
-			if (tickable.shouldTick()) {
-
 				if (Constants.DEBUG) {
-					PerfTester.startTick(tickable.getClass().getSimpleName());
+					PerfTester.testTick(
+							tickable.getClass().getSimpleName(),
+							() -> tickable.tick(minecraft)
+					);
+				} else {
+					tickable.tick(minecraft);
 				}
-
-				tickable.tick(minecraft);
-
-				if (Constants.DEBUG) {
-					PerfTester.endTick(tickable.getClass().getSimpleName());
-				}
-			}
 		}
 	}
 }

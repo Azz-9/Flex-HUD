@@ -24,7 +24,7 @@ import me.Azz_9.flex_hud.client.gui.components.config.ScrollableConfigList;
 import me.Azz_9.flex_hud.client.gui.components.config.fields.ConfigTextFieldWidget;
 
 public class StringFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
-	private ConfigTextFieldWidget textFieldWidget;
+	private final ConfigTextFieldWidget textFieldWidget;
 
 	private final List<Dependency<?>> dependencies = new ArrayList<>();
 

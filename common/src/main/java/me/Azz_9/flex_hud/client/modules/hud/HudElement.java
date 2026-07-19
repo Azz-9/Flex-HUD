@@ -17,11 +17,7 @@ public interface HudElement extends Configurable {
 			return;
 		}
 
-		PerfTester.startFrame(getID());
-
-		this.render(graphics, tickCounter);
-
-		PerfTester.endFrame(getID());
+		PerfTester.testFrame(getID(), () -> render(graphics, tickCounter));
 	}
 
 	default boolean shouldRunSpeedTest() {
