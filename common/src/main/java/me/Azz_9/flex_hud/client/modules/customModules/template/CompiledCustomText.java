@@ -88,8 +88,8 @@ public final class CompiledCustomText {
 			return new ConditionNode(compiledCondition, compileSequence(conditionNode.content(), buildContext));
 		}
 
-		if (node instanceof CustomTextParser.DirectiveNode directiveNode) {
-			return new DirectiveNode(compileDirective(directiveNode.directive()));
+		if (node instanceof CustomTextParser.DirectiveNode(CustomTextParser.Directive directive)) {
+			return new DirectiveNode(compileDirective(directive));
 		}
 
 		CustomTextParser.GradientNode gradientNode = (CustomTextParser.GradientNode) node;
