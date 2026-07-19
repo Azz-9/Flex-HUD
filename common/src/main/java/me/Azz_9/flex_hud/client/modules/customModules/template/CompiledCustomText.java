@@ -1,7 +1,6 @@
 package me.Azz_9.flex_hud.client.modules.customModules.template;
 
 import static java.util.Objects.requireNonNull;
-
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
 import net.minecraft.network.chat.Component;
@@ -11,9 +10,7 @@ import net.minecraft.network.chat.TextColor;
 
 import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 
 import me.Azz_9.flex_hud.client.modules.customModules.Variable;
@@ -23,7 +20,7 @@ import me.Azz_9.flex_hud.client.modules.customModules.text.CustomCondition;
 import me.Azz_9.flex_hud.client.modules.customModules.text.CustomTextParser;
 import me.Azz_9.flex_hud.client.tickables.ChromaColorTickable;
 
-public final class CompiledCustomText {
+public final class CompiledCustomText implements AutoCloseable {
 
 	private static final int DEFAULT_STYLED_TEXT_COLOR = 0xffffff;
 
@@ -31,21 +28,25 @@ public final class CompiledCustomText {
 	private final SequenceNode root;
 	private final List<CompiledVariable> variables;
 	private final List<CompiledCondition> conditions;
+	private final List<Variable<?>> usedVariables;
 	private final boolean hasExplicitColors;
 	private final boolean hasDynamicColors;
 
 	private @Nullable RenderData cachedRenderData;
+	private boolean closed;
 
 	private CompiledCustomText(String source,
 	                           SequenceNode root,
 	                           List<CompiledVariable> variables,
 	                           List<CompiledCondition> conditions,
+	                           Set<Variable<?>> usedVariables,
 	                           boolean hasExplicitColors,
 	                           boolean hasDynamicColors) {
 		this.source = source;
 		this.root = root;
 		this.variables = List.copyOf(variables);
 		this.conditions = List.copyOf(conditions);
+		this.usedVariables = List.copyOf(usedVariables);
 		this.hasExplicitColors = hasExplicitColors;
 		this.hasDynamicColors = hasDynamicColors;
 	}
@@ -55,10 +56,32 @@ public final class CompiledCustomText {
 	}
 
 	public static CompiledCustomText compile(String source, Function<String, @Nullable Variable<?>> variableResolver) {
-		CustomTextParser.ParsedDocument parsedDocument = CustomTextParser.parse(source, variableResolver);
-		BuildContext buildContext = new BuildContext();
-		SequenceNode root = compileSequence(parsedDocument.root(), buildContext);
-		return new CompiledCustomText(source, root, buildContext.variables, buildContext.conditions, parsedDocument.hasExplicitColors(), parsedDocument.hasDynamicColors());
+		Set<Variable<?>> acquiredVariables = new LinkedHashSet<>();
+		Function<String, @Nullable Variable<?>> activatingResolver = key -> {
+			Variable<?> variable = variableResolver.apply(key);
+			if (variable != null && acquiredVariables.add(variable)) {
+				variable.acquireUsage();
+			}
+			return variable;
+		};
+
+		try {
+			CustomTextParser.ParsedDocument parsedDocument = CustomTextParser.parse(source, activatingResolver);
+			BuildContext buildContext = new BuildContext();
+			SequenceNode root = compileSequence(parsedDocument.root(), buildContext);
+
+			for (Variable<?> variable : acquiredVariables) {
+				if (!buildContext.usedVariables.contains(variable)) {
+					variable.releaseUsage();
+				}
+			}
+			acquiredVariables.retainAll(buildContext.usedVariables);
+
+			return new CompiledCustomText(source, root, buildContext.variables, buildContext.conditions, buildContext.usedVariables, parsedDocument.hasExplicitColors(), parsedDocument.hasDynamicColors());
+		} catch (RuntimeException | Error exception) {
+			acquiredVariables.forEach(Variable::releaseUsage);
+			throw exception;
+		}
 	}
 
 	private static SequenceNode compileSequence(CustomTextParser.SequenceNode sequence, BuildContext buildContext) {
@@ -75,6 +98,7 @@ public final class CompiledCustomText {
 		}
 
 		if (node instanceof CustomTextParser.VariableNode variableNode) {
+			buildContext.usedVariables.add(variableNode.variable());
 			CompiledVariable compiledVariable = new CompiledVariable(variableNode.rawPlaceholder(), variableNode.variable(), variableNode.modifiers());
 			compiledVariable.refreshIfNeeded();
 			buildContext.variables.add(compiledVariable);
@@ -82,6 +106,7 @@ public final class CompiledCustomText {
 		}
 
 		if (node instanceof CustomTextParser.ConditionNode conditionNode) {
+			buildContext.usedVariables.addAll(conditionNode.condition().dependencies());
 			CompiledCondition compiledCondition = new CompiledCondition(conditionNode.condition());
 			compiledCondition.refreshIfNeeded();
 			buildContext.conditions.add(compiledCondition);
@@ -147,6 +172,15 @@ public final class CompiledCustomText {
 
 	public String getSource() {
 		return source;
+	}
+
+	@Override
+	public void close() {
+		if (closed) {
+			return;
+		}
+		closed = true;
+		usedVariables.forEach(Variable::releaseUsage);
 	}
 
 	private RenderData buildRenderData(WidthMeasurer widthMeasurer) {
@@ -584,6 +618,7 @@ public final class CompiledCustomText {
 	private static final class BuildContext {
 		private final List<CompiledVariable> variables = new ArrayList<>();
 		private final List<CompiledCondition> conditions = new ArrayList<>();
+		private final Set<Variable<?>> usedVariables = new LinkedHashSet<>();
 	}
 
 	@FunctionalInterface
