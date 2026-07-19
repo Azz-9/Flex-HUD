@@ -9,13 +9,82 @@ import net.minecraft.network.chat.TextColor;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 import me.Azz_9.flex_hud.client.modules.customModules.Variable;
 import me.Azz_9.flex_hud.client.modules.customModules.modifiers.Modifiers;
 import me.Azz_9.flex_hud.client.modules.customModules.text.CustomCondition;
 
 public class CompiledCustomTextTest {
+
+	@Test
+	void activatesAReferencedVariableImmediatelyAndReleasesItOnClose() {
+		AtomicInteger supplierCalls = new AtomicInteger();
+		Variable<Integer> variable = new Variable<>(
+				Component.literal("tracked"),
+				Component.literal("tracked"),
+				"tracked",
+				supplierCalls::incrementAndGet
+		);
+
+		assertFalse(variable.isUsed());
+		assertNull(variable.getValue());
+
+		CompiledCustomText template = CompiledCustomText.compile(
+				"{tracked}/{tracked}",
+				key -> "tracked".equals(key) ? variable : null
+		);
+
+		assertTrue(variable.isUsed());
+		assertEquals(1, supplierCalls.get());
+		assertEquals("1/1", template.getRenderDataForTests().text().getString());
+
+		template.close();
+		assertFalse(variable.isUsed());
+	}
+
+	@Test
+	void keepsVariableActiveUntilEveryCompiledTextReleasesIt() {
+		AtomicInteger supplierCalls = new AtomicInteger();
+		Variable<Integer> variable = new Variable<>(
+				Component.literal("shared"),
+				Component.literal("shared"),
+				"shared",
+				supplierCalls::incrementAndGet
+		);
+		Function<String, Variable<?>> resolver = key -> "shared".equals(key) ? variable : null;
+
+		CompiledCustomText first = CompiledCustomText.compile("{shared}", resolver);
+		CompiledCustomText second = CompiledCustomText.compile("{shared}", resolver);
+
+		assertEquals(1, supplierCalls.get());
+		first.close();
+		assertTrue(variable.isUsed());
+
+		second.close();
+		assertFalse(variable.isUsed());
+	}
+
+	@Test
+	void initializesConditionDependenciesBeforeParsingTheirType() {
+		Variable<Integer> variable = new Variable<>(
+				Component.literal("health"),
+				Component.literal("health"),
+				"health",
+				() -> 10
+		);
+
+		try (CompiledCustomText template = CompiledCustomText.compile(
+				"{if:health>0|alive}",
+				key -> "health".equals(key) ? variable : null
+		)) {
+			assertEquals("alive", template.getRenderDataForTests().text().getString());
+		}
+
+		assertFalse(variable.isUsed());
+	}
 
 	@Test
 	void appliesModifiersAndInlineStyles() {

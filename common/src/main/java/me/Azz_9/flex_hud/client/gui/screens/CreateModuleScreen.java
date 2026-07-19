@@ -226,6 +226,7 @@ public class CreateModuleScreen extends AbstractSavableScreen {
 
 	@Override
 	public void onActuallyClose() {
+		CustomModulePreview.unload();
 		if (PARENT instanceof ModulesListScreen modulesListScreen) {
 			modulesListScreen.getModulesListWidget().setScrollAmount(parentScrollAmount);
 		}
