@@ -12,6 +12,7 @@ public final class Variable<T> {
 	private final Supplier<T> supplier;
 	private T value;
 	private long version;
+	private int usageCount;
 
 	public Variable(Component name, Component description, String key, Supplier<T> supplier) {
 		this.name = Objects.requireNonNull(name, "name");
@@ -39,6 +40,23 @@ public final class Variable<T> {
 		}
 
 		value = newValue;
+	}
+
+	public void acquireUsage() {
+		if (usageCount++ == 0) {
+			updateValue();
+		}
+	}
+
+	public void releaseUsage() {
+		if (usageCount <= 0) {
+			throw new IllegalStateException("Variable usage released too many times: " + key);
+		}
+		usageCount--;
+	}
+
+	public boolean isUsed() {
+		return usageCount > 0;
 	}
 
 	public T getValue() {

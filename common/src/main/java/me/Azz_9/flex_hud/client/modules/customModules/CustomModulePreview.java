@@ -12,11 +12,21 @@ public class CustomModulePreview {
 	private static CompiledCustomText compiledText = CompiledCustomText.compile("");
 
 	public static void unload() {
-		compiledText = CompiledCustomText.compile("");
+		replaceCompiledText(CompiledCustomText.compile(""));
 	}
 
 	public static void load(String text) {
-		compiledText = CompiledCustomText.compile(text);
+		replaceCompiledText(CompiledCustomText.compile(text));
+	}
+
+	public static void recompile() {
+		load(compiledText.getSource());
+	}
+
+	private static void replaceCompiledText(CompiledCustomText newCompiledText) {
+		CompiledCustomText oldCompiledText = compiledText;
+		compiledText = newCompiledText;
+		oldCompiledText.close();
 	}
 
 	public static void renderPreview(int x, int y, GuiGraphicsExtractor graphics, float deltaTicks) {
