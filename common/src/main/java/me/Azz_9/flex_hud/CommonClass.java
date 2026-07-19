@@ -21,6 +21,7 @@ import me.Azz_9.flex_hud.client.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.modules.Modules;
 import me.Azz_9.flex_hud.client.modules.TickableModule;
 import me.Azz_9.flex_hud.client.modules.customModules.CustomModule;
+import me.Azz_9.flex_hud.client.modules.customModules.CustomModulePreview;
 import me.Azz_9.flex_hud.client.modules.customModules.CustomModulesPersistence;
 import me.Azz_9.flex_hud.client.modules.customModules.Variables;
 import me.Azz_9.flex_hud.client.modules.customModules.modifiers.Modifiers;
@@ -94,6 +95,7 @@ public class CommonClass {
 						reloadSynchronizer.wait(null).thenRunAsync(() -> {
 							Variables.init();
 							Modules.recompileCustomModules();
+							CustomModulePreview.recompile();
 						}, applyExecutor));
 
 		Services.PLATFORM.registerEndClientTickEvent(() -> {
