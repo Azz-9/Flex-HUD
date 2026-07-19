@@ -26,10 +26,11 @@ import me.Azz_9.flex_hud.client.gui.components.config.entries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.gui.screens.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.modules.TickableModule;
 import me.Azz_9.flex_hud.client.modules.hud.AbstractTextModule;
-import me.Azz_9.flex_hud.client.tickables.SpeedTickable;
 
 public class Speedometer extends AbstractTextModule implements TickableModule {
+
 	public ConfigInteger digits = new ConfigInteger(1, "flex_hud.speedometer.config.number_of_digits", 0, 16);
+	public ConfigBoolean ignoreYSpeed = new ConfigBoolean(false, "flex_hud.speedometer.config.ignore_y_speed");
 	public ConfigEnum<SpeedometerUnits> units = new ConfigEnum<>(SpeedometerUnits.class, SpeedometerUnits.MPS, "flex_hud.speedometer.config.selected_unit");
 	public ConfigBoolean useKnotInBoat = new ConfigBoolean(false, "flex_hud.speedometer.config.use_knot_when_in_boat");
 
@@ -42,6 +43,7 @@ public class Speedometer extends AbstractTextModule implements TickableModule {
 		ConfigRegistry.register(getID(), "digits", digits);
 		ConfigRegistry.register(getID(), "units", units);
 		ConfigRegistry.register(getID(), "useKnotInBoat", useKnotInBoat);
+		ConfigRegistry.register(getID(), "ignoreYSpeed", ignoreYSpeed);
 	}
 
 	@Override
@@ -149,6 +151,11 @@ public class Speedometer extends AbstractTextModule implements TickableModule {
 								.build(),
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
+								.setVariable(ignoreYSpeed)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
 								.setVariable(useKnotInBoat)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build(),
@@ -177,14 +184,26 @@ public class Speedometer extends AbstractTextModule implements TickableModule {
 	public void tick() {
 		LocalPlayer player = MINECRAFT.player;
 
-		String format = "%." + this.digits.getValue() + "f";
-		String speed = String.format(format, CommonClass.isEditingLayout ? 0 : SpeedTickable.getSpeed());
-
-		if (this.units.getValue() == Speedometer.SpeedometerUnits.KNOT || (this.useKnotInBoat.getValue() && player != null && player.getVehicle() instanceof Boat)) {
-			formattedSpeed = speed + " " + Component.translatable(Speedometer.SpeedometerUnits.KNOT.getTranslationKey()).getString();
-		} else {
-			formattedSpeed = speed + " " + Component.translatable(this.units.getValue().getTranslationKey()).getString();
+		double speedBlocksPerTicks = 0;
+		if (player != null && !CommonClass.isEditingLayout) {
+			if (ignoreYSpeed.getValue()) {
+				speedBlocksPerTicks = player.getKnownSpeed().horizontalDistance();
+			} else {
+				speedBlocksPerTicks = player.getKnownSpeed().length();
+			}
 		}
+
+		SpeedometerUnits usedUnit = getUsedUnit();
+
+		String format = "%." + this.digits.getValue() + "f";
+		formattedSpeed = String.format(format, usedUnit.convert(speedBlocksPerTicks)) + " " + Component.translatable(usedUnit.getTranslationKey()).getString();
+	}
+
+	private SpeedometerUnits getUsedUnit() {
+		if (useKnotInBoat.getValue() && MINECRAFT.player != null && MINECRAFT.player.getVehicle() instanceof Boat) {
+			return SpeedometerUnits.KNOT;
+		}
+		return units.getValue();
 	}
 
 
@@ -193,6 +212,11 @@ public class Speedometer extends AbstractTextModule implements TickableModule {
 		KPH("flex_hud.enum.speedometer.units.kph"),
 		MPH("flex_hud.enum.speedometer.units.mph"),
 		KNOT("flex_hud.enum.speedometer.units.knots");
+
+		private static final double MPT_TO_MPS = 20;
+		private static final double MPT_TO_KNOT = MPT_TO_MPS * 1.9438452492;
+		private static final double MPT_TO_KPH = MPT_TO_MPS * 3.6;
+		private static final double MPT_TO_MPH = MPT_TO_MPS * 2.2369362921;
 
 		private final String translationKey;
 
@@ -203,6 +227,16 @@ public class Speedometer extends AbstractTextModule implements TickableModule {
 		@Override
 		public String getTranslationKey() {
 			return translationKey;
+		}
+
+		public double convert(double speedMetersPerTicks) {
+			return switch (this) {
+				case MPS -> speedMetersPerTicks * MPT_TO_MPS;
+				case KPH -> speedMetersPerTicks * MPT_TO_KPH;
+				case MPH -> speedMetersPerTicks * MPT_TO_MPH;
+				case KNOT -> speedMetersPerTicks * MPT_TO_KNOT;
+				default -> throw new IllegalStateException("Unknown speed unit");
+			};
 		}
 	}
 }
