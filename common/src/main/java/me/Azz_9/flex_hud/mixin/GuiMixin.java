@@ -80,7 +80,7 @@ public abstract class GuiMixin {
 
 	// potion effect
 	@Inject(method = "extractEffects", at = @At("HEAD"), cancellable = true)
-	private void renderStatusEffectOverlay(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+	private void extractEffects(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
 		if (Modules.getInstance().isEnabled.getValue() && Modules.getInstance().potionEffect.enabled.getValue()) {
 			ci.cancel();
 		}
@@ -196,10 +196,10 @@ public abstract class GuiMixin {
 	private MutableComponent modifyScoreString(MutableComponent original) {
 		if (Modules.getInstance().isEnabled.getValue()
 				&& Modules.getInstance().scoreboard.enabled.getValue()
-				&& Modules.getInstance().scoreboard.showScore.getValue()) {
-			return original;
+				&& !Modules.getInstance().scoreboard.showScore.getValue()) {
+			return Component.empty();
 		}
-		return Component.empty();
+		return original;
 	}
 
 	@ModifyExpressionValue(
@@ -212,10 +212,10 @@ public abstract class GuiMixin {
 	private int modifyScoreWidth(int original) {
 		if (Modules.getInstance().isEnabled.getValue()
 				&& Modules.getInstance().scoreboard.enabled.getValue()
-				&& Modules.getInstance().scoreboard.showScore.getValue()) {
-			return original;
+				&& !Modules.getInstance().scoreboard.showScore.getValue()) {
+			return 0;
 		}
-		return 0;
+		return original;
 	}
 
 	@ModifyVariable(
