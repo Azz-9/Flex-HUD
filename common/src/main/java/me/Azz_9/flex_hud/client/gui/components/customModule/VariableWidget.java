@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.client.gui.components.customModule;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.layouts.LayoutElement;
@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.Consumer;
 
 import me.Azz_9.flex_hud.client.modules.customModules.Variable;
-import me.Azz_9.flex_hud.mixin.GuiGraphicsExtractorAccessor;
+import me.Azz_9.flex_hud.mixin.GuiGraphicsAccessor;
 import me.Azz_9.flex_hud.platform.Services;
 
 public class VariableWidget implements Renderable, LayoutElement {
@@ -52,7 +52,7 @@ public class VariableWidget implements Renderable, LayoutElement {
 	}
 
 	@Override
-	public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		boolean wasHovered = hovered;
 		hovered = getX() <= mouseX && mouseX <= getRight() && getY() <= mouseY && mouseY <= getBottom();
 
@@ -64,7 +64,7 @@ public class VariableWidget implements Renderable, LayoutElement {
 			ScreenRectangle rect = Services.PLATFORM.scissorStackPeek(graphics);
 			graphics.disableScissor();
 
-			((GuiGraphicsExtractorAccessor) graphics).setDeferredTooltip(
+			((GuiGraphicsAccessor) graphics).setDeferredTooltip(
 					() -> renderDescription(graphics, mouseX, mouseY, deltaTicks)
 			);
 
@@ -74,9 +74,9 @@ public class VariableWidget implements Renderable, LayoutElement {
 		}
 
 		graphics.fill(getX(), getY(), getRight(), getBottom(), BG_COLOR);
-		graphics.outline(getX(), getY(), getWidth(), getHeight(), BORDER_COLOR);
+		graphics.renderOutline(getX(), getY(), getWidth(), getHeight(), BORDER_COLOR);
 
-		graphics.text(
+		graphics.drawString(
 				MINECRAFT.font,
 				variable.getName(),
 				getX() + (getWidth() - textWidth) / 2,
@@ -86,7 +86,7 @@ public class VariableWidget implements Renderable, LayoutElement {
 		);
 	}
 
-	private void renderDescription(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	private void renderDescription(GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		int x = getRight() + DESCRIPTION_GAP;
 		int y = getY();
 		int innerWidth = Math.min(DESCRIPTION_MAX_INNER_WIDTH, MINECRAFT.font.width(variable.getDescription()));
@@ -109,7 +109,7 @@ public class VariableWidget implements Renderable, LayoutElement {
 		}
 
 		graphics.fill(x, y, x + width, y + height, DESCRIPTION_BG_COLOR);
-		graphics.textWithWordWrap(
+		graphics.drawWordWrap(
 				MINECRAFT.font,
 				variable.getDescription(),
 				x + DESCRIPTION_PADDING,

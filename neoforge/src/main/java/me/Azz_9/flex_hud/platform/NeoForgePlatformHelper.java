@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.platform;
 
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
@@ -71,7 +71,7 @@ public class NeoForgePlatformHelper implements IPlatformHelper {
 	public void registerHudElement(
 			@NotNull Identifier beforeThis,
 			@NotNull Identifier identifier,
-			@NotNull BiConsumer<GuiGraphicsExtractor, DeltaTracker> hudElement
+			@NotNull BiConsumer<GuiGraphics, DeltaTracker> hudElement
 	) {
 		eventBus.addListener((RegisterGuiLayersEvent event) -> event.registerBelow(beforeThis, identifier, hudElement::accept));
 	}
@@ -108,7 +108,7 @@ public class NeoForgePlatformHelper implements IPlatformHelper {
 	}
 
 	@Override
-	public ScreenRectangle scissorStackPeek(@NotNull GuiGraphicsExtractor graphics) {
+	public ScreenRectangle scissorStackPeek(@NotNull GuiGraphics graphics) {
 		return graphics.peekScissorStack();
 	}
 }

@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.client.gui.components.config.buttons;
 
 import static me.Azz_9.flex_hud.Constants.MOD_ID;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.WidgetSprites;
@@ -29,14 +29,14 @@ public class ConfigResetButtonWidget extends ImageButton implements Observer {
 	}
 
 	@Override
-	public void extractContents(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
-		super.extractContents(graphics, mouseX, mouseY, delta);
+	public void renderContents(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+		super.renderContents(graphics, mouseX, mouseY, delta);
 
 		if (!this.active) {
 			graphics.fill(getX(), getY(), getRight(), getBottom(), 0xcf4e4e4e);
 		} else {
 			if (this.isHoveredOrFocused()) {
-				graphics.outline(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, Colors.WHITE);
+				graphics.renderOutline(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, Colors.WHITE);
 			}
 		}
 	}

@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.client.gui.components.customModule;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 
@@ -101,8 +101,8 @@ public class VariablesList extends AbstractSmoothScrollableList<VariablesList.En
 		}
 
 		@Override
-		public void extractContent(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
-			widget.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+		public void renderContent(@NotNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+			widget.render(graphics, mouseX, mouseY, deltaTicks);
 		}
 
 		@Override

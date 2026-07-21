@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.client.gui.screens;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
@@ -34,26 +34,26 @@ public abstract class AbstractPopupScreen extends AbstractBackNavigableScreen {
 	}
 
 	@Override
-	public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		// Suppress hover / tooltips on everything below the overlay
 		int mx = popupWidget != null ? -1 : mouseX;
 		int my = popupWidget != null ? -1 : mouseY;
 
 		renderBeforeOtherElements(graphics, mouseX, mouseY, deltaTicks);
 
-		super.extractRenderState(graphics, mx, my, deltaTicks);
+		super.render(graphics, mx, my, deltaTicks);
 
 		renderBeforePopup(graphics, mx, my, deltaTicks);
 
 		if (popupWidget != null) {
-			popupWidget.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+			popupWidget.render(graphics, mouseX, mouseY, deltaTicks);
 		}
 	}
 
-	public void renderBeforePopup(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	public void renderBeforePopup(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 	}
 
-	public void renderBeforeOtherElements(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	public void renderBeforeOtherElements(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 	}
 
 	@Override

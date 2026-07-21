@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.client.gui.components.customModule.moduleContentField;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -62,7 +62,7 @@ final class GradientPopup {
 		selector.setFocused(true);
 	}
 
-	void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	void extractRenderState(GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		host.renderPanel(graphics, bounds);
 		host.renderButtonCenterLabel(graphics, startBounds, Component.translatable("flex_hud.create_module_screen.editor.gradient_start"), startBounds.contains(mouseX, mouseY) || editingStart ? ModuleContentField.BUTTON_HOVERED_BACKGROUND : ModuleContentField.BUTTON_BACKGROUND, ModuleContentField.BUTTON_TEXT_COLOR, mouseX, mouseY);
 		host.renderButtonCenterLabel(graphics, endBounds, Component.translatable("flex_hud.create_module_screen.editor.gradient_end"), endBounds.contains(mouseX, mouseY) || !editingStart ? ModuleContentField.BUTTON_HOVERED_BACKGROUND : ModuleContentField.BUTTON_BACKGROUND, ModuleContentField.BUTTON_TEXT_COLOR, mouseX, mouseY);
@@ -70,10 +70,10 @@ final class GradientPopup {
 
 		extractColorPreview(graphics, startBounds, startColor);
 		extractColorPreview(graphics, endBounds, endColor);
-		selector.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+		selector.render(graphics, mouseX, mouseY, deltaTicks);
 	}
 
-	private void extractColorPreview(GuiGraphicsExtractor graphics, Bounds bounds, int color) {
+	private void extractColorPreview(GuiGraphics graphics, Bounds bounds, int color) {
 		graphics.fill(bounds.x() + 2, bounds.bottom() - 4, bounds.right() - 2, bounds.bottom() - 2, 0xff000000 | color);
 	}
 

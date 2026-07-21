@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.client.gui.components.config.entries;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
@@ -64,10 +64,10 @@ public class StringFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 	}
 
 	@Override
-	public void extractContent(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
-		super.extractContent(graphics, mouseX, mouseY, hovered, deltaTicks);
+	public void renderContent(@NonNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+		super.renderContent(graphics, mouseX, mouseY, hovered, deltaTicks);
 
-		textFieldWidget.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+		textFieldWidget.render(graphics, mouseX, mouseY, deltaTicks);
 	}
 
 	@Override

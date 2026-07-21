@@ -3,7 +3,7 @@ package me.Azz_9.flex_hud.client.gui.components.config.entries;
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 import static me.Azz_9.flex_hud.Constants.MOD_ID;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
@@ -95,18 +95,18 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 	}
 
 	@Override
-	public void extractContent(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
-		super.extractContent(graphics, mouseX, mouseY, hovered, deltaTicks);
+	public void renderContent(@NonNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+		super.renderContent(graphics, mouseX, mouseY, hovered, deltaTicks);
 
-		increaseButton.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+		increaseButton.render(graphics, mouseX, mouseY, deltaTicks);
 		if (!increaseButton.active) {
 			graphics.fill(increaseButton.getX(), increaseButton.getY(), increaseButton.getRight(), increaseButton.getBottom(), 0xcf4e4e4e);
 		}
-		decreaseButton.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+		decreaseButton.render(graphics, mouseX, mouseY, deltaTicks);
 		if (!decreaseButton.active) {
 			graphics.fill(decreaseButton.getX(), decreaseButton.getY(), decreaseButton.getRight(), decreaseButton.getBottom(), 0xcf4e4e4e);
 		}
-		intFieldWidget.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+		intFieldWidget.render(graphics, mouseX, mouseY, deltaTicks);
 	}
 
 	@Override

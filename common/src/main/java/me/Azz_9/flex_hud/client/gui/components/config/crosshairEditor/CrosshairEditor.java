@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.client.gui.components.config.crosshairEditor;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.StringWidget;
@@ -118,7 +118,7 @@ public class CrosshairEditor extends AbstractWidget implements Popup {
 		this.colorSelector.setFocused(false);
 
 		// clear button
-		clearButton = Button.builder(Component.translatable("flex_hud.crosshair_editor.clear"), (_) -> this.clearTexture())
+		clearButton = Button.builder(Component.translatable("flex_hud.crosshair_editor.clear"), ignored -> this.clearTexture())
 				.pos(asideX, colorButton.getBottom() + colorButtonBlockMargin)
 				.size(ASIDE_WIDTH, CLEAR_BUTTON_HEIGHT)
 				.build();
@@ -131,7 +131,7 @@ public class CrosshairEditor extends AbstractWidget implements Popup {
 				this.getBottom() - PADDING - listHeight, asideX, this
 		);
 
-		done = Button.builder(CommonComponents.GUI_DONE, _ -> {
+		done = Button.builder(CommonComponents.GUI_DONE, ignored -> {
 					if (MINECRAFT.screen instanceof AbstractPopupScreen screen) {
 						screen.closePopup();
 					}
@@ -145,7 +145,7 @@ public class CrosshairEditor extends AbstractWidget implements Popup {
 	}
 
 	@Override
-	protected void extractWidgetRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		//overlay
 		graphics.fill(0, 0, graphics.guiWidth(), graphics.guiHeight(), Colors.BLACK_TRANSPARENT);
 
@@ -153,29 +153,29 @@ public class CrosshairEditor extends AbstractWidget implements Popup {
 			graphics.requestCursor(Cursors.DEFAULT);
 		}
 
-		helpWidget.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+		helpWidget.render(graphics, mouseX, mouseY, deltaTicks);
 
 		graphics.fill(getX(), getY(), getRight(), getBottom(), 0xff4a4a4a);
 
 		for (int y = 0; y < pixels.length; y++) {
 			for (int x = 0; x < pixels[y].length; x++) {
-				pixels[y][x].extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+				pixels[y][x].render(graphics, mouseX, mouseY, deltaTicks);
 			}
 		}
 
-		colorText.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
-		colorButton.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+		colorText.render(graphics, mouseX, mouseY, deltaTicks);
+		colorButton.render(graphics, mouseX, mouseY, deltaTicks);
 
-		clearButton.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+		clearButton.render(graphics, mouseX, mouseY, deltaTicks);
 
-		graphics.text(MINECRAFT.font, Component.translatable("flex_hud.crosshair_editor.presets"), crosshairPresetsList.getX(), crosshairPresetsList.getY() - MINECRAFT.font.lineHeight - 2, Colors.WHITE);
-		crosshairPresetsList.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+		graphics.drawString(MINECRAFT.font, Component.translatable("flex_hud.crosshair_editor.presets"), crosshairPresetsList.getX(), crosshairPresetsList.getY() - MINECRAFT.font.lineHeight - 2, Colors.WHITE);
+		crosshairPresetsList.render(graphics, mouseX, mouseY, deltaTicks);
 
 		if (colorSelector.isFocused()) {
-			colorSelector.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+			colorSelector.render(graphics, mouseX, mouseY, deltaTicks);
 		}
 
-		done.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+		done.render(graphics, mouseX, mouseY, deltaTicks);
 	}
 
 	public void onTextureChange(int x, int y) {

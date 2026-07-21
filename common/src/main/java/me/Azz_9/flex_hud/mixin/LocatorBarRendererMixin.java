@@ -1,7 +1,7 @@
 package me.Azz_9.flex_hud.mixin;
 
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.contextualbar.LocatorBarRenderer;
 
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,8 +14,8 @@ import me.Azz_9.flex_hud.client.modules.Modules;
 @Mixin(LocatorBarRenderer.class)
 public abstract class LocatorBarRendererMixin {
 
-	@Inject(method = "extractBackground", at = @At("HEAD"), cancellable = true)
-	private void extractBackground(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+	@Inject(method = "renderBackground", at = @At("HEAD"), cancellable = true)
+	private void renderBackground(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
 		if (Modules.getInstance().isEnabled.getValue() &&
 				Modules.getInstance().compass.enabled.getValue() &&
 				Modules.getInstance().compass.overrideLocatorBar.getValue()) {
@@ -23,8 +23,8 @@ public abstract class LocatorBarRendererMixin {
 		}
 	}
 
-	@Inject(method = "extractRenderState", at = @At("HEAD"), cancellable = true)
-	private void extractRenderState(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
+	private void render(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
 		if (Modules.getInstance().isEnabled.getValue() &&
 				Modules.getInstance().compass.enabled.getValue() &&
 				Modules.getInstance().compass.overrideLocatorBar.getValue()) {

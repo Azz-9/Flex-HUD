@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.client.gui.components.config.buttons;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.input.KeyEvent;
@@ -45,9 +45,9 @@ public class ConfigCyclingButtonWidget<T, E extends Enum<E> & Translatable> exte
 	}
 
 	@Override
-	protected void extractContents(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
-		super.extractDefaultSprite(graphics);
-		super.extractDefaultLabel(graphics.textRenderer());
+	protected void renderContents(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
+		super.renderDefaultSprite(graphics);
+		super.renderDefaultLabel(graphics.textRenderer());
 
 		if (!this.active) {
 			graphics.fill(getX(), getY(), getRight(), getBottom(), 0xcf4e4e4e);
