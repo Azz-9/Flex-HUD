@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.client.gui.components.config.fields;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
@@ -86,13 +86,13 @@ public class ConfigIntFieldWidget extends CustomEditBox implements TrackableChan
 	}
 
 	@Override
-	public void extractWidgetRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	public void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (this.active) {
 			if (this.isHoveredOrFocused()) {
-				graphics.outline(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, Colors.WHITE);
+				graphics.renderOutline(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, Colors.WHITE);
 			}
 		}
-		super.extractWidgetRenderState(graphics, mouseX, mouseY, deltaTicks);
+		super.renderWidget(graphics, mouseX, mouseY, deltaTicks);
 		if (!this.active) {
 			graphics.fill(getX(), getY(), getRight(), getBottom(), 0xcf4e4e4e);
 		}

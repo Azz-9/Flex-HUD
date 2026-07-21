@@ -68,8 +68,8 @@ public class Variables {
 		register("player.z", SafeSupplier.create(() -> requireNonNull(MINECRAFT.player).getZ(), 0.0), TICK);
 		register("nether.player.x", SafeSupplier.create(() -> scaledNetherCoordinate(requireNonNull(MINECRAFT.player).getX()), 0), TICK);
 		register("nether.player.z", SafeSupplier.create(() -> scaledNetherCoordinate(requireNonNull(MINECRAFT.player).getZ()), 0), TICK);
-		register("player.chunk.x", SafeSupplier.create(() -> requireNonNull(MINECRAFT.player).chunkPosition().x(), 0), TICK);
-		register("player.chunk.z", SafeSupplier.create(() -> requireNonNull(MINECRAFT.player).chunkPosition().z(), 0), TICK);
+		register("player.chunk.x", SafeSupplier.create(() -> requireNonNull(MINECRAFT.player).chunkPosition().x, 0), TICK);
+		register("player.chunk.z", SafeSupplier.create(() -> requireNonNull(MINECRAFT.player).chunkPosition().z, 0), TICK);
 		register("player.direction", () -> getDirection(MINECRAFT.player).name(), FRAME);
 		register("player.direction_abbr", () -> getDirection(MINECRAFT.player).abbreviation(), FRAME);
 		register("player.direction.x", () -> getDirection(MINECRAFT.player).xSign(), FRAME);
@@ -91,16 +91,16 @@ public class Variables {
 		register("world.name", SafeSupplier.create(() -> requireNonNull(MINECRAFT.getSingleplayerServer()).getWorldData().getLevelName(), "", "World name"), ON_JOIN_WORLD);
 		register("world.biome", SafeSupplier.create(() -> requireNonNull(MINECRAFT.level).getBiome(requireNonNull(MINECRAFT.player).blockPosition()).unwrap().map(key -> key.identifier().getPath(), value -> "[unregistered " + value + "]"), "", Biomes.PLAINS.identifier().getPath()), TICK);
 		register("world.dimension", SafeSupplier.create(() -> requireNonNull(MINECRAFT.level).dimension().identifier().getPath(), "", Level.OVERWORLD.identifier().getPath()), TICK);
-		register("world.time", SafeSupplier.create(() -> requireNonNull(MINECRAFT.level).getOverworldClockTime() % 24000, 12000L), TICK);
-		register("world.time.hour_24", SafeSupplier.create(() -> ((requireNonNull(MINECRAFT.level).getOverworldClockTime() % 24000) / 1000 + 6) % 24, 18L), TICK);
+		register("world.time", SafeSupplier.create(() -> requireNonNull(MINECRAFT.level).getDayTime() % 24000, 12000L), TICK);
+		register("world.time.hour_24", SafeSupplier.create(() -> ((requireNonNull(MINECRAFT.level).getDayTime() % 24000) / 1000 + 6) % 24, 18L), TICK);
 		register("world.time.hour_12", SafeSupplier.create(() -> {
-			long h = ((requireNonNull(MINECRAFT.level).getOverworldClockTime() % 24000) / 1000 + 6) % 12;
+			long h = ((requireNonNull(MINECRAFT.level).getDayTime() % 24000) / 1000 + 6) % 12;
 			return h == 0 ? 12 : h;
 		}, 18L), TICK);
-		register("world.time.minute", SafeSupplier.create(() -> (requireNonNull(MINECRAFT.level).getOverworldClockTime() % 1000) * 60 / 1000, 0L), TICK);
-		register("world.time.second", SafeSupplier.create(() -> (requireNonNull(MINECRAFT.level).getOverworldClockTime() % 1000) * 60 % 1000 * 60 / 1000, 0L), TICK);
-		register("world.time.ampm", SafeSupplier.create(() -> (requireNonNull(MINECRAFT.level).getOverworldClockTime() / 1000 + 6) % 24 < 12 ? "AM" : "PM", "AM"), TICK);
-		register("world.day", SafeSupplier.create(() -> requireNonNull(MINECRAFT.level).getOverworldClockTime() / 24000, 5), TICK);
+		register("world.time.minute", SafeSupplier.create(() -> (requireNonNull(MINECRAFT.level).getDayTime() % 1000) * 60 / 1000, 0L), TICK);
+		register("world.time.second", SafeSupplier.create(() -> (requireNonNull(MINECRAFT.level).getDayTime() % 1000) * 60 % 1000 * 60 / 1000, 0L), TICK);
+		register("world.time.ampm", SafeSupplier.create(() -> (requireNonNull(MINECRAFT.level).getDayTime() / 1000 + 6) % 24 < 12 ? "AM" : "PM", "AM"), TICK);
+		register("world.day", SafeSupplier.create(() -> requireNonNull(MINECRAFT.level).getDayTime() / 24000, 5), TICK);
 	}
 
 	private static void registerServerVariables() {

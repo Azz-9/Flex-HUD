@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.client.gui.components.customModule.moduleContentField;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
@@ -135,11 +135,11 @@ final class ModifierPickerPopup {
 		return bounds.y() + ModuleContentField.POPUP_PADDING + MINECRAFT.font.lineHeight + ModuleContentField.POPUP_GAP + SEARCH_FIELD_HEIGHT + ModuleContentField.POPUP_GAP;
 	}
 
-	void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	void render(GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		updateScrollAnimation();
 
 		host.renderPanel(graphics, bounds);
-		graphics.text(
+		graphics.drawString(
 				MINECRAFT.font,
 				Component.translatable("flex_hud.create_module_screen.editor.add_modifier"),
 				bounds.x() + ModuleContentField.POPUP_PADDING,
@@ -147,10 +147,10 @@ final class ModifierPickerPopup {
 				ModuleContentField.TEXT_COLOR,
 				false
 		);
-		searchField.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+		searchField.render(graphics, mouseX, mouseY, deltaTicks);
 
 		if (entries.isEmpty()) {
-			graphics.text(
+			graphics.drawString(
 					MINECRAFT.font,
 					Component.translatable("flex_hud.create_module_screen.editor.no_modifier_available"),
 					bounds.x() + ModuleContentField.POPUP_PADDING,
@@ -186,7 +186,7 @@ final class ModifierPickerPopup {
 		}
 	}
 
-	private void renderScrollbar(GuiGraphicsExtractor graphics, int vpOriginY, double mouseX, double mouseY) {
+	private void renderScrollbar(GuiGraphics graphics, int vpOriginY, double mouseX, double mouseY) {
 		int trackX = bounds.x() + bounds.width() - ModuleContentField.POPUP_PADDING - SCROLLBAR_WIDTH;
 		int trackHeight = viewportHeight;
 		float ratio = (float) viewportHeight / contentHeight;

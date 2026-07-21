@@ -3,7 +3,7 @@ package me.Azz_9.flex_hud.client.modules.hud.custom;
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -53,7 +53,7 @@ public class InventoryDisplay extends AbstractMovableModule {
 	}
 
 	@Override
-	public void render(GuiGraphicsExtractor graphics, DeltaTracker tickCounter) {
+	public void render(GuiGraphics graphics, DeltaTracker tickCounter) {
 		if (shouldNotRender() || !CommonClass.isEditingLayout && MINECRAFT.player == null) {
 			return;
 		}
@@ -89,12 +89,12 @@ public class InventoryDisplay extends AbstractMovableModule {
 					ItemStack stack = inventory.get(NUM_COLS * row + col);
 					int x = PADDING + col * ITEM_SIZE;
 					int y = PADDING + row * ITEM_SIZE;
-					graphics.item(stack, x, y);
-					graphics.itemDecorations(MINECRAFT.font, stack, x, y, stack.getCount() > 1 ? String.valueOf(stack.getCount()) : null);
+					graphics.renderItem(stack, x, y);
+					graphics.renderItemDecorations(MINECRAFT.font, stack, x, y, stack.getCount() > 1 ? String.valueOf(stack.getCount()) : null);
 				}
 			}
 		} else {
-			graphics.text(
+			graphics.drawString(
 					MINECRAFT.font, getName(),
 					(getWidth() - MINECRAFT.font.width(getName())) / 2,
 					(getHeight() - MINECRAFT.font.lineHeight) / 2,

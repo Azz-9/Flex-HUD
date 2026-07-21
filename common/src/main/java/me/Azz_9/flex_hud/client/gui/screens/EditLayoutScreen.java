@@ -3,7 +3,7 @@ package me.Azz_9.flex_hud.client.gui.screens;
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -75,14 +75,14 @@ public class EditLayoutScreen extends AbstractSavableScreen {
 	}
 
 	@Override
-	public void extractBackground(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+	public void renderBackground(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float a) {
 		if (this.minecraft.level == null) {
-			this.extractPanorama(graphics, a);
+			this.renderPanorama(graphics, a);
 		}
 	}
 
 	@Override
-	public void renderBeforeOtherElements(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	public void renderBeforeOtherElements(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (MINECRAFT.level == null) {
 			Modules.getMovableModules().forEach(movableModule -> {
 				if (movableModule.shouldShowInEditLayoutScreen()) {

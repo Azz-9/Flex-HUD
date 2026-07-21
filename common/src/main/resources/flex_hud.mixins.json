@@ -2,7 +2,7 @@
 	"required": true,
 	"minVersion": "0.8",
 	"package": "me.Azz_9.flex_hud.mixin",
-	"compatibilityLevel": "JAVA_25",
+	"compatibilityLevel": "JAVA_21",
 	"mixins": [
 		"LevelMixin"
 	],
@@ -12,7 +12,7 @@
 		"ClientLevelMixin",
 		"ClientPacketListenerMixin",
 		"GuiAccessor",
-		"GuiGraphicsExtractorAccessor",
+		"GuiGraphicsAccessor",
 		"GuiMixin",
 		"KeyboardHandlerMixin",
 		"KeyMappingAccessor",
@@ -30,4 +30,3 @@
 		"requireAnnotations": true
 	}
 }
-

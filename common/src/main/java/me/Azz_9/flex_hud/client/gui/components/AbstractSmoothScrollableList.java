@@ -1,7 +1,7 @@
 package me.Azz_9.flex_hud.client.gui.components;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.util.Mth;
 
@@ -38,9 +38,9 @@ public abstract class AbstractSmoothScrollableList<E extends ContainerObjectSele
 	}
 
 	@Override
-	protected void extractListItems(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+	protected void renderListItems(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
 		if (externalSmoothDetected) {
-			super.extractListItems(graphics, mouseX, mouseY, delta);
+			super.renderListItems(graphics, mouseX, mouseY, delta);
 			return;
 		}
 
@@ -57,7 +57,7 @@ public abstract class AbstractSmoothScrollableList<E extends ContainerObjectSele
 		currentScroll = Mth.clamp(currentScroll, 0.0, this.maxScrollAmount());
 
 		super.setScrollAmount(currentScroll);
-		super.extractListItems(graphics, mouseX, mouseY, delta);
+		super.renderListItems(graphics, mouseX, mouseY, delta);
 	}
 
 	@Override

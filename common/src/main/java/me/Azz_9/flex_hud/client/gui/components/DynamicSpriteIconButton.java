@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.client.gui.components;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
@@ -23,8 +23,8 @@ public class DynamicSpriteIconButton extends Button {
 	}
 
 	@Override
-	protected void extractContents(@NotNull GuiGraphicsExtractor graphics, int i, int i1, float v) {
-		super.extractDefaultSprite(graphics);
+	protected void renderContents(@NotNull GuiGraphics graphics, int i, int i1, float v) {
+		super.renderDefaultSprite(graphics);
 
 		if (sprite == null) return;
 

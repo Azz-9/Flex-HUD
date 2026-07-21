@@ -1,6 +1,6 @@
 plugins {
 	id 'multiloader-loader'
-	id 'net.fabricmc.fabric-loom'
+	id 'net.fabricmc.fabric-loom-remap'
 }
 
 def includeModMenu = project.hasProperty("launch_with_modmenu") && project.launch_with_modmenu.toBoolean()
@@ -17,22 +17,26 @@ repositories {
 
 dependencies {
 	minecraft("com.mojang:minecraft:${minecraft_version}")
-	implementation("net.fabricmc:fabric-loader:${fabric_loader_version}")
-	implementation("net.fabricmc.fabric-api:fabric-api:${fabric_version}")
+	mappings loom.layered {
+		officialMojangMappings()
+		parchment("org.parchmentmc.data:parchment-${parchment_minecraft}:${parchment_version}@zip")
+	}
+	modImplementation("net.fabricmc:fabric-loader:${fabric_loader_version}")
+	modImplementation("net.fabricmc.fabric-api:fabric-api:${fabric_version}")
 
 	if (includeModMenu) {
-		implementation("com.terraformersmc:modmenu:${project.modmenu_version}")
+		modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
 	} else {
-		compileOnly("com.terraformersmc:modmenu:${project.modmenu_version}")
+		modCompileOnly("com.terraformersmc:modmenu:${project.modmenu_version}")
 	}
 
 	if (includeXaero) {
-		implementation "xaero.minimap:xaerominimap-fabric-${project.xaero_minimap_version}"
+		modImplementation "xaero.minimap:xaerominimap-fabric-${project.xaero_minimap_version}"
 	} else {
-		compileOnly "xaero.minimap:xaerominimap-fabric-${project.xaero_minimap_version}"
+		modCompileOnly "xaero.minimap:xaerominimap-fabric-${project.xaero_minimap_version}"
 	}
 
-	compileOnly "info.journeymap:journeymap-api-fabric:${project.journeymap_api_version}"
+	modCompileOnly "info.journeymap:journeymap-api-fabric:${project.journeymap_api_version}"
 }
 
 loom {

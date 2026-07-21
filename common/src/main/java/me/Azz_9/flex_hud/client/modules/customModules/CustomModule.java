@@ -3,7 +3,7 @@ package me.Azz_9.flex_hud.client.modules.customModules;
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -50,7 +50,7 @@ public class CustomModule extends AbstractTextModule {
 	}
 
 	@Override
-	public void render(GuiGraphicsExtractor graphics, DeltaTracker tickCounter) {
+	public void render(GuiGraphics graphics, DeltaTracker tickCounter) {
 		if (shouldNotRender()) {
 			return;
 		}
@@ -65,7 +65,7 @@ public class CustomModule extends AbstractTextModule {
 
 		drawBackground(graphics);
 
-		graphics.text(
+		graphics.drawString(
 				MINECRAFT.font,
 				renderData.text(),
 				0, 0,

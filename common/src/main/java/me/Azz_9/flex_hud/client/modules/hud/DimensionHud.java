@@ -1,7 +1,7 @@
 package me.Azz_9.flex_hud.client.modules.hud;
 
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -126,7 +126,7 @@ public class DimensionHud implements MovableModule {
 		this.multiRenderables.add(multiRenderable);
 	}
 
-	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
 		if (isDisplayed()) {
 			for (MultiRenderable multiRenderable : multiRenderables) {
 				multiRenderable.render(graphics, deltaTracker);

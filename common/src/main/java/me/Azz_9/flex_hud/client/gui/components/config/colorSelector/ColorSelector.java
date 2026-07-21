@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.client.gui.components.config.colorSelector;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.input.CharacterEvent;
@@ -56,7 +56,7 @@ public class ColorSelector extends ColorUpdatable implements GuiEventListener, R
 	}
 
 	@Override
-	public void extractRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	public void render(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (this.isMouseOver(mouseX, mouseY)) {
 			graphics.requestCursor(Cursors.DEFAULT);
 		}
@@ -64,9 +64,9 @@ public class ColorSelector extends ColorUpdatable implements GuiEventListener, R
 		int backgroundColor = 0xff1e1f22;
 		graphics.fill(getX(), getY(), getRight(), getBottom(), backgroundColor);
 
-		gradientWidget.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
-		hueWidget.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
-		colorFieldWidget.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+		gradientWidget.render(graphics, mouseX, mouseY, deltaTicks);
+		hueWidget.render(graphics, mouseX, mouseY, deltaTicks);
+		colorFieldWidget.render(graphics, mouseX, mouseY, deltaTicks);
 	}
 
 	public void updatePosition(int scrollableListTop) {

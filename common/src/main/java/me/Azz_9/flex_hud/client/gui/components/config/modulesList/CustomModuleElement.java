@@ -5,7 +5,7 @@ import static me.Azz_9.flex_hud.Constants.MOD_ID;
 
 import com.google.common.collect.ImmutableList;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.SpriteIconButton;
 import net.minecraft.client.gui.components.Tooltip;
@@ -98,10 +98,10 @@ public class CustomModuleElement extends ModuleElement {
 	}
 
 	@Override
-	public void renderButton(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	public void renderButton(GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		super.renderButton(graphics, mouseX, mouseY, deltaTicks);
-		editButton.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
-		deleteButton.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+		editButton.render(graphics, mouseX, mouseY, deltaTicks);
+		deleteButton.render(graphics, mouseX, mouseY, deltaTicks);
 	}
 
 	@Override

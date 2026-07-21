@@ -3,7 +3,7 @@ package me.Azz_9.flex_hud.client.gui.components.config.colorSelector;
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 import static me.Azz_9.flex_hud.Constants.MOD_ID;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -40,7 +40,7 @@ public class GradientWidget extends AbstractWidget.WithInactiveMessage {
 	}
 
 	@Override
-	protected void extractWidgetRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	protected void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (this.isActive() && this.isHovered()) {
 			graphics.requestCursor(Cursors.CROSSHAIR);
 		}
@@ -63,7 +63,7 @@ public class GradientWidget extends AbstractWidget.WithInactiveMessage {
 		matrices.popMatrix();
 	}
 
-	private void renderGradient(GuiGraphicsExtractor graphics) {
+	private void renderGradient(GuiGraphics graphics) {
 		for (int x = 0; x < getWidth(); x++) {
 			float saturation = x / (float) getWidth();
 

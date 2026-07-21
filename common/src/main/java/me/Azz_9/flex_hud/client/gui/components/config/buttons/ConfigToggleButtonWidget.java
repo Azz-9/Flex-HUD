@@ -3,7 +3,7 @@ package me.Azz_9.flex_hud.client.gui.components.config.buttons;
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 import static me.Azz_9.flex_hud.Constants.MOD_ID;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
@@ -69,14 +69,14 @@ public class ConfigToggleButtonWidget extends Button implements TrackableChange,
 	}
 
 	@Override
-	public void extractContents(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+	public void renderContents(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
 		if (this.active) {
 			if (this.isHovered()) graphics.requestCursor(Cursors.POINTING_HAND);
 
 			drawSelectedTexture(graphics);
 
 			if (this.isHoveredOrFocused()) {
-				graphics.outline(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+				graphics.renderOutline(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
 			}
 		}
 
@@ -91,7 +91,7 @@ public class ConfigToggleButtonWidget extends Button implements TrackableChange,
 		}
 	}
 
-	private void drawSelectedTexture(GuiGraphicsExtractor graphics) {
+	private void drawSelectedTexture(GuiGraphics graphics) {
 		boolean currentlyHovered = this.isHovered();
 
 		// Handle transition triggers

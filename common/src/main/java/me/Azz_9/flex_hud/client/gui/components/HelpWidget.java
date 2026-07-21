@@ -4,7 +4,7 @@ import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 import static me.Azz_9.flex_hud.Constants.MOD_ID;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -43,7 +43,7 @@ public class HelpWidget extends AbstractWidget.WithInactiveMessage {
 	}
 
 	@Override
-	protected void extractWidgetRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+	protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
 		if (this.isHovered() && this.isActive()) {
 			graphics.requestCursor(Cursors.POINTING_HAND);
 		}
@@ -82,13 +82,13 @@ public class HelpWidget extends AbstractWidget.WithInactiveMessage {
 
 			int textY = popupY + POPUP_PADDING;
 			for (Component helpLine : helpLines) {
-				graphics.textWithWordWrap(font, helpLine, popupX + POPUP_PADDING, textY, textWidth, ARGB.color(easedProgress, TEXT_COLOR), false);
+				graphics.drawWordWrap(font, helpLine, popupX + POPUP_PADDING, textY, textWidth, ARGB.color(easedProgress, TEXT_COLOR), false);
 				textY += font.wordWrapHeight(helpLine, textWidth) + LINE_SPACING;
 			}
 		}
 	}
 
-	private void renderArrow(GuiGraphicsExtractor graphics, float easedProgress) {
+	private void renderArrow(GuiGraphics graphics, float easedProgress) {
 		int arrowSize = 6;
 
 		graphics.enableScissor(getX(), getY() - POPUP_MARGIN_BOTTOM, getRight(), getY() - POPUP_MARGIN_BOTTOM + arrowSize);

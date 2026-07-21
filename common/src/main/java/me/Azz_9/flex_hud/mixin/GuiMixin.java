@@ -2,7 +2,6 @@ package me.Azz_9.flex_hud.mixin;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -13,10 +12,9 @@ import com.mojang.blaze3d.pipeline.RenderPipeline;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.scores.Objective;
@@ -63,8 +61,8 @@ public abstract class GuiMixin {
 	private static final int flex_hud$SCOREBOARD_PADDING = 2;
 
 	// trigger variables frame update on hud render
-	@Inject(method = "extractRenderState", at = @At("HEAD"))
-	private void extractRenderState(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+	@Inject(method = "render", at = @At("HEAD"))
+	private void render(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
 		Variables.frame();
 	}
 
@@ -79,8 +77,8 @@ public abstract class GuiMixin {
 	}
 
 	// potion effect
-	@Inject(method = "extractEffects", at = @At("HEAD"), cancellable = true)
-	private void renderStatusEffectOverlay(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+	@Inject(method = "renderEffects", at = @At("HEAD"), cancellable = true)
+	private void renderEffects(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
 		if (Modules.getInstance().isEnabled.getValue() && Modules.getInstance().potionEffect.enabled.getValue()) {
 			ci.cancel();
 		}
@@ -88,15 +86,15 @@ public abstract class GuiMixin {
 
 	// ------------------- Crosshair -------------------
 	@WrapOperation(
-			method = "extractCrosshair",
+			method = "renderCrosshair",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIII)V",
+					target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIII)V",
 					ordinal = 0
 			)
 	)
 	private void replaceCrosshair(
-			GuiGraphicsExtractor graphics,
+			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
 			Identifier location,
 			int x,
@@ -115,10 +113,10 @@ public abstract class GuiMixin {
 	}
 
 	@ModifyArg(
-			method = "extractCrosshair",
+			method = "renderCrosshair",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIII)V",
+					target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIII)V",
 					ordinal = 1
 			),
 			index = 0
@@ -128,10 +126,10 @@ public abstract class GuiMixin {
 	}
 
 	@ModifyArg(
-			method = "extractCrosshair",
+			method = "renderCrosshair",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIII)V",
+					target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIII)V",
 					ordinal = 2
 			),
 			index = 0
@@ -141,10 +139,10 @@ public abstract class GuiMixin {
 	}
 
 	@ModifyArg(
-			method = "extractCrosshair",
+			method = "renderCrosshair",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIIIIIII)V"
+					target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIIIIIII)V"
 			),
 			index = 0
 	)
@@ -163,8 +161,8 @@ public abstract class GuiMixin {
 	}
 
 	// ------------------- Scoreboard -------------------
-	@Inject(method = "extractScoreboardSidebar", at = @At("HEAD"), cancellable = true)
-	private void extractScoreboardSidebar(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+	@Inject(method = "renderScoreboardSidebar", at = @At("HEAD"), cancellable = true)
+	private void renderScoreboardSidebar(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
 		Scoreboard scoreboard = Modules.getInstance().scoreboard;
 		if (Modules.getInstance().isEnabled.getValue()
 				&& scoreboard.enabled.getValue()
@@ -175,9 +173,9 @@ public abstract class GuiMixin {
 	}
 
 	@ModifyVariable(
-			method = "extractScoreboardSidebar",
+			method = "renderScoreboardSidebar",
 			at = @At("STORE"),
-			name = "displayObjective"
+			index = 6
 	)
 	private Objective modifyDisplayedObjective(Objective displayObjective) {
 		if (Modules.getInstance().scoreboard.shouldShowInEditLayoutScreen() && CommonClass.isEditingLayout) {
@@ -186,54 +184,22 @@ public abstract class GuiMixin {
 		return displayObjective;
 	}
 
-	@ModifyExpressionValue(
-			method = "lambda$displayScoreboardSidebar$1",
-			at = @At(
-					value = "INVOKE",
-					target = "Lnet/minecraft/world/scores/PlayerScoreEntry;formatValue(Lnet/minecraft/network/chat/numbers/NumberFormat;)Lnet/minecraft/network/chat/MutableComponent;"
-			)
-	)
-	private MutableComponent modifyScoreString(MutableComponent original) {
-		if (Modules.getInstance().isEnabled.getValue()
-				&& Modules.getInstance().scoreboard.enabled.getValue()
-				&& Modules.getInstance().scoreboard.showScore.getValue()) {
-			return original;
-		}
-		return Component.empty();
-	}
-
-	@ModifyExpressionValue(
-			method = "lambda$displayScoreboardSidebar$1",
-			at = @At(
-					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/Font;width(Lnet/minecraft/network/chat/FormattedText;)I"
-			)
-	)
-	private int modifyScoreWidth(int original) {
-		if (Modules.getInstance().isEnabled.getValue()
-				&& Modules.getInstance().scoreboard.enabled.getValue()
-				&& Modules.getInstance().scoreboard.showScore.getValue()) {
-			return original;
-		}
-		return 0;
-	}
-
 	@ModifyVariable(
 			method = "displayScoreboardSidebar",
 			at = @At("STORE"),
-			name = "headerY"
+			index = 19
 	)
 	private int beforeRender(
 			int headerY,
-			GuiGraphicsExtractor graphics,
+			GuiGraphics graphics,
 			Objective objective,
-			@Local(name = "biggestWidth") int biggestWidth,
-			@Local(name = "height") int height,
-			@Local(name = "bottom") LocalIntRef bottom,
-			@Local(name = "left") LocalIntRef left,
-			@Local(name = "right") LocalIntRef right,
-			@Local(name = "backgroundColor") LocalIntRef backgroundColor,
-			@Local(name = "headerBackgroundColor") LocalIntRef headerBackgroundColor
+			@Local(index = 10) int biggestWidth,
+			@Local(index = 12) int height,
+			@Local(index = 13) LocalIntRef bottom,
+			@Local(index = 15) LocalIntRef left,
+			@Local(index = 16) LocalIntRef right,
+			@Local(index = 17) LocalIntRef backgroundColor,
+			@Local(index = 18) LocalIntRef headerBackgroundColor
 	) {
 		Scoreboard scoreboard = Modules.getInstance().scoreboard;
 
@@ -262,10 +228,10 @@ public abstract class GuiMixin {
 			method = "displayScoreboardSidebar",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;fill(IIIII)V"
+					target = "Lnet/minecraft/client/gui/GuiGraphics;fill(IIIII)V"
 			)
 	)
-	private boolean conditionBackground(GuiGraphicsExtractor instance, int x0, int y0, int x1, int y1, int col) {
+	private boolean conditionBackground(GuiGraphics instance, int x0, int y0, int x1, int y1, int col) {
 		return !Modules.getInstance().isEnabled.getValue()
 				|| !Modules.getInstance().scoreboard.enabled.getValue()
 				|| Modules.getInstance().scoreboard.drawBackground.getValue();
@@ -275,10 +241,10 @@ public abstract class GuiMixin {
 			method = "displayScoreboardSidebar",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;text(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIIZ)V"
+					target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIIZ)V"
 			)
 	)
-	private void textShadow(GuiGraphicsExtractor instance, Font font, Component str, int x, int y, int color, boolean dropShadow, Operation<Void> original) {
+	private void textShadow(GuiGraphics instance, Font font, Component str, int x, int y, int color, boolean dropShadow, Operation<Void> original) {
 		if (Modules.getInstance().isEnabled.getValue() && Modules.getInstance().scoreboard.enabled.getValue()) {
 			original.call(instance, font, str, x, y, color, Modules.getInstance().scoreboard.shadow.getValue());
 		} else {
@@ -287,7 +253,7 @@ public abstract class GuiMixin {
 	}
 
 	@Inject(method = "displayScoreboardSidebar", at = @At("RETURN"))
-	private void popMatrix(GuiGraphicsExtractor graphics, Objective objective, CallbackInfo ci) {
+	private void popMatrix(GuiGraphics graphics, Objective objective, CallbackInfo ci) {
 		if (Modules.getInstance().isEnabled.getValue() && Modules.getInstance().scoreboard.enabled.getValue()) {
 			graphics.pose().popMatrix();
 		}
@@ -296,7 +262,7 @@ public abstract class GuiMixin {
 	// ------------------- Title -------------------
 	// title
 	@ModifyArgs(
-			method = "extractTitle",
+			method = "renderTitle",
 			at = @At(
 					value = "INVOKE",
 					target = "Lorg/joml/Matrix3x2fStack;translate(FF)Lorg/joml/Matrix3x2f;",
@@ -311,14 +277,14 @@ public abstract class GuiMixin {
 	}
 
 	@ModifyArgs(
-			method = "extractTitle",
+			method = "renderTitle",
 			at = @At(
 					value = "INVOKE",
 					target = "Lorg/joml/Matrix3x2fStack;scale(FF)Lorg/joml/Matrix3x2f;",
 					ordinal = 0
 			)
 	)
-	private void scaleAndTranslateTitle(Args args, GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+	private void scaleAndTranslateTitle(Args args, GuiGraphics graphics, DeltaTracker deltaTracker) {
 		Titles titles = Modules.getInstance().titles;
 
 		if (!Modules.getInstance().isEnabled.getValue() || !titles.enabled.getValue()) {
@@ -346,15 +312,15 @@ public abstract class GuiMixin {
 	}
 
 	@WrapOperation(
-			method = "extractTitle",
+			method = "renderTitle",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;textWithBackdrop(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIII)V",
+					target = "Lnet/minecraft/client/gui/GuiGraphics;drawStringWithBackdrop(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIII)V",
 					ordinal = 0
 			)
 	)
 	private void modifyTitle(
-			GuiGraphicsExtractor instance,
+			GuiGraphics instance,
 			Font font,
 			Component str,
 			int textX,
@@ -362,13 +328,13 @@ public abstract class GuiMixin {
 			int textWidth,
 			int textColor,
 			Operation<Void> original,
-			@Local(name = "alpha") int alpha
+			@Local(index = 5) int alpha
 	) {
 		Titles titles = Modules.getInstance().titles;
 		if (Modules.getInstance().isEnabled.getValue() && titles.enabled.getValue()) {
 			if (titles.showTitle.getValue()) {
 				titles.drawBackground(1, instance, textWidth, getFont().lineHeight, alpha / 255.0f);
-				instance.text(font, str, 0, 0, ARGB.color(alpha, titles.getColor()), titles.shadow.getValue());
+				instance.drawString(font, str, 0, 0, ARGB.color(alpha, titles.getColor()), titles.shadow.getValue());
 			}
 		} else {
 			original.call(instance, font, str, textX, textY, textWidth, textColor);
@@ -378,14 +344,14 @@ public abstract class GuiMixin {
 	// subtitle
 
 	@ModifyArgs(
-			method = "extractTitle",
+			method = "renderTitle",
 			at = @At(
 					value = "INVOKE",
 					target = "Lorg/joml/Matrix3x2fStack;scale(FF)Lorg/joml/Matrix3x2f;",
 					ordinal = 1
 			)
 	)
-	private void scaleAndTranslateSubtitle(Args args, GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+	private void scaleAndTranslateSubtitle(Args args, GuiGraphics graphics, DeltaTracker deltaTracker) {
 		Titles titles = Modules.getInstance().titles;
 
 		if (!Modules.getInstance().isEnabled.getValue() || !titles.enabled.getValue()) {
@@ -413,15 +379,15 @@ public abstract class GuiMixin {
 	}
 
 	@WrapOperation(
-			method = "extractTitle",
+			method = "renderTitle",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;textWithBackdrop(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIII)V",
+					target = "Lnet/minecraft/client/gui/GuiGraphics;drawStringWithBackdrop(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIII)V",
 					ordinal = 1
 			)
 	)
 	private void modifySubtitle(
-			GuiGraphicsExtractor instance,
+			GuiGraphics instance,
 			Font font,
 			Component str,
 			int textX,
@@ -429,13 +395,13 @@ public abstract class GuiMixin {
 			int textWidth,
 			int textColor,
 			Operation<Void> original,
-			@Local(name = "alpha") int alpha
+			@Local(index = 5) int alpha
 	) {
 		Titles titles = Modules.getInstance().titles;
 		if (Modules.getInstance().isEnabled.getValue() && titles.enabled.getValue()) {
 			if (titles.showSubtitle.getValue()) {
 				titles.drawBackground(1, instance, textWidth, getFont().lineHeight, alpha / 255.0f);
-				instance.text(font, str, 0, 0, ARGB.color(alpha, titles.getColor()), titles.shadow.getValue());
+				instance.drawString(font, str, 0, 0, ARGB.color(alpha, titles.getColor()), titles.shadow.getValue());
 			}
 		} else {
 			original.call(instance, font, str, textX, textY, textWidth, textColor);
@@ -443,8 +409,8 @@ public abstract class GuiMixin {
 	}
 
 	// placeholder
-	@Inject(method = "extractTitle", at = @At("HEAD"), cancellable = true)
-	private void beforeExtractTitle(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+	@Inject(method = "renderTitle", at = @At("HEAD"), cancellable = true)
+	private void beforeRenderTitle(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
 		Titles titles = Modules.getInstance().titles;
 		if (Modules.getInstance().isEnabled.getValue()
 				&& titles.enabled.getValue()
@@ -474,8 +440,8 @@ public abstract class GuiMixin {
 		}
 	}
 
-	@Inject(method = "extractTitle", at = @At("RETURN"))
-	private void restoreRealTitle(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+	@Inject(method = "renderTitle", at = @At("RETURN"))
+	private void restoreRealTitle(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
 		if (flex_hud$savedTitleState == null) {
 			return;
 		}
