@@ -47,7 +47,7 @@ public class CrosshairButtonWidget<T> extends AbstractWidget.WithInactiveMessage
 		if (this.active) {
 			if (this.isHovered()) graphics.requestCursor(Cursors.POINTING_HAND);
 
-			drawSelectedTexture(graphics);
+			drawHover(graphics);
 
 			if (this.isHoveredOrFocused()) {
 				graphics.outline(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
@@ -75,7 +75,7 @@ public class CrosshairButtonWidget<T> extends AbstractWidget.WithInactiveMessage
 		}
 	}
 
-	private void drawSelectedTexture(GuiGraphicsExtractor graphics) {
+	private void drawHover(GuiGraphicsExtractor graphics) {
 		boolean currentlyHovered = this.isHovered();
 
 		// Handle transition triggers

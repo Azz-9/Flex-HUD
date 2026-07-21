@@ -3,7 +3,7 @@ plugins {
 	id 'net.neoforged.moddev'
 }
 
-final def includeXaero = project.hasProperty("launch_with_xaero_worldmap") && project.launch_with_xaero_minimap.toBoolean()
+final def includeXaero = project.hasProperty("launch_with_xaero_minimap") && project.launch_with_xaero_minimap.toBoolean()
 
 dependencies {
 	if (includeXaero) {

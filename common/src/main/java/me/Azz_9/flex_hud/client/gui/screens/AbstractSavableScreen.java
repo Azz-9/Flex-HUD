@@ -25,13 +25,11 @@ import me.Azz_9.flex_hud.client.gui.components.config.UnsavedChangesOverlay;
  * overlay guard.
  * </p>
  *
- * <p>
  * Contract for subclasses:
  * <ol>
  *     <li>Call registerTracked / unregisterTracked to keep the tracked set in sync.</li>
  *     <li>Override initContent() instead of init() to add your own widgets.</li>
  * </ol>
- * </p>
  *
  * <p>
  * Save button state:
