@@ -5,7 +5,7 @@ import static me.Azz_9.flex_hud.Constants.MOD_ID;
 
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
@@ -104,7 +104,7 @@ public class Compass extends AbstractTextModule {
 		return Component.translatable("flex_hud.compass");
 	}
 
-	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
 		LocalPlayer player = MINECRAFT.player;
 
 		if (shouldNotRender() || !CommonClass.isEditingLayout && player == null) {
@@ -192,7 +192,7 @@ public class Compass extends AbstractTextModule {
 			matrices.pushMatrix();
 			matrices.translate((getWidth() / 2.0f) - (MINECRAFT.font.width(degrees) / 2.0f) * 0.75f, 1);
 			matrices.scale(0.75f, 0.75f);
-			graphics.text(MINECRAFT.font, degrees, 0, 0, getColor(), this.shadow.getValue());
+			graphics.drawString(MINECRAFT.font, degrees, 0, 0, getColor(), this.shadow.getValue());
 			matrices.popMatrix();
 		}
 
@@ -203,14 +203,14 @@ public class Compass extends AbstractTextModule {
 			matrices.pushMatrix();
 			matrices.translate((getWidth() / 2.0f) - (MINECRAFT.font.width(markerText) / 2.0f), this.showDegrees.getValue() ? 8 : 0);
 			matrices.scale(1.0f, 0.5f);
-			graphics.text(MINECRAFT.font, markerText, 0, 0, getColor(), this.shadow.getValue());
+			graphics.drawString(MINECRAFT.font, markerText, 0, 0, getColor(), this.shadow.getValue());
 			matrices.popMatrix();
 		}
 
 		matrices.popMatrix();
 	}
 
-	private void drawCompassPoint(GuiGraphicsExtractor graphics, Matrix3x2fStack matrices, Component label, int angle, float yaw, int y) {
+	private void drawCompassPoint(GuiGraphics graphics, Matrix3x2fStack matrices, Component label, int angle, float yaw, int y) {
 		float angleDifference = (angle - yaw + 540) % 360 - 180;
 
 		if (Math.abs(angleDifference) <= 120) {
@@ -223,12 +223,12 @@ public class Compass extends AbstractTextModule {
 			matrices.pushMatrix();
 			matrices.translate(positionX - pointWidth / 2.0f, y);
 			matrices.scale(scaleFactor, scaleFactor);
-			graphics.text(MINECRAFT.font, label, 0, 0, getColorWithFadeEffect(positionX), this.shadow.getValue());
+			graphics.drawString(MINECRAFT.font, label, 0, 0, getColorWithFadeEffect(positionX), this.shadow.getValue());
 			matrices.popMatrix();
 		}
 	}
 
-	private void drawIntermediatePoint(GuiGraphicsExtractor graphics, Matrix3x2fStack matrices, int angle, float yaw, int y) {
+	private void drawIntermediatePoint(GuiGraphics graphics, Matrix3x2fStack matrices, int angle, float yaw, int y) {
 		float angleDifference = (angle - yaw + 540) % 360 - 180;
 
 		if (Math.abs(angleDifference) <= 120) {
@@ -238,14 +238,14 @@ public class Compass extends AbstractTextModule {
 			matrices.pushMatrix();
 			matrices.translate(positionX - (MINECRAFT.font.width("|") / 2.0f), y);
 			matrices.scale(1.0f, 0.75f); // slightly smaller
-			graphics.text(MINECRAFT.font, "|", 0, 0, getColorWithFadeEffect(positionX), this.shadow.getValue());
+			graphics.drawString(MINECRAFT.font, "|", 0, 0, getColorWithFadeEffect(positionX), this.shadow.getValue());
 			matrices.popMatrix();
 
 
 			matrices.pushMatrix();
 			matrices.translate(positionX - (MINECRAFT.font.width(String.valueOf(angle)) / 4.0f), y + 8);
 			matrices.scale(0.5f, 0.5f); // 2 times smaller
-			graphics.text(MINECRAFT.font, String.valueOf(angle), 0, 0, getColorWithFadeEffect(positionX), this.shadow.getValue());
+			graphics.drawString(MINECRAFT.font, String.valueOf(angle), 0, 0, getColorWithFadeEffect(positionX), this.shadow.getValue());
 			matrices.popMatrix();
 
 		}
@@ -270,7 +270,7 @@ public class Compass extends AbstractTextModule {
 		return ((getWidth() / 2.0f) + (angleDifference * (getWidth() / 180.0f)));
 	}
 
-	private void drawXaerosMapWaypoints(GuiGraphicsExtractor graphics, Matrix3x2fStack matrices, float yaw, DeltaTracker deltaTracker) {
+	private void drawXaerosMapWaypoints(GuiGraphics graphics, Matrix3x2fStack matrices, float yaw, DeltaTracker deltaTracker) {
 		LocalPlayer player = MINECRAFT.player;
 		if (player == null) return;
 
@@ -312,7 +312,7 @@ public class Compass extends AbstractTextModule {
 		}
 	}
 
-	private void renderTextWithBackground(GuiGraphicsExtractor graphics, String text, int x, int y, int backgroundColor, int textColor) {
+	private void renderTextWithBackground(GuiGraphics graphics, String text, int x, int y, int backgroundColor, int textColor) {
 		// Calculer la largeur et la hauteur du texte
 		int textWidth = MINECRAFT.font.width(text);
 		int textHeight = MINECRAFT.font.lineHeight;
@@ -321,10 +321,10 @@ public class Compass extends AbstractTextModule {
 		graphics.fill(x - 2, y - 1, x + textWidth + 1, y + textHeight - 1, backgroundColor);
 
 		// Dessiner le texte par-dessus le rectangle
-		graphics.text(MINECRAFT.font, text, x, y, textColor, this.shadow.getValue());
+		graphics.drawString(MINECRAFT.font, text, x, y, textColor, this.shadow.getValue());
 	}
 
-	private void drawJourneyMapWaypoints(GuiGraphicsExtractor graphics, Matrix3x2fStack matrices, float yaw, DeltaTracker deltaTracker) {
+	private void drawJourneyMapWaypoints(GuiGraphics graphics, Matrix3x2fStack matrices, float yaw, DeltaTracker deltaTracker) {
 		LocalPlayer player = MINECRAFT.player;
 		if (player == null) return;
 
@@ -387,7 +387,7 @@ public class Compass extends AbstractTextModule {
 		return ARGB.color(getAlpha(CenterXOfDrawing), getColor());
 	}
 
-	private void renderLocatorBarWaypoints(GuiGraphicsExtractor graphics, Matrix3x2fStack matrices, DeltaTracker deltaTracker) {
+	private void renderLocatorBarWaypoints(GuiGraphics graphics, Matrix3x2fStack matrices, DeltaTracker deltaTracker) {
 		if (MINECRAFT.getCameraEntity() == null || MINECRAFT.player == null || MINECRAFT.level == null) {
 			return;
 		}
@@ -465,7 +465,7 @@ public class Compass extends AbstractTextModule {
 		});
 	}
 
-	private void renderMobs(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, float yaw, Matrix3x2fStack matrices, List<LivingEntitiesTickable.EntityTexture> entityTextures) {
+	private void renderMobs(GuiGraphics graphics, DeltaTracker deltaTracker, float yaw, Matrix3x2fStack matrices, List<LivingEntitiesTickable.EntityTexture> entityTextures) {
 		LocalPlayer player = MINECRAFT.player;
 		if (player == null) {
 			return;
@@ -529,15 +529,15 @@ public class Compass extends AbstractTextModule {
 		}
 	}
 
-	private void renderPetEntities(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, float yaw, Matrix3x2fStack matrices) {
+	private void renderPetEntities(GuiGraphics graphics, DeltaTracker deltaTracker, float yaw, Matrix3x2fStack matrices) {
 		renderMobs(graphics, deltaTracker, yaw, matrices, LivingEntitiesTickable.getPetsEntities());
 	}
 
-	private void renderTamedEntityPoint(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, float yaw, Matrix3x2fStack matrices) {
+	private void renderTamedEntityPoint(GuiGraphics graphics, DeltaTracker deltaTracker, float yaw, Matrix3x2fStack matrices) {
 		renderMobs(graphics, deltaTracker, yaw, matrices, LivingEntitiesTickable.getTamedEntities());
 	}
 
-	private void renderAllMobs(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, float yaw, Matrix3x2fStack matrices) {
+	private void renderAllMobs(GuiGraphics graphics, DeltaTracker deltaTracker, float yaw, Matrix3x2fStack matrices) {
 		renderMobs(graphics, deltaTracker, yaw, matrices, LivingEntitiesTickable.getMobEntities());
 	}
 

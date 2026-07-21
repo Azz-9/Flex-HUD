@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.client.modules.hud;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.ARGB;
 
 import org.jetbrains.annotations.NotNull;
@@ -23,16 +23,16 @@ public abstract class AbstractBackgroundModule extends AbstractMovableModule {
 		ConfigRegistry.register(getID(), "backgroundColor", backgroundColor);
 	}
 
-	protected void drawBackground(GuiGraphicsExtractor graphics) {
+	protected void drawBackground(GuiGraphics graphics) {
 		drawBackground(0, graphics);
 	}
 
-	protected void drawBackground(int index, GuiGraphicsExtractor graphics) {
+	protected void drawBackground(int index, GuiGraphics graphics) {
 		DimensionHud dimensionHud = getDimensionHudList().get(index);
 		drawBackground(index, graphics, dimensionHud.getWidth(), dimensionHud.getHeight(), 1);
 	}
 
-	public void drawBackground(int index, GuiGraphicsExtractor graphics, int width, int height, float alphaMultiplier) {
+	public void drawBackground(int index, GuiGraphics graphics, int width, int height, float alphaMultiplier) {
 		DimensionHud dimensionHud = getDimensionHudList().get(index);
 		if (drawBackground.getValue() && dimensionHud.isDisplayed() && width != 0 && height != 0) {
 			graphics.fill(

@@ -3,7 +3,7 @@ package me.Azz_9.flex_hud.client.gui.components.config;
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.Tooltip;
@@ -98,9 +98,9 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 		}
 
 		@Override
-		public void extractContent(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
-			this.resetButtonWidget.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
-			graphics.text(MINECRAFT.font, text, textX, textY, textColor, true);
+		public void renderContent(@NonNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+			this.resetButtonWidget.render(graphics, mouseX, mouseY, deltaTicks);
+			graphics.drawString(MINECRAFT.font, text, textX, textY, textColor, true);
 		}
 
 		@Override

@@ -55,7 +55,7 @@ public class PerfTester {
 	public static void end(String module, Map<String, Long> starts, Map<String, List<Long>> times, int maxSamples) {
 		if (starts.containsKey(module)) {
 			long elapsed = System.nanoTime() - starts.get(module);
-			times.computeIfAbsent(module, _ -> new ArrayList<>());
+			times.computeIfAbsent(module, ignored -> new ArrayList<>());
 			List<Long> list = times.get(module);
 			list.add(elapsed);
 			if (list.size() > maxSamples) {
@@ -137,7 +137,7 @@ public class PerfTester {
 				.append(" ===");
 
 		if (MINECRAFT.player != null) {
-			MINECRAFT.player.sendSystemMessage(text);
+			MINECRAFT.player.displayClientMessage(text, false);
 		}
 
 		FlexHudLogger.debug(text.getString());
@@ -156,7 +156,7 @@ public class PerfTester {
 				.append(Component.literal(String.format("%.4f%%", percentage)).withColor(getColor(averageUs, result.maxTime)));
 
 		if (MINECRAFT.player != null) {
-			MINECRAFT.player.sendSystemMessage(text);
+			MINECRAFT.player.displayClientMessage(text, false);
 		}
 
 		FlexHudLogger.debug(text.getString());

@@ -4,7 +4,7 @@ import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.BossHealthOverlay;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 
@@ -25,8 +25,8 @@ import me.Azz_9.flex_hud.client.modules.hud.vanilla.BossBar;
 @Mixin(BossHealthOverlay.class)
 public abstract class BossHealthOverlayMixin {
 
-	@Inject(method = "extractRenderState", at = @At("HEAD"), cancellable = true)
-	private void cancelRender(GuiGraphicsExtractor graphics, CallbackInfo ci) {
+	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
+	private void cancelRender(GuiGraphics graphics, CallbackInfo ci) {
 		BossBar bossBar = Modules.getInstance().bossBar;
 		if (Modules.getInstance().isEnabled.getValue()
 				&& bossBar.enabled.getValue()
@@ -37,13 +37,13 @@ public abstract class BossHealthOverlayMixin {
 	}
 
 	@Inject(
-			method = "extractRenderState",
+			method = "render",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;nextStratum()V"
+					target = "Lnet/minecraft/client/gui/GuiGraphics;nextStratum()V"
 			)
 	)
-	private void beforeRender(GuiGraphicsExtractor graphics, CallbackInfo ci) {
+	private void beforeRender(GuiGraphics graphics, CallbackInfo ci) {
 		BossBar bossBar = Modules.getInstance().bossBar;
 		if (Modules.getInstance().isEnabled.getValue() && bossBar.enabled.getValue()) {
 			Matrix3x2fStack matrices = graphics.pose();
@@ -54,9 +54,9 @@ public abstract class BossHealthOverlayMixin {
 	}
 
 	@ModifyVariable(
-			method = "extractRenderState",
+			method = "render",
 			at = @At("STORE"),
-			name = "screenWidth"
+			index = 3
 	)
 	private int modifyScreenWidth(int screenWidth) {
 		if (Modules.getInstance().isEnabled.getValue() && Modules.getInstance().bossBar.enabled.getValue()) {
@@ -66,13 +66,13 @@ public abstract class BossHealthOverlayMixin {
 	}
 
 	@Inject(
-			method = "extractRenderState",
+			method = "render",
 			at = @At(
 					value = "INVOKE",
 					target = "Lnet/minecraft/util/profiling/ProfilerFiller;pop()V"
 			)
 	)
-	private void afterRender(GuiGraphicsExtractor graphics, CallbackInfo ci) {
+	private void afterRender(GuiGraphics graphics, CallbackInfo ci) {
 		if (Modules.getInstance().isEnabled.getValue() && Modules.getInstance().bossBar.enabled.getValue()) {
 			graphics.pose().popMatrix();
 		}
@@ -80,7 +80,7 @@ public abstract class BossHealthOverlayMixin {
 
 	// placeholder
 	@ModifyExpressionValue(
-			method = "extractRenderState",
+			method = "render",
 			at = @At(
 					value = "INVOKE",
 					target = "Ljava/util/Map;isEmpty()Z"
@@ -94,7 +94,7 @@ public abstract class BossHealthOverlayMixin {
 	}
 
 	@ModifyExpressionValue(
-			method = "extractRenderState",
+			method = "render",
 			at = @At(
 					value = "INVOKE",
 					target = "Ljava/util/Map;values()Ljava/util/Collection;"

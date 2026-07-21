@@ -3,7 +3,7 @@ package me.Azz_9.flex_hud.client.modules.hud.custom;
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.HitResult;
@@ -49,7 +49,7 @@ public class Distance extends AbstractTextModule implements TickableModule {
 	}
 
 	@Override
-	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
 		if (shouldNotRender() || !CommonClass.isEditingLayout && MINECRAFT.getCameraEntity() == null) {
 			return;
 		}
@@ -63,7 +63,7 @@ public class Distance extends AbstractTextModule implements TickableModule {
 
 		drawBackground(graphics);
 
-		graphics.text(MINECRAFT.font, distanceText, 0, 0, getColor(), shadow.getValue());
+		graphics.drawString(MINECRAFT.font, distanceText, 0, 0, getColor(), shadow.getValue());
 
 		matrices.popMatrix();
 	}

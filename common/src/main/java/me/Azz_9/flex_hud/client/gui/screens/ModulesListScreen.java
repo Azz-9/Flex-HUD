@@ -4,7 +4,7 @@ import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
 import com.google.common.collect.ImmutableList;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.screens.Screen;
@@ -99,12 +99,12 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 	}
 
 	@Override
-	public void extractRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
-		super.extractRenderState(graphics, mouseX, mouseY, delta);
+	public void render(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+		super.render(graphics, mouseX, mouseY, delta);
 
-		graphics.centeredText(font, title, this.width / 2, 7, 0xffffffff);
+		graphics.drawCenteredString(font, title, this.width / 2, 7, 0xffffffff);
 
-		this.modulesListWidget.extractRenderState(graphics, mouseX, mouseY, delta);
+		this.modulesListWidget.render(graphics, mouseX, mouseY, delta);
 	}
 
 	@Override

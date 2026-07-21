@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.client.gui.components.config.crosshairEditor;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -24,12 +24,12 @@ public class ColorButton extends AbstractWidget.WithInactiveMessage implements C
 	}
 
 	@Override
-	protected void extractWidgetRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	protected void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (this.isHovered()) {
 			graphics.requestCursor(Cursors.POINTING_HAND);
-			graphics.outline(getX(), getY(), getWidth(), getHeight(), 0xffd0d0d0);
+			graphics.renderOutline(getX(), getY(), getWidth(), getHeight(), 0xffd0d0d0);
 		} else {
-			graphics.outline(getX(), getY(), getWidth(), getHeight(), 0xff404040);
+			graphics.renderOutline(getX(), getY(), getWidth(), getHeight(), 0xff404040);
 		}
 
 		graphics.fill(getX() + 1, getY() + 1, getRight() - 1, getBottom() - 1, color);

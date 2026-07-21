@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.client.gui.components.config.buttons;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -43,16 +43,16 @@ public class CrosshairButtonWidget<T> extends AbstractWidget.WithInactiveMessage
 	}
 
 	@Override
-	protected void extractWidgetRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	protected void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (this.active) {
 			if (this.isHovered()) graphics.requestCursor(Cursors.POINTING_HAND);
 
 			drawSelectedTexture(graphics);
 
 			if (this.isHoveredOrFocused()) {
-				graphics.outline(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+				graphics.renderOutline(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
 			}
-			graphics.outline(getRight() - getHeight(), getY(), getHeight(), getHeight(), (this.isHovered() ? 0xffd0d0d0 : 0xff404040));
+			graphics.renderOutline(getRight() - getHeight(), getY(), getHeight(), getHeight(), (this.isHovered() ? 0xffd0d0d0 : 0xff404040));
 		} else {
 			if (this.isHovered()) graphics.requestCursor(Cursors.NOT_ALLOWED);
 		}
@@ -75,7 +75,7 @@ public class CrosshairButtonWidget<T> extends AbstractWidget.WithInactiveMessage
 		}
 	}
 
-	private void drawSelectedTexture(GuiGraphicsExtractor graphics) {
+	private void drawSelectedTexture(GuiGraphics graphics) {
 		boolean currentlyHovered = this.isHovered();
 
 		// Handle transition triggers

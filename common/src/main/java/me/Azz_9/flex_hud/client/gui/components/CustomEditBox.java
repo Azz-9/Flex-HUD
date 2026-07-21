@@ -1,7 +1,7 @@
 package me.Azz_9.flex_hud.client.gui.components;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
 
@@ -43,15 +43,15 @@ public class CustomEditBox extends EditBox {
 	}
 
 	@Override
-	public void extractWidgetRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+	public void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
 		if (this.isVisible()) {
-			super.extractWidgetRenderState(graphics, mouseX, mouseY, delta);
+			super.renderWidget(graphics, mouseX, mouseY, delta);
 
 			if (this.placeholderText != null && this.getValue().isEmpty()) {
 				int x = this.isBordered() ? this.getX() + 4 : this.getX();
 				int y = this.isBordered() ? this.getY() + (this.height - 8) / 2 : this.getY();
 
-				graphics.text(FONT, this.placeholderText, x, y, this.placeholderColor);
+				graphics.drawString(FONT, this.placeholderText, x, y, this.placeholderColor);
 			}
 		}
 	}

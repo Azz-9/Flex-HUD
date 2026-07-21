@@ -3,7 +3,7 @@ package me.Azz_9.flex_hud.client.modules.hud.vanilla;
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -58,10 +58,10 @@ public class BossBar extends AbstractMovableModule {
 		setHeight(BOSS_BAR_GAP + MINECRAFT.font.lineHeight);
 	}
 
-	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
 		// render is handled in BossHealthOverlayMixin
 		if (MINECRAFT.level == null) {
-			((GuiAccessor) MINECRAFT.gui).invokeExtractBossOverlay(graphics, deltaTracker);
+			((GuiAccessor) MINECRAFT.gui).invokeRenderBossOverlay(graphics, deltaTracker);
 		}
 	}
 

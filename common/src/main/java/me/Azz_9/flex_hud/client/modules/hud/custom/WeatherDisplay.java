@@ -5,7 +5,7 @@ import static me.Azz_9.flex_hud.Constants.MOD_ID;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -52,7 +52,7 @@ public class WeatherDisplay extends AbstractBackgroundModule {
 	}
 
 	@Override
-	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
 		if (shouldNotRender()) {
 			return;
 		}
@@ -86,7 +86,7 @@ public class WeatherDisplay extends AbstractBackgroundModule {
 			return DEFAULT;
 		}
 
-		int timeOfDay = (int) (MINECRAFT.level.getOverworldClockTime() % 24000L);
+		int timeOfDay = (int) (MINECRAFT.level.getDayTime() % 24000L);
 		if (timeOfDay >= 12600 && timeOfDay <= 23400) {
 			if (MINECRAFT.level.isThundering()) {
 				return DAY_THUNDER;

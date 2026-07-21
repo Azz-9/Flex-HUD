@@ -6,7 +6,7 @@ import com.google.common.collect.Ordering;
 
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -52,7 +52,7 @@ public class PotionEffect extends AbstractTextModule {
 	}
 
 	@Override
-	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
 		if (shouldNotRender() || !CommonClass.isEditingLayout && MINECRAFT.player == null) {
 			return;
 		}
@@ -196,7 +196,7 @@ public class PotionEffect extends AbstractTextModule {
 		float tickDelta = MINECRAFT.getDeltaTracker().getGameTimeDeltaTicks();
 
 		// Add tickDelta to world time for smooth animation
-		float ticks = MINECRAFT.level.getOverworldClockTime() + tickDelta;
+		float ticks = MINECRAFT.level.getDayTime() + tickDelta;
 
 		// 20 ticks ~= 1 second at 20 TPS
 		float cycle = (ticks % 20.0f) / 20.0f;

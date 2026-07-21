@@ -52,7 +52,7 @@ public class ColorFieldWidget extends CustomEditBox {
 			if (getValue().length() > 1) {
 				return Integer.parseInt(getValue().substring(1), 16);
 			}
-		} catch (NumberFormatException _) {
+		} catch (NumberFormatException ignored) {
 		}
 		return 0;
 	}
