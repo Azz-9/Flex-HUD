@@ -3,6 +3,8 @@ plugins {
 	id 'net.fabricmc.fabric-loom' version '1.17.13' apply false
 	// see https://projects.neoforged.net/neoforged/moddevgradle for new versions
 	id 'net.neoforged.moddev' version '2.0.141' apply false
+	// see https://modmuss50.github.io/mod-publish-plugin/ for new versions
+	id "me.modmuss50.mod-publish-plugin" version "2.1.1"
 }
 
 allprojects {
@@ -26,5 +28,127 @@ allprojects {
 				includeGroup "maven.modrinth"
 			}
 		}
+	}
+}
+
+def releaseJarsDirectory = providers.gradleProperty("release_jars_dir")
+		.map { file(it) }
+		.orElse(layout.projectDirectory.dir("release-jars").asFile)
+
+def simpleModVersion = mod_version.split("-")[0]
+
+publishMods {
+	version = mod_version
+	changelog = providers.fileContents(
+			layout.projectDirectory.file("CHANGELOG.md")
+	).asText
+
+	type = switch (version_type) {
+		case "alpha" -> ALPHA
+		case "beta" -> BETA
+		case "stable" -> STABLE
+		default -> throw new GradleException(
+				"Unknown release type: ${version_type}"
+		)
+	}
+
+
+	def cf = curseforgeOptions {
+		projectId = "1452411"
+		projectSlug = "flex-hud"
+		accessToken = providers.gradleProperty("CURSEFORGE_TOKEN")
+		minecraftVersionRange {
+			start = start = minecraft_version_start
+			end = minecraft_version_end
+		}
+		changelogType = "markdown"
+		type = STABLE
+
+		client = true
+		server = false
+	}
+
+	def mr = modrinthOptions {
+		projectId = "sJd4aIJv"
+		accessToken = providers.gradleProperty("MODRINTH_TOKEN")
+		minecraftVersionRange {
+			start = minecraft_version_start
+			end = minecraft_version_end
+		}
+
+		environment = CLIENT_ONLY
+	}
+
+	curseforge("curseforgeFabric") {
+		announcementTitle = "CurseForge Fabric"
+		from cf
+		file project(":fabric")
+		modLoaders.add("fabric")
+		displayName = "${mod_name} ${mod_version} Fabric"
+		requires("fabric-api")
+	}
+
+	curseforge("curseforgeNeoForge") {
+		announcementTitle = "CurseForge NeoForge"
+		from cf
+		file project(":neoforge")
+		modLoaders.add("neoforge")
+		displayName = "${mod_name} ${mod_version} NeoForge"
+	}
+
+	modrinth("modrinthFabric") {
+		announcementTitle = "Modrinth Fabric"
+		from mr
+		file project(":fabric")
+		modLoaders.add("fabric")
+		displayName = "${mod_name} ${mod_version} Fabric"
+		requires("fabric-api")
+	}
+
+	modrinth("modrinthNeoForge") {
+		announcementTitle = "Modrinth NeoForge"
+		from mr
+		file project(":neoforge")
+		modLoaders.add("neoforge")
+		displayName = "${mod_name} ${mod_version} NeoForge"
+	}
+
+	github {
+		accessToken = providers.gradleProperty("GITHUB_TOKEN")
+		repository = "Azz-9/${rootProject.name}"
+
+		commitish = providers.gradleProperty("github_commitish")
+		tagName = providers.gradleProperty("github_tag_name")
+		type = STABLE
+
+		// Tous les JAR sont passés comme fichiers supplémentaires.
+		additionalFiles.from(
+				fileTree(releaseJarsDirectory) {
+					include("*.jar")
+				}
+		)
+
+		// Aucun fichier principal : les fichiers sont dans additionalFiles.
+		allowEmptyFiles = true
+	}
+
+	discord {
+		webhookUrl = providers.gradleProperty(DISCORD_MOD_FLEX_HUD_PUBLISH_WEBHOOK)
+		username = mod_name
+
+		avatarUrl = "https://raw.githubusercontent.com/Azz-9/${rootProject.name}/26.2/common/src/main/resources/${mod_id}.png"
+		content = changelog.map {
+			"""
+			## ${mod_name} ${simpleModVersion} is now available!
+
+			${it}
+			""".stripIndent()
+		}
+		setPlatforms(
+				publishMods.platforms.modrinthFabric,
+				publishMods.platforms.curseforgeFabric,
+				publishMods.platforms.modrinthNeoForge,
+				publishMods.platforms.curseforgeNeoForge
+		)
 	}
 }
