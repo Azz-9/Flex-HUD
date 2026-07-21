@@ -4,7 +4,7 @@ import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -60,7 +60,7 @@ public class InGameTime extends AbstractTextModule implements TickableModule {
 	}
 
 	@Override
-	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
 		if (shouldNotRender()) {
 			return;
 		}
@@ -74,7 +74,7 @@ public class InGameTime extends AbstractTextModule implements TickableModule {
 
 		drawBackground(graphics);
 
-		graphics.text(MINECRAFT.font, formattedTime, 0, 0, getColor(), shadow.getValue());
+		graphics.drawString(MINECRAFT.font, formattedTime, 0, 0, getColor(), shadow.getValue());
 
 		matrices.popMatrix();
 	}
@@ -195,7 +195,7 @@ public class InGameTime extends AbstractTextModule implements TickableModule {
 		if (CommonClass.isEditingLayout) {
 			timeOfDay = 12000;
 		} else {
-			timeOfDay = (int) (MINECRAFT.level.getOverworldClockTime() % 24000 + 6000) % 24000;
+			timeOfDay = (int) (MINECRAFT.level.getDayTime() % 24000 + 6000) % 24000;
 		}
 
 		int totalSeconds = (int) Math.round(timeOfDay * 3.6);

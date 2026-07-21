@@ -4,7 +4,7 @@ import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
@@ -50,7 +50,7 @@ public class HeldItem extends AbstractTextModule {
 
 
 	@Override
-	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
 		if (shouldNotRender()) {
 			return;
 		}
@@ -111,14 +111,14 @@ public class HeldItem extends AbstractTextModule {
 		Font font = MINECRAFT.font;
 		if (MINECRAFT.level != null && stack != null) {
 			if (getAnchorX() == AnchorPosition.END) {
-				graphics.text(font, label, 0, 4, getColor(), this.shadow.getValue());
-				graphics.item(stack, font.width(label) + gap, 0);
+				graphics.drawString(font, label, 0, 4, getColor(), this.shadow.getValue());
+				graphics.renderItem(stack, font.width(label) + gap, 0);
 			} else {
-				graphics.item(stack, 0, 0);
-				graphics.text(font, label, ITEM_SIZE + gap, 4, textColor, this.shadow.getValue());
+				graphics.renderItem(stack, 0, 0);
+				graphics.drawString(font, label, ITEM_SIZE + gap, 4, textColor, this.shadow.getValue());
 			}
 		} else {
-			graphics.text(font, getName(), (getWidth() - font.width(getName())) / 2, 4, getColor(), this.shadow.getValue());
+			graphics.drawString(font, getName(), (getWidth() - font.width(getName())) / 2, 4, getColor(), this.shadow.getValue());
 		}
 
 		matrices.popMatrix();

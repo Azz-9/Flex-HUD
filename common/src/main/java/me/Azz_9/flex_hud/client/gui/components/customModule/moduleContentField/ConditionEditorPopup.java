@@ -4,7 +4,7 @@ import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
 import com.mojang.blaze3d.platform.InputConstants;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
@@ -127,9 +127,9 @@ final class ConditionEditorPopup {
 		cancelBounds = new Bounds(buttonX, buttonsY, cancelWidth, ModuleContentField.BUTTON_HEIGHT);
 	}
 
-	void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	void extractRenderState(GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		host.renderPanel(graphics, bounds);
-		graphics.text(MINECRAFT.font, Component.translatable("flex_hud.create_module_screen.editor.condition"), bounds.x() + ModuleContentField.POPUP_PADDING, bounds.y() + ModuleContentField.POPUP_PADDING, ModuleContentField.TEXT_COLOR, false);
+		graphics.drawString(MINECRAFT.font, Component.translatable("flex_hud.create_module_screen.editor.condition"), bounds.x() + ModuleContentField.POPUP_PADDING, bounds.y() + ModuleContentField.POPUP_PADDING, ModuleContentField.TEXT_COLOR, false);
 
 		for (ConditionRow row : rows) {
 			row.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
@@ -138,13 +138,13 @@ final class ConditionEditorPopup {
 		host.renderButton(graphics, addBounds, Component.translatable("flex_hud.create_module_screen.editor.add_condition_clause"), addBounds.contains(mouseX, mouseY) ? ModuleContentField.BUTTON_HOVERED_BACKGROUND : ModuleContentField.BUTTON_BACKGROUND, ModuleContentField.BUTTON_TEXT_COLOR, ModuleContentField.BUTTON_HORIZONTAL_PADDING, mouseX, mouseY);
 
 		int contentLabelY = contentField.getY() - MINECRAFT.font.lineHeight - LABEL_FIELD_GAP;
-		graphics.text(MINECRAFT.font, Component.translatable("flex_hud.create_module_screen.editor.condition_content"), contentField.getX(), contentLabelY, ModuleContentField.TEXT_COLOR, false);
-		contentField.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+		graphics.drawString(MINECRAFT.font, Component.translatable("flex_hud.create_module_screen.editor.condition_content"), contentField.getX(), contentLabelY, ModuleContentField.TEXT_COLOR, false);
+		contentField.render(graphics, mouseX, mouseY, deltaTicks);
 
 		if (!error.getString().isBlank()) {
 			int errorWidth = bounds.width() - ModuleContentField.POPUP_PADDING * 2;
 			int errorHeight = MINECRAFT.font.wordWrapHeight(error, errorWidth);
-			graphics.textWithWordWrap(MINECRAFT.font, error, bounds.x() + ModuleContentField.POPUP_PADDING, saveBounds.y() - ModuleContentField.POPUP_GAP - errorHeight, errorWidth, ModuleContentField.POPUP_ERROR_COLOR, false);
+			graphics.drawWordWrap(MINECRAFT.font, error, bounds.x() + ModuleContentField.POPUP_PADDING, saveBounds.y() - ModuleContentField.POPUP_GAP - errorHeight, errorWidth, ModuleContentField.POPUP_ERROR_COLOR, false);
 		}
 
 		host.renderButtonCenterLabel(graphics, deleteBounds, Component.translatable("flex_hud.create_module_screen.editor.delete_condition"), deleteBounds.contains(mouseX, mouseY) ? ModuleContentField.BUTTON_HOVERED_BACKGROUND : ModuleContentField.BUTTON_BACKGROUND, ModuleContentField.BUTTON_TEXT_COLOR, mouseX, mouseY);
@@ -416,17 +416,17 @@ final class ConditionEditorPopup {
 			removeBounds = new Bounds(x + width - REMOVE_WIDTH, y, REMOVE_WIDTH, FIELD_HEIGHT);
 		}
 
-		private void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+		private void extractRenderState(GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 			if (connectorBounds.width() > 0) {
 				host.renderButtonCenterLabel(graphics, connectorBounds, ModuleContentField.conditionConnectorLabel(connector), connectorBounds.contains(mouseX, mouseY) ? ModuleContentField.BUTTON_HOVERED_BACKGROUND : ModuleContentField.BUTTON_BACKGROUND, ModuleContentField.BUTTON_TEXT_COLOR, mouseX, mouseY);
 			}
-			variableField.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+			variableField.render(graphics, mouseX, mouseY, deltaTicks);
 			host.renderButtonCenterLabel(graphics, operatorBounds, Component.literal(operator.primarySymbol()), operatorBounds.contains(mouseX, mouseY) ? ModuleContentField.BUTTON_HOVERED_BACKGROUND : ModuleContentField.BUTTON_BACKGROUND, ModuleContentField.BUTTON_TEXT_COLOR, mouseX, mouseY);
-			thresholdField.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+			thresholdField.render(graphics, mouseX, mouseY, deltaTicks);
 			host.renderButtonCenterLabel(graphics, removeBounds, Component.literal("x"), removeBounds.contains(mouseX, mouseY) ? ModuleContentField.BUTTON_HOVERED_BACKGROUND : ModuleContentField.BUTTON_BACKGROUND, ModuleContentField.BUTTON_TEXT_COLOR, mouseX, mouseY);
 		}
 
-		private void renderOverlays(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+		private void renderOverlays(GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 			variableField.renderOverlays(graphics, mouseX, mouseY, deltaTicks);
 		}
 

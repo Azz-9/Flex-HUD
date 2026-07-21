@@ -3,7 +3,7 @@ package me.Azz_9.flex_hud.client.gui.screens;
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.StringWidget;
@@ -172,18 +172,18 @@ public class CreateModuleScreen extends AbstractSavableScreen {
 	}
 
 	@Override
-	public void renderBeforePopup(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
-		variablesList.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
-		searchBar.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+	public void renderBeforePopup(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
+		variablesList.render(graphics, mouseX, mouseY, deltaTicks);
+		searchBar.render(graphics, mouseX, mouseY, deltaTicks);
 
-		moduleNameTextWidget.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
-		moduleNameField.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
-		feedbackTextWidget.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+		moduleNameTextWidget.render(graphics, mouseX, mouseY, deltaTicks);
+		moduleNameField.render(graphics, mouseX, mouseY, deltaTicks);
+		feedbackTextWidget.render(graphics, mouseX, mouseY, deltaTicks);
 
-		moduleContentTextWidget.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
-		addConditionButton.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+		moduleContentTextWidget.render(graphics, mouseX, mouseY, deltaTicks);
+		addConditionButton.render(graphics, mouseX, mouseY, deltaTicks);
 
-		previewTextWidget.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+		previewTextWidget.render(graphics, mouseX, mouseY, deltaTicks);
 
 		CustomModulePreview.renderPreview(
 				previewTextWidget.getX(), previewTextWidget.getBottom(),
@@ -191,7 +191,7 @@ public class CreateModuleScreen extends AbstractSavableScreen {
 		);
 
 		// render content field last so the popups are above everything
-		moduleContentField.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+		moduleContentField.render(graphics, mouseX, mouseY, deltaTicks);
 	}
 
 	@Override

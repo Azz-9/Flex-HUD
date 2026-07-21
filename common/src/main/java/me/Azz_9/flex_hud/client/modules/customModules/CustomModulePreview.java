@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.client.modules.customModules;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 
 import me.Azz_9.flex_hud.client.modules.customModules.template.CompiledCustomText;
 
@@ -29,9 +29,9 @@ public class CustomModulePreview {
 		oldCompiledText.close();
 	}
 
-	public static void renderPreview(int x, int y, GuiGraphicsExtractor graphics, float deltaTicks) {
+	public static void renderPreview(int x, int y, GuiGraphics graphics, float deltaTicks) {
 		CompiledCustomText.RenderData renderData = compiledText.getRenderData();
-		graphics.text(
+		graphics.drawString(
 				MINECRAFT.font,
 				renderData.text(),
 				x, y,

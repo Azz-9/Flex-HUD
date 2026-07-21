@@ -1,11 +1,10 @@
 package me.Azz_9.flex_hud.client.modules.hud.custom;
 
 import static java.util.Map.entry;
-
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
@@ -51,7 +50,7 @@ public class BiomeDisplay extends AbstractTextModule {
 	}
 
 	@Override
-	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
 		if (shouldNotRender() || !CommonClass.isEditingLayout && MINECRAFT.player == null) {
 			return;
 		}
@@ -91,8 +90,8 @@ public class BiomeDisplay extends AbstractTextModule {
 
 		drawBackground(graphics);
 
-		graphics.text(MINECRAFT.font, prefix, 0, 0, getColor(), shadow.getValue());
-		graphics.text(MINECRAFT.font, biomeName, prefixWidth, 0, biomeTextColor, shadow.getValue());
+		graphics.drawString(MINECRAFT.font, prefix, 0, 0, getColor(), shadow.getValue());
+		graphics.drawString(MINECRAFT.font, biomeName, prefixWidth, 0, biomeTextColor, shadow.getValue());
 
 		matrices.popMatrix();
 	}

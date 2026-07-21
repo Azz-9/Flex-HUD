@@ -5,7 +5,7 @@ import static me.Azz_9.flex_hud.CommonClass.openOptionScreenKeyBind;
 import static me.Azz_9.flex_hud.Constants.MOD_ID;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.SpriteIconButton;
@@ -113,7 +113,7 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 	}
 
 	@Override
-	public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+	public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
 		float progress = Math.min((float) (System.currentTimeMillis() - initTimestamp) / ANIMATION_DURATION, 1.0f);
 		float easedProgress = Ease.outQuad(progress);
 
@@ -131,7 +131,7 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 			widget.setAlpha(easedProgress);
 		}
 
-		super.extractRenderState(graphics, mouseX, mouseY, delta);
+		super.render(graphics, mouseX, mouseY, delta);
 
 		Matrix3x2fStack matrices = graphics.pose();
 		matrices.pushMatrix();
@@ -143,7 +143,7 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 		matrices.popMatrix();
 
 		if (!Modules.getInstance().isEnabled.getValue()) {
-			graphics.centeredText(
+			graphics.drawCenteredString(
 					MINECRAFT.font,
 					Component.translatable("flex_hud.options_screen.mod_is_disabled_warning").withStyle(ChatFormatting.RED, ChatFormatting.ITALIC),
 					this.width / 2, this.height / 2 + 20,

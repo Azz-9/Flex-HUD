@@ -5,7 +5,7 @@ import static me.Azz_9.flex_hud.Constants.MOD_ID;
 
 import com.google.common.collect.ImmutableList;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
@@ -90,8 +90,8 @@ public class ModuleElement {
 		button.setY(y);
 	}
 
-	public void renderButton(GuiGraphicsExtractor context, int mouseX, int mouseY, float deltaTicks) {
-		button.extractRenderState(context, mouseX, mouseY, deltaTicks);
+	public void renderButton(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
+		button.render(context, mouseX, mouseY, deltaTicks);
 	}
 
 	public List<Button> buttons() {

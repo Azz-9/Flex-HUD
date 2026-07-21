@@ -1,7 +1,7 @@
 package me.Azz_9.flex_hud.client.gui.components.config.modulesList;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -130,7 +130,7 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 		}
 
 		@Override
-		public void extractContent(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+		public void renderContent(@NonNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
 			int totalButtonWidth = scrollableModulesList.buttonWidth * scrollableModulesList.columns + scrollableModulesList.padding;
 			int buttonX = getX() + (getWidth() - totalButtonWidth) / scrollableModulesList.columns;
 			int iconX = buttonX + (scrollableModulesList.buttonWidth - scrollableModulesList.iconWidthHeight) / 2;

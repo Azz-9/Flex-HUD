@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.client.gui.screens;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
@@ -25,13 +25,11 @@ import me.Azz_9.flex_hud.client.gui.components.config.UnsavedChangesOverlay;
  * overlay guard.
  * </p>
  *
- * <p>
  * Contract for subclasses:
  * <ol>
  *     <li>Call registerTracked / unregisterTracked to keep the tracked set in sync.</li>
  *     <li>Override initContent() instead of init() to add your own widgets.</li>
  * </ol>
- * </p>
  *
  * <p>
  * Save button state:
@@ -127,7 +125,7 @@ public abstract class AbstractSavableScreen extends AbstractPopupScreen {
 	protected abstract void initContent();
 
 	@Override
-	public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		// Bottom-bar separator
 		graphics.fill(0, height - BOTTOM_BAR_HEIGHT, width, height - BOTTOM_BAR_HEIGHT + 1, Colors.GRAY);
 
@@ -135,7 +133,7 @@ public abstract class AbstractSavableScreen extends AbstractPopupScreen {
 			saveButton.active = canSave();
 		}
 
-		super.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+		super.render(graphics, mouseX, mouseY, deltaTicks);
 	}
 
 	// -------------------------------------------------------------------------
@@ -288,12 +286,12 @@ public abstract class AbstractSavableScreen extends AbstractPopupScreen {
 
 	/**
 	 * Renders only the Cancel and Save buttons with the provided mouse coordinates.
-	 * Useful for subclasses that override {@link #extractRenderState(GuiGraphicsExtractor, int, int, float)} and need fine-grained
+	 * Useful for subclasses that override {@link #render(GuiGraphics, int, int, float)} and need fine-grained
 	 * control over which coord pair reaches the bottom bar (e.g. to suppress hover
 	 * while a foreground overlay is active).
 	 */
-	protected void renderBottomBarButtons(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
-		if (cancelButton != null) cancelButton.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
-		if (saveButton != null) saveButton.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+	protected void renderBottomBarButtons(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
+		if (cancelButton != null) cancelButton.render(graphics, mouseX, mouseY, deltaTicks);
+		if (saveButton != null) saveButton.render(graphics, mouseX, mouseY, deltaTicks);
 	}
 }

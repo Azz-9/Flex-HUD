@@ -3,7 +3,7 @@ package me.Azz_9.flex_hud.client.gui.components.config.colorSelector;
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 import static me.Azz_9.flex_hud.Constants.MOD_ID;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -36,7 +36,7 @@ public class HueWidget extends AbstractWidget.WithInactiveMessage {
 	}
 
 	@Override
-	protected void extractWidgetRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	protected void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (this.isActive() && this.isHovered()) {
 			graphics.requestCursor(Cursors.POINTING_HAND);
 		}
@@ -60,7 +60,7 @@ public class HueWidget extends AbstractWidget.WithInactiveMessage {
 		matrices.popMatrix();
 	}
 
-	private void drawHueBar(GuiGraphicsExtractor graphics) {
+	private void drawHueBar(GuiGraphics graphics) {
 		for (int i = 0; i < getHeight(); i++) {
 			int color = Color.HSBtoRGB(i / (float) getHeight(), 1.0f, 1.0f);
 			graphics.fill(getX(), getY() + i, getX() + getWidth(), getY() + i + 1, color);

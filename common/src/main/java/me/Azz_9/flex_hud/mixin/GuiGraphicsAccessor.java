@@ -2,20 +2,20 @@ package me.Azz_9.flex_hud.mixin;
 
 import com.mojang.blaze3d.platform.cursor.CursorType;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin(GuiGraphicsExtractor.class)
-public interface GuiGraphicsExtractorAccessor {
+@Mixin(GuiGraphics.class)
+public interface GuiGraphicsAccessor {
 
-	@Invoker("itemBar")
+	@Invoker("renderItemBar")
 	void flex_hud$renderItemBar(ItemStack stack, int x, int y);
 
-	@Invoker("itemCooldown")
+	@Invoker("renderItemCooldown")
 	void flex_hud$renderItemCooldown(ItemStack stack, int x, int y);
 
 	@Accessor("deferredTooltip")

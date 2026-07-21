@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.client.gui.components.config.crosshairEditor;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -26,7 +26,7 @@ public class Pixel extends AbstractWidget.WithInactiveMessage {
 	}
 
 	@Override
-	protected void extractWidgetRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (this.isHovered()) {
 			graphics.requestCursor(Cursors.POINTING_HAND);
 		}
@@ -39,9 +39,9 @@ public class Pixel extends AbstractWidget.WithInactiveMessage {
 
 
 		if (this.isHovered()) {
-			graphics.outline(getX(), getY(), getWidth(), getHeight(), 0xffdf1515);
+			graphics.renderOutline(getX(), getY(), getWidth(), getHeight(), 0xffdf1515);
 		} else {
-			graphics.outline(getX(), getY(), getWidth(), getHeight(), 0xffdfdfdf);
+			graphics.renderOutline(getX(), getY(), getWidth(), getHeight(), 0xffdfdfdf);
 		}
 	}
 
