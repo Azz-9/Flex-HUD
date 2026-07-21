@@ -23,3 +23,6 @@ eclipse
 run
 runs
 common/logs
+
+CHANGELOG.md
+release-jars/
