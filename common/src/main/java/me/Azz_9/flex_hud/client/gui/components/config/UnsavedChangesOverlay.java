@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.client.gui.components.config;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.narration.NarratedElementType;
@@ -110,7 +110,7 @@ public final class UnsavedChangesOverlay extends AbstractWidget implements Popup
 
 
 	@Override
-	protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		// Full-screen dark veil
 		graphics.fill(0, 0, getWidth(), getHeight(), Colors.BLACK_TRANSPARENT);
 
@@ -119,23 +119,23 @@ public final class UnsavedChangesOverlay extends AbstractWidget implements Popup
 
 		// Dialog background
 		graphics.fill(dialogX, dialogY, dialogX + DIALOG_WIDTH, dialogY + DIALOG_HEIGHT, Colors.DARK_GRAY);
-		graphics.outline(dialogX, dialogY, DIALOG_WIDTH, DIALOG_HEIGHT, Colors.GRAY);
+		graphics.renderOutline(dialogX, dialogY, DIALOG_WIDTH, DIALOG_HEIGHT, Colors.GRAY);
 
 		// Title
 		Component title = Component.translatable("flex_hud.global.config.callback.message_title");
 		int titleW = MINECRAFT.font.width(title);
-		graphics.text(MINECRAFT.font, title,
+		graphics.drawString(MINECRAFT.font, title,
 				dialogX + (DIALOG_WIDTH - titleW) / 2, dialogY + 14, Colors.WHITE, true);
 
 		// Body
 		Component body = Component.translatable("flex_hud.global.config.callback.message_content");
 		int bodyX = dialogX + 12;
 		int bodyY = dialogY + 34;
-		graphics.textWithWordWrap(MINECRAFT.font, body, bodyX, bodyY, DIALOG_WIDTH - 24, Colors.LIGHT_GRAY);
+		graphics.drawWordWrap(MINECRAFT.font, body, bodyX, bodyY, DIALOG_WIDTH - 24, Colors.LIGHT_GRAY);
 
 		// Buttons
-		cancelButton.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
-		discardButton.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+		cancelButton.render(graphics, mouseX, mouseY, deltaTicks);
+		discardButton.render(graphics, mouseX, mouseY, deltaTicks);
 	}
 
 	// -------------------------------------------------------------------------

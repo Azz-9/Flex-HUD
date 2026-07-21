@@ -4,7 +4,7 @@ import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
 import com.mojang.blaze3d.platform.InputConstants;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
@@ -192,19 +192,19 @@ final class ModifierEditorPopup {
 		cancelBounds = new Bounds(buttonX, buttonsY, cancelWidth, ModuleContentField.BUTTON_HEIGHT);
 	}
 
-	void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	void render(GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		host.renderPanel(graphics, bounds);
-		graphics.text(MINECRAFT.font, modifier.uiMetadata().getName(modifier.key()), bounds.x() + ModuleContentField.POPUP_PADDING, bounds.y() + ModuleContentField.POPUP_PADDING, ModuleContentField.TEXT_COLOR, false);
+		graphics.drawString(MINECRAFT.font, modifier.uiMetadata().getName(modifier.key()), bounds.x() + ModuleContentField.POPUP_PADDING, bounds.y() + ModuleContentField.POPUP_PADDING, ModuleContentField.TEXT_COLOR, false);
 		int cursorY = bounds.y() + ModuleContentField.POPUP_PADDING + MINECRAFT.font.lineHeight + ModuleContentField.POPUP_GAP;
 
 		switch (modifier.uiMetadata().editorKind()) {
 			case NONE ->
-					graphics.textWithWordWrap(MINECRAFT.font, modifier.uiMetadata().getDescription(modifier.key()), bounds.x() + ModuleContentField.POPUP_PADDING, cursorY, wrappedDescriptionWidth, ModuleContentField.PLACEHOLDER_COLOR, false);
+					graphics.drawWordWrap(MINECRAFT.font, modifier.uiMetadata().getDescription(modifier.key()), bounds.x() + ModuleContentField.POPUP_PADDING, cursorY, wrappedDescriptionWidth, ModuleContentField.PLACEHOLDER_COLOR, false);
 			case FIXED_FIELDS -> {
 				for (int i = 0; i < parameterFields.size(); i++) {
 					Modifier.ParameterDefinition parameter = modifier.uiMetadata().parameters().get(i);
-					graphics.text(MINECRAFT.font, parameter.getName(modifier.key()), bounds.x() + ModuleContentField.POPUP_PADDING, cursorY, ModuleContentField.TEXT_COLOR, false);
-					parameterFields.get(i).extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+					graphics.drawString(MINECRAFT.font, parameter.getName(modifier.key()), bounds.x() + ModuleContentField.POPUP_PADDING, cursorY, ModuleContentField.TEXT_COLOR, false);
+					parameterFields.get(i).render(graphics, mouseX, mouseY, deltaTicks);
 					cursorY += MINECRAFT.font.lineHeight + LABEL_FIELD_GAP + FIELD_HEIGHT + ROW_GAP;
 				}
 			}
@@ -221,7 +221,7 @@ final class ModifierEditorPopup {
 		if (error != null) {
 			int errorWidth = bounds.width() - ModuleContentField.POPUP_PADDING * 2;
 			int errorHeight = wrappedErrorHeight(errorWidth);
-			graphics.textWithWordWrap(MINECRAFT.font, error, bounds.x() + ModuleContentField.POPUP_PADDING, saveBounds.y() - ModuleContentField.POPUP_GAP - errorHeight, errorWidth, ModuleContentField.POPUP_ERROR_COLOR, false);
+			graphics.drawWordWrap(MINECRAFT.font, error, bounds.x() + ModuleContentField.POPUP_PADDING, saveBounds.y() - ModuleContentField.POPUP_GAP - errorHeight, errorWidth, ModuleContentField.POPUP_ERROR_COLOR, false);
 		}
 
 		if (deleteBounds != null) {
@@ -505,10 +505,10 @@ final class ModifierEditorPopup {
 			removeBounds = new Bounds(x + width - CONDITIONAL_REMOVE_WIDTH, y, CONDITIONAL_REMOVE_WIDTH, FIELD_HEIGHT);
 		}
 
-		private void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+		private void extractRenderState(GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 			host.renderButtonCenterLabel(graphics, operatorBounds, Component.literal(displayOperator()), operatorBounds.contains(mouseX, mouseY) ? ModuleContentField.BUTTON_HOVERED_BACKGROUND : ModuleContentField.BUTTON_BACKGROUND, ModuleContentField.BUTTON_TEXT_COLOR, mouseX, mouseY);
-			thresholdField.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
-			resultField.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+			thresholdField.render(graphics, mouseX, mouseY, deltaTicks);
+			resultField.render(graphics, mouseX, mouseY, deltaTicks);
 			host.renderButtonCenterLabel(graphics, removeBounds, Component.literal("x"), removeBounds.contains(mouseX, mouseY) ? ModuleContentField.BUTTON_HOVERED_BACKGROUND : ModuleContentField.BUTTON_BACKGROUND, ModuleContentField.BUTTON_TEXT_COLOR, mouseX, mouseY);
 		}
 

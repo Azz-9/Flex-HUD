@@ -3,7 +3,7 @@ plugins {
 	id 'net.neoforged.moddev'
 }
 
-final def includeXaero = project.hasProperty("launch_with_xaero_worldmap") && project.launch_with_xaero_minimap.toBoolean()
+final def includeXaero = project.hasProperty("launch_with_xaero_minimap") && project.launch_with_xaero_minimap.toBoolean()
 
 dependencies {
 	if (includeXaero) {
@@ -17,6 +17,10 @@ dependencies {
 
 neoForge {
 	version = neoforge_version
+	parchment {
+		minecraftVersion = parchment_minecraft
+		mappingsVersion = parchment_version
+	}
 	// Automatically enable neoforge AccessTransformers if the file exists
 	def at = project(':common').file('src/main/resources/META-INF/accesstransformer.cfg')
 	if (at.exists()) {

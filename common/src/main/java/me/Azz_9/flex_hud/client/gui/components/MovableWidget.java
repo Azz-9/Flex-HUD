@@ -5,7 +5,7 @@ import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.cursor.CursorType;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.KeyEvent;
@@ -27,7 +27,7 @@ import me.Azz_9.flex_hud.client.gui.undoManager.ScaleAction;
 import me.Azz_9.flex_hud.client.modules.hud.AbstractMovableModule;
 import me.Azz_9.flex_hud.client.modules.hud.DimensionHud;
 import me.Azz_9.flex_hud.client.modules.hud.MovableModule;
-import me.Azz_9.flex_hud.mixin.GuiGraphicsExtractorAccessor;
+import me.Azz_9.flex_hud.mixin.GuiGraphicsAccessor;
 
 public class MovableWidget extends AbstractWidget.WithInactiveMessage implements TrackableChange {
 	private final EditLayoutScreen PARENT;
@@ -90,16 +90,16 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 	}
 
 	// i don't want to use the render method that already exists in ClickableWidget because it sets the value of hovered, and here, i'm setting this in the method mouseMove
-	public void draw(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	public void draw(GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (this.visible) {
-			this.extractWidgetRenderState(graphics, mouseX, mouseY, deltaTicks);
+			this.renderWidget(graphics, mouseX, mouseY, deltaTicks);
 		}
 	}
 
 	@Override
-	protected void extractWidgetRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	protected void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		this.isHovered = (mouseX >= getX() && mouseY >= getY() && mouseX <= getRight() && mouseY <= getBottom()) || isScaleHandleHovered(mouseX, mouseY);
-		if (((GuiGraphicsExtractorAccessor) graphics).getCursor() == CursorType.DEFAULT) {
+		if (((GuiGraphicsAccessor) graphics).getCursor() == CursorType.DEFAULT) {
 			if (this.isScaleHandleHovered(mouseX, mouseY) || isDraggingScaleHandle) {
 				graphics.requestCursor(
 						switch (handlePosition) {
@@ -120,19 +120,19 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 			color = 0x7fa8a8ac;
 		}
 
-		graphics.outline(getX(), getY(), getWidth(), getHeight(), color);
+		graphics.renderOutline(getX(), getY(), getWidth(), getHeight(), color);
 
 		if (shouldDrawHorizontalSnapLine) {
-			graphics.horizontalLine(0, graphics.guiWidth(), snapLineY, 0x7fff0000);
+			graphics.hLine(0, graphics.guiWidth(), snapLineY, 0x7fff0000);
 		}
 		if (shouldDrawVerticalSnapLine) {
-			graphics.verticalLine(snapLineX, 0, graphics.guiHeight(), 0x7fff0000);
+			graphics.vLine(snapLineX, 0, graphics.guiHeight(), 0x7fff0000);
 		}
 
 		renderScaleHandler(graphics);
 	}
 
-	public void renderScaleHandler(GuiGraphicsExtractor graphics) {
+	public void renderScaleHandler(GuiGraphics graphics) {
 		graphics.fill(handleX, handleY, handleX + HANDLE_SIZE, handleY + HANDLE_SIZE, 0xffF8F8FC);
 
 		if (shouldDrawScaleValue) {
@@ -152,7 +152,7 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 			matrices.translate(valueX, valueY);
 			matrices.scale(0.75f, 0.75f);
 
-			graphics.text(MINECRAFT.font, text, 0, 0, Colors.WHITE, true);
+			graphics.drawString(MINECRAFT.font, text, 0, 0, Colors.WHITE, true);
 
 			matrices.popMatrix();
 		}

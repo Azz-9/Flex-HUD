@@ -4,7 +4,7 @@ import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
 import com.mojang.blaze3d.platform.InputConstants;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -142,7 +142,7 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 	}
 
 	@Override
-	protected void extractWidgetRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		Identifier texture = SPRITES.get(this.isActive(), this.isFocused());
 		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, texture, getX(), getY(), getWidth(), getHeight());
 
@@ -162,7 +162,7 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 		graphics.disableScissor();
 
 		if (rawText.isEmpty() && placeholder != null && !placeholder.getString().isEmpty()) {
-			graphics.text(MINECRAFT.font, placeholder, innerLeft, contentTextY, PLACEHOLDER_COLOR, false);
+			graphics.drawString(MINECRAFT.font, placeholder, innerLeft, contentTextY, PLACEHOLDER_COLOR, false);
 		}
 
 		handleCursor(graphics);
@@ -172,7 +172,7 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 		}
 	}
 
-	void renderOverlays(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	void renderOverlays(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		renderToolbar(graphics, mouseX, mouseY);
 		renderModifierPicker(graphics, mouseX, mouseY, deltaTicks);
 		renderModifierEditor(graphics, mouseX, mouseY, deltaTicks);
@@ -183,7 +183,7 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 	}
 
 	@Override
-	protected void handleCursor(@NotNull GuiGraphicsExtractor graphics) {
+	protected void handleCursor(@NotNull GuiGraphics graphics) {
 		if (this.isHovered()) {
 			if (!this.isActive()) {
 				graphics.requestCursor(Cursors.NOT_ALLOWED);
@@ -197,7 +197,7 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 		}
 	}
 
-	private void renderContent(GuiGraphicsExtractor graphics, int innerLeft, int contentTextY) {
+	private void renderContent(GuiGraphics graphics, int innerLeft, int contentTextY) {
 		for (DisplayItem item : displayItems) {
 			int drawX = innerLeft + item.x() - horizontalScroll;
 			if (drawX + item.width() < innerLeft || drawX > getRight() - TEXT_PADDING_X) {
@@ -205,7 +205,7 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 			}
 
 			if (item instanceof TextDisplayItem textDisplayItem) {
-				graphics.text(MINECRAFT.font, textDisplayItem.text(), drawX, contentTextY, textDisplayItem.color(), false);
+				graphics.drawString(MINECRAFT.font, textDisplayItem.text(), drawX, contentTextY, textDisplayItem.color(), false);
 				continue;
 			}
 
@@ -214,8 +214,8 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 				boolean selected = isIndexSelected(conditionDisplayItem.modelIndex());
 				int backgroundColor = selected ? CONDITION_SELECTED_BG_COLOR : CONDITION_BG_COLOR;
 				graphics.fill(drawX, chipTop, drawX + conditionDisplayItem.width(), getDisplayItemBottom(conditionDisplayItem, contentTextY), backgroundColor);
-				graphics.outline(drawX, chipTop, conditionDisplayItem.width(), conditionDisplayItem.height(), CONDITION_BORDER_COLOR);
-				graphics.text(MINECRAFT.font, conditionDisplayItem.displayText(), drawX + VARIABLE_PADDING_X, contentTextY, conditionDisplayItem.color(), false);
+				graphics.renderOutline(drawX, chipTop, conditionDisplayItem.width(), conditionDisplayItem.height(), CONDITION_BORDER_COLOR);
+				graphics.drawString(MINECRAFT.font, conditionDisplayItem.displayText(), drawX + VARIABLE_PADDING_X, contentTextY, conditionDisplayItem.color(), false);
 				continue;
 			}
 
@@ -225,26 +225,26 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 			int backgroundColor = selected ? VARIABLE_SELECTED_BG_COLOR : VARIABLE_BG_COLOR;
 			int modifierBackgroundColor = selected ? MODIFIER_SELECTED_BG_COLOR : MODIFIER_BG_COLOR;
 			graphics.fill(drawX, chipTop, drawX + variableDisplayItem.width(), getDisplayItemBottom(variableDisplayItem, contentTextY), backgroundColor);
-			graphics.outline(drawX, chipTop, variableDisplayItem.width(), variableDisplayItem.height(), VARIABLE_BORDER_COLOR);
+			graphics.renderOutline(drawX, chipTop, variableDisplayItem.width(), variableDisplayItem.height(), VARIABLE_BORDER_COLOR);
 
-			graphics.text(MINECRAFT.font, variableDisplayItem.name(), drawX + VARIABLE_PADDING_X, contentTextY, variableDisplayItem.color(), false);
+			graphics.drawString(MINECRAFT.font, variableDisplayItem.name(), drawX + VARIABLE_PADDING_X, contentTextY, variableDisplayItem.color(), false);
 
 			for (int modifierIndex = 0; modifierIndex < variableDisplayItem.modifiers().size(); modifierIndex++) {
 				ModifierPart modifierPart = variableDisplayItem.modifiers().get(modifierIndex);
 				int modifierX = drawX + modifierPart.startX();
 				graphics.fill(modifierX, chipTop + 1, modifierX + modifierPart.width(), chipTop + variableDisplayItem.height() - 1, modifierBackgroundColor);
-				graphics.text(MINECRAFT.font, modifierPart.displayText(), modifierX + MODIFIER_PADDING_X, contentTextY, modifierPart.color(), false);
+				graphics.drawString(MINECRAFT.font, modifierPart.displayText(), modifierX + MODIFIER_PADDING_X, contentTextY, modifierPart.color(), false);
 				if (modifierIndex < variableDisplayItem.modifiers().size() - 1) {
 					int separatorX = modifierX + modifierPart.width() + MODIFIER_SEPARATOR_GAP / 2;
 					graphics.fill(separatorX, chipTop + 2, separatorX + 1, chipTop + variableDisplayItem.height() - 1, MODIFIER_SEPARATOR_COLOR);
 				}
 			}
 
-			graphics.text(MINECRAFT.font, "+", drawX + variableDisplayItem.plusX(), contentTextY, variableDisplayItem.color(), false);
+			graphics.drawString(MINECRAFT.font, "+", drawX + variableDisplayItem.plusX(), contentTextY, variableDisplayItem.color(), false);
 		}
 	}
 
-	private void renderSelection(GuiGraphicsExtractor graphics, int innerLeft, int contentTextY) {
+	private void renderSelection(GuiGraphics graphics, int innerLeft, int contentTextY) {
 		int selectionStart = Math.min(caretIndex, selectionAnchor);
 		int selectionEnd = Math.max(caretIndex, selectionAnchor);
 		if (selectionStart == selectionEnd) {
@@ -261,7 +261,7 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 		}
 	}
 
-	private void renderCaret(GuiGraphicsExtractor graphics, int innerLeft, int contentTextY) {
+	private void renderCaret(GuiGraphics graphics, int innerLeft, int contentTextY) {
 		if (!isFocused() || hasSelection()) {
 			return;
 		}
@@ -274,7 +274,7 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 		graphics.fill(caretX, contentTextY - 1, caretX + 1, contentTextY + MINECRAFT.font.lineHeight + 1, CARET_COLOR);
 	}
 
-	private void renderTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+	private void renderTooltip(GuiGraphics graphics, int mouseX, int mouseY) {
 		if (hoveredTarget == null || System.currentTimeMillis() - hoverStartTime < DESCRIPTION_DELAY) {
 			return;
 		}
@@ -305,7 +305,7 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 		}
 		try {
 			graphics.fill(x, y, x + width, y + height, DESCRIPTION_BACKGROUND);
-			graphics.textWithWordWrap(MINECRAFT.font, tooltip, x + DESCRIPTION_PADDING, y + DESCRIPTION_PADDING, innerWidth, TEXT_COLOR, false);
+			graphics.drawWordWrap(MINECRAFT.font, tooltip, x + DESCRIPTION_PADDING, y + DESCRIPTION_PADDING, innerWidth, TEXT_COLOR, false);
 		} finally {
 			if (currentScissor != null) {
 				graphics.enableScissor(currentScissor.left(), currentScissor.top(), currentScissor.right(), currentScissor.bottom());
@@ -333,7 +333,7 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 		return item instanceof VariableDisplayItem || item instanceof ConditionDisplayItem;
 	}
 
-	private void renderToolbar(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+	private void renderToolbar(GuiGraphics graphics, int mouseX, int mouseY) {
 		if (!styleToolbarEnabled) {
 			return;
 		}
@@ -342,31 +342,31 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 		}
 	}
 
-	private void renderModifierPicker(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	private void renderModifierPicker(GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (modifierPickerPopup != null) {
 			modifierPickerPopup.render(graphics, mouseX, mouseY, deltaTicks);
 		}
 	}
 
-	private void renderModifierEditor(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	private void renderModifierEditor(GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (modifierEditorPopup != null) {
 			modifierEditorPopup.render(graphics, mouseX, mouseY, deltaTicks);
 		}
 	}
 
-	private void renderConditionEditor(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	private void renderConditionEditor(GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (conditionEditorPopup != null) {
 			conditionEditorPopup.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
 		}
 	}
 
-	private void renderColorPopup(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	private void renderColorPopup(GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (colorPopup != null) {
 			colorPopup.render(graphics, mouseX, mouseY, deltaTicks);
 		}
 	}
 
-	private void renderGradientPopup(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	private void renderGradientPopup(GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (gradientPopup != null) {
 			gradientPopup.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
 		}
@@ -1468,43 +1468,43 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 				&& selectionEnd == Math.max(caretIndex, selectionAnchor);
 	}
 
-	void renderButtonCenterLabel(GuiGraphicsExtractor graphics, Bounds bounds, Component label, int backgroundColor, int textColor, double mouseX, double mouseY) {
+	void renderButtonCenterLabel(GuiGraphics graphics, Bounds bounds, Component label, int backgroundColor, int textColor, double mouseX, double mouseY) {
 		if (!label.getString().isEmpty()) {
 			graphics.fill(bounds.x(), bounds.y(), bounds.right(), bounds.bottom(), backgroundColor);
-			graphics.outline(bounds.x(), bounds.y(), bounds.width(), bounds.height(), POPUP_BORDER);
+			graphics.renderOutline(bounds.x(), bounds.y(), bounds.width(), bounds.height(), POPUP_BORDER);
 			int textX = bounds.x() + (bounds.width() - MINECRAFT.font.width(label)) / 2;
 			int textY = centeredTextY(bounds.y(), bounds.height());
-			graphics.text(MINECRAFT.font, label, textX, textY, textColor, false);
+			graphics.drawString(MINECRAFT.font, label, textX, textY, textColor, false);
 
 			if (bounds.contains(mouseX, mouseY)) {
 				graphics.requestCursor(Cursors.POINTING_HAND);
 			}
 		} else {
 			graphics.fill(bounds.x(), bounds.y(), bounds.right(), bounds.bottom(), POPUP_BACKGROUND);
-			graphics.outline(bounds.x(), bounds.y(), bounds.width(), bounds.height(), POPUP_BORDER);
+			graphics.renderOutline(bounds.x(), bounds.y(), bounds.width(), bounds.height(), POPUP_BORDER);
 		}
 	}
 
-	void renderButton(GuiGraphicsExtractor graphics, Bounds bounds, Component label, int backgroundColor, int textColor, int padding, double mouseX, double mouseY) {
+	void renderButton(GuiGraphics graphics, Bounds bounds, Component label, int backgroundColor, int textColor, int padding, double mouseX, double mouseY) {
 		if (!label.getString().isEmpty()) {
 			graphics.fill(bounds.x(), bounds.y(), bounds.right(), bounds.bottom(), backgroundColor);
-			graphics.outline(bounds.x(), bounds.y(), bounds.width(), bounds.height(), POPUP_BORDER);
+			graphics.renderOutline(bounds.x(), bounds.y(), bounds.width(), bounds.height(), POPUP_BORDER);
 			int textX = bounds.x() + padding;
 			int textY = centeredTextY(bounds.y(), bounds.height());
-			graphics.text(MINECRAFT.font, label, textX, textY, textColor, false);
+			graphics.drawString(MINECRAFT.font, label, textX, textY, textColor, false);
 
 			if (bounds.contains(mouseX, mouseY)) {
 				graphics.requestCursor(Cursors.POINTING_HAND);
 			}
 		} else {
 			graphics.fill(bounds.x(), bounds.y(), bounds.right(), bounds.bottom(), POPUP_BACKGROUND);
-			graphics.outline(bounds.x(), bounds.y(), bounds.width(), bounds.height(), POPUP_BORDER);
+			graphics.renderOutline(bounds.x(), bounds.y(), bounds.width(), bounds.height(), POPUP_BORDER);
 		}
 	}
 
-	void renderPanel(GuiGraphicsExtractor graphics, Bounds bounds) {
+	void renderPanel(GuiGraphics graphics, Bounds bounds) {
 		graphics.fill(bounds.x(), bounds.y(), bounds.right(), bounds.bottom(), POPUP_BACKGROUND);
-		graphics.outline(bounds.x(), bounds.y(), bounds.width(), bounds.height(), POPUP_BORDER);
+		graphics.renderOutline(bounds.x(), bounds.y(), bounds.width(), bounds.height(), POPUP_BORDER);
 	}
 
 	int clampX(int x, int width) {

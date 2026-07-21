@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.client.gui.components.customModule;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -54,8 +54,8 @@ public class ClickableVariableWidget extends AbstractWidget.WithInactiveMessage 
 	}
 
 	@Override
-	protected void extractWidgetRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
-		variableWidget.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+	protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
+		variableWidget.render(graphics, mouseX, mouseY, deltaTicks);
 		handleCursor(graphics);
 	}
 

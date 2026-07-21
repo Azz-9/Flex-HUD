@@ -6,7 +6,7 @@ import static me.Azz_9.flex_hud.utils.DrawingUtils.drawBorder;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
@@ -77,7 +77,7 @@ public class KeyStrokes extends AbstractTextModule {
 	}
 
 	@Override
-	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
 		if (shouldNotRender()) {
 			return;
 		}
@@ -117,7 +117,7 @@ public class KeyStrokes extends AbstractTextModule {
 		matrices.popMatrix();
 	}
 
-	private float renderKey(GuiGraphicsExtractor graphics, int x, int y, int keyWidth, int keyHeight, KeyMapping keyMapping) {
+	private float renderKey(GuiGraphics graphics, int x, int y, int keyWidth, int keyHeight, KeyMapping keyMapping) {
 		boolean isPressed = keyMapping.isDown();
 		long now = System.currentTimeMillis();
 
@@ -159,7 +159,7 @@ public class KeyStrokes extends AbstractTextModule {
 		return fadeFactor;
 	}
 
-	private void renderMovementKey(GuiGraphicsExtractor graphics, int x, int y, int keyWidth, int keyHeight, KeyMapping keyMapping, Component label) {
+	private void renderMovementKey(GuiGraphics graphics, int x, int y, int keyWidth, int keyHeight, KeyMapping keyMapping, Component label) {
 		float fadeFactor = renderKey(graphics, x, y, keyWidth, keyHeight, keyMapping);
 
 		Font font = MINECRAFT.font;
@@ -168,12 +168,12 @@ public class KeyStrokes extends AbstractTextModule {
 		matrices.pushMatrix();
 		matrices.translate(x + (keyWidth - font.width(label)) / 2.0f, y + (keyHeight - font.lineHeight) / 2.0f);
 
-		graphics.text(font, label, 0, 0, getColor(fadeFactor), shadow.getValue());
+		graphics.drawString(font, label, 0, 0, getColor(fadeFactor), shadow.getValue());
 
 		matrices.popMatrix();
 	}
 
-	private void renderJumpKey(GuiGraphicsExtractor graphics, int x, int y, int keyWidth, int keyHeight, KeyMapping keyMapping) {
+	private void renderJumpKey(GuiGraphics graphics, int x, int y, int keyWidth, int keyHeight, KeyMapping keyMapping) {
 		float fadeFactor = renderKey(graphics, x, y, keyWidth, keyHeight, keyMapping);
 
 		int barX1 = x + keyWidth / 4;
@@ -188,7 +188,7 @@ public class KeyStrokes extends AbstractTextModule {
 		graphics.fill(barX1, barY1, barX2, barY2, color);
 	}
 
-	private void renderMouseKey(GuiGraphicsExtractor graphics, int x, int y, int keyWidth, int keyHeight, KeyMapping keyMapping, int cps, Component label) {
+	private void renderMouseKey(GuiGraphics graphics, int x, int y, int keyWidth, int keyHeight, KeyMapping keyMapping, int cps, Component label) {
 		float fadeFactor = renderKey(graphics, x, y, keyWidth, keyHeight, keyMapping);
 
 		Font font = MINECRAFT.font;
@@ -198,14 +198,14 @@ public class KeyStrokes extends AbstractTextModule {
 
 		matrices.pushMatrix();
 		matrices.translate(x + (keyWidth - font.width(label)) / 2.0f, y + keyHeight / 2.0f - font.lineHeight + 2);
-		graphics.text(font, label, 0, 0, color, shadow.getValue());
+		graphics.drawString(font, label, 0, 0, color, shadow.getValue());
 		matrices.popMatrix();
 
 		Component cpsLabel = Component.literal(cps + " CPS");
 		matrices.pushMatrix();
 		matrices.translate(x + (keyWidth - font.width(cpsLabel) * 0.7f) / 2.0f, y + keyHeight / 2.0f + 3);
 		matrices.scale(0.7f);
-		graphics.text(font, cpsLabel, 0, 0, color, shadow.getValue());
+		graphics.drawString(font, cpsLabel, 0, 0, color, shadow.getValue());
 		matrices.popMatrix();
 	}
 

@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.client.gui.components.config.slider;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
@@ -40,16 +40,16 @@ public class ConfigIntSliderWidget<T> extends AbstractSliderButton implements Tr
 	}
 
 	@Override
-	public void extractWidgetRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	public void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (this.active) {
 			if (this.isHovered()) graphics.requestCursor(Cursors.POINTING_HAND);
 
 			if (this.isHoveredOrFocused()) {
-				graphics.outline(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+				graphics.renderOutline(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
 			}
 		}
 
-		super.extractWidgetRenderState(graphics, mouseX, mouseY, deltaTicks);
+		super.renderWidget(graphics, mouseX, mouseY, deltaTicks);
 
 		if (!this.active) {
 			if (this.isHovered()) graphics.requestCursor(Cursors.NOT_ALLOWED);

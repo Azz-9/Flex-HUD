@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.client.gui.screens;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
@@ -82,17 +82,17 @@ public abstract class AbstractConfigurationScreen extends AbstractSavableScreen 
 	}
 
 	@Override
-	public void renderBeforePopup(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	public void renderBeforePopup(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		int textColor = Colors.WHITE;
 		int backgroundColor = Colors.BLACK_SEMI_TRANSPARENT;
 		int padding = 2;
 		graphics.fill(this.width / 2 - font.width(title) / 2 - padding, 7 - padding, this.width / 2 + font.width(title) / 2 + padding, 7 + font.lineHeight, backgroundColor);
-		graphics.centeredText(font, title, this.width / 2, 7, textColor);
+		graphics.drawCenteredString(font, title, this.width / 2, 7, textColor);
 
 		if (colorSelector != null && colorSelector.isFocused()) {
 			colorSelector.updatePosition(configList.getY());
 			if (colorSelector.getY() >= configList.getY()) {
-				colorSelector.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+				colorSelector.render(graphics, mouseX, mouseY, deltaTicks);
 			} else {
 				colorSelector.setFocused(false);
 			}
@@ -100,9 +100,9 @@ public abstract class AbstractConfigurationScreen extends AbstractSavableScreen 
 	}
 
 	@Override
-	public void extractBackground(@NonNull GuiGraphicsExtractor context, int mouseX, int mouseY, float deltaTicks) {
+	public void renderBackground(@NonNull GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
 		if (MINECRAFT.level == null) {
-			super.extractBackground(context, mouseX, mouseY, deltaTicks);
+			super.renderBackground(context, mouseX, mouseY, deltaTicks);
 		}
 	}
 

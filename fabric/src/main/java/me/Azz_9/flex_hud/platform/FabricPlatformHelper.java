@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.platform;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
@@ -10,7 +10,7 @@ import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
@@ -66,7 +66,7 @@ public class FabricPlatformHelper implements IPlatformHelper {
 	}
 
 	@Override
-	public void registerHudElement(@NotNull Identifier beforeThis, @NotNull Identifier identifier, @NotNull BiConsumer<GuiGraphicsExtractor, DeltaTracker> hudElement) {
+	public void registerHudElement(@NotNull Identifier beforeThis, @NotNull Identifier identifier, @NotNull BiConsumer<GuiGraphics, DeltaTracker> hudElement) {
 		HudElementRegistry.attachElementBefore(
 				beforeThis,
 				identifier,
@@ -76,7 +76,7 @@ public class FabricPlatformHelper implements IPlatformHelper {
 
 	@Override
 	public void registerReloadListener(@NotNull Identifier id, @NotNull PreparableReloadListener listener) {
-		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(id, listener);
+		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloader(id, listener);
 	}
 
 	@Override
@@ -101,11 +101,11 @@ public class FabricPlatformHelper implements IPlatformHelper {
 
 	@Override
 	public @NotNull KeyMapping registerKeyMapping(@NotNull KeyMapping keyMapping) {
-		return KeyMappingHelper.registerKeyMapping(keyMapping);
+		return KeyBindingHelper.registerKeyBinding(keyMapping);
 	}
 
 	@Override
-	public ScreenRectangle scissorStackPeek(@NotNull GuiGraphicsExtractor graphics) {
+	public ScreenRectangle scissorStackPeek(@NotNull GuiGraphics graphics) {
 		return graphics.scissorStack.peek();
 	}
 }

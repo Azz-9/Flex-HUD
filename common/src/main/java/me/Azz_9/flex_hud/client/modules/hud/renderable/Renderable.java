@@ -1,7 +1,7 @@
 package me.Azz_9.flex_hud.client.modules.hud.renderable;
 
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 
 public abstract class Renderable {
 	protected int x;
@@ -34,5 +34,5 @@ public abstract class Renderable {
 		return width;
 	}
 
-	public abstract void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker);
+	public abstract void render(GuiGraphics graphics, DeltaTracker deltaTracker);
 }

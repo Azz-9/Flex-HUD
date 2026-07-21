@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.client.gui.components.customModule.moduleContentField;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -51,12 +51,12 @@ final class ColorPopup {
 		selector.setFocused(true);
 	}
 
-	void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+	void render(GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		host.renderPanel(graphics, bounds);
 		host.renderButtonCenterLabel(graphics, noneBounds, Component.translatable("flex_hud.create_module_screen.editor.no_color"), noneBounds.contains(mouseX, mouseY) ? ModuleContentField.BUTTON_HOVERED_BACKGROUND : ModuleContentField.BUTTON_BACKGROUND, ModuleContentField.BUTTON_TEXT_COLOR, mouseX, mouseY);
 		host.renderButtonCenterLabel(graphics, chromaBounds, Component.translatable("flex_hud.create_module_screen.editor.chroma"), chromaBounds.contains(mouseX, mouseY) ? ModuleContentField.BUTTON_HOVERED_BACKGROUND : ModuleContentField.BUTTON_BACKGROUND, ModuleContentField.BUTTON_TEXT_COLOR, mouseX, mouseY);
 
-		selector.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+		selector.render(graphics, mouseX, mouseY, deltaTicks);
 	}
 
 	boolean mouseClicked(MouseButtonEvent event, boolean doubled) {

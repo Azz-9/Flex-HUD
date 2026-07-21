@@ -13,7 +13,7 @@ import me.Azz_9.flex_hud.client.modules.notHud.TimeChanger;
 @Mixin(Level.class)
 public abstract class LevelMixin {
 
-	@Inject(at = @At("RETURN"), method = "getOverworldClockTime", cancellable = true)
+	@Inject(at = @At("RETURN"), method = "getDayTime", cancellable = true)
 	public void getOverworldClockTime(CallbackInfoReturnable<Long> cir) {
 		if (Modules.getInstance().isEnabled.getValue() &&
 				Modules.getInstance().timeChanger.enabled.getValue()) {

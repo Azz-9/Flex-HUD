@@ -3,7 +3,7 @@ package me.Azz_9.flex_hud.client.modules.hud.custom;
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.LightLayer;
@@ -42,7 +42,7 @@ public class LightLevel extends AbstractTextModule {
 	}
 
 	@Override
-	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
 		if (shouldNotRender() || !CommonClass.isEditingLayout && (MINECRAFT.level == null || MINECRAFT.player == null)) {
 			return;
 		}
@@ -80,7 +80,7 @@ public class LightLevel extends AbstractTextModule {
 
 		drawBackground(graphics);
 
-		graphics.text(MINECRAFT.font, text, 0, 0, color, shadow.getValue());
+		graphics.drawString(MINECRAFT.font, text, 0, 0, color, shadow.getValue());
 
 		matrices.popMatrix();
 	}

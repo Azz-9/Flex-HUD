@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.platform.services;
 
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
@@ -55,7 +55,7 @@ public interface IPlatformHelper {
 
 	void registerDisconnectEvent(@NotNull Runnable runnable);
 
-	void registerHudElement(@NotNull Identifier beforeThis, @NotNull Identifier identifier, @NotNull BiConsumer<GuiGraphicsExtractor, DeltaTracker> hudElement);
+	void registerHudElement(@NotNull Identifier beforeThis, @NotNull Identifier identifier, @NotNull BiConsumer<GuiGraphics, DeltaTracker> hudElement);
 
 	void registerReloadListener(@NotNull Identifier id, @NotNull PreparableReloadListener listener);
 
@@ -69,5 +69,5 @@ public interface IPlatformHelper {
 
 	@NotNull KeyMapping registerKeyMapping(@NotNull KeyMapping keyMapping);
 
-	ScreenRectangle scissorStackPeek(@NotNull GuiGraphicsExtractor graphics);
+	ScreenRectangle scissorStackPeek(@NotNull GuiGraphics graphics);
 }
