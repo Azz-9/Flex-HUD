@@ -58,7 +58,7 @@ publishMods {
 		projectSlug = "flex-hud"
 		accessToken = providers.gradleProperty("CURSEFORGE_TOKEN")
 		minecraftVersionRange {
-			start = start = minecraft_version_start
+			start = minecraft_version_start
 			end = minecraft_version_end
 		}
 		changelogType = "markdown"

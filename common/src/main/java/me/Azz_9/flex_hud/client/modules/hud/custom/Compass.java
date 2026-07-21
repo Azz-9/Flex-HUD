@@ -413,6 +413,7 @@ public class Compass extends AbstractTextModule {
 			}
 		}
 
+		// MC_COPY net.minecraft.client.gui.contextualbar.LocatorBarRenderer.extractRenderState
 		PartialTickSupplier partialTickSupplier = entity -> deltaTracker.getGameTimeDeltaPartialTick(!MINECRAFT.level.tickRateManager().isEntityFrozen(entity));
 
 		MINECRAFT.player.connection.getWaypointManager().forEachWaypoint(MINECRAFT.getCameraEntity(), (waypoint) -> {
