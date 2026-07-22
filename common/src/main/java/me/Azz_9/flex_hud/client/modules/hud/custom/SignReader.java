@@ -71,22 +71,23 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 
 		float textureScale; // used to make the texture bigger by default
 		int textureWidth, textureHeight;
+		float offsetX, offsetY;
 		if (data.isHangingSign) {
 			textureScale = 4.5f;
 			setWidth(Math.round(14 * textureScale));
 			setHeight(Math.round(10 * textureScale));
-			textureWidth = Math.round(16 * textureScale);
-			textureHeight = Math.round(16 * textureScale);
+			offsetX = data.facingSignTextSlot == SignTextSlot.FRONT ? 2 * textureScale : getWidth() + 4 * textureScale;
+			offsetY = 16 * textureScale;
 		} else {
 			textureScale = 4;
 			setWidth(Math.round(24 * textureScale));
 			setHeight(Math.round(12 * textureScale));
-			textureWidth = Math.round(24 * textureScale);
-			textureHeight = Math.round(26 * textureScale);
+			offsetX = 0;
+			offsetY = data.facingSignTextSlot == SignTextSlot.FRONT ? 2 * textureScale : getHeight() + 4 * textureScale;
 		}
 
-		float offsetX = data.isHangingSign ? 1 * textureScale : 0;
-		float offsetY = data.isHangingSign ? 6 * textureScale : 0;
+		textureWidth = Math.round(32 * textureScale);
+		textureHeight = Math.round(32 * textureScale);
 
 		Matrix3x2fStack matrices = graphics.pose();
 		matrices.pushMatrix();
@@ -207,7 +208,7 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 	private @NotNull RenderData getPlaceholderRenderData() {
 		RenderData data = new RenderData();
 
-		data.texture = Identifier.withDefaultNamespace("textures/gui/signs/" + WoodType.OAK.name() + ".png");
+		data.texture = getSignTexture(WoodType.OAK);
 		data.content = List.of(
 				Component.literal(""),
 				Component.translatable("flex_hud.sign_reader.placeholder_content"),
@@ -276,10 +277,22 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 		data.glowColor = AbstractSignRenderer.getDarkColor(signText);
 		data.isGlowing = signText.hasGlowingText();
 		data.texture = data.isHangingSign
-				? Identifier.withDefaultNamespace("textures/gui/hanging_signs/" + woodType.name() + ".png")
-				: Identifier.withDefaultNamespace("textures/gui/signs/" + woodType.name() + ".png");
+				? getHangingSignTexture(woodType)
+				: getSignTexture(woodType);
 
 		return data;
+	}
+
+	public static Identifier getSignTexture(@NotNull WoodType woodType) {
+		return Identifier.parse(woodType.name())
+				.withPrefix("textures/block/")
+				.withSuffix("_sign.png");
+	}
+
+	public static Identifier getHangingSignTexture(@NotNull WoodType woodType) {
+		return Identifier.parse(woodType.name())
+				.withPrefix("textures/block/")
+				.withSuffix("_hanging_sign.png");
 	}
 
 	private static class RenderData {
