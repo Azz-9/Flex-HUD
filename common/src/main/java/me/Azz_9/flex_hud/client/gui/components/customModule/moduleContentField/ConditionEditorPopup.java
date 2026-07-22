@@ -7,9 +7,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
@@ -157,48 +154,48 @@ final class ConditionEditorPopup {
 		contentField.renderOverlays(graphics, mouseX, mouseY, deltaTicks);
 	}
 
-	boolean mouseClicked(MouseButtonEvent event, boolean doubled) {
+	boolean mouseClicked(double mouseX, double mouseY, int button) {
 		activeDragWidget = null;
 		setAllFieldsFocused(false);
 		for (ConditionRow row : rows) {
-			if (row.mouseClicked(event, doubled)) {
+			if (row.mouseClicked(mouseX, mouseY, button)) {
 				return true;
 			}
 		}
-		if (contentField.isMouseOver(event.x(), event.y()) && contentField.mouseClicked(event, doubled)) {
+		if (contentField.isMouseOver(mouseX, mouseY) && contentField.mouseClicked(mouseX, mouseY, button)) {
 			activeDragWidget = contentField;
 			return true;
 		}
-		if (addBounds.contains(event.x(), event.y())) {
+		if (addBounds.contains(mouseX, mouseY)) {
 			rows.add(defaultRow());
 			layoutFromCurrentAnchor();
 			return true;
 		}
-		if (deleteBounds.contains(event.x(), event.y())) {
+		if (deleteBounds.contains(mouseX, mouseY)) {
 			host.applyConditionChange(elementIndex, null, null, true);
 			return true;
 		}
-		if (saveBounds.contains(event.x(), event.y())) {
+		if (saveBounds.contains(mouseX, mouseY)) {
 			save();
 			return true;
 		}
-		if (cancelBounds.contains(event.x(), event.y())) {
+		if (cancelBounds.contains(mouseX, mouseY)) {
 			host.conditionEditorPopup = null;
 			return true;
 		}
-		return bounds.contains(event.x(), event.y());
+		return bounds.contains(mouseX, mouseY);
 	}
 
-	boolean mouseDragged(MouseButtonEvent event, double offsetX, double offsetY) {
+	boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
 		if (activeDragWidget != null) {
-			return activeDragWidget.mouseDragged(event, offsetX, offsetY);
+			return activeDragWidget.mouseDragged(mouseX, mouseY, button, dragX, dragY);
 		}
 		return false;
 	}
 
-	boolean mouseReleased(MouseButtonEvent event) {
+	boolean mouseReleased(double mouseX, double mouseY, int button) {
 		if (activeDragWidget != null) {
-			boolean handled = activeDragWidget.mouseReleased(event);
+			boolean handled = activeDragWidget.mouseReleased(mouseX, mouseY, button);
 			activeDragWidget = null;
 			return handled;
 		}
@@ -214,33 +211,33 @@ final class ConditionEditorPopup {
 		return contentField.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
 	}
 
-	boolean keyPressed(KeyEvent event) {
+	boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		for (ConditionRow row : rows) {
-			if (row.keyPressed(event)) {
+			if (row.keyPressed(keyCode, scanCode, modifiers)) {
 				return true;
 			}
 		}
-		if (contentField.isFocused() && contentField.keyPressed(event)) {
+		if (contentField.isFocused() && contentField.keyPressed(keyCode, scanCode, modifiers)) {
 			return true;
 		}
-		if (event.isConfirmation()) {
+		if (keyCode == InputConstants.KEY_RETURN || keyCode == InputConstants.KEY_NUMPADENTER) {
 			save();
 			return true;
 		}
-		if (event.key() == InputConstants.KEY_TAB) {
+		if (keyCode == InputConstants.KEY_TAB) {
 			focusNextField();
 			return true;
 		}
 		return false;
 	}
 
-	boolean charTyped(CharacterEvent event) {
+	boolean charTyped(char codePoint, int modifiers) {
 		for (ConditionRow row : rows) {
-			if (row.charTyped(event)) {
+			if (row.charTyped(codePoint, modifiers)) {
 				return true;
 			}
 		}
-		return contentField.isFocused() && contentField.charTyped(event);
+		return contentField.isFocused() && contentField.charTyped(codePoint, modifiers);
 	}
 
 	boolean contains(double mouseX, double mouseY) {
@@ -430,16 +427,16 @@ final class ConditionEditorPopup {
 			variableField.renderOverlays(graphics, mouseX, mouseY, deltaTicks);
 		}
 
-		private boolean mouseClicked(MouseButtonEvent event, boolean doubled) {
-			if (connectorBounds.width() > 0 && connectorBounds.contains(event.x(), event.y())) {
+		private boolean mouseClicked(double mouseX, double mouseY, int button) {
+			if (connectorBounds.width() > 0 && connectorBounds.contains(mouseX, mouseY)) {
 				connector = connector.next();
 				return true;
 			}
-			if (operatorBounds.contains(event.x(), event.y())) {
+			if (operatorBounds.contains(mouseX, mouseY)) {
 				operator = nextOperator(operator, valueKind());
 				return true;
 			}
-			if (removeBounds.contains(event.x(), event.y())) {
+			if (removeBounds.contains(mouseX, mouseY)) {
 				rows.remove(this);
 				if (rows.isEmpty()) {
 					rows.add(defaultRow());
@@ -447,11 +444,11 @@ final class ConditionEditorPopup {
 				layoutFromCurrentAnchor();
 				return true;
 			}
-			if (variableField.isMouseOver(event.x(), event.y()) && variableField.mouseClicked(event, doubled)) {
+			if (variableField.isMouseOver(mouseX, mouseY) && variableField.mouseClicked(mouseX, mouseY, button)) {
 				activeDragWidget = variableField;
 				return true;
 			}
-			if (thresholdField.isMouseOver(event.x(), event.y()) && thresholdField.mouseClicked(event, doubled)) {
+			if (thresholdField.isMouseOver(mouseX, mouseY) && thresholdField.mouseClicked(mouseX, mouseY, button)) {
 				activeDragWidget = thresholdField;
 				return true;
 			}
@@ -462,18 +459,18 @@ final class ConditionEditorPopup {
 			return variableField.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
 		}
 
-		private boolean keyPressed(KeyEvent event) {
-			boolean handled = (variableField.isFocused() && variableField.keyPressed(event))
-					|| (thresholdField.isFocused() && thresholdField.keyPressed(event));
+		private boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+			boolean handled = (variableField.isFocused() && variableField.keyPressed(keyCode, scanCode, modifiers))
+					|| (thresholdField.isFocused() && thresholdField.keyPressed(keyCode, scanCode, modifiers));
 			if (handled) {
 				updateTypeState();
 			}
 			return handled;
 		}
 
-		private boolean charTyped(CharacterEvent event) {
-			boolean handled = (variableField.isFocused() && variableField.charTyped(event))
-					|| (thresholdField.isFocused() && thresholdField.charTyped(event));
+		private boolean charTyped(char codePoint, int modifiers) {
+			boolean handled = (variableField.isFocused() && variableField.charTyped(codePoint, modifiers))
+					|| (thresholdField.isFocused() && thresholdField.charTyped(codePoint, modifiers));
 			if (handled) {
 				updateTypeState();
 			}

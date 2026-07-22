@@ -3,12 +3,12 @@ package me.Azz_9.flex_hud.client.gui.components.config.buttons;
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 import static me.Azz_9.flex_hud.Constants.MOD_ID;
 
+import com.mojang.blaze3d.platform.InputConstants;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -22,7 +22,6 @@ import java.util.Objects;
 import java.util.function.Function;
 
 import me.Azz_9.flex_hud.client.config.option.ConfigBoolean;
-import me.Azz_9.flex_hud.client.gui.Cursors;
 import me.Azz_9.flex_hud.client.gui.components.TrackableChange;
 import me.Azz_9.flex_hud.client.gui.components.config.DataGetter;
 import me.Azz_9.flex_hud.client.gui.components.config.Observer;
@@ -72,8 +71,6 @@ public class ConfigToggleButtonWidget extends Button implements TrackableChange,
 	@Override
 	public void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
 		if (this.active) {
-			if (this.isHovered()) graphics.requestCursor(Cursors.POINTING_HAND);
-
 			drawHover(graphics);
 
 			if (this.isHoveredOrFocused()) {
@@ -86,8 +83,6 @@ public class ConfigToggleButtonWidget extends Button implements TrackableChange,
 		}
 
 		if (!this.active) {
-			if (this.isHovered()) graphics.requestCursor(Cursors.NOT_ALLOWED);
-
 			graphics.fill(getRight() - getHeight(), getY(), getRight(), getBottom(), 0xcf4e4e4e);
 		}
 	}
@@ -132,18 +127,18 @@ public class ConfigToggleButtonWidget extends Button implements TrackableChange,
 	}
 
 	@Override
-	public void onClick(@NotNull MouseButtonEvent click, boolean bl) {
+	public void onClick(double mouseX, double mouseY) {
 		onClickAction();
 	}
 
 	@Override
-	public boolean keyPressed(KeyEvent input) {
-		if (input.isConfirmation()) {
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (keyCode == InputConstants.KEY_RETURN || keyCode == InputConstants.KEY_NUMPADENTER) {
 			onClickAction();
 			this.playDownSound(MINECRAFT.getSoundManager());
 		}
 
-		return super.keyPressed(input);
+		return super.keyPressed(keyCode, scanCode, modifiers);
 	}
 
 	public void onClickAction() {

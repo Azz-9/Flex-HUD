@@ -36,10 +36,6 @@ bee/bee_stinger.png
 breeze/breeze_eyes.png
 breeze/breeze_wind.png
 cat/cat_collar.png
-copper_golem/exposed_copper_golem_eyes.png
-copper_golem/oxidized_copper_golem_eyes.png
-copper_golem/weathered_copper_golem_eyes.png
-copper_golem/copper_golem_eyes.png
 creaking/creaking_eyes.png
 creeper/creeper_armor.png
 enderdragon/dragon_exploding.png

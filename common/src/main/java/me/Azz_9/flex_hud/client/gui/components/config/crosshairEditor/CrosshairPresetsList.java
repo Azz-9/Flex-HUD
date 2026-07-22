@@ -7,13 +7,11 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
-import net.minecraft.client.input.MouseButtonEvent;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-import me.Azz_9.flex_hud.client.gui.Cursors;
 import me.Azz_9.flex_hud.client.gui.components.AbstractSmoothScrollableList;
 
 public class CrosshairPresetsList extends AbstractSmoothScrollableList<CrosshairPresetsList.CrosshairEntry> {
@@ -297,16 +295,15 @@ public class CrosshairPresetsList extends AbstractSmoothScrollableList<Crosshair
 		}
 
 		@Override
-		public void renderContent(@NotNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+		public void render(@NotNull GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float delta) {
 			if (this.isMouseOver(mouseX, mouseY) && parent.isMouseOver(mouseX, mouseY)) {
-				graphics.requestCursor(Cursors.POINTING_HAND);
-				graphics.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), 0x10000000);
+				graphics.fill(x, y, x + entryWidth, y + entryHeight, 0x10000000);
 			} else {
-				graphics.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), 0x50000000);
+				graphics.fill(x, y, x + entryWidth, y + entryHeight, 0x50000000);
 			}
 
-			int centerX = getX() + (getWidth() - texture.length * PIXEL_SIZE) / 2;
-			int centerY = getY() + (getHeight() - texture.length * PIXEL_SIZE) / 2;
+			int centerX = x + (entryWidth - texture.length * PIXEL_SIZE) / 2;
+			int centerY = y + (entryHeight - texture.length * PIXEL_SIZE) / 2;
 			for (int textureY = 0; textureY < texture.length; textureY++) {
 				for (int textureX = 0; textureX < texture.length; textureX++) {
 					if (texture[textureY][textureX] >> 24 != 0) {
@@ -319,7 +316,7 @@ public class CrosshairPresetsList extends AbstractSmoothScrollableList<Crosshair
 		}
 
 		@Override
-		public boolean mouseClicked(@NotNull MouseButtonEvent click, boolean doubled) {
+		public boolean mouseClicked(double mouseX, double mouseY, int button) {
 			if (parent != null) {
 
 				int[][] texture = new int[this.texture.length][this.texture[0].length];

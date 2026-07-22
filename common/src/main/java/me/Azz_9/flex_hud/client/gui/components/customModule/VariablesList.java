@@ -81,7 +81,7 @@ public class VariablesList extends AbstractSmoothScrollableList<VariablesList.En
 		private final ClickableVariableWidget widget;
 
 		public Entry(Variable<?> variable) {
-			this.widget = new ClickableVariableWidget(getX() + PADDING, getY() + PADDING, variable);
+			this.widget = new ClickableVariableWidget(0, 0, variable);
 		}
 
 		public void setOnVariableClick(Consumer<Variable<?>> onVariableClick) {
@@ -89,20 +89,10 @@ public class VariablesList extends AbstractSmoothScrollableList<VariablesList.En
 		}
 
 		@Override
-		public void setY(int y) {
-			super.setY(y);
-			widget.setY(y + PADDING);
-		}
+		public void render(@NotNull GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float delta) {
+			widget.setPosition(x + PADDING, y + PADDING);
 
-		@Override
-		public void setX(int x) {
-			super.setX(x);
-			widget.setX(x + PADDING);
-		}
-
-		@Override
-		public void renderContent(@NotNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
-			widget.render(graphics, mouseX, mouseY, deltaTicks);
+			widget.render(graphics, mouseX, mouseY, delta);
 		}
 
 		@Override

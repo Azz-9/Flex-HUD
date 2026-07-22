@@ -79,34 +79,21 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 	}
 
 	@Override
-	public void setX(int x) {
-		super.setX(x);
-		intFieldWidget.setX(x + getWidth() - resetButtonWidget.getWidth() - 10 - increaseAndDecreaseButtonsSize - intFieldWidget.getWidth());
-		increaseButton.setX(intFieldWidget.getRight());
-		decreaseButton.setX(intFieldWidget.getRight());
-	}
+	public void render(@NotNull GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float delta) {
+		super.render(graphics, index, y, x, entryWidth, entryHeight, mouseX, mouseY, hovered, delta);
+		intFieldWidget.setPosition(x + entryWidth - resetButtonWidget.getWidth() - 10 - increaseAndDecreaseButtonsSize - intFieldWidget.getWidth(), y);
+		increaseButton.setPosition(intFieldWidget.getRight(), y);
+		decreaseButton.setPosition(intFieldWidget.getRight(), y + increaseAndDecreaseButtonsSize);
 
-	@Override
-	public void setY(int y) {
-		super.setY(y);
-		intFieldWidget.setY(y);
-		increaseButton.setY(y);
-		decreaseButton.setY(y + increaseAndDecreaseButtonsSize);
-	}
-
-	@Override
-	public void renderContent(@NotNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
-		super.renderContent(graphics, mouseX, mouseY, hovered, deltaTicks);
-
-		increaseButton.render(graphics, mouseX, mouseY, deltaTicks);
+		increaseButton.render(graphics, mouseX, mouseY, delta);
 		if (!increaseButton.active) {
 			graphics.fill(increaseButton.getX(), increaseButton.getY(), increaseButton.getRight(), increaseButton.getBottom(), 0xcf4e4e4e);
 		}
-		decreaseButton.render(graphics, mouseX, mouseY, deltaTicks);
+		decreaseButton.render(graphics, mouseX, mouseY, delta);
 		if (!decreaseButton.active) {
 			graphics.fill(decreaseButton.getX(), decreaseButton.getY(), decreaseButton.getRight(), decreaseButton.getBottom(), 0xcf4e4e4e);
 		}
-		intFieldWidget.render(graphics, mouseX, mouseY, deltaTicks);
+		intFieldWidget.render(graphics, mouseX, mouseY, delta);
 	}
 
 	@Override

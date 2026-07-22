@@ -3,13 +3,11 @@ package me.Azz_9.flex_hud.client.gui.components.config.crosshairEditor;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
 import org.jetbrains.annotations.NotNull;
 
 import me.Azz_9.flex_hud.client.gui.Colors;
-import me.Azz_9.flex_hud.client.gui.Cursors;
 import me.Azz_9.flex_hud.client.gui.components.config.DataGetter;
 import me.Azz_9.flex_hud.client.gui.components.config.colorSelector.ColorBindable;
 import me.Azz_9.flex_hud.utils.DrawingUtils;
@@ -27,7 +25,6 @@ public class ColorButton extends AbstractWidget implements ColorBindable, DataGe
 	@Override
 	protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (this.isHovered()) {
-			graphics.requestCursor(Cursors.POINTING_HAND);
 			DrawingUtils.drawBorder(graphics, getX(), getY(), getWidth(), getHeight(), 0xffd0d0d0);
 		} else {
 			DrawingUtils.drawBorder(graphics, getX(), getY(), getWidth(), getHeight(), 0xff404040);
@@ -37,7 +34,7 @@ public class ColorButton extends AbstractWidget implements ColorBindable, DataGe
 	}
 
 	@Override
-	public void onClick(@NotNull MouseButtonEvent event, boolean doubleClick) {
+	public void onClick(double mouseX, double mouseY) {
 		onPress.run();
 	}
 

@@ -1,11 +1,8 @@
 package me.Azz_9.flex_hud.client.gui.components.customModule;
 
-import com.mojang.blaze3d.platform.cursor.CursorTypes;
-
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.input.MouseButtonEvent;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -32,15 +29,15 @@ public class ClickableVariableWidget extends AbstractWidget {
 	}
 
 	@Override
-	public void onClick(@NotNull MouseButtonEvent event, boolean doubleClick) {
+	public void onClick(double mouseX, double mouseY) {
 		if (onClick != null) {
 			onClick.accept(variable);
 		}
 	}
 
 	@Override
-	public boolean mouseClicked(@NotNull MouseButtonEvent event, boolean doubleClick) {
-		return super.mouseClicked(event, doubleClick);
+	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		return super.mouseClicked(mouseX, mouseY, button);
 	}
 
 	@Override
@@ -58,9 +55,6 @@ public class ClickableVariableWidget extends AbstractWidget {
 	@Override
 	protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		variableWidget.render(graphics, mouseX, mouseY, deltaTicks);
-		if (this.isHovered()) {
-			graphics.requestCursor(this.isActive() ? CursorTypes.POINTING_HAND : CursorTypes.NOT_ALLOWED);
-		}
 	}
 
 	@Override

@@ -1,10 +1,9 @@
 package me.Azz_9.flex_hud.client.gui.components.config.slider;
 
-import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
-
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +13,6 @@ import java.util.List;
 import java.util.function.Function;
 
 import me.Azz_9.flex_hud.client.config.option.ConfigInteger;
-import me.Azz_9.flex_hud.client.gui.Cursors;
 import me.Azz_9.flex_hud.client.gui.components.TrackableChange;
 import me.Azz_9.flex_hud.client.gui.components.config.DataGetter;
 import me.Azz_9.flex_hud.client.gui.components.config.Observer;
@@ -43,8 +41,6 @@ public class ConfigIntSliderWidget<T> extends AbstractSliderButton implements Tr
 	@Override
 	public void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (this.active) {
-			if (this.isHovered()) graphics.requestCursor(Cursors.POINTING_HAND);
-
 			if (this.isHoveredOrFocused()) {
 				DrawingUtils.drawBorder(graphics, getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
 			}
@@ -53,8 +49,6 @@ public class ConfigIntSliderWidget<T> extends AbstractSliderButton implements Tr
 		super.renderWidget(graphics, mouseX, mouseY, deltaTicks);
 
 		if (!this.active) {
-			if (this.isHovered()) graphics.requestCursor(Cursors.NOT_ALLOWED);
-
 			graphics.fill(getX(), getY(), getRight(), getBottom(), 0xcf4e4e4e);
 		}
 	}
@@ -102,7 +96,7 @@ public class ConfigIntSliderWidget<T> extends AbstractSliderButton implements Tr
 
 	@Override
 	protected void applyValue() {
-		if (MINECRAFT.hasShiftDown() && STEP != null) {
+		if (Screen.hasShiftDown() && STEP != null) {
 			// Snap to the nearest multiple of STEP
 			int rawValue = getRelativeValue();
 			int snappedValue = Math.round((float) rawValue / STEP) * STEP;

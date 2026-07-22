@@ -7,7 +7,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -17,7 +16,6 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 
 import me.Azz_9.flex_hud.client.gui.Colors;
-import me.Azz_9.flex_hud.client.gui.Cursors;
 import me.Azz_9.flex_hud.utils.Ease;
 
 public class HelpWidget extends AbstractWidget {
@@ -44,10 +42,6 @@ public class HelpWidget extends AbstractWidget {
 
 	@Override
 	protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-		if (this.isHovered() && this.isActive()) {
-			graphics.requestCursor(Cursors.POINTING_HAND);
-		}
-
 		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SPRITE, getX(), getY(), getWidth(), getHeight());
 
 		if (displayHelp || isFadingOut) {
@@ -105,14 +99,14 @@ public class HelpWidget extends AbstractWidget {
 		graphics.disableScissor();
 	}
 
-	public void handleOutsideClick(@NotNull MouseButtonEvent click, boolean doubled) {
-		if (getDisplayHelp() && !isMouseOver(click.x(), click.y())) {
-			onClick(click, doubled);
+	public void handleOutsideClick(double mouseX, double mouseY) {
+		if (getDisplayHelp() && !isMouseOver(mouseX, mouseY)) {
+			onClick(mouseX, mouseY);
 		}
 	}
 
 	@Override
-	public void onClick(@NotNull MouseButtonEvent click, boolean bl) {
+	public void onClick(double mouseX, double mouseY) {
 		isFadingOut = displayHelp;
 		timestamp = System.currentTimeMillis();
 		displayHelp = !displayHelp;

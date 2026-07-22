@@ -5,15 +5,10 @@ import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-
-import me.Azz_9.flex_hud.client.gui.Cursors;
 
 public class ColorSelector extends ColorUpdatable implements GuiEventListener, Renderable {
 	private final @NotNull GradientWidget gradientWidget;
@@ -56,10 +51,6 @@ public class ColorSelector extends ColorUpdatable implements GuiEventListener, R
 
 	@Override
 	public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
-		if (this.isMouseOver(mouseX, mouseY)) {
-			graphics.requestCursor(Cursors.DEFAULT);
-		}
-
 		int backgroundColor = 0xff1e1f22;
 		graphics.fill(getX(), getY(), getRight(), getBottom(), backgroundColor);
 
@@ -92,10 +83,10 @@ public class ColorSelector extends ColorUpdatable implements GuiEventListener, R
 	}
 
 	@Override
-	public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
-		if (this.isMouseOver(click.x(), click.y())) {
+	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		if (this.isMouseOver(mouseX, mouseY)) {
 			for (GuiEventListener child : getChildren()) {
-				child.mouseClicked(click, doubled);
+				child.mouseClicked(mouseX, mouseY, button);
 			}
 
 			return true;
@@ -104,10 +95,10 @@ public class ColorSelector extends ColorUpdatable implements GuiEventListener, R
 	}
 
 	@Override
-	public boolean mouseReleased(MouseButtonEvent click) {
-		if (this.isMouseOver(click.x(), click.y()) || this.isDraggingACursor()) {
-			gradientWidget.mouseReleased(click);
-			hueWidget.mouseReleased(click);
+	public boolean mouseReleased(double mouseX, double mouseY, int button) {
+		if (this.isMouseOver(mouseX, mouseY) || this.isDraggingACursor()) {
+			gradientWidget.mouseReleased(mouseX, mouseY, button);
+			hueWidget.mouseReleased(mouseX, mouseY, button);
 
 			return true;
 		}
@@ -115,10 +106,10 @@ public class ColorSelector extends ColorUpdatable implements GuiEventListener, R
 	}
 
 	@Override
-	public boolean mouseDragged(MouseButtonEvent click, double offsetX, double offsetY) {
-		if (this.isMouseOver(click.x(), click.y()) || this.isDraggingACursor()) {
-			gradientWidget.mouseDragged(click, offsetX, offsetY);
-			hueWidget.mouseDragged(click, offsetX, offsetY);
+	public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+		if (this.isMouseOver(mouseX, mouseY) || this.isDraggingACursor()) {
+			gradientWidget.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+			hueWidget.mouseDragged(mouseX, mouseY, button, dragX, dragY);
 
 			return true;
 		}
@@ -126,9 +117,9 @@ public class ColorSelector extends ColorUpdatable implements GuiEventListener, R
 	}
 
 	@Override
-	public boolean keyPressed(@NotNull KeyEvent input) {
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (colorFieldWidget.isFocused()) {
-			colorFieldWidget.keyPressed(input);
+			colorFieldWidget.keyPressed(keyCode, scanCode, modifiers);
 
 			return true;
 		}
@@ -136,9 +127,9 @@ public class ColorSelector extends ColorUpdatable implements GuiEventListener, R
 	}
 
 	@Override
-	public boolean charTyped(@NotNull CharacterEvent input) {
+	public boolean charTyped(char codePoint, int modifiers) {
 		if (colorFieldWidget.isFocused()) {
-			return colorFieldWidget.charTyped(input);
+			return colorFieldWidget.charTyped(codePoint, modifiers);
 		}
 		return false;
 	}

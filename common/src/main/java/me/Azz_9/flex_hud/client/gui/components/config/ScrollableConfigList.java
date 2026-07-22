@@ -62,7 +62,6 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 		protected ConfigResetButtonWidget resetButtonWidget;
 		//protected TextWidget textWidget;
 		private final Component text;
-		private int textX, textY;
 		private int textColor;
 		protected List<Observer> observers = new ArrayList<>();
 
@@ -73,8 +72,6 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 		public AbstractConfigEntry(int resetButtonSize, Component text) {
 			this.resetButtonSize = resetButtonSize;
 			this.text = text;
-			this.textX = 0;
-			this.textY = 0;
 			this.textColor = Colors.WHITE;
 		}
 
@@ -83,23 +80,11 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 		}
 
 		@Override
-		public void setX(int x) {
-			super.setX(x);
-			this.resetButtonWidget.setX(x + getWidth() - resetButtonWidget.getWidth());
-			textX = x + TEXT_MARGIN_LEFT;
-		}
+		public void render(@NotNull GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float delta) {
+			this.resetButtonWidget.setPosition(x + entryWidth - resetButtonWidget.getWidth(), y);
 
-		@Override
-		public void setY(int y) {
-			super.setY(y);
-			this.resetButtonWidget.setY(y);
-			textY = (int) (y + (this.resetButtonSize - MINECRAFT.font.lineHeight) / 2.0);
-		}
-
-		@Override
-		public void renderContent(@NotNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
-			this.resetButtonWidget.render(graphics, mouseX, mouseY, deltaTicks);
-			graphics.drawString(MINECRAFT.font, text, textX, textY, textColor, true);
+			this.resetButtonWidget.render(graphics, mouseX, mouseY, delta);
+			graphics.drawString(MINECRAFT.font, text, x + TEXT_MARGIN_LEFT, (int) (y + (entryHeight - MINECRAFT.font.lineHeight) / 2.0), textColor, true);
 		}
 
 		@Override
