@@ -26,6 +26,7 @@ import me.Azz_9.flex_hud.client.modules.customModules.CustomModulesPersistence;
 import me.Azz_9.flex_hud.client.modules.customModules.Variables;
 import me.Azz_9.flex_hud.client.modules.customModules.modifiers.Modifiers;
 import me.Azz_9.flex_hud.client.modules.hud.HudElement;
+import me.Azz_9.flex_hud.client.tickables.LivingEntityHeadClientAudit;
 import me.Azz_9.flex_hud.client.tickables.TickRegistry;
 import me.Azz_9.flex_hud.compat.CompatManager;
 import me.Azz_9.flex_hud.compat.waypointsCollectors.Collector;
@@ -118,6 +119,7 @@ public class CommonClass {
 
 		Services.PLATFORM.registerJoinEvent(() -> {
 			Variables.onJoinWorld();
+			LivingEntityHeadClientAudit.runIfEnabled(MINECRAFT);
 
 			if (!MINECRAFT.isLocalServer()) {
 				PingUtils.connection = MINECRAFT.getConnection();
