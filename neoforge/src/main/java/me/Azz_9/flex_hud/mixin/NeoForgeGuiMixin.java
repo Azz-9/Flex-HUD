@@ -1,18 +1,45 @@
 package me.Azz_9.flex_hud.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
 
 import net.minecraft.client.gui.Gui;
-import net.minecraft.network.chat.Component;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.scores.Objective;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
-import me.Azz_9.flex_hud.client.modules.Modules;
+import me.Azz_9.flex_hud.utils.ScoreboardMixinHelper;
 
 @Mixin(Gui.class)
 public abstract class NeoForgeGuiMixin {
+
+	@ModifyVariable(
+			method = "displayScoreboardSidebar",
+			at = @At("STORE"),
+			index = 18
+	)
+	private int beforeRender(
+			int headerY,
+			GuiGraphics graphics,
+			Objective objective,
+			@Local(index = 8) int biggestWidth,
+			@Local(index = 11) int height,
+			@Local(index = 12) LocalIntRef bottom,
+			@Local(index = 14) LocalIntRef left,
+			@Local(index = 15) LocalIntRef right,
+			@Local(index = 16) LocalIntRef backgroundColor,
+			@Local(index = 17) LocalIntRef headerBackgroundColor
+	) {
+		return ScoreboardMixinHelper.beforeRender(
+				headerY, graphics, biggestWidth, height, bottom, left, right,
+				backgroundColor, headerBackgroundColor
+		);
+	}
 
 	@ModifyExpressionValue(
 			method = "lambda$displayScoreboardSidebar$17",
@@ -22,12 +49,7 @@ public abstract class NeoForgeGuiMixin {
 			)
 	)
 	private MutableComponent modifyScoreString(MutableComponent original) {
-		if (Modules.getInstance().isEnabled.getValue()
-				&& Modules.getInstance().scoreboard.enabled.getValue()
-				&& !Modules.getInstance().scoreboard.showScore.getValue()) {
-			return Component.empty();
-		}
-		return original;
+		return ScoreboardMixinHelper.modifyScoreString(original);
 	}
 
 	@ModifyExpressionValue(
@@ -38,11 +60,6 @@ public abstract class NeoForgeGuiMixin {
 			)
 	)
 	private int modifyScoreWidth(int original) {
-		if (Modules.getInstance().isEnabled.getValue()
-				&& Modules.getInstance().scoreboard.enabled.getValue()
-				&& !Modules.getInstance().scoreboard.showScore.getValue()) {
-			return 0;
-		}
-		return original;
+		return ScoreboardMixinHelper.modifyScoreWidth(original);
 	}
 }
