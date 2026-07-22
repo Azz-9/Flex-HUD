@@ -10,23 +10,21 @@ import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.StringUtil;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
-import me.Azz_9.flex_hud.client.gui.Cursors;
 import me.Azz_9.flex_hud.client.gui.components.TrackableChange;
 import me.Azz_9.flex_hud.client.gui.components.customModule.ModuleContentEditorModel;
 import me.Azz_9.flex_hud.client.modules.customModules.Variable;
@@ -166,8 +164,6 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 			graphics.drawString(MINECRAFT.font, placeholder, innerLeft, contentTextY, PLACEHOLDER_COLOR, false);
 		}
 
-		handleCursor(graphics);
-
 		if (renderOverlaysInline) {
 			renderOverlays(graphics, mouseX, mouseY, deltaTicks);
 		}
@@ -181,20 +177,6 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 		renderColorPopup(graphics, mouseX, mouseY, deltaTicks);
 		renderGradientPopup(graphics, mouseX, mouseY, deltaTicks);
 		renderTooltip(graphics, mouseX, mouseY);
-	}
-
-	protected void handleCursor(@NotNull GuiGraphics graphics) {
-		if (this.isHovered()) {
-			if (!this.isActive()) {
-				graphics.requestCursor(Cursors.NOT_ALLOWED);
-			} else if ((hoveredVariableHit != null
-					&& (hoveredVariableHit.kind() == VariableHitKind.PLUS || hoveredVariableHit.kind() == VariableHitKind.MODIFIER))
-					|| hoveredConditionItem != null) {
-				graphics.requestCursor(Cursors.POINTING_HAND);
-			} else {
-				graphics.requestCursor(Cursors.IBEAM);
-			}
-		}
 	}
 
 	private void renderContent(GuiGraphics graphics, int innerLeft, int contentTextY) {
@@ -431,40 +413,40 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 	}
 
 	@Override
-	public boolean mouseClicked(@NotNull MouseButtonEvent event, boolean doubleClick) {
+	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		if (!active) {
 			return false;
 		}
 
-		if (gradientPopup != null && gradientPopup.mouseClicked(event, doubleClick)) {
+		if (gradientPopup != null && gradientPopup.mouseClicked(mouseX, mouseY, button)) {
 			setFocused(true);
 			return true;
 		}
-		if (colorPopup != null && colorPopup.mouseClicked(event, doubleClick)) {
+		if (colorPopup != null && colorPopup.mouseClicked(mouseX, mouseY, button)) {
 			setFocused(true);
 			return true;
 		}
-		if (modifierEditorPopup != null && modifierEditorPopup.mouseClicked(event, doubleClick)) {
+		if (modifierEditorPopup != null && modifierEditorPopup.mouseClicked(mouseX, mouseY, button)) {
 			setFocused(true);
 			return true;
 		}
-		if (conditionEditorPopup != null && conditionEditorPopup.mouseClicked(event, doubleClick)) {
+		if (conditionEditorPopup != null && conditionEditorPopup.mouseClicked(mouseX, mouseY, button)) {
 			setFocused(true);
 			return true;
 		}
-		if (modifierPickerPopup != null && modifierPickerPopup.mouseClicked(event, doubleClick)) {
+		if (modifierPickerPopup != null && modifierPickerPopup.mouseClicked(mouseX, mouseY, button)) {
 			setFocused(true);
 			return true;
 		}
 
-		ToolbarButton toolbarButton = findToolbarButton(event.x(), event.y());
+		ToolbarButton toolbarButton = findToolbarButton(mouseX, mouseY);
 		if (toolbarButton != null) {
 			handleToolbarAction(toolbarButton.action());
 			setFocused(true);
 			return true;
 		}
 
-		if (!isInsideField(event.x(), event.y())) {
+		if (!isInsideField(mouseX, mouseY)) {
 			closeTransientPopups();
 			setFocused(false);
 			return false;
@@ -472,24 +454,20 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 
 		setFocused(true);
 
-		VariableHit variableHit = findVariableHit(event.x(), event.y());
+		VariableHit variableHit = findVariableHit(mouseX, mouseY);
 		if (variableHit != null) {
 			if (variableHit.kind() == VariableHitKind.PLUS) {
 				openModifierPicker(variableHit.variableItem());
 			} else if (variableHit.kind() == VariableHitKind.MODIFIER) {
 				openModifierEditor(variableHit.variableItem(), variableHit.modifierIndex());
-			} else if (doubleClick) {
-				closeModifierPopups();
-				closeSelectionPopups();
-				selectWord(variableHit.variableItem().modelIndex());
 			} else {
-				handleBodyClick(event, variableHit.variableItem());
+				handleBodyClick(mouseX, variableHit.variableItem());
 			}
 			ensureCaretVisible();
 			return true;
 		}
 
-		ConditionDisplayItem conditionHit = findConditionDisplayItemAt(event.x(), event.y());
+		ConditionDisplayItem conditionHit = findConditionDisplayItemAt(mouseX, mouseY);
 		if (conditionHit != null) {
 			openConditionEditor(conditionHit);
 			caretIndex = conditionHit.modelIndex() + 1;
@@ -502,14 +480,8 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 		closeModifierPopups();
 		closeSelectionPopups();
 
-		if (doubleClick) {
-			selectWordAt(event.x());
-			draggingSelection = true;
-			return true;
-		}
-
-		int clickedIndex = getClosestCaretIndex(event.x());
-		if ((event.modifiers() & InputConstants.MOD_SHIFT) != 0) {
+		int clickedIndex = getClosestCaretIndex(mouseX);
+		if (!Screen.hasShiftDown()) {
 			caretIndex = clickedIndex;
 		} else {
 			caretIndex = clickedIndex;
@@ -522,20 +494,20 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 	}
 
 	@Override
-	public boolean mouseDragged(@NotNull MouseButtonEvent event, double dx, double dy) {
-		if (gradientPopup != null && gradientPopup.mouseDragged(event, dx, dy)) {
+	public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+		if (gradientPopup != null && gradientPopup.mouseDragged(mouseX, mouseY, button, dragX, dragY)) {
 			return true;
 		}
-		if (colorPopup != null && colorPopup.mouseDragged(event, dx, dy)) {
+		if (colorPopup != null && colorPopup.mouseDragged(mouseX, mouseY, button, dragX, dragY)) {
 			return true;
 		}
-		if (modifierEditorPopup != null && modifierEditorPopup.mouseDragged(event, dx, dy)) {
+		if (modifierEditorPopup != null && modifierEditorPopup.mouseDragged(mouseX, mouseY, button, dragX, dragY)) {
 			return true;
 		}
-		if (conditionEditorPopup != null && conditionEditorPopup.mouseDragged(event, dx, dy)) {
+		if (conditionEditorPopup != null && conditionEditorPopup.mouseDragged(mouseX, mouseY, button, dragX, dragY)) {
 			return true;
 		}
-		if (modifierPickerPopup != null && modifierPickerPopup.mouseDragged(event, dx, dy)) {
+		if (modifierPickerPopup != null && modifierPickerPopup.mouseDragged(mouseX, mouseY, button, dragX, dragY)) {
 			return true;
 		}
 
@@ -543,29 +515,29 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 			return false;
 		}
 
-		caretIndex = getClosestCaretIndex(event.x());
+		caretIndex = getClosestCaretIndex(mouseX);
 		ensureCaretVisible();
 		refreshOverlayLayout();
 		return true;
 	}
 
 	@Override
-	public boolean mouseReleased(@NotNull MouseButtonEvent event) {
+	public boolean mouseReleased(double mouseX, double mouseY, int button) {
 		boolean handled = false;
 		if (gradientPopup != null) {
-			handled |= gradientPopup.mouseReleased(event);
+			handled |= gradientPopup.mouseReleased(mouseX, mouseY, button);
 		}
 		if (colorPopup != null) {
-			handled |= colorPopup.mouseReleased(event);
+			handled |= colorPopup.mouseReleased(mouseX, mouseY, button);
 		}
 		if (modifierEditorPopup != null) {
-			handled |= modifierEditorPopup.mouseReleased(event);
+			handled |= modifierEditorPopup.mouseReleased(mouseX, mouseY, button);
 		}
 		if (conditionEditorPopup != null) {
-			handled |= conditionEditorPopup.mouseReleased(event);
+			handled |= conditionEditorPopup.mouseReleased(mouseX, mouseY, button);
 		}
 		if (modifierPickerPopup != null) {
-			handled |= modifierPickerPopup.mouseReleased(event);
+			handled |= modifierPickerPopup.mouseReleased(mouseX, mouseY, button);
 		}
 
 		draggingSelection = false;
@@ -587,42 +559,42 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 	}
 
 	@Override
-	public boolean charTyped(@NotNull CharacterEvent event) {
+	public boolean charTyped(char codePoint, int modifiers) {
 		if (!active) {
 			return false;
 		}
 
-		if (gradientPopup != null && gradientPopup.charTyped(event)) {
+		if (gradientPopup != null && gradientPopup.charTyped(codePoint, modifiers)) {
 			return true;
 		}
-		if (colorPopup != null && colorPopup.charTyped(event)) {
+		if (colorPopup != null && colorPopup.charTyped(codePoint, modifiers)) {
 			return true;
 		}
-		if (modifierEditorPopup != null && modifierEditorPopup.charTyped(event)) {
+		if (modifierEditorPopup != null && modifierEditorPopup.charTyped(codePoint, modifiers)) {
 			return true;
 		}
-		if (conditionEditorPopup != null && conditionEditorPopup.charTyped(event)) {
+		if (conditionEditorPopup != null && conditionEditorPopup.charTyped(codePoint, modifiers)) {
 			return true;
 		}
-		if (modifierPickerPopup != null && modifierPickerPopup.charTyped(event)) {
+		if (modifierPickerPopup != null && modifierPickerPopup.charTyped(codePoint, modifiers)) {
 			return true;
 		}
 
-		if (!isFocused() || !event.isAllowedChatCharacter()) {
+		if (!isFocused() || !StringUtil.isAllowedChatCharacter(codePoint)) {
 			return false;
 		}
 
-		insertText(event.codepointAsString());
+		insertText(Character.toString(codePoint));
 		return true;
 	}
 
 	@Override
-	public boolean keyPressed(@NotNull KeyEvent event) {
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (!active) {
 			return false;
 		}
 
-		if (event.isEscape()) {
+		if (keyCode == InputConstants.KEY_ESCAPE) {
 			if (gradientPopup != null) {
 				closeGradientPopup();
 				return true;
@@ -645,19 +617,19 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 			}
 		}
 
-		if (gradientPopup != null && gradientPopup.keyPressed(event)) {
+		if (gradientPopup != null && gradientPopup.keyPressed(keyCode, scanCode, modifiers)) {
 			return true;
 		}
-		if (colorPopup != null && colorPopup.keyPressed(event)) {
+		if (colorPopup != null && colorPopup.keyPressed(keyCode, scanCode, modifiers)) {
 			return true;
 		}
-		if (modifierEditorPopup != null && modifierEditorPopup.keyPressed(event)) {
+		if (modifierEditorPopup != null && modifierEditorPopup.keyPressed(keyCode, scanCode, modifiers)) {
 			return true;
 		}
-		if (conditionEditorPopup != null && conditionEditorPopup.keyPressed(event)) {
+		if (conditionEditorPopup != null && conditionEditorPopup.keyPressed(keyCode, scanCode, modifiers)) {
 			return true;
 		}
-		if (modifierPickerPopup != null && modifierPickerPopup.keyPressed(event)) {
+		if (modifierPickerPopup != null && modifierPickerPopup.keyPressed(keyCode, scanCode, modifiers)) {
 			return true;
 		}
 
@@ -665,54 +637,54 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 			return false;
 		}
 
-		if (event.isSelectAll()) {
+		if (keyCode == InputConstants.KEY_A && modifiers == InputConstants.MOD_CONTROL) {
 			selectAll();
 			return true;
 		}
-		if (event.isCopy()) {
+		if (keyCode == InputConstants.KEY_C && modifiers == InputConstants.MOD_CONTROL) {
 			copySelectionToClipboard();
 			return true;
 		}
-		if (event.isPaste()) {
+		if (keyCode == InputConstants.KEY_V && modifiers == InputConstants.MOD_CONTROL) {
 			insertText(MINECRAFT.keyboardHandler.getClipboard());
 			return true;
 		}
-		if (event.isCut()) {
+		if (keyCode == InputConstants.KEY_X && modifiers == InputConstants.MOD_CONTROL) {
 			cutSelectionToClipboard();
 			return true;
 		}
 
-		switch (event.key()) {
+		switch (keyCode) {
 			case InputConstants.KEY_BACKSPACE -> {
-				erase(-1, event.hasControlDown());
+				erase(-1, modifiers == InputConstants.MOD_CONTROL);
 				return true;
 			}
 			case InputConstants.KEY_DELETE -> {
-				erase(1, event.hasControlDown());
+				erase(1, modifiers == InputConstants.MOD_CONTROL);
 				return true;
 			}
 			case InputConstants.KEY_LEFT -> {
-				if (event.hasControlDown()) {
-					setCaret(getWordSkipPosition(-1), event.hasShiftDown());
+				if (modifiers == InputConstants.MOD_CONTROL) {
+					setCaret(getWordSkipPosition(-1), modifiers == GLFW.GLFW_MOD_SHIFT);
 				} else {
-					moveCaret(-1, event.hasShiftDown());
+					moveCaret(-1, modifiers == GLFW.GLFW_MOD_SHIFT);
 				}
 				return true;
 			}
 			case InputConstants.KEY_RIGHT -> {
-				if (event.hasControlDown()) {
-					setCaret(getWordSkipPosition(1), event.hasShiftDown());
+				if (modifiers == InputConstants.MOD_CONTROL) {
+					setCaret(getWordSkipPosition(1), modifiers == GLFW.GLFW_MOD_SHIFT);
 				} else {
-					moveCaret(1, event.hasShiftDown());
+					moveCaret(1, modifiers == GLFW.GLFW_MOD_SHIFT);
 				}
 				return true;
 			}
 			case InputConstants.KEY_HOME -> {
-				setCaret(0, event.hasShiftDown());
+				setCaret(0, modifiers == GLFW.GLFW_MOD_SHIFT);
 				return true;
 			}
 			case InputConstants.KEY_END -> {
-				setCaret(model.size(), event.hasShiftDown());
+				setCaret(model.size(), modifiers == GLFW.GLFW_MOD_SHIFT);
 				return true;
 			}
 			default -> {
@@ -1475,10 +1447,6 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 			int textX = bounds.x() + (bounds.width() - MINECRAFT.font.width(label)) / 2;
 			int textY = centeredTextY(bounds.y(), bounds.height());
 			graphics.drawString(MINECRAFT.font, label, textX, textY, textColor, false);
-
-			if (bounds.contains(mouseX, mouseY)) {
-				graphics.requestCursor(Cursors.POINTING_HAND);
-			}
 		} else {
 			graphics.fill(bounds.x(), bounds.y(), bounds.right(), bounds.bottom(), POPUP_BACKGROUND);
 			DrawingUtils.drawBorder(graphics, bounds.x(), bounds.y(), bounds.width(), bounds.height(), POPUP_BORDER);
@@ -1492,10 +1460,6 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 			int textX = bounds.x() + padding;
 			int textY = centeredTextY(bounds.y(), bounds.height());
 			graphics.drawString(MINECRAFT.font, label, textX, textY, textColor, false);
-
-			if (bounds.contains(mouseX, mouseY)) {
-				graphics.requestCursor(Cursors.POINTING_HAND);
-			}
 		} else {
 			graphics.fill(bounds.x(), bounds.y(), bounds.right(), bounds.bottom(), POPUP_BACKGROUND);
 			DrawingUtils.drawBorder(graphics, bounds.x(), bounds.y(), bounds.width(), bounds.height(), POPUP_BORDER);
@@ -1606,12 +1570,12 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 		conditionEditorPopup.layout(conditionItem);
 	}
 
-	private void handleBodyClick(MouseButtonEvent event, VariableDisplayItem variableItem) {
+	private void handleBodyClick(double mouseX, VariableDisplayItem variableItem) {
 		closeModifierPopups();
 		closeSelectionPopups();
 		int drawX = getX() + TEXT_PADDING_X + variableItem.x() - horizontalScroll;
-		int clickedIndex = event.x() < drawX + variableItem.width() / 2.0 ? variableItem.modelIndex() : variableItem.modelIndex() + 1;
-		if ((event.modifiers() & InputConstants.MOD_SHIFT) != 0) {
+		int clickedIndex = mouseX < drawX + variableItem.width() / 2.0 ? variableItem.modelIndex() : variableItem.modelIndex() + 1;
+		if (!Screen.hasShiftDown()) {
 			caretIndex = clickedIndex;
 		} else {
 			caretIndex = clickedIndex;

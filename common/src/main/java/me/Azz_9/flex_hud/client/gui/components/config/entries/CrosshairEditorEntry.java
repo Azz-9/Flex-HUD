@@ -60,22 +60,11 @@ public class CrosshairEditorEntry extends ScrollableConfigList.AbstractConfigEnt
 	}
 
 	@Override
-	public void setX(int x) {
-		super.setX(x);
-		crosshairButtonWidget.setX(x);
-	}
+	public void render(@NotNull GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float delta) {
+		super.render(graphics, index, y, x, entryWidth, entryHeight, mouseX, mouseY, hovered, delta);
+		crosshairButtonWidget.setPosition(x, y);
 
-	@Override
-	public void setY(int y) {
-		super.setY(y);
-		crosshairButtonWidget.setY(y);
-	}
-
-	@Override
-	public void renderContent(@NotNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
-		super.renderContent(graphics, mouseX, mouseY, hovered, deltaTicks);
-
-		crosshairButtonWidget.render(graphics, mouseX, mouseY, deltaTicks);
+		crosshairButtonWidget.render(graphics, mouseX, mouseY, delta);
 	}
 
 	@Override

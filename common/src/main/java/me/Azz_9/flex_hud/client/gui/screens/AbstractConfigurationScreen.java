@@ -4,9 +4,6 @@ import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
 import org.jetbrains.annotations.NotNull;
@@ -106,57 +103,57 @@ public abstract class AbstractConfigurationScreen extends AbstractSavableScreen 
 	}
 
 	@Override
-	public boolean mouseClicked(@NotNull MouseButtonEvent click, boolean doubled) {
+	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		if (colorSelector != null && colorSelector.isFocused()) {
-			if (colorSelector.mouseClicked(click, doubled)) {
+			if (colorSelector.mouseClicked(mouseX, mouseY, button)) {
 				return true;
 			} else {
-				boolean res = super.mouseClicked(click, doubled);
+				boolean res = super.mouseClicked(mouseX, mouseY, button);
 				closeColorSelector();
 				return res;
 			}
 		}
-		return super.mouseClicked(click, doubled);
+		return super.mouseClicked(mouseX, mouseY, button);
 	}
 
 	@Override
-	public boolean mouseReleased(@NotNull MouseButtonEvent click) {
+	public boolean mouseReleased(double mouseX, double mouseY, int button) {
 		if (colorSelector != null && colorSelector.isFocused()) {
-			if (colorSelector.mouseReleased(click)) {
+			if (colorSelector.mouseReleased(mouseX, mouseY, button)) {
 				return true;
 			}
 		}
-		return super.mouseReleased(click);
+		return super.mouseReleased(mouseX, mouseY, button);
 	}
 
 	@Override
-	public boolean mouseDragged(@NotNull MouseButtonEvent click, double offsetX, double offsetY) {
+	public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
 		if (colorSelector != null && colorSelector.isFocused() && colorSelector.isDraggingACursor()) {
-			if (colorSelector.mouseDragged(click, offsetX, offsetY)) {
+			if (colorSelector.mouseDragged(mouseX, mouseY, button, dragX, dragY)) {
 				return true;
 			}
 		}
-		return super.mouseDragged(click, offsetX, offsetY);
+		return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
 	}
 
 	@Override
-	public boolean keyPressed(@NotNull KeyEvent input) {
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (colorSelector != null && colorSelector.isFocused()) {
-			if (colorSelector.keyPressed(input)) {
+			if (colorSelector.keyPressed(keyCode, scanCode, modifiers)) {
 				return true;
 			}
 		}
-		return super.keyPressed(input);
+		return super.keyPressed(keyCode, scanCode, modifiers);
 	}
 
 	@Override
-	public boolean charTyped(@NotNull CharacterEvent input) {
+	public boolean charTyped(char codePoint, int modifiers) {
 		if (colorSelector != null && colorSelector.isFocused()) {
-			if (colorSelector.charTyped(input)) {
+			if (colorSelector.charTyped(codePoint, modifiers)) {
 				return true;
 			}
 		}
-		return super.charTyped(input);
+		return super.charTyped(codePoint, modifiers);
 	}
 
 

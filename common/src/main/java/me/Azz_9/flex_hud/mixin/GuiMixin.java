@@ -162,7 +162,7 @@ public abstract class GuiMixin {
 		if (Modules.getInstance().isEnabled.getValue()
 				&& scoreboard.enabled.getValue()
 				&& (!scoreboard.showScoreboard.getValue()
-				|| scoreboard.hideInF3.getValue() && MINECRAFT.debugEntries.isF3Visible())) {
+				|| scoreboard.hideInF3.getValue() && MINECRAFT.getDebugOverlay().showDebugScreen())) {
 			ci.cancel();
 		}
 	}
@@ -370,7 +370,7 @@ public abstract class GuiMixin {
 		if (Modules.getInstance().isEnabled.getValue()
 				&& titles.enabled.getValue()
 				&& (!titles.showTitle.getValue() && !titles.showSubtitle.getValue()
-				|| titles.hideInF3.getValue() && MINECRAFT.debugEntries.isF3Visible())) {
+				|| titles.hideInF3.getValue() && MINECRAFT.getDebugOverlay().showDebugScreen())) {
 			ci.cancel();
 			return;
 		}

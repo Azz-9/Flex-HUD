@@ -56,7 +56,7 @@ public class CustomModuleElement extends ModuleElement {
 	}
 
 	private Button createEditButton() {
-		return SpriteIconButton.TextAndIcon.builder(
+		Button editButton = SpriteIconButton.TextAndIcon.builder(
 						Component.translatable("flex_hud.configuration_screen.edit_module"),
 						(btn) -> {
 							CreateModuleScreen createModuleScreen = new CreateModuleScreen(parent, module);
@@ -65,22 +65,24 @@ public class CustomModuleElement extends ModuleElement {
 						},
 						true
 				)
-				.withTootip()
 				.size(BUTTONS_SIZE, BUTTONS_SIZE)
 				.sprite(EDIT_SPRITE, 14, 14)
 				.build();
+		editButton.setTooltip(Tooltip.create(editButton.getMessage()));
+		return editButton;
 	}
 
 	private Button createDeleteButton() {
-		return SpriteIconButton.TextAndIcon.builder(
+		Button deleteButton = SpriteIconButton.TextAndIcon.builder(
 						Component.translatable("flex_hud.configuration_screen.delete_module"),
 						(btn) -> onDelete.run(),
 						true
 				)
-				.withTootip()
 				.size(BUTTONS_SIZE, BUTTONS_SIZE)
 				.sprite(DELETE_SPRITE, 14, 14)
 				.build();
+		deleteButton.setTooltip(Tooltip.create(deleteButton.getMessage()));
+		return deleteButton;
 	}
 
 	@Override

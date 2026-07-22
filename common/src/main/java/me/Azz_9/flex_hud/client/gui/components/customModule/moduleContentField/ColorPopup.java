@@ -3,9 +3,6 @@ package me.Azz_9.flex_hud.client.gui.components.customModule.moduleContentField;
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
@@ -59,41 +56,41 @@ final class ColorPopup {
 		selector.render(graphics, mouseX, mouseY, deltaTicks);
 	}
 
-	boolean mouseClicked(MouseButtonEvent event, boolean doubled) {
-		if (selector.mouseClicked(event, doubled)) {
+	boolean mouseClicked(double mouseX, double mouseY, int button) {
+		if (selector.mouseClicked(mouseX, mouseY, button)) {
 			return true;
 		}
-		if (noneBounds.contains(event.x(), event.y())) {
+		if (noneBounds.contains(mouseX, mouseY)) {
 			host.applySelectionColorLayers(selectionStart, selectionEnd, List.of());
 			host.closeColorPopup();
 			return true;
 		}
-		if (chromaBounds.contains(event.x(), event.y())) {
+		if (chromaBounds.contains(mouseX, mouseY)) {
 			host.applySelectionColorLayers(selectionStart, selectionEnd, List.of(ModuleContentEditorModel.ChromaColorLayer.INSTANCE));
 			host.closeColorPopup();
 			return true;
 		}
-		if (!bounds.contains(event.x(), event.y())) {
+		if (!bounds.contains(mouseX, mouseY)) {
 			host.closeColorPopup();
 			return true;
 		}
 		return true;
 	}
 
-	boolean mouseDragged(MouseButtonEvent event, double offsetX, double offsetY) {
-		return selector.mouseDragged(event, offsetX, offsetY);
+	boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+		return selector.mouseDragged(mouseX, mouseY, button, dragX, dragY);
 	}
 
-	boolean mouseReleased(MouseButtonEvent event) {
-		return selector.mouseReleased(event);
+	boolean mouseReleased(double mouseX, double mouseY, int button) {
+		return selector.mouseReleased(mouseX, mouseY, button);
 	}
 
-	boolean keyPressed(KeyEvent event) {
-		return selector.keyPressed(event);
+	boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		return selector.keyPressed(keyCode, scanCode, modifiers);
 	}
 
-	boolean charTyped(CharacterEvent event) {
-		return selector.charTyped(event);
+	boolean charTyped(char codePoint, int modifiers) {
+		return selector.charTyped(codePoint, modifiers);
 	}
 
 	boolean contains(double mouseX, double mouseY) {

@@ -4,9 +4,6 @@ import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 
@@ -16,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import me.Azz_9.flex_hud.client.gui.Cursors;
 import me.Azz_9.flex_hud.client.modules.customModules.modifiers.Modifier;
 
 final class ModifierPickerPopup {
@@ -204,10 +200,6 @@ final class ModifierPickerPopup {
 				trackX + SCROLLBAR_WIDTH, vpOriginY + thumbOffset + thumbHeight,
 				thumbColor
 		);
-
-		if (isOverScrollbarThumb(mouseX, mouseY)) {
-			graphics.requestCursor(isDraggingScrollbar ? Cursors.RESIZE_NS : Cursors.POINTING_HAND);
-		}
 	}
 
 	private boolean isOverScrollbarThumb(double mouseX, double mouseY) {
@@ -232,13 +224,13 @@ final class ModifierPickerPopup {
 		return true;
 	}
 
-	boolean mouseClicked(MouseButtonEvent event, boolean doubled) {
-		if (searchField.mouseClicked(event, doubled)) {
+	boolean mouseClicked(double mouseX, double mouseY, int button) {
+		if (searchField.mouseClicked(mouseX, mouseY, button)) {
 			return true;
 		}
-		if (isOverScrollbarThumb(event.x(), event.y())) {
+		if (isOverScrollbarThumb(mouseX, mouseY)) {
 			isDraggingScrollbar = true;
-			dragStartMouseY = event.y();
+			dragStartMouseY = mouseY;
 			dragStartScrollOffset = currentScroll;
 			targetScroll = currentScroll;
 			return true;
@@ -248,8 +240,8 @@ final class ModifierPickerPopup {
 		for (ModifierPickerEntry entry : entries) {
 			int screenY = entryRenderY(entry);
 			Bounds renderBounds = new Bounds(entry.bounds().x(), screenY, entry.bounds().width(), entry.bounds().height());
-			if (!renderBounds.contains(event.x(), event.y())) continue;
-			if (event.y() < vpOriginY || event.y() > vpOriginY + viewportHeight) continue;
+			if (!renderBounds.contains(mouseX, mouseY)) continue;
+			if (mouseY < vpOriginY || mouseY > vpOriginY + viewportHeight) continue;
 
 			if (entry.modifier().uiMetadata().editorKind() == Modifier.EditorKind.NONE) {
 				host.applyModifierChange(elementIndex, null, host.defaultResolvedModifier(entry.modifier()), false);
@@ -263,11 +255,11 @@ final class ModifierPickerPopup {
 			}
 			return true;
 		}
-		return bounds.contains(event.x(), event.y());
+		return bounds.contains(mouseX, mouseY);
 	}
 
-	boolean mouseDragged(MouseButtonEvent event, double deltaX, double deltaY) {
-		if (searchField.mouseDragged(event, deltaX, deltaY)) {
+	boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+		if (searchField.mouseDragged(mouseX, mouseY, button, dragX, dragY)) {
 			return true;
 		}
 		if (!isDraggingScrollbar) return false;
@@ -279,13 +271,13 @@ final class ModifierPickerPopup {
 			return false;
 		}
 		float scrollPerPixel = (float) maxScroll() / maxThumbOffset;
-		int delta = (int) ((event.y() - dragStartMouseY) * scrollPerPixel);
+		int delta = (int) ((mouseY - dragStartMouseY) * scrollPerPixel);
 		setScrollPosition(dragStartScrollOffset + delta);
 		return true;
 	}
 
-	boolean mouseReleased(MouseButtonEvent event) {
-		if (searchField.mouseReleased(event)) {
+	boolean mouseReleased(double mouseX, double mouseY, int button) {
+		if (searchField.mouseReleased(mouseX, mouseY, button)) {
 			return true;
 		}
 		if (isDraggingScrollbar) {
@@ -295,12 +287,12 @@ final class ModifierPickerPopup {
 		return false;
 	}
 
-	boolean keyPressed(KeyEvent event) {
-		return searchField.isFocused() && searchField.keyPressed(event);
+	boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		return searchField.isFocused() && searchField.keyPressed(keyCode, scanCode, modifiers);
 	}
 
-	boolean charTyped(CharacterEvent event) {
-		return searchField.isFocused() && searchField.charTyped(event);
+	boolean charTyped(char codePoint, int modifiers) {
+		return searchField.isFocused() && searchField.charTyped(codePoint, modifiers);
 	}
 
 	@Nullable HoverTarget findHoverTarget(int mouseX, int mouseY) {

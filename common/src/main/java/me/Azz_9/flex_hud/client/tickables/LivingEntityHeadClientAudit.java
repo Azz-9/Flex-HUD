@@ -21,15 +21,25 @@ public final class LivingEntityHeadClientAudit {
 	public static final String SYSTEM_PROPERTY = "flex_hud.auditMobHeads";
 
 	private static boolean hasRun;
+	private static boolean pending;
 
 	private LivingEntityHeadClientAudit() {
 	}
 
-	public static void runIfEnabled(Minecraft minecraft) {
+	public static void requestIfEnabled() {
 		if (hasRun || !Boolean.getBoolean(SYSTEM_PROPERTY)) {
 			return;
 		}
 
+		pending = true;
+	}
+
+	public static void runIfRequested(Minecraft minecraft) {
+		if (!pending || hasRun || minecraft.level == null) {
+			return;
+		}
+
+		pending = false;
 		hasRun = true;
 		run(minecraft);
 	}

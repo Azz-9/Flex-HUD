@@ -5,8 +5,6 @@ import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
 import org.jetbrains.annotations.NotNull;
@@ -108,17 +106,17 @@ public class EditLayoutScreen extends AbstractSavableScreen {
 	}
 
 	@Override
-	public boolean mouseClicked(@NotNull MouseButtonEvent click, boolean doubled) {
-		helpWidget.handleOutsideClick(click, doubled);
-		return super.mouseClicked(click, doubled);
+	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		helpWidget.handleOutsideClick(mouseX, mouseY);
+		return super.mouseClicked(mouseX, mouseY, button);
 	}
 
 	@Override
-	public boolean keyPressed(@NotNull KeyEvent input) {
-		if (undoManager.handleKeyPressed(input)) {
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (undoManager.handleKeyPressed(keyCode, scanCode, modifiers)) {
 			return true;
 		}
-		return super.keyPressed(input);
+		return super.keyPressed(keyCode, scanCode, modifiers);
 	}
 
 	@Override

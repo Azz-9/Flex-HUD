@@ -36,7 +36,7 @@ public abstract class AbstractMovableModule extends AbstractModule implements Hu
 
 	@Override
 	public boolean shouldNotRender() {
-		return !Modules.getInstance().isEnabled.getValue() || !this.enabled.getValue() || (!CommonClass.isEditingLayout && this.hideInF3.getValue() && MINECRAFT.debugEntries.isF3Visible());
+		return !Modules.getInstance().isEnabled.getValue() || !this.enabled.getValue() || (!CommonClass.isEditingLayout && this.hideInF3.getValue() && MINECRAFT.getDebugOverlay().showDebugScreen());
 	}
 
 	public boolean shouldShowInEditLayoutScreen() {

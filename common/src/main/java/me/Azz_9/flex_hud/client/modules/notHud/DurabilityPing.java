@@ -61,7 +61,7 @@ public class DurabilityPing extends AbstractModule {
 						MESSAGE,
 						font,
 						false,
-						FocusableTextWidget.BackgroundFill.NEVER,
+						false,
 						FocusableTextWidget.DEFAULT_PADDING
 				)
 						.setCentered(true)

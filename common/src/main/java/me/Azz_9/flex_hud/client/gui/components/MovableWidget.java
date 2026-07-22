@@ -3,13 +3,11 @@ package me.Azz_9.flex_hud.client.gui.components;
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.platform.cursor.CursorType;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 import org.jetbrains.annotations.NotNull;
@@ -19,14 +17,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import me.Azz_9.flex_hud.client.gui.Colors;
-import me.Azz_9.flex_hud.client.gui.Cursors;
 import me.Azz_9.flex_hud.client.gui.screens.EditLayoutScreen;
 import me.Azz_9.flex_hud.client.gui.undoManager.MoveAction;
 import me.Azz_9.flex_hud.client.gui.undoManager.ScaleAction;
 import me.Azz_9.flex_hud.client.modules.hud.AbstractMovableModule;
 import me.Azz_9.flex_hud.client.modules.hud.DimensionHud;
 import me.Azz_9.flex_hud.client.modules.hud.MovableModule;
-import me.Azz_9.flex_hud.mixin.GuiGraphicsAccessor;
 import me.Azz_9.flex_hud.utils.DrawingUtils;
 
 public class MovableWidget extends AbstractWidget implements TrackableChange {
@@ -99,18 +95,6 @@ public class MovableWidget extends AbstractWidget implements TrackableChange {
 	@Override
 	protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		this.isHovered = (mouseX >= getX() && mouseY >= getY() && mouseX <= getRight() && mouseY <= getBottom()) || isScaleHandleHovered(mouseX, mouseY);
-		if (((GuiGraphicsAccessor) graphics).getCursor() == CursorType.DEFAULT) {
-			if (this.isScaleHandleHovered(mouseX, mouseY) || isDraggingScaleHandle) {
-				graphics.requestCursor(
-						switch (handlePosition) {
-							case BOTTOM_RIGHT, TOP_LEFT -> Cursors.RESIZE_NWSE;
-							case BOTTOM_LEFT, TOP_RIGHT -> Cursors.RESIZE_NESW;
-						}
-				);
-			} else if (this.isHovered()) {
-				graphics.requestCursor(Cursors.RESIZE_ALL);
-			}
-		}
 
 		graphics.fill(getX(), getY(), getRight(), getBottom(), 0x4f88888c);
 		int color;
@@ -210,14 +194,14 @@ public class MovableWidget extends AbstractWidget implements TrackableChange {
 	}
 
 	@Override
-	public void onClick(MouseButtonEvent click, boolean bl) {
-		if (isScaleHandleHovered(click.x(), click.y())) {
+	public void onClick(double mouseX, double mouseY) {
+		if (isScaleHandleHovered(mouseX, mouseY)) {
 			isDraggingScaleHandle = true;
 			onClickRight = HUD_ELEMENT.getWidth() + getX();
 			onClickBottom = HUD_ELEMENT.getHeight() + getY();
 		} else {
-			offsetX = click.x() - getX();
-			offsetY = click.y() - getY();
+			offsetX = mouseX - getX();
+			offsetY = mouseY - getY();
 		}
 		onClickX = HUD_ELEMENT.getRoundedX();
 		onClickY = HUD_ELEMENT.getRoundedY();
@@ -225,11 +209,11 @@ public class MovableWidget extends AbstractWidget implements TrackableChange {
 	}
 
 	@Override
-	protected void onDrag(@NotNull MouseButtonEvent click, double d, double e) {
+	protected void onDrag(double mouseX, double mouseY, double dragX, double dragY) {
 		if (!isDraggingScaleHandle) {
 			isMoving = true;
-			double x = click.x() - offsetX;
-			double y = click.y() - offsetY;
+			double x = mouseX - offsetX;
+			double y = mouseY - offsetY;
 			snapElement(x, y);
 		} else {
 			double oppositeCornerX;
@@ -267,7 +251,7 @@ public class MovableWidget extends AbstractWidget implements TrackableChange {
 
 			// Calcul du paramètre t (projection du point de la souris sur la droite)
 			double denom = dx * dx + dy * dy;
-			double t = (denom == 0) ? 0 : ((click.x() - oppositeCornerX) * dx + (click.y() - oppositeCornerY) * dy) / denom;
+			double t = (denom == 0) ? 0 : ((mouseX - oppositeCornerX) * dx + (mouseY - oppositeCornerY) * dy) / denom;
 
 			// Clamping de t pour rester dans les limites du segment
 			t = Math.clamp(t, MIN_SCALE, MAX_SCALE);
@@ -281,7 +265,7 @@ public class MovableWidget extends AbstractWidget implements TrackableChange {
 					/ Math.sqrt(dx * dx + dy * dy));
 
 			// Arrondi à STEP près si Maj est enfoncé
-			if (MINECRAFT.hasShiftDown()) {
+			if (Screen.hasShiftDown()) {
 				newScale = Math.round(newScale / STEP) * STEP;
 				shouldDrawScaleValue = true;
 			}
@@ -291,7 +275,7 @@ public class MovableWidget extends AbstractWidget implements TrackableChange {
 	}
 
 	@Override
-	public void onRelease(@NotNull MouseButtonEvent click) {
+	public void onRelease(double mouseX, double mouseY) {
 		if (isDraggingScaleHandle) {
 			updateScaleHandle();
 
@@ -310,16 +294,16 @@ public class MovableWidget extends AbstractWidget implements TrackableChange {
 	}
 
 	@Override
-	public boolean keyPressed(@NotNull KeyEvent input) {
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (isDraggingScaleHandle) {
 			return true; // so pressing a key won't do anything
 		}
-		if (this.isFocused() && isArrowKey(input)) {
+		if (this.isFocused() && isArrowKey(keyCode)) {
 			if (pressedKeys.isEmpty()) {
 				onKeyPressX = getX();
 				onKeyPressY = getY();
 			}
-			pressedKeys.add(input.key());
+			pressedKeys.add(keyCode);
 			if (pressedKeys.contains(InputConstants.KEY_UP)) {
 				moveTo(getX(), getY() - 1);
 			}
@@ -338,16 +322,19 @@ public class MovableWidget extends AbstractWidget implements TrackableChange {
 		return false;
 	}
 
-	private boolean isArrowKey(@NotNull KeyEvent input) {
-		return input.isUp() || input.isDown() || input.isLeft() || input.isRight();
+	private boolean isArrowKey(int keyCode) {
+		return keyCode == InputConstants.KEY_UP
+				|| keyCode == InputConstants.KEY_DOWN
+				|| keyCode == InputConstants.KEY_LEFT
+				|| keyCode == InputConstants.KEY_RIGHT;
 	}
 
 	@Override
-	public boolean keyReleased(@NotNull KeyEvent input) {
+	public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
 		shouldDrawScaleValue = false;
 
-		if (isArrowKey(input)) {
-			pressedKeys.remove(input.key());
+		if (isArrowKey(keyCode)) {
+			pressedKeys.remove(keyCode);
 			if (pressedKeys.isEmpty() && (onKeyPressX != getX() || onKeyPressY != getY())) {
 				PARENT.undoManager.addAction(new MoveAction(this, onKeyPressX, onKeyPressY, getX(), getY()));
 			}
@@ -383,7 +370,7 @@ public class MovableWidget extends AbstractWidget implements TrackableChange {
 		double thisW = this.HUD_ELEMENT.getScaledWidth();
 		double thisH = this.HUD_ELEMENT.getScaledHeight();
 
-		if (!MINECRAFT.hasShiftDown()) {
+		if (!Screen.hasShiftDown()) {
 			// ---- Center snapping (screen center) ----
 			double dxCenter = Math.abs((x + thisW / 2.0) - centerX);
 			if (dxCenter < CENTERED_LINES_SNAP_DISTANCE) {
@@ -422,7 +409,7 @@ public class MovableWidget extends AbstractWidget implements TrackableChange {
 				}
 			}
 
-			if (!MINECRAFT.hasControlDown()) {
+			if (!Screen.hasControlDown()) {
 				for (MovableWidget widget : PARENT.getMovableWidgets()) {
 					if (widget.HUD_ELEMENT != this.HUD_ELEMENT) {
 						double otherX = widget.getX();

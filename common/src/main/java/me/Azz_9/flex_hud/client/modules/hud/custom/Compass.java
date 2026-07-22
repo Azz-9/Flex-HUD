@@ -17,7 +17,6 @@ import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.waypoints.PartialTickSupplier;
 import net.minecraft.world.waypoints.TrackedWaypoint;
 import net.minecraft.world.waypoints.Waypoint;
 
@@ -416,12 +415,10 @@ public class Compass extends AbstractTextModule {
 		Level level = cameraEntity.level();
 
 		// MC_COPY net.minecraft.client.gui.contextualbar.LocatorBarRenderer.render
-		PartialTickSupplier partialTickSupplier = entity -> deltaTracker.getGameTimeDeltaPartialTick(!level.tickRateManager().isEntityFrozen(entity));
-
 		MINECRAFT.player.connection.getWaypointManager().forEachWaypoint(cameraEntity, (waypoint) -> {
 			if (!waypoint.id().left().map((uuid) -> uuid.equals(cameraEntity.getUUID())).orElse(false)) {
 
-				double angleDifference = waypoint.yawAngleToCamera(level, MINECRAFT.gameRenderer.getMainCamera(), partialTickSupplier);
+				double angleDifference = waypoint.yawAngleToCamera(level, MINECRAFT.gameRenderer.getMainCamera());
 
 				if (Math.abs(angleDifference) <= 120) {
 					// Calculer la position X de chaque point cardinal en fonction de l'angle
@@ -440,7 +437,7 @@ public class Compass extends AbstractTextModule {
 					matrices.scale(scale, scale);
 
 					graphics.blitSprite(RenderPipelines.GUI_TEXTURED, waypointIdentifier, 0, 0, textureSize, textureSize, ARGB.color(getAlpha((float) positionX), color));
-					TrackedWaypoint.PitchDirection pitch = waypoint.pitchDirectionToCamera(level, MINECRAFT.gameRenderer, partialTickSupplier);
+					TrackedWaypoint.PitchDirection pitch = waypoint.pitchDirectionToCamera(level, MINECRAFT.gameRenderer);
 					if (pitch != TrackedWaypoint.PitchDirection.NONE) {
 						int offset;
 						ResourceLocation arrowIdentifier;

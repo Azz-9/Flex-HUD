@@ -6,7 +6,6 @@ import static me.Azz_9.flex_hud.Constants.MOD_ID;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -16,8 +15,6 @@ import org.joml.Matrix3x2fStack;
 import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
-
-import me.Azz_9.flex_hud.client.gui.Cursors;
 
 public class HueWidget extends AbstractWidget {
 
@@ -37,10 +34,6 @@ public class HueWidget extends AbstractWidget {
 
 	@Override
 	protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
-		if (this.isActive() && this.isHovered()) {
-			graphics.requestCursor(Cursors.POINTING_HAND);
-		}
-
 		drawHueBar(graphics);
 
 		Matrix3x2fStack matrices = graphics.pose();
@@ -68,37 +61,37 @@ public class HueWidget extends AbstractWidget {
 	}
 
 	@Override
-	public void onClick(MouseButtonEvent click, boolean doubleClick) {
-		long window = MINECRAFT.getWindow().handle();
+	public void onClick(double mouseX, double mouseY) {
+		long window = MINECRAFT.getWindow().getWindow();
 		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);
-		moveCursor(click.y());
+		moveCursor(mouseY);
 		isDraggingCursor = true;
 	}
 
 	@Override
-	public boolean mouseDragged(@NotNull MouseButtonEvent click, double offsetX, double offsetY) {
+	public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
 		if (isDraggingCursor) {
-			return super.mouseDragged(click, offsetX, offsetY);
+			return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
 		}
 		return false;
 	}
 
 	@Override
-	protected void onDrag(MouseButtonEvent click, double d, double e) {
-		moveCursor(click.y());
+	protected void onDrag(double mouseX, double mouseY, double dragX, double dragY) {
+		moveCursor(mouseY);
 	}
 
 	@Override
-	public boolean mouseReleased(@NotNull MouseButtonEvent click) {
+	public boolean mouseReleased(double mouseX, double mouseY, int button) {
 		if (isDraggingCursor) {
-			return super.mouseReleased(click);
+			return super.mouseReleased(mouseX, mouseY, button);
 		}
 		return false;
 	}
 
 	@Override
-	public void onRelease(@NotNull MouseButtonEvent click) {
-		long window = MINECRAFT.getWindow().handle();
+	public void onRelease(double mouseX, double mouseY) {
+		long window = MINECRAFT.getWindow().getWindow();
 		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
 		isDraggingCursor = false;
 	}

@@ -1,7 +1,6 @@
 package me.Azz_9.flex_hud.client.gui.components.config.colorSelector;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
 import org.jetbrains.annotations.NotNull;
@@ -36,11 +35,11 @@ public class ColorFieldWidget extends CustomEditBox {
 	}
 
 	@Override
-	public boolean mouseClicked(@NotNull MouseButtonEvent click, boolean doubled) {
-		if (this.active && this.visible && this.isValidClickButton(click.buttonInfo())) {
-			setFocused(this.isMouseOver(click.x(), click.y()));
+	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		if (this.active && this.visible && this.isValidClickButton(button)) {
+			setFocused(this.isMouseOver(mouseX, mouseY));
 		}
-		return super.mouseClicked(click, doubled);
+		return super.mouseClicked(mouseX, mouseY, button);
 	}
 
 	public void updateColor(int color) {
