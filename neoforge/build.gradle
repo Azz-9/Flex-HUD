@@ -31,6 +31,11 @@ neoForge {
 			client()
 			gameDirectory = this.mkdir(this.file('runs/client'))
 		}
+		mobHeadAudit {
+			client()
+			gameDirectory = this.mkdir(this.file('runs/client'))
+			systemProperty('flex_hud.auditMobHeads', 'true')
+		}
 	}
 	mods {
 		"${mod_id}" {

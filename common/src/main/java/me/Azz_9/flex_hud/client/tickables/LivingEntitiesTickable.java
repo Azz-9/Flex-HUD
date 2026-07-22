@@ -22,6 +22,7 @@ import net.minecraft.world.entity.animal.wolf.Wolf;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.phys.Vec3;
 
+import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -43,6 +44,34 @@ public class LivingEntitiesTickable implements Tickable {
 	public boolean shouldTick() {
 		Compass compass = Modules.getInstance().compass;
 		return compass.showMobs.getValue() || compass.showTamedEntitiesPoint.getValue();
+	}
+
+	static Identifier spriteResource(@NotNull Identifier sprite) {
+		return Identifier.fromNamespaceAndPath(
+				sprite.getNamespace(),
+				"textures/gui/sprites/" + sprite.getPath() + ".png"
+		);
+	}
+
+	static boolean spriteDoesNotExist(@NotNull Identifier sprite) {
+		return MINECRAFT.getResourceManager().getResource(spriteResource(sprite)).isEmpty();
+	}
+
+	static Identifier spriteFromEntityTexture(@NotNull Identifier texture) {
+		String path = texture.getPath();
+		String entityTexturesPrefix = "textures/entity/";
+
+		if (path.startsWith(entityTexturesPrefix)) {
+			path = path.substring(entityTexturesPrefix.length());
+		}
+		if (path.endsWith(".png")) {
+			path = path.substring(0, path.length() - ".png".length());
+		}
+
+		return Identifier.fromNamespaceAndPath(
+				MOD_ID,
+				"hud/living_entities/" + texture.getNamespace() + "/" + path
+		);
 	}
 
 	@Override
@@ -74,27 +103,27 @@ public class LivingEntitiesTickable implements Tickable {
 					continue;
 				}
 
-				Identifier id = getMobHeadTexture(mob);
+				Identifier sprite = getMobHeadTexture(mob);
 
 				// if the texture is not found, skip this entity
-				if (id == null || MINECRAFT.getResourceManager().getResource(id).isEmpty()) {
+				if (sprite == null || spriteDoesNotExist(sprite)) {
 					continue;
 				}
 
-				mobEntitiesTextures.add(new EntityTexture(id, mob));
+				mobEntitiesTextures.add(new EntityTexture(sprite, mob));
 
 				if (mob instanceof AbstractHorse horseEntity && horseEntity.isTamed() ||
 						mob instanceof TamableAnimal tameable
 								&& tameable.getOwner() != null
 								&& tameable.getOwner().getUUID().equals(player.getUUID())) {
 
-					tamedEntitiesTextures.add(new EntityTexture(id, mob));
+					tamedEntitiesTextures.add(new EntityTexture(sprite, mob));
 
 					if (mob instanceof Wolf
 							|| mob instanceof Cat
 							|| mob instanceof Parrot) {
 
-						petsEntitiesTextures.add(new EntityTexture(id, mob));
+						petsEntitiesTextures.add(new EntityTexture(sprite, mob));
 					}
 				}
 			}
@@ -102,7 +131,7 @@ public class LivingEntitiesTickable implements Tickable {
 	}
 
 	@Nullable
-	private Identifier getMobHeadTexture(Mob mob) {
+	static Identifier getMobHeadTexture(Mob mob) {
 		Identifier id = null;
 		switch (mob) {
 			case EnderDragon enderDragonEntity ->
@@ -123,8 +152,6 @@ public class LivingEntitiesTickable implements Tickable {
 				id = Identifier.fromNamespaceAndPath(MOD_ID, path);
 			}
 			default -> {
-
-
 				EntityRenderer<? super LivingEntity, ?> renderer = MINECRAFT.getEntityRenderDispatcher().getRenderer(mob);
 
 				if (renderer instanceof LivingEntityRenderer<?, ?, ?> livingRenderer) {
@@ -135,10 +162,16 @@ public class LivingEntitiesTickable implements Tickable {
 
 						LivingEntityRenderState state = casted.createRenderState(mob, 0);
 
-						Identifier minecraft_id = casted.getTextureLocation(state);
-						id = Identifier.fromNamespaceAndPath(MOD_ID, "hud/living_entities/" + minecraft_id.getNamespace() + minecraft_id.getPath().replace("textures/entity", ""));
+						Identifier minecraftId = casted.getTextureLocation(state);
+						id = spriteFromEntityTexture(minecraftId);
 
-					} catch (Exception ignored) {
+					} catch (Exception exception) {
+						if (Boolean.getBoolean(LivingEntityHeadClientAudit.SYSTEM_PROPERTY)) {
+							throw new IllegalStateException(
+									"Could not resolve the head texture for " + mob.getType(),
+									exception
+							);
+						}
 					}
 				}
 			}
