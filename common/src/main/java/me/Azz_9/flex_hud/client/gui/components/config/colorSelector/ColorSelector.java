@@ -10,7 +10,6 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 
 import org.jetbrains.annotations.NotNull;
-import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
@@ -56,7 +55,7 @@ public class ColorSelector extends ColorUpdatable implements GuiEventListener, R
 	}
 
 	@Override
-	public void render(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
+	public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (this.isMouseOver(mouseX, mouseY)) {
 			graphics.requestCursor(Cursors.DEFAULT);
 		}
@@ -127,7 +126,7 @@ public class ColorSelector extends ColorUpdatable implements GuiEventListener, R
 	}
 
 	@Override
-	public boolean keyPressed(@NonNull KeyEvent input) {
+	public boolean keyPressed(@NotNull KeyEvent input) {
 		if (colorFieldWidget.isFocused()) {
 			colorFieldWidget.keyPressed(input);
 
@@ -137,7 +136,7 @@ public class ColorSelector extends ColorUpdatable implements GuiEventListener, R
 	}
 
 	@Override
-	public boolean charTyped(@NonNull CharacterEvent input) {
+	public boolean charTyped(@NotNull CharacterEvent input) {
 		if (colorFieldWidget.isFocused()) {
 			return colorFieldWidget.charTyped(input);
 		}

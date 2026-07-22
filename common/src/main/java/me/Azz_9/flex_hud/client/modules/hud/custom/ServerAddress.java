@@ -8,7 +8,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
@@ -72,14 +72,14 @@ public class ServerAddress extends AbstractTextModule {
 			int textX = 0;
 			int textY = 0;
 			int faviconSize = 14;
-			Identifier icon = null;
+			ResourceLocation icon = null;
 			if (showServerIcon.getValue() && (MINECRAFT.getCurrentServer() != null || CommonClass.isEditingLayout)) {
 				if (CommonClass.isEditingLayout) {
-					icon = Identifier.fromNamespaceAndPath(MOD_ID, "textures/gui/sprites/hud/hypixel_logo.png");
+					icon = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/gui/sprites/hud/hypixel_logo.png");
 				} else {
 					icon = FaviconUtils.getCurrentServerFavicon();
 					if (icon == null) {
-						icon = Identifier.withDefaultNamespace("textures/misc/unknown_server.png");
+						icon = ResourceLocation.withDefaultNamespace("textures/misc/unknown_server.png");
 					}
 				}
 

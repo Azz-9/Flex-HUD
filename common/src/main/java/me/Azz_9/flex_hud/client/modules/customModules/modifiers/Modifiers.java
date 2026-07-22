@@ -3,7 +3,7 @@ package me.Azz_9.flex_hud.client.modules.customModules.modifiers;
 import net.minecraft.util.StringUtil;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.MathContext;

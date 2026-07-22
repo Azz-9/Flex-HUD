@@ -10,18 +10,18 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
-import net.minecraft.util.Ease;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 
 import me.Azz_9.flex_hud.client.gui.Colors;
 import me.Azz_9.flex_hud.client.gui.Cursors;
+import me.Azz_9.flex_hud.utils.Ease;
 
-public class HelpWidget extends AbstractWidget.WithInactiveMessage {
-	private static final Identifier SPRITE = Identifier.fromNamespaceAndPath(MOD_ID, "widget/help");
+public class HelpWidget extends AbstractWidget {
+	private static final ResourceLocation SPRITE = ResourceLocation.fromNamespaceAndPath(MOD_ID, "widget/help");
 	private static final int POPUP_WIDTH = 200;
 	private static final int POPUP_PADDING = 4;
 	private static final int POPUP_MARGIN_BOTTOM = 6;

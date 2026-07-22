@@ -1,9 +1,9 @@
 package me.Azz_9.flex_hud.mixin;
 
+import net.minecraft.Util;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.game.ClientboundStartConfigurationPacket;
 import net.minecraft.network.protocol.ping.ClientboundPongResponsePacket;
-import net.minecraft.util.Util;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

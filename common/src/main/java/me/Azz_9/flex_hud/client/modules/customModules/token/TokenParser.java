@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.client.modules.customModules.token;
 
-import org.jspecify.annotations.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ public class TokenParser {
 	public static final Pattern VARIABLE_PATTERN = Pattern.compile("\\{((?:\\\\.|[^{}])+)}");
 	public static final String DELIMITER = ":";
 
-	public static List<Token> parseText(@NonNull String text) {
+	public static List<Token> parseText(@NotNull String text) {
 		List<Token> tokens = new ArrayList<>();
 
 		Matcher matcher = VARIABLE_PATTERN.matcher(text);

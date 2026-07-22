@@ -214,7 +214,7 @@ public class KeyStrokes extends AbstractTextModule {
 	}
 
 	private int getColor(float fadeFactor) {
-		return ARGB.srgbLerp(fadeFactor, getColor(), getColorPressed());
+		return ARGB.lerp(fadeFactor, getColor(), getColorPressed());
 	}
 
 	private int getColorPressed() {

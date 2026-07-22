@@ -2,12 +2,12 @@ package me.Azz_9.flex_hud.client.modules.notHud;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
+import net.minecraft.Util;
 import net.minecraft.client.gui.components.FocusableTextWidget;
 import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Util;
 
 import java.net.URI;
 
@@ -56,17 +56,20 @@ public class DurabilityPing extends AbstractModule {
 			protected void initContent() {
 				int width = (int) (MINECRAFT.getWindow().getGuiScaledWidth() * MESSAGE_WIDTH_FRACTION);
 
-				MultiLineTextWidget text = FocusableTextWidget.builder(MESSAGE, font)
-						.maxWidth(width)
-						.alwaysShowBorder(false)
-						.backgroundFill(FocusableTextWidget.BackgroundFill.NEVER)
-						.build()
-						.setCentered(true);
-				text.setComponentClickHandler(style -> {
-					if (style.getClickEvent() instanceof ClickEvent.OpenUrl(URI uri)) {
-						Util.getPlatform().openUri(uri);
-					}
-				});
+				MultiLineTextWidget text = new FocusableTextWidget(
+						width,
+						MESSAGE,
+						font,
+						false,
+						FocusableTextWidget.BackgroundFill.NEVER,
+						FocusableTextWidget.DEFAULT_PADDING
+				)
+						.setCentered(true)
+						.configureStyleHandling(true, style -> {
+							if (style.getClickEvent() instanceof ClickEvent.OpenUrl(URI uri)) {
+								Util.getPlatform().openUri(uri);
+							}
+						});
 				text.setPosition(
 						(MINECRAFT.getWindow().getGuiScaledWidth() - text.getWidth()) / 2,
 						(MINECRAFT.getWindow().getGuiScaledHeight() - text.getHeight()) / 2

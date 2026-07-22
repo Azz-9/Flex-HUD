@@ -9,7 +9,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -21,7 +21,7 @@ import me.Azz_9.flex_hud.client.gui.screens.ModulesListScreen;
 public class ModuleElement {
 	public String name;
 	public String id;
-	public Identifier icon;
+	public ResourceLocation icon;
 	public AbstractConfigurationScreen configScreen;
 	public Button button;
 	public ImmutableList<String> keywords;
@@ -38,7 +38,7 @@ public class ModuleElement {
 
 		this.name = module.getName().getString();
 		this.id = module.getID();
-		this.icon = Identifier.fromNamespaceAndPath(MOD_ID, "icon/modules/" + id);
+		this.icon = ResourceLocation.fromNamespaceAndPath(MOD_ID, "icon/modules/" + id);
 		this.configScreen = module.getConfigScreen(parent);
 		this.button = createButton(buttonWidth, buttonHeight);
 
@@ -57,7 +57,7 @@ public class ModuleElement {
 			ModulesListScreen parent,
 			Supplier<Tooltip> getTooltip,
 			ImmutableList<String> keywords,
-			Identifier icon) {
+			ResourceLocation icon) {
 
 		this.name = module.getName().getString();
 		this.id = module.getID();

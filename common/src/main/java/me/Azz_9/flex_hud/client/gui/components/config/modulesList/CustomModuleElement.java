@@ -10,7 +10,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.SpriteIconButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +22,8 @@ import me.Azz_9.flex_hud.client.modules.customModules.CustomModule;
 
 public class CustomModuleElement extends ModuleElement {
 
-	private static final Identifier EDIT_SPRITE = Identifier.fromNamespaceAndPath(MOD_ID, "icon/edit");
-	private static final Identifier DELETE_SPRITE = Identifier.fromNamespaceAndPath(MOD_ID, "icon/delete");
+	private static final ResourceLocation EDIT_SPRITE = ResourceLocation.fromNamespaceAndPath(MOD_ID, "icon/edit");
+	private static final ResourceLocation DELETE_SPRITE = ResourceLocation.fromNamespaceAndPath(MOD_ID, "icon/delete");
 	private static final int GAP = 5;
 	private static final int BUTTONS_SIZE = 20;
 
@@ -43,7 +43,7 @@ public class CustomModuleElement extends ModuleElement {
 			ImmutableList<String> keywords,
 			Runnable onDelete) {
 
-		super(module, buttonWidth, buttonHeight, parent, getTooltip, keywords, Identifier.fromNamespaceAndPath(MOD_ID, "icon/modules/custom_module"));
+		super(module, buttonWidth, buttonHeight, parent, getTooltip, keywords, ResourceLocation.fromNamespaceAndPath(MOD_ID, "icon/modules/custom_module"));
 		this.module = module;
 		this.onDelete = onDelete;
 		editButton = createEditButton();

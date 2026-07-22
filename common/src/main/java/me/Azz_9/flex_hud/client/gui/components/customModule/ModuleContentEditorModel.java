@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.client.gui.components.customModule;
 
 import static java.util.Objects.requireNonNull;
 
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;

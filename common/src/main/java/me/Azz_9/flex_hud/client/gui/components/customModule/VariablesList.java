@@ -106,12 +106,12 @@ public class VariablesList extends AbstractSmoothScrollableList<VariablesList.En
 		}
 
 		@Override
-		public @NotNull List<AbstractWidget.WithInactiveMessage> narratables() {
+		public @NotNull List<AbstractWidget> narratables() {
 			return children();
 		}
 
 		@Override
-		public @NotNull List<AbstractWidget.WithInactiveMessage> children() {
+		public @NotNull List<AbstractWidget> children() {
 			return List.of(widget);
 		}
 	}

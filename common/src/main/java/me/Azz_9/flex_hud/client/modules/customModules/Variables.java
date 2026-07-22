@@ -11,7 +11,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biomes;
 
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.LocalTime;
 import java.time.temporal.ChronoField;
@@ -22,6 +22,7 @@ import me.Azz_9.flex_hud.Constants;
 import me.Azz_9.flex_hud.client.debug.PerfTester;
 import me.Azz_9.flex_hud.client.modules.hud.custom.Speedometer;
 import me.Azz_9.flex_hud.client.tickables.MemoryUsageTickable;
+import me.Azz_9.flex_hud.client.tickables.SpeedTickable;
 import me.Azz_9.flex_hud.utils.CpsUtils;
 import me.Azz_9.flex_hud.utils.PingUtils;
 
@@ -74,8 +75,8 @@ public class Variables {
 		register("player.direction_abbr", () -> getDirection(MINECRAFT.player).abbreviation(), FRAME);
 		register("player.direction.x", () -> getDirection(MINECRAFT.player).xSign(), FRAME);
 		register("player.direction.z", () -> getDirection(MINECRAFT.player).zSign(), FRAME);
-		register("player.speed", SafeSupplier.create(() -> Speedometer.SpeedometerUnits.MPS.convert(requireNonNull(MINECRAFT.player).getKnownSpeed().length()), 0), TICK);
-		register("player.horizontal_speed", SafeSupplier.create(() -> Speedometer.SpeedometerUnits.MPS.convert(requireNonNull(MINECRAFT.player).getKnownSpeed().horizontalDistance()), 0), TICK);
+		register("player.speed", SafeSupplier.create(() -> Speedometer.SpeedometerUnits.MPS.convert(SpeedTickable.getSpeedMeterPerTicks()), 0), TICK);
+		register("player.horizontal_speed", SafeSupplier.create(() -> Speedometer.SpeedometerUnits.MPS.convert(SpeedTickable.getHorizontalSpeedMeterPerTicks()), 0), TICK);
 		register("player.health", SafeSupplier.create(() -> requireNonNull(MINECRAFT.player).getHealth(), 20), TICK);
 		register("player.health_max", SafeSupplier.create(() -> requireNonNull(MINECRAFT.player).getMaxHealth(), 20), TICK);
 		register("player.health_percent", SafeSupplier.create(() -> requireNonNull(MINECRAFT.player).getMaxHealth() == 0 ? 0 : MINECRAFT.player.getHealth() / MINECRAFT.player.getMaxHealth(), 100), TICK);
@@ -89,8 +90,8 @@ public class Variables {
 
 	private static void registerWorldVariables() {
 		register("world.name", SafeSupplier.create(() -> requireNonNull(MINECRAFT.getSingleplayerServer()).getWorldData().getLevelName(), "", "World name"), ON_JOIN_WORLD);
-		register("world.biome", SafeSupplier.create(() -> requireNonNull(MINECRAFT.level).getBiome(requireNonNull(MINECRAFT.player).blockPosition()).unwrap().map(key -> key.identifier().getPath(), value -> "[unregistered " + value + "]"), "", Biomes.PLAINS.identifier().getPath()), TICK);
-		register("world.dimension", SafeSupplier.create(() -> requireNonNull(MINECRAFT.level).dimension().identifier().getPath(), "", Level.OVERWORLD.identifier().getPath()), TICK);
+		register("world.biome", SafeSupplier.create(() -> requireNonNull(MINECRAFT.level).getBiome(requireNonNull(MINECRAFT.player).blockPosition()).unwrap().map(key -> key.location().getPath(), value -> "[unregistered " + value + "]"), "", Biomes.PLAINS.location().getPath()), TICK);
+		register("world.dimension", SafeSupplier.create(() -> requireNonNull(MINECRAFT.level).dimension().location().getPath(), "", Level.OVERWORLD.location().getPath()), TICK);
 		register("world.time", SafeSupplier.create(() -> requireNonNull(MINECRAFT.level).getDayTime() % 24000, 12000L), TICK);
 		register("world.time.hour_24", SafeSupplier.create(() -> ((requireNonNull(MINECRAFT.level).getDayTime() % 24000) / 1000 + 6) % 24, 18L), TICK);
 		register("world.time.hour_12", SafeSupplier.create(() -> {
