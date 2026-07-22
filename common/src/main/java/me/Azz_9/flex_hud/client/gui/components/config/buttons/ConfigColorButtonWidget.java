@@ -62,7 +62,7 @@ public class ConfigColorButtonWidget extends AbstractWidget.WithInactiveMessage 
 		if (this.active) {
 			if (this.isHovered()) graphics.requestCursor(Cursors.POINTING_HAND);
 
-			drawSelectedTexture(graphics);
+			drawHover(graphics);
 
 			if (this.isHoveredOrFocused()) {
 				graphics.renderOutline(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
@@ -78,7 +78,7 @@ public class ConfigColorButtonWidget extends AbstractWidget.WithInactiveMessage 
 		}
 	}
 
-	private void drawSelectedTexture(GuiGraphics graphics) {
+	private void drawHover(GuiGraphics graphics) {
 		boolean currentlyHovered = this.isHovered();
 
 		// Handle transition triggers

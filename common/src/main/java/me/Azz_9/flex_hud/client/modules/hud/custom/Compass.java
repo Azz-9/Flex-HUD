@@ -15,6 +15,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.waypoints.PartialTickSupplier;
 import net.minecraft.world.waypoints.TrackedWaypoint;
@@ -413,22 +414,26 @@ public class Compass extends AbstractTextModule {
 			}
 		}
 
-		PartialTickSupplier partialTickSupplier = entity -> deltaTracker.getGameTimeDeltaPartialTick(!MINECRAFT.level.tickRateManager().isEntityFrozen(entity));
+		Entity cameraEntity = MINECRAFT.getCameraEntity();
+		Level level = cameraEntity.level();
 
-		MINECRAFT.player.connection.getWaypointManager().forEachWaypoint(MINECRAFT.getCameraEntity(), (waypoint) -> {
-			if (!(Boolean) waypoint.id().left().map((uuid) -> uuid.equals(MINECRAFT.getCameraEntity().getUUID())).orElse(false)) {
+		// MC_COPY net.minecraft.client.gui.contextualbar.LocatorBarRenderer.render
+		PartialTickSupplier partialTickSupplier = entity -> deltaTracker.getGameTimeDeltaPartialTick(!level.tickRateManager().isEntityFrozen(entity));
 
-				double angleDifference = waypoint.yawAngleToCamera(MINECRAFT.level, MINECRAFT.gameRenderer.getMainCamera(), partialTickSupplier);
+		MINECRAFT.player.connection.getWaypointManager().forEachWaypoint(cameraEntity, (waypoint) -> {
+			if (!waypoint.id().left().map((uuid) -> uuid.equals(cameraEntity.getUUID())).orElse(false)) {
+
+				double angleDifference = waypoint.yawAngleToCamera(level, MINECRAFT.gameRenderer.getMainCamera(), partialTickSupplier);
 
 				if (Math.abs(angleDifference) <= 120) {
 					// Calculer la position X de chaque point cardinal en fonction de l'angle
 					double positionX = calculatePositionX((float) angleDifference);
 
-					Waypoint.Icon config = waypoint.icon();
-					WaypointStyle style = MINECRAFT.getWaypointStyles().get(config.style);
-					float distance = (float) Math.sqrt(waypoint.distanceSquared(MINECRAFT.getCameraEntity()));
+					Waypoint.Icon icon = waypoint.icon();
+					WaypointStyle style = MINECRAFT.getWaypointStyles().get(icon.style);
+					float distance = (float) Math.sqrt(waypoint.distanceSquared(cameraEntity));
 					Identifier waypointIdentifier = style.sprite(distance);
-					int color = config.color.orElseGet(() -> waypoint.id().map((uuid) -> ARGB.setBrightness(ARGB.color(255, uuid.hashCode()), 0.9F), (name) -> ARGB.setBrightness(ARGB.color(255, name.hashCode()), 0.9F)));
+					int color = icon.color.orElseGet(() -> waypoint.id().map((uuid) -> ARGB.setBrightness(ARGB.color(255, uuid.hashCode()), 0.9F), (name) -> ARGB.setBrightness(ARGB.color(255, name.hashCode()), 0.9F)));
 
 					int textureSize = 9;
 
@@ -436,9 +441,8 @@ public class Compass extends AbstractTextModule {
 					matrices.translate((float) (positionX - textureSize / 2.0), y);
 					matrices.scale(scale, scale);
 
-
 					graphics.blitSprite(RenderPipelines.GUI_TEXTURED, waypointIdentifier, 0, 0, textureSize, textureSize, ARGB.color(getAlpha((float) positionX), color));
-					TrackedWaypoint.PitchDirection pitch = waypoint.pitchDirectionToCamera(MINECRAFT.level, MINECRAFT.gameRenderer, partialTickSupplier);
+					TrackedWaypoint.PitchDirection pitch = waypoint.pitchDirectionToCamera(level, MINECRAFT.gameRenderer, partialTickSupplier);
 					if (pitch != TrackedWaypoint.PitchDirection.NONE) {
 						int offset;
 						Identifier arrowIdentifier;
