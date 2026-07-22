@@ -8,6 +8,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.blockentity.AbstractSignRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -75,18 +76,20 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 			textureScale = 4.5f;
 			setWidth(Math.round(14 * textureScale));
 			setHeight(Math.round(10 * textureScale));
-			textureWidth = Math.round(16 * textureScale);
-			textureHeight = Math.round(16 * textureScale);
 		} else {
 			textureScale = 4;
 			setWidth(Math.round(24 * textureScale));
 			setHeight(Math.round(12 * textureScale));
-			textureWidth = Math.round(24 * textureScale);
-			textureHeight = Math.round(26 * textureScale);
 		}
 
-		float offsetX = data.isHangingSign ? 1 * textureScale : 0;
-		float offsetY = data.isHangingSign ? 6 * textureScale : 0;
+		textureWidth = Math.round(64 * textureScale);
+		textureHeight = Math.round(32 * textureScale);
+
+		float offsetX = 2 * textureScale;
+		if (!data.playerFacingFront) {
+			offsetX += getWidth() + 2 * textureScale;
+		}
+		float offsetY = data.isHangingSign ? 14 * textureScale : 2 * textureScale;
 
 		Matrix3x2fStack matrices = graphics.pose();
 		matrices.pushMatrix();
@@ -207,7 +210,7 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 	private @NotNull RenderData getPlaceholderRenderData() {
 		RenderData data = new RenderData();
 
-		data.texture = ResourceLocation.withDefaultNamespace("textures/gui/signs/" + WoodType.OAK.name() + ".png");
+		data.texture = getSignTexture(WoodType.OAK);
 		data.content = new Component[]{
 				Component.literal(""),
 				Component.translatable("flex_hud.sign_reader.placeholder_content"),
@@ -276,10 +279,22 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 		data.glowColor = AbstractSignRenderer.getDarkColor(signText);
 		data.isGlowing = signText.hasGlowingText();
 		data.texture = data.isHangingSign
-				? ResourceLocation.withDefaultNamespace("textures/gui/hanging_signs/" + woodType.name() + ".png")
-				: ResourceLocation.withDefaultNamespace("textures/gui/signs/" + woodType.name() + ".png");
+				? getHangingSignTexture(woodType)
+				: getSignTexture(woodType);
 
 		return data;
+	}
+
+	public static ResourceLocation getSignTexture(@NotNull WoodType woodType) {
+		return addPrefixAndSuffix(Sheets.getSignMaterial(woodType).texture());
+	}
+
+	public static ResourceLocation getHangingSignTexture(@NotNull WoodType woodType) {
+		return addPrefixAndSuffix(Sheets.getHangingSignMaterial(woodType).texture());
+	}
+
+	private static ResourceLocation addPrefixAndSuffix(ResourceLocation location) {
+		return location.withPrefix("textures/").withSuffix(".png");
 	}
 
 	private static class RenderData {
