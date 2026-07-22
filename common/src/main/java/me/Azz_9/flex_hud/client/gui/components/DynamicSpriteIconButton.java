@@ -23,7 +23,7 @@ public class DynamicSpriteIconButton extends Button {
 	}
 
 	@Override
-	protected void extractContents(@NotNull GuiGraphicsExtractor graphics, int i, int i1, float v) {
+	protected void extractContents(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
 		super.extractDefaultSprite(graphics);
 
 		if (sprite == null) return;
