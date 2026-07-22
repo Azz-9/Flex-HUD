@@ -42,6 +42,7 @@ import me.Azz_9.flex_hud.client.gui.screens.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.modules.hud.AbstractTextModule;
 import me.Azz_9.flex_hud.client.tickables.LivingEntitiesTickable;
 import me.Azz_9.flex_hud.compat.CompatManager;
+import me.Azz_9.flex_hud.mixin.LocatorBarRendererAccessor;
 
 public class Compass extends AbstractTextModule {
 	private final ConfigBoolean showMarker = new ConfigBoolean(true, "flex_hud.compass.config.show_marker");
@@ -55,9 +56,6 @@ public class Compass extends AbstractTextModule {
 	public final ConfigBoolean showTamedEntitiesPoint = new ConfigBoolean(false, "flex_hud.compass.config.show_tamed_entities_point");
 	public final ConfigBoolean showOnlyPets = new ConfigBoolean(false, "flex_hud.compass.config.show_only_pets");
 	private final ConfigEnum<IconsSize> iconsSize = new ConfigEnum<>(IconsSize.class, IconsSize.SMALL, "flex_hud.compass.config.icons_size");
-
-	private final ResourceLocation ARROW_UP = ResourceLocation.withDefaultNamespace("hud/locator_bar_arrow_up");
-	private final ResourceLocation ARROW_DOWN = ResourceLocation.withDefaultNamespace("hud/locator_bar_arrow_down");
 
 	private List<XaeroWaypoint> xaeroWaypoints = new ArrayList<>();
 	private List<JourneyMapWaypoint> journeyMapWaypoints = new ArrayList<>();
@@ -448,10 +446,10 @@ public class Compass extends AbstractTextModule {
 						ResourceLocation arrowIdentifier;
 						if (pitch == TrackedWaypoint.PitchDirection.DOWN) {
 							offset = 8;
-							arrowIdentifier = ARROW_DOWN;
+							arrowIdentifier = LocatorBarRendererAccessor.getArrowDownIdentifier();
 						} else {
 							offset = -4;
-							arrowIdentifier = ARROW_UP;
+							arrowIdentifier = LocatorBarRendererAccessor.getArrowUpIdentifier();
 						}
 
 						graphics.blitSprite(
@@ -513,10 +511,10 @@ public class Compass extends AbstractTextModule {
 
 					if (pitch == TrackedWaypoint.PitchDirection.DOWN) {
 						offset = 8;
-						arrowIdentifier = ARROW_DOWN;
+						arrowIdentifier = LocatorBarRendererAccessor.getArrowDownIdentifier();
 					} else {
 						offset = -4;
-						arrowIdentifier = ARROW_UP;
+						arrowIdentifier = LocatorBarRendererAccessor.getArrowUpIdentifier();
 					}
 
 					graphics.blitSprite(
