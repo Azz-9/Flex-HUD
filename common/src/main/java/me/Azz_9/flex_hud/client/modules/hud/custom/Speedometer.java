@@ -8,7 +8,7 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.vehicle.boat.Boat;
+import net.minecraft.world.entity.vehicle.Boat;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
@@ -26,6 +26,7 @@ import me.Azz_9.flex_hud.client.gui.components.config.entries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.gui.screens.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.modules.TickableModule;
 import me.Azz_9.flex_hud.client.modules.hud.AbstractTextModule;
+import me.Azz_9.flex_hud.client.tickables.SpeedTickable;
 
 public class Speedometer extends AbstractTextModule implements TickableModule {
 
@@ -187,9 +188,9 @@ public class Speedometer extends AbstractTextModule implements TickableModule {
 		double speedBlocksPerTicks = 0;
 		if (player != null && !CommonClass.isEditingLayout) {
 			if (ignoreYSpeed.getValue()) {
-				speedBlocksPerTicks = player.getKnownSpeed().horizontalDistance();
+				speedBlocksPerTicks = SpeedTickable.getHorizontalSpeedMeterPerTicks();
 			} else {
-				speedBlocksPerTicks = player.getKnownSpeed().length();
+				speedBlocksPerTicks = SpeedTickable.getSpeedMeterPerTicks();
 			}
 		}
 

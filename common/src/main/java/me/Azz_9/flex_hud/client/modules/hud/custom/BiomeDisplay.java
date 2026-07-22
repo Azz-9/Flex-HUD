@@ -72,7 +72,7 @@ public class BiomeDisplay extends AbstractTextModule {
 
 			if (biomeKey == null) return;
 
-			biomeName = biomeKey.identifier().getPath();
+			biomeName = biomeKey.location().getPath();
 		}
 
 		String prefix = "Biome: ";

@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.compat.waypointsCollectors;
 
-import org.jspecify.annotations.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,7 +80,7 @@ public class XaeroWaypointCollector extends Collector<Compass.XaeroWaypoint> imp
 		available = false;
 	}
 
-	public @NonNull List<Compass.XaeroWaypoint> getWaypoints() {
+	public @NotNull List<Compass.XaeroWaypoint> getWaypoints() {
 		return waypoints;
 	}
 

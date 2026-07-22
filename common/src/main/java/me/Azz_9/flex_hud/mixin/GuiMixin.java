@@ -14,11 +14,11 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.scores.Objective;
 
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -84,14 +84,14 @@ public abstract class GuiMixin {
 			method = "renderCrosshair",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIII)V",
+					target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIII)V",
 					ordinal = 0
 			)
 	)
 	private void replaceCrosshair(
 			GuiGraphics graphics,
 			RenderPipeline renderPipeline,
-			Identifier location,
+			ResourceLocation location,
 			int x,
 			int y,
 			int width,
@@ -111,7 +111,7 @@ public abstract class GuiMixin {
 			method = "renderCrosshair",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIII)V",
+					target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIII)V",
 					ordinal = 1
 			),
 			index = 0
@@ -124,7 +124,7 @@ public abstract class GuiMixin {
 			method = "renderCrosshair",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIII)V",
+					target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIII)V",
 					ordinal = 2
 			),
 			index = 0
@@ -137,7 +137,7 @@ public abstract class GuiMixin {
 			method = "renderCrosshair",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIIIIIII)V"
+					target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIIIIIII)V"
 			),
 			index = 0
 	)
@@ -162,7 +162,7 @@ public abstract class GuiMixin {
 		if (Modules.getInstance().isEnabled.getValue()
 				&& scoreboard.enabled.getValue()
 				&& (!scoreboard.showScoreboard.getValue()
-				|| scoreboard.hideInF3.getValue() && MINECRAFT.debugEntries.isOverlayVisible())) {
+				|| scoreboard.hideInF3.getValue() && MINECRAFT.debugEntries.isF3Visible())) {
 			ci.cancel();
 		}
 	}
@@ -370,7 +370,7 @@ public abstract class GuiMixin {
 		if (Modules.getInstance().isEnabled.getValue()
 				&& titles.enabled.getValue()
 				&& (!titles.showTitle.getValue() && !titles.showSubtitle.getValue()
-				|| titles.hideInF3.getValue() && MINECRAFT.debugEntries.isOverlayVisible())) {
+				|| titles.hideInF3.getValue() && MINECRAFT.debugEntries.isF3Visible())) {
 			ci.cancel();
 			return;
 		}

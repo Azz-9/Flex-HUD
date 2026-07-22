@@ -9,7 +9,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -88,7 +88,7 @@ public class PotionEffect extends AbstractTextModule {
 
 			String effectString = Component.translatable(effect.getDescriptionId()).getString() + " " + (effect.getAmplifier() + 1);
 			String durationString = effect.isInfiniteDuration() ? "∞" : getDurationString(effect.getDuration() / 20);
-			Identifier icon = Gui.getMobEffectSprite(effect.getEffect());
+			ResourceLocation icon = Gui.getMobEffectSprite(effect.getEffect());
 
 			textWidth = Math.max(
 					MINECRAFT.font.width(effectString),

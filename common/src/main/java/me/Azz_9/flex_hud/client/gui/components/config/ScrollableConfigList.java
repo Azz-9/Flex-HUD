@@ -12,7 +12,6 @@ import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.network.chat.Component;
 
 import org.jetbrains.annotations.NotNull;
-import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,18 +97,18 @@ public class ScrollableConfigList extends AbstractSmoothScrollableList<Scrollabl
 		}
 
 		@Override
-		public void renderContent(@NonNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+		public void renderContent(@NotNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
 			this.resetButtonWidget.render(graphics, mouseX, mouseY, deltaTicks);
 			graphics.drawString(MINECRAFT.font, text, textX, textY, textColor, true);
 		}
 
 		@Override
-		public @NonNull List<? extends GuiEventListener> children() {
+		public @NotNull List<? extends GuiEventListener> children() {
 			return List.of(resetButtonWidget);
 		}
 
 		@Override
-		public @NonNull List<? extends NarratableEntry> narratables() {
+		public @NotNull List<? extends NarratableEntry> narratables() {
 			return List.of(resetButtonWidget);
 		}
 

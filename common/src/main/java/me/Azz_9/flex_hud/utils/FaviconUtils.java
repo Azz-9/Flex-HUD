@@ -8,7 +8,7 @@ import com.mojang.blaze3d.platform.NativeImage;
 
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -16,7 +16,7 @@ import java.io.InputStream;
 import me.Azz_9.flex_hud.FlexHudLogger;
 
 public class FaviconUtils {
-	private static Identifier currentServerFavicon = null;
+	private static ResourceLocation currentServerFavicon = null;
 
 	public static void registerServerIcon(byte[] faviconBytes) {
 		DynamicTexture texture = createTextureFromBytes(faviconBytes);
@@ -26,7 +26,7 @@ public class FaviconUtils {
 		}
 
 		TextureManager textureManager = MINECRAFT.getTextureManager();
-		currentServerFavicon = Identifier.fromNamespaceAndPath(MOD_ID, "server_icon");
+		currentServerFavicon = ResourceLocation.fromNamespaceAndPath(MOD_ID, "server_icon");
 
 		textureManager.register(currentServerFavicon, texture);
 	}
@@ -44,7 +44,7 @@ public class FaviconUtils {
 		}
 	}
 
-	public static Identifier getCurrentServerFavicon() {
+	public static ResourceLocation getCurrentServerFavicon() {
 		return currentServerFavicon;
 	}
 }

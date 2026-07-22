@@ -1,11 +1,11 @@
 package me.Azz_9.flex_hud.client.modules.customModules.token;
 
-import org.jspecify.annotations.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 record TextToken(String text) implements Token {
 
 	@Override
-	public @NonNull String getString() {
+	public @NotNull String getString() {
 		return text;
 	}
 }

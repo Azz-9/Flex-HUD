@@ -31,7 +31,7 @@ public abstract class BossHealthOverlayMixin {
 		if (Modules.getInstance().isEnabled.getValue()
 				&& bossBar.enabled.getValue()
 				&& (!bossBar.showBossBar.getValue()
-				|| bossBar.hideInF3.getValue() && MINECRAFT.debugEntries.isOverlayVisible())) {
+				|| bossBar.hideInF3.getValue() && MINECRAFT.debugEntries.isF3Visible())) {
 			ci.cancel();
 		}
 	}

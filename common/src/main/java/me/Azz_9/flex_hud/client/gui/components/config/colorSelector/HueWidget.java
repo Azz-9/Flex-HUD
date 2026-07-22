@@ -9,19 +9,19 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
-import org.jspecify.annotations.NonNull;
 import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
 
 import me.Azz_9.flex_hud.client.gui.Cursors;
 
-public class HueWidget extends AbstractWidget.WithInactiveMessage {
+public class HueWidget extends AbstractWidget {
 
-	private static final Identifier CURSOR = Identifier.fromNamespaceAndPath(MOD_ID, "widget/color_selector/hue_cursor");
+	private static final ResourceLocation CURSOR = ResourceLocation.fromNamespaceAndPath(MOD_ID, "widget/color_selector/hue_cursor");
 
 	private float selectedHue;
 	private double cursorY;
@@ -36,7 +36,7 @@ public class HueWidget extends AbstractWidget.WithInactiveMessage {
 	}
 
 	@Override
-	protected void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
+	protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (this.isActive() && this.isHovered()) {
 			graphics.requestCursor(Cursors.POINTING_HAND);
 		}
@@ -76,7 +76,7 @@ public class HueWidget extends AbstractWidget.WithInactiveMessage {
 	}
 
 	@Override
-	public boolean mouseDragged(@NonNull MouseButtonEvent click, double offsetX, double offsetY) {
+	public boolean mouseDragged(@NotNull MouseButtonEvent click, double offsetX, double offsetY) {
 		if (isDraggingCursor) {
 			return super.mouseDragged(click, offsetX, offsetY);
 		}
@@ -89,7 +89,7 @@ public class HueWidget extends AbstractWidget.WithInactiveMessage {
 	}
 
 	@Override
-	public boolean mouseReleased(@NonNull MouseButtonEvent click) {
+	public boolean mouseReleased(@NotNull MouseButtonEvent click) {
 		if (isDraggingCursor) {
 			return super.mouseReleased(click);
 		}
@@ -97,7 +97,7 @@ public class HueWidget extends AbstractWidget.WithInactiveMessage {
 	}
 
 	@Override
-	public void onRelease(@NonNull MouseButtonEvent click) {
+	public void onRelease(@NotNull MouseButtonEvent click) {
 		long window = MINECRAFT.getWindow().handle();
 		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
 		isDraggingCursor = false;
@@ -129,6 +129,6 @@ public class HueWidget extends AbstractWidget.WithInactiveMessage {
 	}
 
 	@Override
-	protected void updateWidgetNarration(@NonNull NarrationElementOutput output) {
+	protected void updateWidgetNarration(@NotNull NarrationElementOutput output) {
 	}
 }

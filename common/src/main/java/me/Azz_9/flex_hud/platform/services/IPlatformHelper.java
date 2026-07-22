@@ -4,7 +4,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 
 import org.jetbrains.annotations.NotNull;
@@ -55,17 +55,17 @@ public interface IPlatformHelper {
 
 	void registerDisconnectEvent(@NotNull Runnable runnable);
 
-	void registerHudElement(@NotNull Identifier beforeThis, @NotNull Identifier identifier, @NotNull BiConsumer<GuiGraphics, DeltaTracker> hudElement);
+	void registerHudElement(@NotNull ResourceLocation beforeThis, @NotNull ResourceLocation location, @NotNull BiConsumer<GuiGraphics, DeltaTracker> hudElement);
 
-	void registerReloadListener(@NotNull Identifier id, @NotNull PreparableReloadListener listener);
+	void registerReloadListener(@NotNull ResourceLocation location, @NotNull PreparableReloadListener listener);
 
-	@NotNull Identifier getChatIdentifier();
+	@NotNull ResourceLocation getChatLocation();
 
-	@NotNull Identifier getBossBarIdentifier();
+	@NotNull ResourceLocation getBossBarLocation();
 
-	@NotNull Identifier getCrosshairIdentifier();
+	@NotNull ResourceLocation getCrosshairLocation();
 
-	@NotNull Identifier getScoreboardIdentifier();
+	@NotNull ResourceLocation getScoreboardLocation();
 
 	@NotNull KeyMapping registerKeyMapping(@NotNull KeyMapping keyMapping);
 

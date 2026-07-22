@@ -15,8 +15,7 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
-import net.minecraft.util.Ease;
+import net.minecraft.resources.ResourceLocation;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
@@ -29,12 +28,13 @@ import me.Azz_9.flex_hud.client.config.ConfigLoader;
 import me.Azz_9.flex_hud.client.gui.Colors;
 import me.Azz_9.flex_hud.client.gui.components.DynamicSpriteIconButton;
 import me.Azz_9.flex_hud.client.modules.Modules;
+import me.Azz_9.flex_hud.utils.Ease;
 
 public class OptionsScreen extends AbstractBackNavigableScreen {
-	private static final Identifier ENABLED_SPRITE = Identifier.fromNamespaceAndPath(MOD_ID, "icon/options_screen/enabled");
-	private static final Identifier DISABLED_SPRITE = Identifier.fromNamespaceAndPath(MOD_ID, "icon/options_screen/disabled");
-	private static final Identifier EDIT_LAYOUT_SPRITE = Identifier.fromNamespaceAndPath(MOD_ID, "icon/options_screen/edit_layout");
-	private static final Identifier LOGO_WITHOUT_BG = Identifier.fromNamespaceAndPath(MOD_ID, "icon/logo_without_bg");
+	private static final ResourceLocation ENABLED_SPRITE = ResourceLocation.fromNamespaceAndPath(MOD_ID, "icon/options_screen/enabled");
+	private static final ResourceLocation DISABLED_SPRITE = ResourceLocation.fromNamespaceAndPath(MOD_ID, "icon/options_screen/disabled");
+	private static final ResourceLocation EDIT_LAYOUT_SPRITE = ResourceLocation.fromNamespaceAndPath(MOD_ID, "icon/options_screen/edit_layout");
+	private static final ResourceLocation LOGO_WITHOUT_BG = ResourceLocation.fromNamespaceAndPath(MOD_ID, "icon/logo_without_bg");
 
 	private static final int SQUARE_BUTTONS_SIZE = 20;
 	private static final int BUTTON_GAP = 20;

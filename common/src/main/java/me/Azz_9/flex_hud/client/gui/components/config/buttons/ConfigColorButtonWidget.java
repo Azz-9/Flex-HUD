@@ -8,10 +8,9 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
-import net.minecraft.util.Ease;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -24,8 +23,10 @@ import me.Azz_9.flex_hud.client.gui.components.config.DataGetter;
 import me.Azz_9.flex_hud.client.gui.components.config.Observer;
 import me.Azz_9.flex_hud.client.gui.components.config.ResetAware;
 import me.Azz_9.flex_hud.client.gui.components.config.colorSelector.ColorBindable;
+import me.Azz_9.flex_hud.utils.DrawingUtils;
+import me.Azz_9.flex_hud.utils.Ease;
 
-public class ConfigColorButtonWidget extends AbstractWidget.WithInactiveMessage implements TrackableChange, DataGetter<Integer>, ResetAware, ColorBindable {
+public class ConfigColorButtonWidget extends AbstractWidget implements TrackableChange, DataGetter<Integer>, ResetAware, ColorBindable {
 	private final ConfigInteger variable;
 	private final int INITIAL_COLOR;
 	private final List<Observer> observers;
@@ -57,7 +58,7 @@ public class ConfigColorButtonWidget extends AbstractWidget.WithInactiveMessage 
 	}
 
 	@Override
-	protected void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
+	protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 
 		if (this.active) {
 			if (this.isHovered()) graphics.requestCursor(Cursors.POINTING_HAND);
@@ -65,9 +66,9 @@ public class ConfigColorButtonWidget extends AbstractWidget.WithInactiveMessage 
 			drawHover(graphics);
 
 			if (this.isHoveredOrFocused()) {
-				graphics.renderOutline(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+				DrawingUtils.drawBorder(graphics, getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
 			}
-			graphics.renderOutline(getRight() - getHeight(), getY(), getHeight(), getHeight(), (this.isHovered() ? 0xffd0d0d0 : 0xff404040));
+			DrawingUtils.drawBorder(graphics, getRight() - getHeight(), getY(), getHeight(), getHeight(), (this.isHovered() ? 0xffd0d0d0 : 0xff404040));
 		}
 		graphics.fill(getRight() - getHeight() + 1, getY() + 1, getRight() - 1, getBottom() - 1, variable.getValue() | 0xff000000);
 
@@ -118,7 +119,7 @@ public class ConfigColorButtonWidget extends AbstractWidget.WithInactiveMessage 
 	}
 
 	@Override
-	public void onClick(@NonNull MouseButtonEvent click, boolean bl) {
+	public void onClick(@NotNull MouseButtonEvent click, boolean bl) {
 		onClickAction.accept(this);
 	}
 
@@ -175,7 +176,7 @@ public class ConfigColorButtonWidget extends AbstractWidget.WithInactiveMessage 
 	}
 
 	@Override
-	protected void updateWidgetNarration(@NonNull NarrationElementOutput output) {
+	protected void updateWidgetNarration(@NotNull NarrationElementOutput output) {
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.gui.components.customModule;
 
+import com.mojang.blaze3d.platform.cursor.CursorTypes;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -11,7 +13,7 @@ import java.util.function.Consumer;
 
 import me.Azz_9.flex_hud.client.modules.customModules.Variable;
 
-public class ClickableVariableWidget extends AbstractWidget.WithInactiveMessage {
+public class ClickableVariableWidget extends AbstractWidget {
 
 	private final Variable<?> variable;
 	private final VariableWidget variableWidget;
@@ -56,7 +58,9 @@ public class ClickableVariableWidget extends AbstractWidget.WithInactiveMessage 
 	@Override
 	protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		variableWidget.render(graphics, mouseX, mouseY, deltaTicks);
-		handleCursor(graphics);
+		if (this.isHovered()) {
+			graphics.requestCursor(this.isActive() ? CursorTypes.POINTING_HAND : CursorTypes.NOT_ALLOWED);
+		}
 	}
 
 	@Override

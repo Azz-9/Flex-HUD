@@ -8,8 +8,8 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.network.chat.Component;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,19 +69,19 @@ public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 	}
 
 	@Override
-	public void renderContent(@NonNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+	public void renderContent(@NotNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
 		super.renderContent(graphics, mouseX, mouseY, hovered, deltaTicks);
 
 		colorButtonWidget.render(graphics, mouseX, mouseY, deltaTicks);
 	}
 
 	@Override
-	public @NonNull List<? extends NarratableEntry> narratables() {
+	public @NotNull List<? extends NarratableEntry> narratables() {
 		return List.of(colorButtonWidget, resetButtonWidget);
 	}
 
 	@Override
-	public @NonNull List<? extends GuiEventListener> children() {
+	public @NotNull List<? extends GuiEventListener> children() {
 		return List.of(colorButtonWidget, resetButtonWidget);
 	}
 

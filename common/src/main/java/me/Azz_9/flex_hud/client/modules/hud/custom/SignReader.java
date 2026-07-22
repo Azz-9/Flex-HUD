@@ -13,7 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
@@ -207,7 +207,7 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 	private @NotNull RenderData getPlaceholderRenderData() {
 		RenderData data = new RenderData();
 
-		data.texture = Identifier.withDefaultNamespace("textures/gui/signs/" + WoodType.OAK.name() + ".png");
+		data.texture = ResourceLocation.withDefaultNamespace("textures/gui/signs/" + WoodType.OAK.name() + ".png");
 		data.content = new Component[]{
 				Component.literal(""),
 				Component.translatable("flex_hud.sign_reader.placeholder_content"),
@@ -276,15 +276,15 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 		data.glowColor = AbstractSignRenderer.getDarkColor(signText);
 		data.isGlowing = signText.hasGlowingText();
 		data.texture = data.isHangingSign
-				? Identifier.withDefaultNamespace("textures/gui/hanging_signs/" + woodType.name() + ".png")
-				: Identifier.withDefaultNamespace("textures/gui/signs/" + woodType.name() + ".png");
+				? ResourceLocation.withDefaultNamespace("textures/gui/hanging_signs/" + woodType.name() + ".png")
+				: ResourceLocation.withDefaultNamespace("textures/gui/signs/" + woodType.name() + ".png");
 
 		return data;
 	}
 
 	private static class RenderData {
 		@Nullable
-		Identifier texture = null;
+		ResourceLocation texture = null;
 		boolean playerFacingFront;
 		@NotNull
 		Component[] content = new Component[0];
