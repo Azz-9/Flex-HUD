@@ -47,6 +47,13 @@ loom {
 			ideConfigGenerated(true)
 			runDir('runs/client')
 		}
+		mobHeadAudit {
+			client()
+			setConfigName('Fabric Mob Head Audit')
+			ideConfigGenerated(true)
+			runDir('runs/client')
+			vmArg('-Dflex_hud.auditMobHeads=true')
+		}
 	}
 }
 

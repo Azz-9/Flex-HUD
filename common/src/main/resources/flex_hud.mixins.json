@@ -16,6 +16,7 @@
 		"GuiMixin",
 		"KeyboardHandlerMixin",
 		"KeyMappingAccessor",
+		"LocatorBarRendererAccessor",
 		"LocatorBarRendererMixin",
 		"MinecraftMixin",
 		"MouseHandlerMixin",
