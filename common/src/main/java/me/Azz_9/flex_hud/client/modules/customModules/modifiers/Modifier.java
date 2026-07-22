@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.client.modules.customModules.modifiers;
 
 import net.minecraft.network.chat.Component;
 
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;

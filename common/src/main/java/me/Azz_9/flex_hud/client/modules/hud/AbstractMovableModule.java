@@ -3,7 +3,6 @@ package me.Azz_9.flex_hud.client.modules.hud;
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
 import org.jetbrains.annotations.NotNull;
-import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +23,7 @@ public abstract class AbstractMovableModule extends AbstractModule implements Hu
 	protected final @NotNull ConfigEnum<AnchorMode> anchorModeX = new ConfigEnum<>(AbstractMovableModule.AnchorMode.class, AbstractMovableModule.AnchorMode.AUTO, "flex_hud.global.config.anchor_mode_x");
 	protected final @NotNull ConfigEnum<AnchorMode> anchorModeY = new ConfigEnum<>(AbstractMovableModule.AnchorMode.class, AbstractMovableModule.AnchorMode.AUTO, "flex_hud.global.config.anchor_mode_y");
 
-	public AbstractMovableModule(@NonNull String id, double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
+	public AbstractMovableModule(@NotNull String id, double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super(id);
 		dimensionHudList.add(new DimensionHud(defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY));
 
@@ -37,7 +36,7 @@ public abstract class AbstractMovableModule extends AbstractModule implements Hu
 
 	@Override
 	public boolean shouldNotRender() {
-		return !Modules.getInstance().isEnabled.getValue() || !this.enabled.getValue() || (!CommonClass.isEditingLayout && this.hideInF3.getValue() && MINECRAFT.debugEntries.isOverlayVisible());
+		return !Modules.getInstance().isEnabled.getValue() || !this.enabled.getValue() || (!CommonClass.isEditingLayout && this.hideInF3.getValue() && MINECRAFT.debugEntries.isF3Visible());
 	}
 
 	public boolean shouldShowInEditLayoutScreen() {

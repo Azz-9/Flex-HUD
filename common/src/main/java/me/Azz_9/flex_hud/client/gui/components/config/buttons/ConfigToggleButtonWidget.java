@@ -11,12 +11,11 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
-import net.minecraft.util.Ease;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.Objects;
@@ -28,12 +27,14 @@ import me.Azz_9.flex_hud.client.gui.components.TrackableChange;
 import me.Azz_9.flex_hud.client.gui.components.config.DataGetter;
 import me.Azz_9.flex_hud.client.gui.components.config.Observer;
 import me.Azz_9.flex_hud.client.gui.components.config.ResetAware;
+import me.Azz_9.flex_hud.utils.DrawingUtils;
+import me.Azz_9.flex_hud.utils.Ease;
 
 public class ConfigToggleButtonWidget extends Button implements TrackableChange, DataGetter<Boolean>, ResetAware {
-	private static final Identifier UNFOCUSED_ENABLED_SPRITE = Identifier.fromNamespaceAndPath(MOD_ID, "widget/toggle/unfocused_enabled");
-	private static final Identifier UNFOCUSED_DISABLED_SPRITE = Identifier.fromNamespaceAndPath(MOD_ID, "widget/toggle/unfocused_disabled");
-	private static final Identifier FOCUSED_ENABLED_SPRITE = Identifier.fromNamespaceAndPath(MOD_ID, "widget/toggle/focused_enabled");
-	private static final Identifier FOCUSED_DISABLED_SPRITE = Identifier.fromNamespaceAndPath(MOD_ID, "widget/toggle/focused_disabled");
+	private static final ResourceLocation UNFOCUSED_ENABLED_SPRITE = ResourceLocation.fromNamespaceAndPath(MOD_ID, "widget/toggle/unfocused_enabled");
+	private static final ResourceLocation UNFOCUSED_DISABLED_SPRITE = ResourceLocation.fromNamespaceAndPath(MOD_ID, "widget/toggle/unfocused_disabled");
+	private static final ResourceLocation FOCUSED_ENABLED_SPRITE = ResourceLocation.fromNamespaceAndPath(MOD_ID, "widget/toggle/focused_enabled");
+	private static final ResourceLocation FOCUSED_DISABLED_SPRITE = ResourceLocation.fromNamespaceAndPath(MOD_ID, "widget/toggle/focused_disabled");
 
 	private final ConfigBoolean variable;
 	private final boolean INITIAL_STATE;
@@ -69,14 +70,14 @@ public class ConfigToggleButtonWidget extends Button implements TrackableChange,
 	}
 
 	@Override
-	public void renderContents(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+	public void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
 		if (this.active) {
 			if (this.isHovered()) graphics.requestCursor(Cursors.POINTING_HAND);
 
 			drawHover(graphics);
 
 			if (this.isHoveredOrFocused()) {
-				graphics.renderOutline(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
+				DrawingUtils.drawBorder(graphics, getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
 			}
 		}
 
@@ -131,7 +132,7 @@ public class ConfigToggleButtonWidget extends Button implements TrackableChange,
 	}
 
 	@Override
-	public void onClick(@NonNull MouseButtonEvent click, boolean bl) {
+	public void onClick(@NotNull MouseButtonEvent click, boolean bl) {
 		onClickAction();
 	}
 

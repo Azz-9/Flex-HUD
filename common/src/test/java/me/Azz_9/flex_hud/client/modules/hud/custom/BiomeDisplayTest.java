@@ -38,7 +38,7 @@ public class BiomeDisplayTest {
 				missingBiomes.isEmpty(),
 				() -> "Missing colors for biomes:\n" +
 						missingBiomes.stream()
-								.map(biome -> "- " + biome.identifier().getPath())
+								.map(biome -> "- " + biome.location().getPath())
 								.sorted()
 								.collect(Collectors.joining("\n")) + "\n"
 		);

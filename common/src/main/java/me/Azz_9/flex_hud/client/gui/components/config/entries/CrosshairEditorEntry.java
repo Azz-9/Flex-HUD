@@ -9,7 +9,6 @@ import net.minecraft.network.chat.Component;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +72,7 @@ public class CrosshairEditorEntry extends ScrollableConfigList.AbstractConfigEnt
 	}
 
 	@Override
-	public void renderContent(@NonNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+	public void renderContent(@NotNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
 		super.renderContent(graphics, mouseX, mouseY, hovered, deltaTicks);
 
 		crosshairButtonWidget.render(graphics, mouseX, mouseY, deltaTicks);
@@ -121,12 +120,12 @@ public class CrosshairEditorEntry extends ScrollableConfigList.AbstractConfigEnt
 	}
 
 	@Override
-	public @NonNull List<? extends NarratableEntry> narratables() {
+	public @NotNull List<? extends NarratableEntry> narratables() {
 		return List.of(crosshairButtonWidget, resetButtonWidget);
 	}
 
 	@Override
-	public @NonNull List<? extends GuiEventListener> children() {
+	public @NotNull List<? extends GuiEventListener> children() {
 		return List.of(crosshairButtonWidget, resetButtonWidget);
 	}
 

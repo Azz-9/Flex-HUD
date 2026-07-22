@@ -8,8 +8,8 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.Objects;
@@ -22,6 +22,7 @@ import me.Azz_9.flex_hud.client.gui.components.TrackableChange;
 import me.Azz_9.flex_hud.client.gui.components.config.DataGetter;
 import me.Azz_9.flex_hud.client.gui.components.config.Observer;
 import me.Azz_9.flex_hud.client.gui.components.config.ResetAware;
+import me.Azz_9.flex_hud.utils.DrawingUtils;
 
 public class ConfigIntFieldWidget extends CustomEditBox implements TrackableChange, DataGetter<Integer>, ResetAware {
 
@@ -86,10 +87,10 @@ public class ConfigIntFieldWidget extends CustomEditBox implements TrackableChan
 	}
 
 	@Override
-	public void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
+	public void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (this.active) {
 			if (this.isHoveredOrFocused()) {
-				graphics.renderOutline(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, Colors.WHITE);
+				DrawingUtils.drawBorder(graphics, getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, Colors.WHITE);
 			}
 		}
 		super.renderWidget(graphics, mouseX, mouseY, deltaTicks);

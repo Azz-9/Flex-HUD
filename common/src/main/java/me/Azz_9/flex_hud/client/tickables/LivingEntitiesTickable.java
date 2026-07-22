@@ -8,21 +8,21 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.TamableAnimal;
-import net.minecraft.world.entity.animal.equine.AbstractHorse;
-import net.minecraft.world.entity.animal.equine.TraderLlama;
-import net.minecraft.world.entity.animal.feline.Cat;
-import net.minecraft.world.entity.animal.golem.SnowGolem;
-import net.minecraft.world.entity.animal.parrot.Parrot;
+import net.minecraft.world.entity.animal.Cat;
+import net.minecraft.world.entity.animal.Parrot;
+import net.minecraft.world.entity.animal.SnowGolem;
+import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.animal.horse.TraderLlama;
 import net.minecraft.world.entity.animal.wolf.Wolf;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.phys.Vec3;
 
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +74,7 @@ public class LivingEntitiesTickable implements Tickable {
 					continue;
 				}
 
-				Identifier id = getMobHeadTexture(mob);
+				ResourceLocation id = getMobHeadTexture(mob);
 
 				// if the texture is not found, skip this entity
 				if (id == null || MINECRAFT.getResourceManager().getResource(id).isEmpty()) {
@@ -102,17 +102,17 @@ public class LivingEntitiesTickable implements Tickable {
 	}
 
 	@Nullable
-	private Identifier getMobHeadTexture(Mob mob) {
-		Identifier id = null;
+	private ResourceLocation getMobHeadTexture(Mob mob) {
+		ResourceLocation id = null;
 		switch (mob) {
 			case EnderDragon enderDragonEntity ->
-					id = Identifier.fromNamespaceAndPath(MOD_ID, "hud/living_entities/minecraft/enderdragon/dragon");
+					id = ResourceLocation.fromNamespaceAndPath(MOD_ID, "hud/living_entities/minecraft/enderdragon/dragon");
 			case SnowGolem snowGolemEntity -> {
 				String path = "hud/living_entities/minecraft/snow_golem/snow_golem";
 				if (!snowGolemEntity.hasPumpkin())
 					path += "_pumpkinless";
 
-				id = Identifier.fromNamespaceAndPath(MOD_ID, path);
+				id = ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
 			}
 			case TraderLlama traderLlamaEntity -> {
 				String path = "hud/living_entities/minecraft/llama/trader/llama_" + traderLlamaEntity.getVariant().getSerializedName();
@@ -120,7 +120,7 @@ public class LivingEntitiesTickable implements Tickable {
 				if (traderLlamaEntity.isBaby())
 					path += "_baby";
 
-				id = Identifier.fromNamespaceAndPath(MOD_ID, path);
+				id = ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
 			}
 			default -> {
 
@@ -135,8 +135,8 @@ public class LivingEntitiesTickable implements Tickable {
 
 						LivingEntityRenderState state = casted.createRenderState(mob, 0);
 
-						Identifier minecraft_id = casted.getTextureLocation(state);
-						id = Identifier.fromNamespaceAndPath(MOD_ID, "hud/living_entities/" + minecraft_id.getNamespace() + minecraft_id.getPath().replace("textures/entity", ""));
+						ResourceLocation minecraft_id = casted.getTextureLocation(state);
+						id = ResourceLocation.fromNamespaceAndPath(MOD_ID, "hud/living_entities/" + minecraft_id.getNamespace() + minecraft_id.getPath().replace("textures/entity", ""));
 
 					} catch (Exception ignored) {
 					}
@@ -159,6 +159,6 @@ public class LivingEntitiesTickable implements Tickable {
 		return petsEntitiesTextures;
 	}
 
-	public record EntityTexture(Identifier texture, LivingEntity entity) {
+	public record EntityTexture(ResourceLocation texture, LivingEntity entity) {
 	}
 }

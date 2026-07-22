@@ -63,10 +63,10 @@ public class JourneyMapWaypointCollector extends Collector<Compass.JourneyMapWay
 						pos.getZ(),
 						color,
 						!wp.isEnabled(),
-						wp.getIconIdentifier(),
+						wp.getIconResourceLocation(),
 						wp.getIconTextureWidth(),
 						wp.getIconTextureHeight(),
-						wp.getDimensions().contains(MINECRAFT.level.dimension().identifier().toString())
+						wp.getDimensions().contains(MINECRAFT.level.dimension().location().toString())
 				));
 			}
 		} catch (Throwable ignored) {

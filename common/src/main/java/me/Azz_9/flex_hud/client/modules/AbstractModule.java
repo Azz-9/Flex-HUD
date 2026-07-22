@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.client.modules;
 
-import org.jspecify.annotations.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import me.Azz_9.flex_hud.client.config.ConfigRegistry;
 import me.Azz_9.flex_hud.client.config.Configurable;
@@ -8,9 +8,9 @@ import me.Azz_9.flex_hud.client.config.option.ConfigBoolean;
 
 public abstract class AbstractModule implements Configurable {
 	public ConfigBoolean enabled;
-	private @NonNull String id;
+	private @NotNull String id;
 
-	public AbstractModule(@NonNull String id) {
+	public AbstractModule(@NotNull String id) {
 		this.enabled = new ConfigBoolean(false, "flex_hud.global.config.enabled");
 		this.id = id;
 
@@ -31,7 +31,7 @@ public abstract class AbstractModule implements Configurable {
 		return id;
 	}
 
-	public void setId(@NonNull String id) {
+	public void setId(@NotNull String id) {
 		this.id = id;
 	}
 

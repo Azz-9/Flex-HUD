@@ -16,6 +16,7 @@ import java.util.function.Consumer;
 import me.Azz_9.flex_hud.client.modules.customModules.Variable;
 import me.Azz_9.flex_hud.mixin.GuiGraphicsAccessor;
 import me.Azz_9.flex_hud.platform.Services;
+import me.Azz_9.flex_hud.utils.DrawingUtils;
 
 public class VariableWidget implements Renderable, LayoutElement {
 
@@ -74,7 +75,7 @@ public class VariableWidget implements Renderable, LayoutElement {
 		}
 
 		graphics.fill(getX(), getY(), getRight(), getBottom(), BG_COLOR);
-		graphics.renderOutline(getX(), getY(), getWidth(), getHeight(), BORDER_COLOR);
+		DrawingUtils.drawBorder(graphics, getX(), getY(), getWidth(), getHeight(), BORDER_COLOR);
 
 		graphics.drawString(
 				MINECRAFT.font,

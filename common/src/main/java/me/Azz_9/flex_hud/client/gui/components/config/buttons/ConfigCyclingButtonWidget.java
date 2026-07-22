@@ -9,8 +9,8 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.function.Function;
@@ -45,9 +45,8 @@ public class ConfigCyclingButtonWidget<T, E extends Enum<E> & Translatable> exte
 	}
 
 	@Override
-	protected void renderContents(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
-		super.renderDefaultSprite(graphics);
-		super.renderDefaultLabel(graphics.textRenderer());
+	protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
+		super.renderWidget(graphics, mouseX, mouseY, deltaTicks);
 
 		if (!this.active) {
 			graphics.fill(getX(), getY(), getRight(), getBottom(), 0xcf4e4e4e);
@@ -55,7 +54,7 @@ public class ConfigCyclingButtonWidget<T, E extends Enum<E> & Translatable> exte
 	}
 
 	@Override
-	public void onClick(@NonNull MouseButtonEvent click, boolean bl) {
+	public void onClick(@NotNull MouseButtonEvent click, boolean bl) {
 		super.onClick(click, bl);
 
 		// shift click to go backward

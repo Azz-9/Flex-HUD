@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.client.modules.customModules.token;
 
-import org.jspecify.annotations.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.function.Function;
@@ -16,7 +16,7 @@ record VariableToken<T>(Variable<T> variable, List<Modifiers.ResolvedModifier<?,
 	}
 
 	@Override
-	public @NonNull String getString() {
+	public @NotNull String getString() {
 		return formatter.apply(variable.getValue());
 	}
 }

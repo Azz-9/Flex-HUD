@@ -71,7 +71,7 @@ public class NetherCoordinates extends AbstractTextModule {
 				x = (int) Math.floor(player.getX());
 				z = (int) Math.floor(player.getZ());
 
-				dimension = StringUtils.capitalize(player.level().dimension().identifier().getPath());
+				dimension = StringUtils.capitalize(player.level().dimension().location().getPath());
 			}
 		}
 

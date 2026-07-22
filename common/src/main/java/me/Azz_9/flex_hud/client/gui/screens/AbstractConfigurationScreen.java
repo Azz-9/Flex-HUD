@@ -11,7 +11,6 @@ import net.minecraft.network.chat.Component;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
 
 import me.Azz_9.flex_hud.client.config.ConfigLoader;
 import me.Azz_9.flex_hud.client.gui.Colors;
@@ -100,14 +99,14 @@ public abstract class AbstractConfigurationScreen extends AbstractSavableScreen 
 	}
 
 	@Override
-	public void renderBackground(@NonNull GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
+	public void renderBackground(@NotNull GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
 		if (MINECRAFT.level == null) {
 			super.renderBackground(context, mouseX, mouseY, deltaTicks);
 		}
 	}
 
 	@Override
-	public boolean mouseClicked(@NonNull MouseButtonEvent click, boolean doubled) {
+	public boolean mouseClicked(@NotNull MouseButtonEvent click, boolean doubled) {
 		if (colorSelector != null && colorSelector.isFocused()) {
 			if (colorSelector.mouseClicked(click, doubled)) {
 				return true;
@@ -121,7 +120,7 @@ public abstract class AbstractConfigurationScreen extends AbstractSavableScreen 
 	}
 
 	@Override
-	public boolean mouseReleased(@NonNull MouseButtonEvent click) {
+	public boolean mouseReleased(@NotNull MouseButtonEvent click) {
 		if (colorSelector != null && colorSelector.isFocused()) {
 			if (colorSelector.mouseReleased(click)) {
 				return true;
@@ -131,7 +130,7 @@ public abstract class AbstractConfigurationScreen extends AbstractSavableScreen 
 	}
 
 	@Override
-	public boolean mouseDragged(@NonNull MouseButtonEvent click, double offsetX, double offsetY) {
+	public boolean mouseDragged(@NotNull MouseButtonEvent click, double offsetX, double offsetY) {
 		if (colorSelector != null && colorSelector.isFocused() && colorSelector.isDraggingACursor()) {
 			if (colorSelector.mouseDragged(click, offsetX, offsetY)) {
 				return true;
@@ -141,7 +140,7 @@ public abstract class AbstractConfigurationScreen extends AbstractSavableScreen 
 	}
 
 	@Override
-	public boolean keyPressed(@NonNull KeyEvent input) {
+	public boolean keyPressed(@NotNull KeyEvent input) {
 		if (colorSelector != null && colorSelector.isFocused()) {
 			if (colorSelector.keyPressed(input)) {
 				return true;
@@ -151,7 +150,7 @@ public abstract class AbstractConfigurationScreen extends AbstractSavableScreen 
 	}
 
 	@Override
-	public boolean charTyped(@NonNull CharacterEvent input) {
+	public boolean charTyped(@NotNull CharacterEvent input) {
 		if (colorSelector != null && colorSelector.isFocused()) {
 			if (colorSelector.charTyped(input)) {
 				return true;

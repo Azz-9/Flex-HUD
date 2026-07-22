@@ -10,7 +10,6 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
 import org.jetbrains.annotations.NotNull;
-import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,7 +108,7 @@ public class EditLayoutScreen extends AbstractSavableScreen {
 	}
 
 	@Override
-	public boolean mouseClicked(@NonNull MouseButtonEvent click, boolean doubled) {
+	public boolean mouseClicked(@NotNull MouseButtonEvent click, boolean doubled) {
 		helpWidget.handleOutsideClick(click, doubled);
 		return super.mouseClicked(click, doubled);
 	}

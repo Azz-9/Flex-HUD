@@ -10,7 +10,7 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -27,13 +27,13 @@ import me.Azz_9.flex_hud.client.modules.hud.AbstractBackgroundModule;
 public class WeatherDisplay extends AbstractBackgroundModule {
 
 	private static final int SPRITE_SIZE = 16;
-	private static final Identifier DAY_CLEAR = Identifier.fromNamespaceAndPath(MOD_ID, "hud/weather_icons/day_clear");
-	private static final Identifier DAY_RAINY = Identifier.fromNamespaceAndPath(MOD_ID, "hud/weather_icons/day_rainy");
-	private static final Identifier DAY_THUNDER = Identifier.fromNamespaceAndPath(MOD_ID, "hud/weather_icons/day_thunder");
-	private static final Identifier NIGHT_CLEAR = Identifier.fromNamespaceAndPath(MOD_ID, "hud/weather_icons/night_clear");
-	private static final Identifier NIGHT_RAINY = Identifier.fromNamespaceAndPath(MOD_ID, "hud/weather_icons/night_rainy");
-	private static final Identifier NIGHT_THUNDER = Identifier.fromNamespaceAndPath(MOD_ID, "hud/weather_icons/night_thunder");
-	private static final Identifier DEFAULT = DAY_CLEAR;
+	private static final ResourceLocation DAY_CLEAR = ResourceLocation.fromNamespaceAndPath(MOD_ID, "hud/weather_icons/day_clear");
+	private static final ResourceLocation DAY_RAINY = ResourceLocation.fromNamespaceAndPath(MOD_ID, "hud/weather_icons/day_rainy");
+	private static final ResourceLocation DAY_THUNDER = ResourceLocation.fromNamespaceAndPath(MOD_ID, "hud/weather_icons/day_thunder");
+	private static final ResourceLocation NIGHT_CLEAR = ResourceLocation.fromNamespaceAndPath(MOD_ID, "hud/weather_icons/night_clear");
+	private static final ResourceLocation NIGHT_RAINY = ResourceLocation.fromNamespaceAndPath(MOD_ID, "hud/weather_icons/night_rainy");
+	private static final ResourceLocation NIGHT_THUNDER = ResourceLocation.fromNamespaceAndPath(MOD_ID, "hud/weather_icons/night_thunder");
+	private static final ResourceLocation DEFAULT = DAY_CLEAR;
 
 	public WeatherDisplay(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super("weather_display", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
@@ -81,7 +81,7 @@ public class WeatherDisplay extends AbstractBackgroundModule {
 		}
 	}
 
-	private static @NotNull Identifier getWeatherSprite() {
+	private static @NotNull ResourceLocation getWeatherSprite() {
 		if (CommonClass.isEditingLayout || MINECRAFT.level == null) {
 			return DEFAULT;
 		}

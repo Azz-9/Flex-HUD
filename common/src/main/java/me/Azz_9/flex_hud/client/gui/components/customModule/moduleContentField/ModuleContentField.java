@@ -17,10 +17,10 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import org.jetbrains.annotations.NotNull;
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -36,11 +36,12 @@ import me.Azz_9.flex_hud.client.modules.customModules.modifiers.Modifiers;
 import me.Azz_9.flex_hud.client.modules.customModules.text.CustomCondition;
 import me.Azz_9.flex_hud.client.tickables.ChromaColorTickable;
 import me.Azz_9.flex_hud.platform.Services;
+import me.Azz_9.flex_hud.utils.DrawingUtils;
 
 public class ModuleContentField extends AbstractWidget implements TrackableChange {
 
 	private static final WidgetSprites SPRITES = new WidgetSprites(
-			Identifier.withDefaultNamespace("widget/text_field"), Identifier.withDefaultNamespace("widget/text_field_highlighted")
+			ResourceLocation.withDefaultNamespace("widget/text_field"), ResourceLocation.withDefaultNamespace("widget/text_field_highlighted")
 	);
 
 	static final int TEXT_PADDING_X = 4;
@@ -143,7 +144,7 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 
 	@Override
 	protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
-		Identifier texture = SPRITES.get(this.isActive(), this.isFocused());
+		ResourceLocation texture = SPRITES.get(this.isActive(), this.isFocused());
 		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, texture, getX(), getY(), getWidth(), getHeight());
 
 		refreshOverlayLayout();
@@ -182,7 +183,6 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 		renderTooltip(graphics, mouseX, mouseY);
 	}
 
-	@Override
 	protected void handleCursor(@NotNull GuiGraphics graphics) {
 		if (this.isHovered()) {
 			if (!this.isActive()) {
@@ -214,7 +214,7 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 				boolean selected = isIndexSelected(conditionDisplayItem.modelIndex());
 				int backgroundColor = selected ? CONDITION_SELECTED_BG_COLOR : CONDITION_BG_COLOR;
 				graphics.fill(drawX, chipTop, drawX + conditionDisplayItem.width(), getDisplayItemBottom(conditionDisplayItem, contentTextY), backgroundColor);
-				graphics.renderOutline(drawX, chipTop, conditionDisplayItem.width(), conditionDisplayItem.height(), CONDITION_BORDER_COLOR);
+				DrawingUtils.drawBorder(graphics, drawX, chipTop, conditionDisplayItem.width(), conditionDisplayItem.height(), CONDITION_BORDER_COLOR);
 				graphics.drawString(MINECRAFT.font, conditionDisplayItem.displayText(), drawX + VARIABLE_PADDING_X, contentTextY, conditionDisplayItem.color(), false);
 				continue;
 			}
@@ -225,7 +225,7 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 			int backgroundColor = selected ? VARIABLE_SELECTED_BG_COLOR : VARIABLE_BG_COLOR;
 			int modifierBackgroundColor = selected ? MODIFIER_SELECTED_BG_COLOR : MODIFIER_BG_COLOR;
 			graphics.fill(drawX, chipTop, drawX + variableDisplayItem.width(), getDisplayItemBottom(variableDisplayItem, contentTextY), backgroundColor);
-			graphics.renderOutline(drawX, chipTop, variableDisplayItem.width(), variableDisplayItem.height(), VARIABLE_BORDER_COLOR);
+			DrawingUtils.drawBorder(graphics, drawX, chipTop, variableDisplayItem.width(), variableDisplayItem.height(), VARIABLE_BORDER_COLOR);
 
 			graphics.drawString(MINECRAFT.font, variableDisplayItem.name(), drawX + VARIABLE_PADDING_X, contentTextY, variableDisplayItem.color(), false);
 
@@ -684,15 +684,15 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 
 		switch (event.key()) {
 			case InputConstants.KEY_BACKSPACE -> {
-				erase(-1, event.hasControlDownWithQuirk());
+				erase(-1, event.hasControlDown());
 				return true;
 			}
 			case InputConstants.KEY_DELETE -> {
-				erase(1, event.hasControlDownWithQuirk());
+				erase(1, event.hasControlDown());
 				return true;
 			}
 			case InputConstants.KEY_LEFT -> {
-				if (event.hasControlDownWithQuirk()) {
+				if (event.hasControlDown()) {
 					setCaret(getWordSkipPosition(-1), event.hasShiftDown());
 				} else {
 					moveCaret(-1, event.hasShiftDown());
@@ -700,7 +700,7 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 				return true;
 			}
 			case InputConstants.KEY_RIGHT -> {
-				if (event.hasControlDownWithQuirk()) {
+				if (event.hasControlDown()) {
 					setCaret(getWordSkipPosition(1), event.hasShiftDown());
 				} else {
 					moveCaret(1, event.hasShiftDown());
@@ -1471,7 +1471,7 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 	void renderButtonCenterLabel(GuiGraphics graphics, Bounds bounds, Component label, int backgroundColor, int textColor, double mouseX, double mouseY) {
 		if (!label.getString().isEmpty()) {
 			graphics.fill(bounds.x(), bounds.y(), bounds.right(), bounds.bottom(), backgroundColor);
-			graphics.renderOutline(bounds.x(), bounds.y(), bounds.width(), bounds.height(), POPUP_BORDER);
+			DrawingUtils.drawBorder(graphics, bounds.x(), bounds.y(), bounds.width(), bounds.height(), POPUP_BORDER);
 			int textX = bounds.x() + (bounds.width() - MINECRAFT.font.width(label)) / 2;
 			int textY = centeredTextY(bounds.y(), bounds.height());
 			graphics.drawString(MINECRAFT.font, label, textX, textY, textColor, false);
@@ -1481,14 +1481,14 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 			}
 		} else {
 			graphics.fill(bounds.x(), bounds.y(), bounds.right(), bounds.bottom(), POPUP_BACKGROUND);
-			graphics.renderOutline(bounds.x(), bounds.y(), bounds.width(), bounds.height(), POPUP_BORDER);
+			DrawingUtils.drawBorder(graphics, bounds.x(), bounds.y(), bounds.width(), bounds.height(), POPUP_BORDER);
 		}
 	}
 
 	void renderButton(GuiGraphics graphics, Bounds bounds, Component label, int backgroundColor, int textColor, int padding, double mouseX, double mouseY) {
 		if (!label.getString().isEmpty()) {
 			graphics.fill(bounds.x(), bounds.y(), bounds.right(), bounds.bottom(), backgroundColor);
-			graphics.renderOutline(bounds.x(), bounds.y(), bounds.width(), bounds.height(), POPUP_BORDER);
+			DrawingUtils.drawBorder(graphics, bounds.x(), bounds.y(), bounds.width(), bounds.height(), POPUP_BORDER);
 			int textX = bounds.x() + padding;
 			int textY = centeredTextY(bounds.y(), bounds.height());
 			graphics.drawString(MINECRAFT.font, label, textX, textY, textColor, false);
@@ -1498,13 +1498,13 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 			}
 		} else {
 			graphics.fill(bounds.x(), bounds.y(), bounds.right(), bounds.bottom(), POPUP_BACKGROUND);
-			graphics.renderOutline(bounds.x(), bounds.y(), bounds.width(), bounds.height(), POPUP_BORDER);
+			DrawingUtils.drawBorder(graphics, bounds.x(), bounds.y(), bounds.width(), bounds.height(), POPUP_BORDER);
 		}
 	}
 
 	void renderPanel(GuiGraphics graphics, Bounds bounds) {
 		graphics.fill(bounds.x(), bounds.y(), bounds.right(), bounds.bottom(), POPUP_BACKGROUND);
-		graphics.renderOutline(bounds.x(), bounds.y(), bounds.width(), bounds.height(), POPUP_BORDER);
+		DrawingUtils.drawBorder(graphics, bounds.x(), bounds.y(), bounds.width(), bounds.height(), POPUP_BORDER);
 	}
 
 	int clampX(int x, int width) {

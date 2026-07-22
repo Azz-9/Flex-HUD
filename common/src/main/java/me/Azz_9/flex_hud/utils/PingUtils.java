@@ -1,8 +1,8 @@
 package me.Azz_9.flex_hud.utils;
 
+import net.minecraft.Util;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.ping.ServerboundPingRequestPacket;
-import net.minecraft.util.Util;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

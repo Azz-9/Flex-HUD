@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.client.modules.customModules.modifiers;
 
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.util.Objects;

@@ -6,7 +6,7 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.renderer.RenderPipelines;
 
-import org.jspecify.annotations.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -130,7 +130,7 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 		}
 
 		@Override
-		public void renderContent(@NonNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+		public void renderContent(@NotNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
 			int totalButtonWidth = scrollableModulesList.buttonWidth * scrollableModulesList.columns + scrollableModulesList.padding;
 			int buttonX = getX() + (getWidth() - totalButtonWidth) / scrollableModulesList.columns;
 			int iconX = buttonX + (scrollableModulesList.buttonWidth - scrollableModulesList.iconWidthHeight) / 2;
@@ -154,8 +154,8 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 		}
 
 		@Override
-		public @NonNull List<AbstractWidget.WithInactiveMessage> children() {
-			List<AbstractWidget.WithInactiveMessage> clickableWidgets = new ArrayList<>();
+		public @NotNull List<AbstractWidget> children() {
+			List<AbstractWidget> clickableWidgets = new ArrayList<>();
 			for (ModuleElement moduleElement : rowModules) {
 				if (moduleElement != null) {
 					clickableWidgets.addAll(moduleElement.buttons());
@@ -165,7 +165,7 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 		}
 
 		@Override
-		public @NonNull List<AbstractWidget.WithInactiveMessage> narratables() {
+		public @NotNull List<AbstractWidget> narratables() {
 			return this.children();
 		}
 	}

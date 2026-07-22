@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import me.Azz_9.flex_hud.client.config.ConfigRegistry;
 import me.Azz_9.flex_hud.client.config.option.ConfigBoolean;
 import me.Azz_9.flex_hud.client.config.option.ConfigInteger;
+import me.Azz_9.flex_hud.client.gui.Colors;
 
 public abstract class AbstractBackgroundModule extends AbstractMovableModule {
 	protected static final int BACKGROUND_PADDING = 2;
@@ -38,7 +39,7 @@ public abstract class AbstractBackgroundModule extends AbstractMovableModule {
 			graphics.fill(
 					-BACKGROUND_PADDING, -BACKGROUND_PADDING,
 					width + BACKGROUND_PADDING, height + BACKGROUND_PADDING,
-					ARGB.multiplyAlpha(getBackgroundColor(), alphaMultiplier)
+					ARGB.multiply(getBackgroundColor(), ARGB.color(alphaMultiplier, Colors.WHITE))
 			);
 		}
 	}
