@@ -11,8 +11,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.SpriteIconButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -153,22 +151,22 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 	}
 
 	@Override
-	public boolean keyPressed(@NotNull KeyEvent input) {
-		if (openOptionScreenKeyBind.matches(input)) {
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (openOptionScreenKeyBind.matches(keyCode, scanCode)) {
 			this.onClose();
 			return true;
 		}
-		return super.keyPressed(input);
+		return super.keyPressed(keyCode, scanCode, modifiers);
 	}
 
 	@Override
-	public boolean mouseClicked(@NotNull MouseButtonEvent click, boolean doubled) {
+	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		//if the keybind is on a mouse button
-		if (openOptionScreenKeyBind.matchesMouse(click)) {
+		if (openOptionScreenKeyBind.matchesMouse(button)) {
 			this.onClose();
 			return true;
 		}
-		return super.mouseClicked(click, doubled);
+		return super.mouseClicked(mouseX, mouseY, button);
 	}
 
 	@Override

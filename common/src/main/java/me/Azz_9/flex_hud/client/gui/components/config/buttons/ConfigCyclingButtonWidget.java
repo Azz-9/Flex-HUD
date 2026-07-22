@@ -2,11 +2,12 @@ package me.Azz_9.flex_hud.client.gui.components.config.buttons;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
+import com.mojang.blaze3d.platform.InputConstants;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 import org.jetbrains.annotations.NotNull;
@@ -54,21 +55,21 @@ public class ConfigCyclingButtonWidget<T, E extends Enum<E> & Translatable> exte
 	}
 
 	@Override
-	public void onClick(@NotNull MouseButtonEvent click, boolean bl) {
-		super.onClick(click, bl);
+	public void onClick(double mouseX, double mouseY) {
+		super.onClick(mouseX, mouseY);
 
 		// shift click to go backward
-		onPress(MINECRAFT.hasShiftDown() ? -1 : 1);
+		onPress(Screen.hasShiftDown() ? -1 : 1);
 	}
 
 	@Override
-	public boolean keyPressed(KeyEvent input) {
-		if (input.isConfirmation()) {
-			onPress(input.hasShiftDown() ? -1 : 1);
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (keyCode == InputConstants.KEY_RETURN || keyCode == InputConstants.KEY_NUMPADENTER) {
+			onPress(Screen.hasShiftDown() ? -1 : 1);
 			this.playDownSound(MINECRAFT.getSoundManager());
 			return true;
 		}
-		return super.keyPressed(input);
+		return super.keyPressed(keyCode, scanCode, modifiers);
 	}
 
 	private void onPress(int offset) {

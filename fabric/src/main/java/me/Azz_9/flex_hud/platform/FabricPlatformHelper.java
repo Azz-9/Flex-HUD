@@ -6,7 +6,8 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
-import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
+import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
@@ -15,10 +16,13 @@ import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
+import net.minecraft.server.packs.resources.ResourceManager;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.function.BiConsumer;
 
 import me.Azz_9.flex_hud.platform.services.IPlatformHelper;
@@ -76,7 +80,22 @@ public class FabricPlatformHelper implements IPlatformHelper {
 
 	@Override
 	public void registerReloadListener(@NotNull ResourceLocation location, @NotNull PreparableReloadListener listener) {
-		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloader(location, listener);
+		ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(new IdentifiableResourceReloadListener() {
+			@Override
+			public ResourceLocation getFabricId() {
+				return location;
+			}
+
+			@Override
+			public @NotNull CompletableFuture<Void> reload(
+					PreparationBarrier preparationBarrier,
+					ResourceManager resourceManager,
+					Executor preparationExecutor,
+					Executor reloadExecutor
+			) {
+				return listener.reload(preparationBarrier, resourceManager, preparationExecutor, reloadExecutor);
+			}
+		});
 	}
 
 	@Override

@@ -6,9 +6,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
 import org.jetbrains.annotations.Nullable;
@@ -231,93 +228,93 @@ final class ModifierEditorPopup {
 		host.renderButtonCenterLabel(graphics, cancelBounds, Component.translatable("flex_hud.global.config.cancel"), cancelBounds.contains(mouseX, mouseY) ? ModuleContentField.BUTTON_HOVERED_BACKGROUND : ModuleContentField.BUTTON_BACKGROUND, ModuleContentField.BUTTON_TEXT_COLOR, mouseX, mouseY);
 	}
 
-	boolean mouseClicked(MouseButtonEvent event, boolean doubled) {
+	boolean mouseClicked(double mouseX, double mouseY, int button) {
 		setAllFieldsFocused(false);
 		for (PopupTextFieldWidget field : parameterFields) {
-			if (field.mouseClicked(event, doubled)) {
+			if (field.mouseClicked(mouseX, mouseY, button)) {
 				return true;
 			}
 		}
 		for (ConditionalBranchRow row : conditionalRows) {
-			if (row.mouseClicked(event, doubled)) {
+			if (row.mouseClicked(mouseX, mouseY, button)) {
 				return true;
 			}
 		}
-		if (addConditionalBounds != null && addConditionalBounds.contains(event.x(), event.y())) {
+		if (addConditionalBounds != null && addConditionalBounds.contains(mouseX, mouseY)) {
 			conditionalRows.add(new ConditionalBranchRow("if_gt", "0", ""));
 			layoutFromCurrentAnchor();
 			return true;
 		}
-		if (deleteBounds != null && deleteBounds.contains(event.x(), event.y())) {
+		if (deleteBounds != null && deleteBounds.contains(mouseX, mouseY)) {
 			host.applyModifierChange(elementIndex, modifierIndex, null, true);
 			return true;
 		}
-		if (saveBounds.contains(event.x(), event.y())) {
+		if (saveBounds.contains(mouseX, mouseY)) {
 			save();
 			return true;
 		}
-		if (cancelBounds.contains(event.x(), event.y())) {
+		if (cancelBounds.contains(mouseX, mouseY)) {
 			host.modifierEditorPopup = null;
 			return true;
 		}
-		return bounds.contains(event.x(), event.y());
+		return bounds.contains(mouseX, mouseY);
 	}
 
-	boolean mouseDragged(MouseButtonEvent event, double offsetX, double offsetY) {
+	boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
 		for (PopupTextFieldWidget field : parameterFields) {
-			if (field.mouseDragged(event, offsetX, offsetY)) {
+			if (field.mouseDragged(mouseX, mouseY, button, dragX, dragY)) {
 				return true;
 			}
 		}
 		for (ConditionalBranchRow row : conditionalRows) {
-			if (row.mouseDragged(event, offsetX, offsetY)) {
+			if (row.mouseDragged(mouseX, mouseY, button, dragX, dragY)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	boolean mouseReleased(MouseButtonEvent event) {
+	boolean mouseReleased(double mouseX, double mouseY, int button) {
 		boolean handled = false;
 		for (PopupTextFieldWidget field : parameterFields) {
-			handled |= field.mouseReleased(event);
+			handled |= field.mouseReleased(mouseX, mouseY, button);
 		}
 		for (ConditionalBranchRow row : conditionalRows) {
-			handled |= row.mouseReleased(event);
+			handled |= row.mouseReleased(mouseX, mouseY, button);
 		}
 		return handled;
 	}
 
-	boolean keyPressed(KeyEvent event) {
+	boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		for (PopupTextFieldWidget field : parameterFields) {
-			if (field.isFocused() && field.keyPressed(event)) {
+			if (field.isFocused() && field.keyPressed(keyCode, scanCode, modifiers)) {
 				return true;
 			}
 		}
 		for (ConditionalBranchRow row : conditionalRows) {
-			if (row.keyPressed(event)) {
+			if (row.keyPressed(keyCode, scanCode, modifiers)) {
 				return true;
 			}
 		}
-		if (event.isConfirmation()) {
+		if (keyCode == InputConstants.KEY_RETURN || keyCode == InputConstants.KEY_NUMPADENTER) {
 			save();
 			return true;
 		}
-		if (event.key() == InputConstants.KEY_TAB) {
+		if (keyCode == InputConstants.KEY_TAB) {
 			focusNextField();
 			return true;
 		}
 		return false;
 	}
 
-	boolean charTyped(CharacterEvent event) {
+	boolean charTyped(char codePoint, int modifiers) {
 		for (PopupTextFieldWidget field : parameterFields) {
-			if (field.isFocused() && field.charTyped(event)) {
+			if (field.isFocused() && field.charTyped(codePoint, modifiers)) {
 				return true;
 			}
 		}
 		for (ConditionalBranchRow row : conditionalRows) {
-			if (row.charTyped(event)) {
+			if (row.charTyped(codePoint, modifiers)) {
 				return true;
 			}
 		}
@@ -512,8 +509,8 @@ final class ModifierEditorPopup {
 			host.renderButtonCenterLabel(graphics, removeBounds, Component.literal("x"), removeBounds.contains(mouseX, mouseY) ? ModuleContentField.BUTTON_HOVERED_BACKGROUND : ModuleContentField.BUTTON_BACKGROUND, ModuleContentField.BUTTON_TEXT_COLOR, mouseX, mouseY);
 		}
 
-		private boolean mouseClicked(MouseButtonEvent event, boolean doubled) {
-			if (operatorBounds.contains(event.x(), event.y())) {
+		private boolean mouseClicked(double mouseX, double mouseY, int button) {
+			if (operatorBounds.contains(mouseX, mouseY)) {
 				operatorKey = switch (operatorKey) {
 					case "if_gt" -> "if_lt";
 					case "if_lt" -> "if_eq";
@@ -521,7 +518,7 @@ final class ModifierEditorPopup {
 				};
 				return true;
 			}
-			if (removeBounds.contains(event.x(), event.y())) {
+			if (removeBounds.contains(mouseX, mouseY)) {
 				conditionalRows.remove(this);
 				if (conditionalRows.isEmpty()) {
 					conditionalRows.add(new ConditionalBranchRow("if_gt", "0", ""));
@@ -529,26 +526,26 @@ final class ModifierEditorPopup {
 				layoutFromCurrentAnchor();
 				return true;
 			}
-			return thresholdField.mouseClicked(event, doubled) || resultField.mouseClicked(event, doubled);
+			return thresholdField.mouseClicked(mouseX, mouseY, button) || resultField.mouseClicked(mouseX, mouseY, button);
 		}
 
-		private boolean mouseDragged(MouseButtonEvent event, double offsetX, double offsetY) {
-			return thresholdField.mouseDragged(event, offsetX, offsetY)
-					|| resultField.mouseDragged(event, offsetX, offsetY);
+		private boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+			return thresholdField.mouseDragged(mouseX, mouseY, button, dragX, dragY)
+					|| resultField.mouseDragged(mouseX, mouseY, button, dragX, dragY);
 		}
 
-		private boolean mouseReleased(MouseButtonEvent event) {
-			return thresholdField.mouseReleased(event) || resultField.mouseReleased(event);
+		private boolean mouseReleased(double mouseX, double mouseY, int button) {
+			return thresholdField.mouseReleased(mouseX, mouseY, button) || resultField.mouseReleased(mouseX, mouseY, button);
 		}
 
-		private boolean keyPressed(KeyEvent event) {
-			return (thresholdField.isFocused() && thresholdField.keyPressed(event))
-					|| (resultField.isFocused() && resultField.keyPressed(event));
+		private boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+			return (thresholdField.isFocused() && thresholdField.keyPressed(keyCode, scanCode, modifiers))
+					|| (resultField.isFocused() && resultField.keyPressed(keyCode, scanCode, modifiers));
 		}
 
-		private boolean charTyped(CharacterEvent event) {
-			return (thresholdField.isFocused() && thresholdField.charTyped(event))
-					|| (resultField.isFocused() && resultField.charTyped(event));
+		private boolean charTyped(char codePoint, int modifiers) {
+			return (thresholdField.isFocused() && thresholdField.charTyped(codePoint, modifiers))
+					|| (resultField.isFocused() && resultField.charTyped(codePoint, modifiers));
 		}
 
 		private String displayOperator() {

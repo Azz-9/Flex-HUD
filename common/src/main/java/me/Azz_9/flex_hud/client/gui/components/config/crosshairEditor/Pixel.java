@@ -3,12 +3,10 @@ package me.Azz_9.flex_hud.client.gui.components.config.crosshairEditor;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
 import org.jetbrains.annotations.NotNull;
 
-import me.Azz_9.flex_hud.client.gui.Cursors;
 import me.Azz_9.flex_hud.utils.DrawingUtils;
 
 public class Pixel extends AbstractWidget {
@@ -28,10 +26,6 @@ public class Pixel extends AbstractWidget {
 
 	@Override
 	protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
-		if (this.isHovered()) {
-			graphics.requestCursor(Cursors.POINTING_HAND);
-		}
-
 		if (color >> 24 == 0) {
 			graphics.fill(getX() + getWidth() / 4, getY() + getHeight() / 4, getRight() - getWidth() / 4, getBottom() - getHeight() / 4, (isCenter ? 0xff424242 : 0xff3a3a3a));
 		} else {
@@ -47,14 +41,14 @@ public class Pixel extends AbstractWidget {
 	}
 
 	@Override
-	public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
-		if (isMouseOver(click.x(), click.y())) {
-			if (click.button() == 0) {
+	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		if (isMouseOver(mouseX, mouseY)) {
+			if (button == 0) {
 				if (color != crosshairEditor.getColor()) {
 					color = crosshairEditor.getColor();
 					crosshairEditor.onTextureChange(pixelX, pixelY);
 				}
-			} else if (click.button() == 1) {
+			} else if (button == 1) {
 				if (color != 0x00000000) {
 					color = 0x00000000;
 					crosshairEditor.onTextureChange(pixelX, pixelY);
@@ -66,8 +60,8 @@ public class Pixel extends AbstractWidget {
 	}
 
 	@Override
-	public boolean mouseDragged(@NotNull MouseButtonEvent click, double offsetX, double offsetY) {
-		return mouseClicked(click, false);
+	public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+		return mouseClicked(mouseX, mouseY, button);
 	}
 
 	public int getColor() {

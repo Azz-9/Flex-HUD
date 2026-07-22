@@ -1,10 +1,9 @@
 package me.Azz_9.flex_hud.client.gui.screens;
 
+import com.mojang.blaze3d.platform.InputConstants;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
 import org.jetbrains.annotations.NotNull;
@@ -57,21 +56,21 @@ public abstract class AbstractPopupScreen extends AbstractBackNavigableScreen {
 	}
 
 	@Override
-	public boolean mouseClicked(@NotNull MouseButtonEvent event, boolean doubleClick) {
-		if (popupWidget != null) return popupWidget.mouseClicked(event, doubleClick);
-		return super.mouseClicked(event, doubleClick);
+	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		if (popupWidget != null) return popupWidget.mouseClicked(mouseX, mouseY, button);
+		return super.mouseClicked(mouseX, mouseY, button);
 	}
 
 	@Override
-	public boolean mouseReleased(@NotNull MouseButtonEvent event) {
-		if (popupWidget != null) return popupWidget.mouseReleased(event);
-		return super.mouseReleased(event);
+	public boolean mouseReleased(double mouseX, double mouseY, int button) {
+		if (popupWidget != null) return popupWidget.mouseReleased(mouseX, mouseY, button);
+		return super.mouseReleased(mouseX, mouseY, button);
 	}
 
 	@Override
-	public boolean mouseDragged(@NotNull MouseButtonEvent event, double dx, double dy) {
-		if (popupWidget != null) return popupWidget.mouseDragged(event, dx, dy);
-		return super.mouseDragged(event, dx, dy);
+	public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+		if (popupWidget != null) return popupWidget.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+		return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
 	}
 
 	@Override
@@ -81,20 +80,20 @@ public abstract class AbstractPopupScreen extends AbstractBackNavigableScreen {
 	}
 
 	@Override
-	public boolean keyPressed(@NotNull KeyEvent event) {
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (popupWidget != null) {
-			if (event.isEscape()) {
+			if (keyCode == InputConstants.KEY_ESCAPE) {
 				closePopup();
 				return true;
 			}
-			return popupWidget.keyPressed(event);
+			return popupWidget.keyPressed(keyCode, scanCode, modifiers);
 		}
-		return super.keyPressed(event);
+		return super.keyPressed(keyCode, scanCode, modifiers);
 	}
 
 	@Override
-	public boolean charTyped(@NotNull CharacterEvent event) {
-		if (popupWidget != null) return popupWidget.charTyped(event);
-		return super.charTyped(event);
+	public boolean charTyped(char codePoint, int modifiers) {
+		if (popupWidget != null) return popupWidget.charTyped(codePoint, modifiers);
+		return super.charTyped(codePoint, modifiers);
 	}
 }

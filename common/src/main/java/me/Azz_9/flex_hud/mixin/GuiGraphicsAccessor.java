@@ -1,7 +1,5 @@
 package me.Azz_9.flex_hud.mixin;
 
-import com.mojang.blaze3d.platform.cursor.CursorType;
-
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
 
@@ -20,7 +18,4 @@ public interface GuiGraphicsAccessor {
 
 	@Accessor("deferredTooltip")
 	void setDeferredTooltip(Runnable deferredTooltip);
-
-	@Accessor("pendingCursor")
-	CursorType getCursor();
 }

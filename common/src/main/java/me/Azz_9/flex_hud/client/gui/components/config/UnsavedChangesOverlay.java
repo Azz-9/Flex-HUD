@@ -2,14 +2,13 @@ package me.Azz_9.flex_hud.client.gui.components.config;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
+import com.mojang.blaze3d.platform.InputConstants;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
@@ -145,21 +144,21 @@ public final class UnsavedChangesOverlay extends AbstractWidget implements Popup
 
 
 	@Override
-	public boolean mouseClicked(@NotNull MouseButtonEvent event, boolean doubleClick) {
-		cancelButton.mouseClicked(event, doubleClick);
-		discardButton.mouseClicked(event, doubleClick);
+	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		cancelButton.mouseClicked(mouseX, mouseY, button);
+		discardButton.mouseClicked(mouseX, mouseY, button);
 		return true; // always consume
 	}
 
 	@Override
-	public boolean mouseReleased(@NotNull MouseButtonEvent event) {
-		cancelButton.mouseReleased(event);
-		discardButton.mouseReleased(event);
+	public boolean mouseReleased(double mouseX, double mouseY, int button) {
+		cancelButton.mouseReleased(mouseX, mouseY, button);
+		discardButton.mouseReleased(mouseX, mouseY, button);
 		return true;
 	}
 
 	@Override
-	public boolean mouseDragged(@NotNull MouseButtonEvent event, double dx, double dy) {
+	public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
 		return true; // consume
 	}
 
@@ -169,8 +168,8 @@ public final class UnsavedChangesOverlay extends AbstractWidget implements Popup
 	}
 
 	@Override
-	public boolean keyPressed(@NotNull KeyEvent event) {
-		if (event.isEscape()) {
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (keyCode == InputConstants.KEY_ESCAPE) {
 			onCancel.run();
 			return true;
 		}
@@ -178,7 +177,7 @@ public final class UnsavedChangesOverlay extends AbstractWidget implements Popup
 	}
 
 	@Override
-	public boolean charTyped(@NotNull CharacterEvent event) {
+	public boolean charTyped(char codePoint, int modifiers) {
 		return true; // consume
 	}
 

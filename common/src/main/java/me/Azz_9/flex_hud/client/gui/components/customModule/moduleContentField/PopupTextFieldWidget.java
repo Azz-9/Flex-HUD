@@ -2,10 +2,7 @@ package me.Azz_9.flex_hud.client.gui.components.customModule.moduleContentField;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-
-import org.jetbrains.annotations.NotNull;
 
 import me.Azz_9.flex_hud.client.gui.components.CustomEditBox;
 
@@ -15,10 +12,10 @@ public final class PopupTextFieldWidget extends CustomEditBox {
 	}
 
 	@Override
-	public boolean mouseClicked(@NotNull MouseButtonEvent event, boolean doubled) {
-		if (this.active && this.visible && this.isValidClickButton(event.buttonInfo())) {
-			setFocused(this.isMouseOver(event.x(), event.y()));
+	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		if (this.active && this.visible && this.isValidClickButton(button)) {
+			setFocused(this.isMouseOver(mouseX, mouseY));
 		}
-		return super.mouseClicked(event, doubled);
+		return super.mouseClicked(mouseX, mouseY, button);
 	}
 }

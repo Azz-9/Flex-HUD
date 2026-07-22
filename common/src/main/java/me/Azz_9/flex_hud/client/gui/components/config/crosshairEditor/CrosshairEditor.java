@@ -7,9 +7,6 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
@@ -19,7 +16,6 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 
 import me.Azz_9.flex_hud.client.gui.Colors;
-import me.Azz_9.flex_hud.client.gui.Cursors;
 import me.Azz_9.flex_hud.client.gui.components.HelpWidget;
 import me.Azz_9.flex_hud.client.gui.components.config.Popup;
 import me.Azz_9.flex_hud.client.gui.components.config.buttons.CrosshairButtonWidget;
@@ -149,10 +145,6 @@ public class CrosshairEditor extends AbstractWidget implements Popup {
 		//overlay
 		graphics.fill(0, 0, graphics.guiWidth(), graphics.guiHeight(), Colors.BLACK_TRANSPARENT);
 
-		if (this.isMouseOver(mouseX, mouseY)) {
-			graphics.requestCursor(Cursors.DEFAULT);
-		}
-
 		helpWidget.render(graphics, mouseX, mouseY, deltaTicks);
 
 		graphics.fill(getX(), getY(), getRight(), getBottom(), 0xff4a4a4a);
@@ -218,36 +210,36 @@ public class CrosshairEditor extends AbstractWidget implements Popup {
 	}
 
 	@Override
-	public boolean mouseClicked(@NotNull MouseButtonEvent click, boolean doubled) {
-		helpWidget.handleOutsideClick(click, doubled);
-		if (colorSelector.isFocused() && colorSelector.mouseClicked(click, doubled)) {
+	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		helpWidget.handleOutsideClick(mouseX, mouseY);
+		if (colorSelector.isFocused() && colorSelector.mouseClicked(mouseX, mouseY, button)) {
 			isDraggingCursor = true;
 			return true;
 
-		} else if (this.isMouseOver(click.x(), click.y())) {
-			if (helpWidget.mouseClicked(click, doubled)) {
+		} else if (this.isMouseOver(mouseX, mouseY)) {
+			if (helpWidget.mouseClicked(mouseX, mouseY, button)) {
 				return true;
 			}
-			if (colorButton.mouseClicked(click, doubled)) {
+			if (colorButton.mouseClicked(mouseX, mouseY, button)) {
 				return true;
 			}
-			if (clearButton.mouseClicked(click, doubled)
-					|| crosshairPresetsList.isMouseOver(click.x(), click.y()) && crosshairPresetsList.mouseClicked(click, doubled)
-					|| done.mouseClicked(click, doubled)) {
+			if (clearButton.mouseClicked(mouseX, mouseY, button)
+					|| crosshairPresetsList.isMouseOver(mouseX, mouseY) && crosshairPresetsList.mouseClicked(mouseX, mouseY, button)
+					|| done.mouseClicked(mouseX, mouseY, button)) {
 				colorSelector.setFocused(false);
 				return true;
 			}
 
 			for (int y = 0; y < pixels.length; y++) {
 				for (int x = 0; x < pixels[y].length; x++) {
-					if (pixels[y][x].isMouseOver(click.x(), click.y()) && (click.button() == 1 || click.button() == 0)) {
+					if (pixels[y][x].isMouseOver(mouseX, mouseY) && (button == 1 || button == 0)) {
 						int[][] texture = new int[crosshairButtonWidget.getData().length][crosshairButtonWidget.getData()[0].length];
 						for (int i = 0; i < crosshairButtonWidget.getData().length; i++) {
 							texture[i] = crosshairButtonWidget.getData()[i].clone();
 						}
 
 						onClickTexture = texture;
-						pixels[y][x].mouseClicked(click, doubled);
+						pixels[y][x].mouseClicked(mouseX, mouseY, button);
 						clicked = true;
 
 						colorSelector.setFocused(false);
@@ -274,24 +266,24 @@ public class CrosshairEditor extends AbstractWidget implements Popup {
 	}
 
 	@Override
-	public boolean mouseDragged(MouseButtonEvent click, double offsetX, double offsetY) {
-		if (this.isMouseOver(click.x(), click.y()) && clicked) {
+	public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+		if (this.isMouseOver(mouseX, mouseY) && clicked) {
 			for (int y = 0; y < pixels.length; y++) {
 				for (int x = 0; x < pixels[y].length; x++) {
-					if (pixels[y][x].mouseDragged(click, offsetX, offsetY)) {
+					if (pixels[y][x].mouseDragged(mouseX, mouseY, button, dragX, dragY)) {
 						return true;
 					}
 				}
 			}
 			return false;
-		} else if (colorSelector.isFocused() && colorSelector.mouseDragged(click, offsetX, offsetY)) {
+		} else if (colorSelector.isFocused() && colorSelector.mouseDragged(mouseX, mouseY, button, dragX, dragY)) {
 			return true;
-		} else return crosshairPresetsList.mouseDragged(click, offsetX, offsetY);
+		} else return crosshairPresetsList.mouseDragged(mouseX, mouseY, button, dragX, dragY);
 	}
 
 	@Override
-	public boolean mouseReleased(MouseButtonEvent click) {
-		if ((this.isMouseOver(click.x(), click.y()) || clicked) && !isDraggingCursor) {
+	public boolean mouseReleased(double mouseX, double mouseY, int button) {
+		if ((this.isMouseOver(mouseX, mouseY) || clicked) && !isDraggingCursor) {
 			if (clicked) {
 				clicked = false;
 
@@ -300,10 +292,10 @@ public class CrosshairEditor extends AbstractWidget implements Popup {
 				}
 			}
 			return true;
-		} else if (colorSelector.isFocused() && colorSelector.mouseReleased(click)) {
+		} else if (colorSelector.isFocused() && colorSelector.mouseReleased(mouseX, mouseY, button)) {
 			isDraggingCursor = false;
 			return true;
-		} else return crosshairPresetsList.mouseReleased(click);
+		} else return crosshairPresetsList.mouseReleased(mouseX, mouseY, button);
 	}
 
 	@Override
@@ -312,17 +304,17 @@ public class CrosshairEditor extends AbstractWidget implements Popup {
 	}
 
 	@Override
-	public boolean keyPressed(@NotNull KeyEvent input) {
-		if (undoManager.handleKeyPressed(input)) {
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (undoManager.handleKeyPressed(keyCode, scanCode, modifiers)) {
 			return true;
 		}
 
-		return colorSelector.keyPressed(input);
+		return colorSelector.keyPressed(keyCode, scanCode, modifiers);
 	}
 
 	@Override
-	public boolean charTyped(@NotNull CharacterEvent input) {
-		return colorSelector.charTyped(input);
+	public boolean charTyped(char codePoint, int modifiers) {
+		return colorSelector.charTyped(codePoint, modifiers);
 	}
 
 	public void updateTexture(int[][] texture) {

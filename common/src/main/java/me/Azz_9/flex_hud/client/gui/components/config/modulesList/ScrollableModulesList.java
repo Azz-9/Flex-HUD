@@ -130,9 +130,9 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 		}
 
 		@Override
-		public void renderContent(@NotNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+		public void render(@NotNull GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float delta) {
 			int totalButtonWidth = scrollableModulesList.buttonWidth * scrollableModulesList.columns + scrollableModulesList.padding;
-			int buttonX = getX() + (getWidth() - totalButtonWidth) / scrollableModulesList.columns;
+			int buttonX = x + (entryWidth - totalButtonWidth) / scrollableModulesList.columns;
 			int iconX = buttonX + (scrollableModulesList.buttonWidth - scrollableModulesList.iconWidthHeight) / 2;
 
 			for (int i = 0; i < rowModules.size(); i++) {
@@ -145,11 +145,11 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 					iconX = buttonX + (scrollableModulesList.buttonWidth - scrollableModulesList.iconWidthHeight) / 2;
 				}
 
-				graphics.blitSprite(RenderPipelines.GUI_TEXTURED, this.rowModules.get(i).icon, iconX, getY(),
+				graphics.blitSprite(RenderPipelines.GUI_TEXTURED, this.rowModules.get(i).icon, iconX, y,
 						scrollableModulesList.iconWidthHeight, scrollableModulesList.iconWidthHeight);
 				this.rowModules.get(i).setButtonX(buttonX);
-				this.rowModules.get(i).setButtonY(getY() + scrollableModulesList.iconWidthHeight + scrollableModulesList.padding / 2);
-				this.rowModules.get(i).renderButton(graphics, mouseX, mouseY, deltaTicks);
+				this.rowModules.get(i).setButtonY(y + scrollableModulesList.iconWidthHeight + scrollableModulesList.padding / 2);
+				this.rowModules.get(i).renderButton(graphics, mouseX, mouseY, delta);
 			}
 		}
 

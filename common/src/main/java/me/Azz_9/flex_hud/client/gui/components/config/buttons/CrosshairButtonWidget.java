@@ -3,7 +3,6 @@ package me.Azz_9.flex_hud.client.gui.components.config.buttons;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
 
@@ -15,7 +14,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import me.Azz_9.flex_hud.client.config.option.ConfigIntGrid;
-import me.Azz_9.flex_hud.client.gui.Cursors;
 import me.Azz_9.flex_hud.client.gui.components.TrackableChange;
 import me.Azz_9.flex_hud.client.gui.components.config.DataGetter;
 import me.Azz_9.flex_hud.client.gui.components.config.Observer;
@@ -46,16 +44,12 @@ public class CrosshairButtonWidget<T> extends AbstractWidget implements Trackabl
 	@Override
 	protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		if (this.active) {
-			if (this.isHovered()) graphics.requestCursor(Cursors.POINTING_HAND);
-
 			drawHover(graphics);
 
 			if (this.isHoveredOrFocused()) {
 				DrawingUtils.drawBorder(graphics, getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0xffffffff);
 			}
 			DrawingUtils.drawBorder(graphics, getRight() - getHeight(), getY(), getHeight(), getHeight(), (this.isHovered() ? 0xffd0d0d0 : 0xff404040));
-		} else {
-			if (this.isHovered()) graphics.requestCursor(Cursors.NOT_ALLOWED);
 		}
 		float startX = getRight() - getHeight() + 1 + (getHeight() - 2 - variable.getRowLength(0)) / 2.0f;
 		float startY = getY() + 1 + (getHeight() - 2 - variable.getLength()) / 2.0f;
@@ -134,7 +128,7 @@ public class CrosshairButtonWidget<T> extends AbstractWidget implements Trackabl
 	}
 
 	@Override
-	public void onClick(@NotNull MouseButtonEvent click, boolean bl) {
+	public void onClick(double mouseX, double mouseY) {
 		onClickAction.accept(this);
 	}
 

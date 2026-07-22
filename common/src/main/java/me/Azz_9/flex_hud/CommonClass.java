@@ -7,6 +7,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import org.jetbrains.annotations.Nullable;
@@ -93,7 +94,7 @@ public class CommonClass {
 		Services.PLATFORM.registerReloadListener(
 				ResourceLocation.fromNamespaceAndPath(MOD_ID, "variables_init"),
 				(store, prepareExecutor, reloadSynchronizer, applyExecutor) ->
-						reloadSynchronizer.wait(null).thenRunAsync(() -> {
+						store.wait(null).thenRunAsync(() -> {
 							Variables.init();
 							Modules.recompileCustomModules();
 							CustomModulePreview.recompile();
@@ -119,7 +120,7 @@ public class CommonClass {
 
 		Services.PLATFORM.registerJoinEvent(() -> {
 			Variables.onJoinWorld();
-			LivingEntityHeadClientAudit.runIfEnabled(MINECRAFT);
+			LivingEntityHeadClientAudit.requestIfEnabled();
 
 			if (!MINECRAFT.isLocalServer()) {
 				PingUtils.connection = MINECRAFT.getConnection();
@@ -139,12 +140,10 @@ public class CommonClass {
 			waypointCollectors.forEach(Collector::onLeaveWorld);
 		});
 
-		final KeyMapping.Category FLEX_HUD = KeyMapping.Category.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "flex-hud"));
-
 		// see KeyBindingMixin
-		openOptionScreenKeyBind = Services.PLATFORM.registerKeyMapping(new KeyMapping("flex_hud.controls.open_menu", InputConstants.Type.KEYSYM, InputConstants.KEY_RSHIFT, FLEX_HUD));
+		openOptionScreenKeyBind = Services.PLATFORM.registerKeyMapping(new KeyMapping("flex_hud.controls.open_menu", InputConstants.Type.KEYSYM, InputConstants.KEY_RSHIFT, Component.translatable("key.category.flex_hud.flex-hud").getString()));
 		if (DEBUG) {
-			printPerfTesterTimesKeyBind = Services.PLATFORM.registerKeyMapping(new KeyMapping("Perf tester", InputConstants.Type.KEYSYM, InputConstants.KEY_I, FLEX_HUD));
+			printPerfTesterTimesKeyBind = Services.PLATFORM.registerKeyMapping(new KeyMapping("Perf tester", InputConstants.Type.KEYSYM, InputConstants.KEY_I, Component.translatable("key.category.flex_hud.flex-hud").getString()));
 		}
 	}
 
@@ -173,6 +172,8 @@ public class CommonClass {
 				Services.PLATFORM.getChatLocation(),
 				ResourceLocation.fromNamespaceAndPath(MOD_ID, "custom_modules"),
 				(graphics, deltaTracker) -> {
+					LivingEntityHeadClientAudit.runIfRequested(MINECRAFT);
+
 					for (CustomModule module : Modules.getCustomModules()) {
 						if (DEBUG) {
 							module.renderWithPerfTest(graphics, deltaTracker);
