@@ -6,7 +6,6 @@ import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 
 import net.minecraft.client.DeltaTracker;
@@ -19,7 +18,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.scores.Objective;
 
-import org.joml.Matrix3x2fStack;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -57,9 +55,6 @@ public abstract class GuiMixin {
 
 	@Unique
 	private TitleState flex_hud$savedTitleState;
-	@Unique
-	private static final int flex_hud$SCOREBOARD_PADDING = 2;
-
 	// trigger variables frame update on hud render
 	@Inject(method = "render", at = @At("HEAD"))
 	private void render(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
@@ -182,46 +177,6 @@ public abstract class GuiMixin {
 			return Scoreboard.placeholderObjective;
 		}
 		return displayObjective;
-	}
-
-	@ModifyVariable(
-			method = "displayScoreboardSidebar",
-			at = @At("STORE"),
-			index = 19
-	)
-	private int beforeRender(
-			int headerY,
-			GuiGraphics graphics,
-			Objective objective,
-			@Local(index = 10) int biggestWidth,
-			@Local(index = 12) int height,
-			@Local(index = 13) LocalIntRef bottom,
-			@Local(index = 15) LocalIntRef left,
-			@Local(index = 16) LocalIntRef right,
-			@Local(index = 17) LocalIntRef backgroundColor,
-			@Local(index = 18) LocalIntRef headerBackgroundColor
-	) {
-		Scoreboard scoreboard = Modules.getInstance().scoreboard;
-
-		if (!Modules.getInstance().isEnabled.getValue() || !scoreboard.enabled.getValue()) {
-			return headerY;
-		}
-
-		scoreboard.setWidth(biggestWidth + flex_hud$SCOREBOARD_PADDING * 2);
-		scoreboard.setHeight(MINECRAFT.font.lineHeight + 1 + height);
-
-		bottom.set(scoreboard.getHeight());
-		left.set(flex_hud$SCOREBOARD_PADDING);
-		right.set(scoreboard.getWidth());
-		backgroundColor.set(ARGB.color(0.3f, scoreboard.backgroundColor.getValue()));
-		headerBackgroundColor.set(ARGB.color(0.4f, scoreboard.backgroundColor.getValue()));
-
-		Matrix3x2fStack matrices = graphics.pose();
-		matrices.pushMatrix();
-		matrices.translate(scoreboard.getRoundedX(), scoreboard.getRoundedY());
-		matrices.scale(scoreboard.getScale());
-
-		return scoreboard.getHeight() - height;
 	}
 
 	@WrapWithCondition(
