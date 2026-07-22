@@ -6,13 +6,8 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
 
 import org.jetbrains.annotations.NotNull;
-import org.jspecify.annotations.NonNull;
-
-import java.util.function.Predicate;
 
 public class CustomEditBox extends EditBox {
-
-	private Predicate<String> filter;
 
 	private int placeholderColor = 0xffa0a0a0;
 	private Component placeholderText;
@@ -21,10 +16,6 @@ public class CustomEditBox extends EditBox {
 	public CustomEditBox(Font font, int x, int y, int width, int height, Component text) {
 		super(font, x, y, width, height, text);
 		this.FONT = font;
-	}
-
-	public void setFilter(final Predicate<String> filter) {
-		this.filter = filter;
 	}
 
 	public void setPlaceholderColor(int color) {
@@ -36,14 +27,7 @@ public class CustomEditBox extends EditBox {
 	}
 
 	@Override
-	public void setValue(@NotNull String value) {
-		if (filter == null || filter.test(value)) {
-			super.setValue(value);
-		}
-	}
-
-	@Override
-	public void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+	public void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
 		if (this.isVisible()) {
 			super.renderWidget(graphics, mouseX, mouseY, delta);
 

@@ -5,7 +5,7 @@ import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
 
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import me.Azz_9.flex_hud.client.gui.components.TrackableChange;
 import me.Azz_9.flex_hud.client.modules.customModules.CustomModuleRegistry;

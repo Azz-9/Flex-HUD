@@ -9,7 +9,7 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.input.MouseButtonEvent;
 
-import org.jspecify.annotations.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -297,7 +297,7 @@ public class CrosshairPresetsList extends AbstractSmoothScrollableList<Crosshair
 		}
 
 		@Override
-		public void renderContent(@NonNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+		public void renderContent(@NotNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
 			if (this.isMouseOver(mouseX, mouseY) && parent.isMouseOver(mouseX, mouseY)) {
 				graphics.requestCursor(Cursors.POINTING_HAND);
 				graphics.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), 0x10000000);
@@ -319,7 +319,7 @@ public class CrosshairPresetsList extends AbstractSmoothScrollableList<Crosshair
 		}
 
 		@Override
-		public boolean mouseClicked(@NonNull MouseButtonEvent click, boolean doubled) {
+		public boolean mouseClicked(@NotNull MouseButtonEvent click, boolean doubled) {
 			if (parent != null) {
 
 				int[][] texture = new int[this.texture.length][this.texture[0].length];
@@ -329,19 +329,19 @@ public class CrosshairPresetsList extends AbstractSmoothScrollableList<Crosshair
 
 				parent.crosshairEditor.onPresetUpdate(texture);
 
-				AbstractWidget.WithInactiveMessage.playButtonClickSound(MINECRAFT.getSoundManager());
+				AbstractWidget.playButtonClickSound(MINECRAFT.getSoundManager());
 				return true;
 			}
 			return false;
 		}
 
 		@Override
-		public @NonNull List<? extends NarratableEntry> narratables() {
+		public @NotNull List<? extends NarratableEntry> narratables() {
 			return List.of();
 		}
 
 		@Override
-		public @NonNull List<? extends GuiEventListener> children() {
+		public @NotNull List<? extends GuiEventListener> children() {
 			return List.of();
 		}
 	}

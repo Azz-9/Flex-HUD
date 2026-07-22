@@ -14,7 +14,6 @@ import net.minecraft.network.chat.Component;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
-import org.jspecify.annotations.NonNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -28,8 +27,9 @@ import me.Azz_9.flex_hud.client.modules.hud.AbstractMovableModule;
 import me.Azz_9.flex_hud.client.modules.hud.DimensionHud;
 import me.Azz_9.flex_hud.client.modules.hud.MovableModule;
 import me.Azz_9.flex_hud.mixin.GuiGraphicsAccessor;
+import me.Azz_9.flex_hud.utils.DrawingUtils;
 
-public class MovableWidget extends AbstractWidget.WithInactiveMessage implements TrackableChange {
+public class MovableWidget extends AbstractWidget implements TrackableChange {
 	private final EditLayoutScreen PARENT;
 	private final MovableModule HUD_ELEMENT;
 	private double offsetX, offsetY;
@@ -97,7 +97,7 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 	}
 
 	@Override
-	protected void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
+	protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		this.isHovered = (mouseX >= getX() && mouseY >= getY() && mouseX <= getRight() && mouseY <= getBottom()) || isScaleHandleHovered(mouseX, mouseY);
 		if (((GuiGraphicsAccessor) graphics).getCursor() == CursorType.DEFAULT) {
 			if (this.isScaleHandleHovered(mouseX, mouseY) || isDraggingScaleHandle) {
@@ -120,7 +120,7 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 			color = 0x7fa8a8ac;
 		}
 
-		graphics.renderOutline(getX(), getY(), getWidth(), getHeight(), color);
+		DrawingUtils.drawBorder(graphics, getX(), getY(), getWidth(), getHeight(), color);
 
 		if (shouldDrawHorizontalSnapLine) {
 			graphics.hLine(0, graphics.guiWidth(), snapLineY, 0x7fff0000);
@@ -225,7 +225,7 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 	}
 
 	@Override
-	protected void onDrag(@NonNull MouseButtonEvent click, double d, double e) {
+	protected void onDrag(@NotNull MouseButtonEvent click, double d, double e) {
 		if (!isDraggingScaleHandle) {
 			isMoving = true;
 			double x = click.x() - offsetX;
@@ -291,7 +291,7 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 	}
 
 	@Override
-	public void onRelease(@NonNull MouseButtonEvent click) {
+	public void onRelease(@NotNull MouseButtonEvent click) {
 		if (isDraggingScaleHandle) {
 			updateScaleHandle();
 
@@ -310,7 +310,7 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 	}
 
 	@Override
-	public boolean keyPressed(@NonNull KeyEvent input) {
+	public boolean keyPressed(@NotNull KeyEvent input) {
 		if (isDraggingScaleHandle) {
 			return true; // so pressing a key won't do anything
 		}
@@ -553,7 +553,7 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 	}
 
 	@Override
-	protected void updateWidgetNarration(@NonNull NarrationElementOutput output) {
+	protected void updateWidgetNarration(@NotNull NarrationElementOutput output) {
 	}
 
 	private enum HandlePosition {

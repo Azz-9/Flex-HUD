@@ -164,7 +164,7 @@ public class PerfTester {
 
 	private static int getColor(double average, double max) {
 		float alpha = (float) Mth.clamp(average / max, 0, 1);
-		return ARGB.srgbLerp(
+		return ARGB.lerp(
 				alpha,
 				ChatFormatting.GREEN.getColor() != null ? ChatFormatting.GREEN.getColor() : 0xff55ff55,
 				ChatFormatting.RED.getColor() != null ? ChatFormatting.RED.getColor() : 0xffff5555

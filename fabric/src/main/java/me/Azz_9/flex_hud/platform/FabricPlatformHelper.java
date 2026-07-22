@@ -12,7 +12,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 
@@ -66,36 +66,36 @@ public class FabricPlatformHelper implements IPlatformHelper {
 	}
 
 	@Override
-	public void registerHudElement(@NotNull Identifier beforeThis, @NotNull Identifier identifier, @NotNull BiConsumer<GuiGraphics, DeltaTracker> hudElement) {
+	public void registerHudElement(@NotNull ResourceLocation beforeThis, @NotNull ResourceLocation location, @NotNull BiConsumer<GuiGraphics, DeltaTracker> hudElement) {
 		HudElementRegistry.attachElementBefore(
 				beforeThis,
-				identifier,
+				location,
 				hudElement::accept
 		);
 	}
 
 	@Override
-	public void registerReloadListener(@NotNull Identifier id, @NotNull PreparableReloadListener listener) {
-		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloader(id, listener);
+	public void registerReloadListener(@NotNull ResourceLocation location, @NotNull PreparableReloadListener listener) {
+		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloader(location, listener);
 	}
 
 	@Override
-	public @NotNull Identifier getChatIdentifier() {
+	public @NotNull ResourceLocation getChatLocation() {
 		return VanillaHudElements.CHAT;
 	}
 
 	@Override
-	public @NotNull Identifier getBossBarIdentifier() {
+	public @NotNull ResourceLocation getBossBarLocation() {
 		return VanillaHudElements.BOSS_BAR;
 	}
 
 	@Override
-	public @NotNull Identifier getCrosshairIdentifier() {
+	public @NotNull ResourceLocation getCrosshairLocation() {
 		return VanillaHudElements.CROSSHAIR;
 	}
 
 	@Override
-	public @NotNull Identifier getScoreboardIdentifier() {
+	public @NotNull ResourceLocation getScoreboardLocation() {
 		return VanillaHudElements.SCOREBOARD;
 	}
 

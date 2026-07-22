@@ -12,7 +12,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.WaypointStyle;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -56,8 +56,8 @@ public class Compass extends AbstractTextModule {
 	public final ConfigBoolean showOnlyPets = new ConfigBoolean(false, "flex_hud.compass.config.show_only_pets");
 	private final ConfigEnum<IconsSize> iconsSize = new ConfigEnum<>(IconsSize.class, IconsSize.SMALL, "flex_hud.compass.config.icons_size");
 
-	private final Identifier ARROW_UP = Identifier.withDefaultNamespace("hud/locator_bar_arrow_up");
-	private final Identifier ARROW_DOWN = Identifier.withDefaultNamespace("hud/locator_bar_arrow_down");
+	private final ResourceLocation ARROW_UP = ResourceLocation.withDefaultNamespace("hud/locator_bar_arrow_up");
+	private final ResourceLocation ARROW_DOWN = ResourceLocation.withDefaultNamespace("hud/locator_bar_arrow_down");
 
 	private List<XaeroWaypoint> xaeroWaypoints = new ArrayList<>();
 	private List<JourneyMapWaypoint> journeyMapWaypoints = new ArrayList<>();
@@ -355,11 +355,11 @@ public class Compass extends AbstractTextModule {
 			if (Math.abs(angleDifference) <= 120) {
 				float positionX = calculatePositionX(angleDifference);
 
-				Identifier icon = waypoint.getIcon();
+				ResourceLocation icon = waypoint.getIcon();
 				int iconWidth = waypoint.getIconWidth();
 				int iconHeight = waypoint.getIconHeight();
 				if (icon == null || MINECRAFT.getResourceManager().getResource(icon).isEmpty()) {
-					icon = Identifier.fromNamespaceAndPath(MOD_ID, "hud/journeymap_default_icon");
+					icon = ResourceLocation.fromNamespaceAndPath(MOD_ID, "hud/journeymap_default_icon");
 					iconWidth = 13;
 					iconHeight = 13;
 				}
@@ -432,7 +432,7 @@ public class Compass extends AbstractTextModule {
 					Waypoint.Icon icon = waypoint.icon();
 					WaypointStyle style = MINECRAFT.getWaypointStyles().get(icon.style);
 					float distance = (float) Math.sqrt(waypoint.distanceSquared(cameraEntity));
-					Identifier waypointIdentifier = style.sprite(distance);
+					ResourceLocation waypointIdentifier = style.sprite(distance);
 					int color = icon.color.orElseGet(() -> waypoint.id().map((uuid) -> ARGB.setBrightness(ARGB.color(255, uuid.hashCode()), 0.9F), (name) -> ARGB.setBrightness(ARGB.color(255, name.hashCode()), 0.9F)));
 
 					int textureSize = 9;
@@ -445,7 +445,7 @@ public class Compass extends AbstractTextModule {
 					TrackedWaypoint.PitchDirection pitch = waypoint.pitchDirectionToCamera(level, MINECRAFT.gameRenderer, partialTickSupplier);
 					if (pitch != TrackedWaypoint.PitchDirection.NONE) {
 						int offset;
-						Identifier arrowIdentifier;
+						ResourceLocation arrowIdentifier;
 						if (pitch == TrackedWaypoint.PitchDirection.DOWN) {
 							offset = 8;
 							arrowIdentifier = ARROW_DOWN;
@@ -509,7 +509,7 @@ public class Compass extends AbstractTextModule {
 				TrackedWaypoint.PitchDirection pitch = getEntityPitch(entity.entity(), MINECRAFT);
 				if (pitch != TrackedWaypoint.PitchDirection.NONE) {
 					int offset;
-					Identifier arrowIdentifier;
+					ResourceLocation arrowIdentifier;
 
 					if (pitch == TrackedWaypoint.PitchDirection.DOWN) {
 						offset = 8;
@@ -776,12 +776,12 @@ public class Compass extends AbstractTextModule {
 	public static class JourneyMapWaypoint extends ModdedWaypoint {
 		private final int COLOR;
 		private final boolean DISABLED;
-		private final Identifier ICON;
+		private final ResourceLocation ICON;
 		private final int ICON_WIDTH;
 		private final int ICON_HEIGHT;
 		private final boolean IS_IN_PLAYER_DIMENSION;
 
-		public JourneyMapWaypoint(double x, double z, int color, boolean disabled, Identifier icon, int iconWidth, int iconHeight, boolean isInPlayerDimension) {
+		public JourneyMapWaypoint(double x, double z, int color, boolean disabled, ResourceLocation icon, int iconWidth, int iconHeight, boolean isInPlayerDimension) {
 			super(x, z);
 			this.COLOR = color;
 			this.DISABLED = disabled;
@@ -799,7 +799,7 @@ public class Compass extends AbstractTextModule {
 			return DISABLED;
 		}
 
-		public Identifier getIcon() {
+		public ResourceLocation getIcon() {
 			return ICON;
 		}
 

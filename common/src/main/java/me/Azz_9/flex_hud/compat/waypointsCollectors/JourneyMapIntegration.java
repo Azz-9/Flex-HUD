@@ -1,10 +1,10 @@
 package me.Azz_9.flex_hud.compat.waypointsCollectors;
 
-import org.jspecify.annotations.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import journeymap.api.v2.client.IClientAPI;
 import journeymap.api.v2.client.IClientPlugin;
-import journeymap.api.v2.common.JourneyMapPlugin;
+import journeymap.api.v2.client.JourneyMapPlugin;
 import me.Azz_9.flex_hud.Constants;
 
 @JourneyMapPlugin(apiVersion = "2.0.0")
@@ -18,7 +18,7 @@ public class JourneyMapIntegration implements IClientPlugin {
 	}
 
 	@Override
-	public void initialize(@NonNull IClientAPI clientAPI) {
+	public void initialize(@NotNull IClientAPI clientAPI) {
 		api = clientAPI;
 	}
 

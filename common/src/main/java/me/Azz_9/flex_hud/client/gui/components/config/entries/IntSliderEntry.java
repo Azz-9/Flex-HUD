@@ -6,7 +6,7 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.network.chat.Component;
 
-import org.jspecify.annotations.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,19 +54,19 @@ public class IntSliderEntry extends ScrollableConfigList.AbstractConfigEntry {
 	}
 
 	@Override
-	public void renderContent(@NonNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+	public void renderContent(@NotNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
 		super.renderContent(graphics, mouseX, mouseY, hovered, deltaTicks);
 
 		sliderWidget.render(graphics, mouseX, mouseY, deltaTicks);
 	}
 
 	@Override
-	public @NonNull List<? extends NarratableEntry> narratables() {
+	public @NotNull List<? extends NarratableEntry> narratables() {
 		return List.of(sliderWidget, resetButtonWidget);
 	}
 
 	@Override
-	public @NonNull List<? extends GuiEventListener> children() {
+	public @NotNull List<? extends GuiEventListener> children() {
 		return List.of(sliderWidget, resetButtonWidget);
 	}
 

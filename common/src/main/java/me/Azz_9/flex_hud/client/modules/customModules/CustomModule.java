@@ -7,8 +7,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
-import org.jspecify.annotations.NonNull;
 
 import me.Azz_9.flex_hud.client.config.ConfigRegistry;
 import me.Azz_9.flex_hud.client.gui.components.config.entries.ColorButtonEntry;
@@ -21,11 +21,11 @@ import me.Azz_9.flex_hud.client.modules.hud.AbstractTextModule;
 public class CustomModule extends AbstractTextModule {
 
 	private CompiledCustomText compiledText = CompiledCustomText.compile("");
-	private @NonNull String text;
+	private @NotNull String text;
 
-	private @NonNull String name;
+	private @NotNull String name;
 
-	private CustomModule(@NonNull String name, @NonNull String text) {
+	private CustomModule(@NotNull String name, @NotNull String text) {
 		super(CustomModuleRegistry.nameToId(name), 0, 0, AnchorPosition.START, AnchorPosition.START);
 		// custom modules are enabled by default when created
 		this.enabled.setDefaultValue(true);
@@ -35,7 +35,7 @@ public class CustomModule extends AbstractTextModule {
 		this.text = text;
 	}
 
-	public static CustomModule fromText(@NonNull String id, @NonNull String text) {
+	public static CustomModule fromText(@NotNull String id, @NotNull String text) {
 		CustomModule module = new CustomModule(id, text);
 
 		module.replaceCompiledText(CompiledCustomText.compile(text));
@@ -81,7 +81,7 @@ public class CustomModule extends AbstractTextModule {
 		return Component.literal(name);
 	}
 
-	public void update(@NonNull String name, @NonNull String text) {
+	public void update(@NotNull String name, @NotNull String text) {
 		String newId = CustomModuleRegistry.nameToId(name);
 		if (!getID().equals(newId)) {
 			ConfigRegistry.renameModule(getID(), newId);
@@ -94,7 +94,7 @@ public class CustomModule extends AbstractTextModule {
 		init();
 	}
 
-	public @NonNull String getText() {
+	public @NotNull String getText() {
 		return text;
 	}
 

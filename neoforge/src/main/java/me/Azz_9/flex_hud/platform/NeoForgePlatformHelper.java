@@ -4,7 +4,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModList;
@@ -16,7 +16,6 @@ import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.common.NeoForge;
 
 import org.jetbrains.annotations.NotNull;
-import org.jspecify.annotations.NonNull;
 
 import java.nio.file.Path;
 import java.util.function.BiConsumer;
@@ -69,35 +68,35 @@ public class NeoForgePlatformHelper implements IPlatformHelper {
 
 	@Override
 	public void registerHudElement(
-			@NotNull Identifier beforeThis,
-			@NotNull Identifier identifier,
+			@NotNull ResourceLocation beforeThis,
+			@NotNull ResourceLocation location,
 			@NotNull BiConsumer<GuiGraphics, DeltaTracker> hudElement
 	) {
-		eventBus.addListener((RegisterGuiLayersEvent event) -> event.registerBelow(beforeThis, identifier, hudElement::accept));
+		eventBus.addListener((RegisterGuiLayersEvent event) -> event.registerBelow(beforeThis, location, hudElement::accept));
 	}
 
 	@Override
-	public void registerReloadListener(@NotNull Identifier id, @NotNull PreparableReloadListener listener) {
-		eventBus.addListener((AddClientReloadListenersEvent event) -> event.addListener(id, listener));
+	public void registerReloadListener(@NotNull ResourceLocation location, @NotNull PreparableReloadListener listener) {
+		eventBus.addListener((AddClientReloadListenersEvent event) -> event.addListener(location, listener));
 	}
 
 	@Override
-	public @NonNull Identifier getChatIdentifier() {
+	public @NotNull ResourceLocation getChatLocation() {
 		return VanillaGuiLayers.CHAT;
 	}
 
 	@Override
-	public @NotNull Identifier getBossBarIdentifier() {
+	public @NotNull ResourceLocation getBossBarLocation() {
 		return VanillaGuiLayers.BOSS_OVERLAY;
 	}
 
 	@Override
-	public @NotNull Identifier getCrosshairIdentifier() {
+	public @NotNull ResourceLocation getCrosshairLocation() {
 		return VanillaGuiLayers.CROSSHAIR;
 	}
 
 	@Override
-	public @NotNull Identifier getScoreboardIdentifier() {
+	public @NotNull ResourceLocation getScoreboardLocation() {
 		return VanillaGuiLayers.SCOREBOARD_SIDEBAR;
 	}
 

@@ -1,21 +1,22 @@
 package me.Azz_9.flex_hud.client.gui.components;
 
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class DynamicSpriteIconButton extends Button {
-	private @Nullable Identifier sprite;
+	private @Nullable ResourceLocation sprite;
 	private final int spriteWidth;
 	private final int spriteHeight;
 
 
-	public DynamicSpriteIconButton(int x, int y, int width, int height, @Nullable Identifier sprite, int spriteWidth, int spriteHeight, OnPress onPress) {
+	public DynamicSpriteIconButton(int x, int y, int width, int height, @Nullable ResourceLocation sprite, int spriteWidth, int spriteHeight, OnPress onPress) {
 		super(x, y, width, height, Component.empty(), onPress, DEFAULT_NARRATION);
 		this.sprite = sprite;
 		this.spriteWidth = spriteWidth;
@@ -23,8 +24,8 @@ public class DynamicSpriteIconButton extends Button {
 	}
 
 	@Override
-	protected void renderContents(@NotNull GuiGraphics graphics, int i, int i1, float v) {
-		super.renderDefaultSprite(graphics);
+	protected void renderWidget(@NotNull GuiGraphics graphics, int i, int i1, float v) {
+		super.renderWidget(graphics, i, i1, v);
 
 		if (sprite == null) return;
 
@@ -33,7 +34,11 @@ public class DynamicSpriteIconButton extends Button {
 		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, iconX, iconY, spriteWidth, spriteHeight, alpha);
 	}
 
-	public void setSprite(@Nullable Identifier sprite) {
+	@Override
+	public void renderString(@NotNull GuiGraphics guiGraphics, @NotNull Font font, int color) {
+	}
+
+	public void setSprite(@Nullable ResourceLocation sprite) {
 		this.sprite = sprite;
 	}
 }

@@ -9,8 +9,9 @@ import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
 import me.Azz_9.flex_hud.client.gui.Cursors;
+import me.Azz_9.flex_hud.utils.DrawingUtils;
 
-public class Pixel extends AbstractWidget.WithInactiveMessage {
+public class Pixel extends AbstractWidget {
 	private final CrosshairEditor crosshairEditor;
 	private int color;
 	private final int pixelX, pixelY;
@@ -39,9 +40,9 @@ public class Pixel extends AbstractWidget.WithInactiveMessage {
 
 
 		if (this.isHovered()) {
-			graphics.renderOutline(getX(), getY(), getWidth(), getHeight(), 0xffdf1515);
+			DrawingUtils.drawBorder(graphics, getX(), getY(), getWidth(), getHeight(), 0xffdf1515);
 		} else {
-			graphics.renderOutline(getX(), getY(), getWidth(), getHeight(), 0xffdfdfdf);
+			DrawingUtils.drawBorder(graphics, getX(), getY(), getWidth(), getHeight(), 0xffdfdfdf);
 		}
 	}
 

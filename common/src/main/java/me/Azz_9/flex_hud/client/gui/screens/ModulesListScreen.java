@@ -11,7 +11,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
-import org.jspecify.annotations.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +67,8 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 				.build();
 
 		// Initialisation du choix du nombre de colonnes
-		columnsButton = CycleButton.<Integer>builder(value -> Component.literal(value.toString()), columns)
+		columnsButton = CycleButton.<Integer>builder(value -> Component.literal(value.toString()))
+				.withInitialValue(columns)
 				.withValues(IntStream.rangeClosed(1, MAX_COLUMNS).boxed().toList())
 				.create(Math.clamp(
 						this.width / 2 + 105 + (int) (this.width / 100.0F * 5),
@@ -99,7 +100,7 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 	}
 
 	@Override
-	public void render(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+	public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
 		super.render(graphics, mouseX, mouseY, delta);
 
 		graphics.drawCenteredString(font, title, this.width / 2, 7, 0xffffffff);

@@ -16,6 +16,7 @@ import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
 import me.Azz_9.flex_hud.client.gui.Colors;
+import me.Azz_9.flex_hud.utils.DrawingUtils;
 
 /**
  * An overlay rendered on top of the settings screen when the user tries to close
@@ -119,7 +120,7 @@ public final class UnsavedChangesOverlay extends AbstractWidget implements Popup
 
 		// Dialog background
 		graphics.fill(dialogX, dialogY, dialogX + DIALOG_WIDTH, dialogY + DIALOG_HEIGHT, Colors.DARK_GRAY);
-		graphics.renderOutline(dialogX, dialogY, DIALOG_WIDTH, DIALOG_HEIGHT, Colors.GRAY);
+		DrawingUtils.drawBorder(graphics, dialogX, dialogY, DIALOG_WIDTH, DIALOG_HEIGHT, Colors.GRAY);
 
 		// Title
 		Component title = Component.translatable("flex_hud.global.config.callback.message_title");

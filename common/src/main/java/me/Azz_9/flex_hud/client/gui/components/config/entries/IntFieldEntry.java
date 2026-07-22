@@ -10,9 +10,9 @@ import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
-import org.jspecify.annotations.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,10 +27,10 @@ import me.Azz_9.flex_hud.client.gui.components.config.ScrollableConfigList;
 import me.Azz_9.flex_hud.client.gui.components.config.fields.ConfigIntFieldWidget;
 
 public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
-	private static final Identifier INCREASE_UNFOCUSED = Identifier.fromNamespaceAndPath(MOD_ID, "widget/increase/unfocused");
-	private static final Identifier INCREASE_FOCUSED = Identifier.fromNamespaceAndPath(MOD_ID, "widget/increase/focused");
-	private static final Identifier DECREASE_UNFOCUSED = Identifier.fromNamespaceAndPath(MOD_ID, "widget/decrease/unfocused");
-	private static final Identifier DECREASE_FOCUSED = Identifier.fromNamespaceAndPath(MOD_ID, "widget/decrease/focused");
+	private static final ResourceLocation INCREASE_UNFOCUSED = ResourceLocation.fromNamespaceAndPath(MOD_ID, "widget/increase/unfocused");
+	private static final ResourceLocation INCREASE_FOCUSED = ResourceLocation.fromNamespaceAndPath(MOD_ID, "widget/increase/focused");
+	private static final ResourceLocation DECREASE_UNFOCUSED = ResourceLocation.fromNamespaceAndPath(MOD_ID, "widget/decrease/unfocused");
+	private static final ResourceLocation DECREASE_FOCUSED = ResourceLocation.fromNamespaceAndPath(MOD_ID, "widget/decrease/focused");
 
 	private final ConfigIntFieldWidget intFieldWidget;
 	private final ImageButton increaseButton;
@@ -95,7 +95,7 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 	}
 
 	@Override
-	public void renderContent(@NonNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+	public void renderContent(@NotNull GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
 		super.renderContent(graphics, mouseX, mouseY, hovered, deltaTicks);
 
 		increaseButton.render(graphics, mouseX, mouseY, deltaTicks);
@@ -110,12 +110,12 @@ public class IntFieldEntry extends ScrollableConfigList.AbstractConfigEntry {
 	}
 
 	@Override
-	public @NonNull List<? extends NarratableEntry> narratables() {
+	public @NotNull List<? extends NarratableEntry> narratables() {
 		return List.of(intFieldWidget, increaseButton, decreaseButton, resetButtonWidget);
 	}
 
 	@Override
-	public @NonNull List<? extends GuiEventListener> children() {
+	public @NotNull List<? extends GuiEventListener> children() {
 		return List.of(intFieldWidget, increaseButton, decreaseButton, resetButtonWidget);
 	}
 

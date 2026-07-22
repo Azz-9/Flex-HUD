@@ -7,7 +7,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -90,7 +90,7 @@ public class CommonClass {
 
 		// init variables when the languages are loaded
 		Services.PLATFORM.registerReloadListener(
-				Identifier.fromNamespaceAndPath(MOD_ID, "variables_init"),
+				ResourceLocation.fromNamespaceAndPath(MOD_ID, "variables_init"),
 				(store, prepareExecutor, reloadSynchronizer, applyExecutor) ->
 						reloadSynchronizer.wait(null).thenRunAsync(() -> {
 							Variables.init();
@@ -137,7 +137,7 @@ public class CommonClass {
 			waypointCollectors.forEach(Collector::onLeaveWorld);
 		});
 
-		final KeyMapping.Category FLEX_HUD = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MOD_ID, "flex-hud"));
+		final KeyMapping.Category FLEX_HUD = KeyMapping.Category.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "flex-hud"));
 
 		// see KeyBindingMixin
 		openOptionScreenKeyBind = Services.PLATFORM.registerKeyMapping(new KeyMapping("flex_hud.controls.open_menu", InputConstants.Type.KEYSYM, InputConstants.KEY_RSHIFT, FLEX_HUD));
@@ -162,14 +162,14 @@ public class CommonClass {
 		for (HudElement hudElement : Modules.getHudElements()) {
 			Services.PLATFORM.registerHudElement(
 					hudElement.getLayer(),
-					Identifier.fromNamespaceAndPath(MOD_ID, hudElement.getID()),
+					ResourceLocation.fromNamespaceAndPath(MOD_ID, hudElement.getID()),
 					DEBUG ? hudElement::renderWithPerfTest : hudElement::render
 			);
 		}
 
 		Services.PLATFORM.registerHudElement(
-				Services.PLATFORM.getChatIdentifier(),
-				Identifier.fromNamespaceAndPath(MOD_ID, "custom_modules"),
+				Services.PLATFORM.getChatLocation(),
+				ResourceLocation.fromNamespaceAndPath(MOD_ID, "custom_modules"),
 				(graphics, deltaTracker) -> {
 					for (CustomModule module : Modules.getCustomModules()) {
 						if (DEBUG) {

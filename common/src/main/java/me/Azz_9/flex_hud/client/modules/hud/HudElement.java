@@ -2,7 +2,7 @@ package me.Azz_9.flex_hud.client.modules.hud;
 
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import me.Azz_9.flex_hud.client.config.Configurable;
 import me.Azz_9.flex_hud.client.debug.PerfTester;
@@ -26,7 +26,7 @@ public interface HudElement extends Configurable {
 
 	boolean shouldNotRender();
 
-	default Identifier getLayer() {
-		return Services.PLATFORM.getChatIdentifier();
+	default ResourceLocation getLayer() {
+		return Services.PLATFORM.getChatLocation();
 	}
 }
