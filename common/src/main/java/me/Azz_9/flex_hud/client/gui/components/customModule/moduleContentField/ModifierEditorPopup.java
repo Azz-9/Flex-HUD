@@ -112,7 +112,6 @@ final class ModifierEditorPopup {
 			case INTEGER -> switch (modifier.key()) {
 				case "round", "floor", "ceil", "percent", "pad_left", "pad_right", "pad_center", "truncate" ->
 						ModuleContentField::isUnsignedTwoDigitIntegerInput;
-				case "pow" -> ModuleContentField::isUnsignedIntegerInput;
 				default -> ModuleContentField::isUnsignedIntegerInput;
 			};
 			case DECIMAL -> modifier.key().equals("div")
@@ -167,7 +166,6 @@ final class ModifierEditorPopup {
 					cursorY += FIELD_HEIGHT + ROW_GAP;
 				}
 				addConditionalBounds = new Bounds(bounds.x() + ModuleContentField.POPUP_PADDING, cursorY, 22, ModuleContentField.BUTTON_HEIGHT);
-				cursorY += FIELD_HEIGHT + ModuleContentField.POPUP_GAP;
 			}
 		}
 

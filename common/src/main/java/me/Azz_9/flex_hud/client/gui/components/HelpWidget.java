@@ -116,10 +116,6 @@ public class HelpWidget extends AbstractWidget {
 		return displayHelp;
 	}
 
-	public void setDisplayHelp(boolean displayHelp) {
-		this.displayHelp = displayHelp;
-	}
-
 	@Override
 	protected void updateWidgetNarration(@NotNull NarrationElementOutput output) {
 	}
