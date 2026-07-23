@@ -4,7 +4,6 @@ import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 import static me.Azz_9.flex_hud.CommonClass.openOptionScreenKeyBind;
 import static me.Azz_9.flex_hud.Constants.MOD_ID;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.ChatFormatting;
@@ -127,8 +126,6 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 		double y = height / 2.0 - iconHeight / 2.0 - 35;
 		y -= 16 * easedProgress; // go up smoothly
 
-		RenderSystem.setShaderColor(1, 1, 1, easedProgress);
-
 		super.render(graphics, mouseX, mouseY, delta);
 
 		PoseStack matrices = graphics.pose();
@@ -139,8 +136,6 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 		graphics.blitSprite(RenderType::guiTextured, LOGO_WITHOUT_BG, 0, 0, iconWidth, iconHeight);
 
 		matrices.popPose();
-
-		RenderSystem.setShaderColor(1, 1, 1, 1);
 
 		if (!Modules.getInstance().isEnabled.getValue()) {
 			graphics.drawCenteredString(
