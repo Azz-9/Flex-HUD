@@ -45,7 +45,10 @@ public abstract class AbstractPopupScreen extends AbstractBackNavigableScreen {
 		renderBeforePopup(graphics, mx, my, deltaTicks);
 
 		if (popupWidget != null) {
+			graphics.pose().pushPose();
+			graphics.pose().translate(0, 0, 400);
 			popupWidget.render(graphics, mouseX, mouseY, deltaTicks);
+			graphics.pose().popPose();
 		}
 	}
 
