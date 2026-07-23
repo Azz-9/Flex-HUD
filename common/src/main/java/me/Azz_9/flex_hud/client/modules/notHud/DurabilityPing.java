@@ -58,10 +58,10 @@ public class DurabilityPing extends AbstractModule {
 
 			@Override
 			protected void initContent() {
-				int width = (int) (MINECRAFT.getWindow().getGuiScaledWidth() * MESSAGE_WIDTH_FRACTION);
+				int maxWidth = (int) (MINECRAFT.getWindow().getGuiScaledWidth() * MESSAGE_WIDTH_FRACTION);
 
 				MultiLineTextWidget text = new FocusableTextWidget(
-						width,
+						maxWidth,
 						MESSAGE,
 						font,
 						false,
@@ -70,7 +70,7 @@ public class DurabilityPing extends AbstractModule {
 					@Override
 					public void onClick(double mouseX, double mouseY) {
 						int lineIndex = (int) (mouseY - getY()) / font.lineHeight;
-						List<FormattedCharSequence> lines = font.split(getMessage(), width);
+						List<FormattedCharSequence> lines = font.split(getMessage(), maxWidth);
 						if (lineIndex < 0 || lineIndex >= lines.size()) {
 							return;
 						}

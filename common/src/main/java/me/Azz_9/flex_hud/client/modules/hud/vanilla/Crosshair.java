@@ -10,7 +10,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.FlexHudRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 
@@ -70,7 +69,12 @@ public class Crosshair extends AbstractModule {
 				.withBlend(new BlendFunction(SourceFactor.ONE_MINUS_DST_COLOR, DestFactor.ONE_MINUS_SRC_COLOR, SourceFactor.ONE, DestFactor.ZERO))
 				.build()
 		);
-		crosshairRenderType = FlexHudRenderTypes.create("flex_hud_crosshair", crosshairPipeline);
+		crosshairRenderType = RenderType.create(
+				"flex_hud_crosshair",
+				RenderType.SMALL_BUFFER_SIZE,
+				crosshairPipeline,
+				RenderType.CompositeState.builder().createCompositeState(false)
+		);
 	}
 
 	@Override
