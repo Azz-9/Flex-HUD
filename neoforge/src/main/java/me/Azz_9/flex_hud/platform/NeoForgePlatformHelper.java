@@ -3,7 +3,6 @@ package me.Azz_9.flex_hud.platform;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.neoforged.bus.api.IEventBus;
@@ -89,10 +88,5 @@ public class NeoForgePlatformHelper implements IPlatformHelper {
 	public @NotNull KeyMapping registerKeyMapping(@NotNull KeyMapping keyMapping) {
 		eventBus.addListener((RegisterKeyMappingsEvent event) -> event.register(keyMapping));
 		return keyMapping;
-	}
-
-	@Override
-	public ScreenRectangle scissorStackPeek(@NotNull GuiGraphics graphics) {
-		return graphics.scissorStack.stack.peekLast();
 	}
 }
