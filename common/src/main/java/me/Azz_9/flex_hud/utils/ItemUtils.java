@@ -9,18 +9,8 @@ import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
-import java.util.Set;
 
 public class ItemUtils {
-	private static final Set<Item> ARMOR_PIECES = Set.of(
-			Items.LEATHER_BOOTS, Items.LEATHER_LEGGINGS, Items.LEATHER_CHESTPLATE, Items.LEATHER_HELMET,
-			Items.CHAINMAIL_BOOTS, Items.CHAINMAIL_LEGGINGS, Items.CHAINMAIL_CHESTPLATE, Items.CHAINMAIL_HELMET,
-			Items.IRON_BOOTS, Items.IRON_LEGGINGS, Items.IRON_CHESTPLATE, Items.IRON_HELMET,
-			Items.GOLDEN_BOOTS, Items.GOLDEN_LEGGINGS, Items.GOLDEN_CHESTPLATE, Items.GOLDEN_HELMET,
-			Items.DIAMOND_BOOTS, Items.DIAMOND_LEGGINGS, Items.DIAMOND_CHESTPLATE, Items.DIAMOND_HELMET,
-			Items.NETHERITE_BOOTS, Items.NETHERITE_LEGGINGS, Items.NETHERITE_CHESTPLATE, Items.NETHERITE_HELMET,
-			Items.TURTLE_HELMET, Items.ELYTRA
-	);
 
 	public static int getStackCount(@NotNull ItemStack stack, @NotNull Inventory inventory) {
 		int itemCount = 0;
@@ -89,9 +79,5 @@ public class ItemUtils {
 
 	public static int getDurabilityValue(@NotNull ItemStack stack) {
 		return stack.getMaxDamage() - stack.getDamageValue();
-	}
-
-	public static boolean isArmorPiece(ItemStack stack) {
-		return ARMOR_PIECES.contains(stack.getItem());
 	}
 }

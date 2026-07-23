@@ -104,21 +104,6 @@ public class FabricPlatformHelper implements IPlatformHelper {
 	}
 
 	@Override
-	public @NotNull ResourceLocation getBossBarLocation() {
-		return VanillaHudElements.BOSS_BAR;
-	}
-
-	@Override
-	public @NotNull ResourceLocation getCrosshairLocation() {
-		return VanillaHudElements.CROSSHAIR;
-	}
-
-	@Override
-	public @NotNull ResourceLocation getScoreboardLocation() {
-		return VanillaHudElements.SCOREBOARD;
-	}
-
-	@Override
 	public @NotNull KeyMapping registerKeyMapping(@NotNull KeyMapping keyMapping) {
 		return KeyBindingHelper.registerKeyBinding(keyMapping);
 	}
