@@ -481,7 +481,7 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 		closeSelectionPopups();
 
 		int clickedIndex = getClosestCaretIndex(mouseX);
-		if (!Screen.hasShiftDown()) {
+		if (Screen.hasShiftDown()) {
 			caretIndex = clickedIndex;
 		} else {
 			caretIndex = clickedIndex;
@@ -1575,7 +1575,7 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 		closeSelectionPopups();
 		int drawX = getX() + TEXT_PADDING_X + variableItem.x() - horizontalScroll;
 		int clickedIndex = mouseX < drawX + variableItem.width() / 2.0 ? variableItem.modelIndex() : variableItem.modelIndex() + 1;
-		if (!Screen.hasShiftDown()) {
+		if (Screen.hasShiftDown()) {
 			caretIndex = clickedIndex;
 		} else {
 			caretIndex = clickedIndex;
