@@ -16,9 +16,9 @@ import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.animal.Cat;
 import net.minecraft.world.entity.animal.Parrot;
 import net.minecraft.world.entity.animal.SnowGolem;
+import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.animal.horse.TraderLlama;
-import net.minecraft.world.entity.animal.wolf.Wolf;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.phys.Vec3;
 

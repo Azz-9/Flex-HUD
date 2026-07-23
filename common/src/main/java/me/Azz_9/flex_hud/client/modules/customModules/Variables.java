@@ -60,7 +60,7 @@ public class Variables {
 	}
 
 	private static void registerPlayerVariables() {
-		register("player.gamemode", SafeSupplier.create(() -> requireNonNull(requireNonNull(MINECRAFT.player).gameMode()).getShortDisplayName().getString(), Component.translatable("selectWorld.gameMode.survival").getString()), TICK);
+		register("player.gamemode", SafeSupplier.create(() -> requireNonNull(requireNonNull(MINECRAFT.gameMode).getPlayerMode()).getShortDisplayName().getString(), Component.translatable("selectWorld.gameMode.survival").getString()), TICK);
 		register("player.name", () -> MINECRAFT.getUser().getName(), ON_JOIN_WORLD);
 		register("player.yaw", SafeSupplier.create(() -> Mth.wrapDegrees(requireNonNull(MINECRAFT.player).getYRot()), 180f), FRAME);
 		register("player.pitch", SafeSupplier.create(() -> requireNonNull(MINECRAFT.player).getXRot(), 0.0f), FRAME);

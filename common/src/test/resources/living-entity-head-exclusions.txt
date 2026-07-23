@@ -65,13 +65,14 @@ iron_golem/iron_golem_crackiness_low.png
 iron_golem/iron_golem_crackiness_medium.png
 llama/spit.png
 phantom_eyes.png
-sheep/sheep_wool_undercoat.png
-sheep/sheep_wool.png
+pig/pig_saddle.png
+sheep/sheep_fur.png
 shulker/spark.png
 skeleton/bogged_overlay.png
 skeleton/stray_overlay.png
 snow_golem.png
 spider_eyes.png
+strider/strider_saddle.png
 villager/profession_level/diamond.png
 villager/profession_level/emerald.png
 villager/profession_level/gold.png

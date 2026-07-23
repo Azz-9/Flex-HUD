@@ -8,10 +8,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModList;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.event.*;
-import net.neoforged.neoforge.client.event.lifecycle.ClientStartedEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.common.NeoForge;
 
@@ -48,7 +48,7 @@ public class NeoForgePlatformHelper implements IPlatformHelper {
 
 	@Override
 	public void registerClientStartEvent(@NotNull Runnable runnable) {
-		NeoForge.EVENT_BUS.addListener((ClientStartedEvent event) -> runnable.run());
+		eventBus.addListener((FMLClientSetupEvent event) -> runnable.run());
 	}
 
 	@Override

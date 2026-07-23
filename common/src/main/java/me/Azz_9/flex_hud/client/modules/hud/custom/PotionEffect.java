@@ -63,7 +63,7 @@ public class PotionEffect extends AbstractTextModule {
 
 		List<MobEffectInstance> playerEffects;
 		if (CommonClass.isEditingLayout) {
-			playerEffects = List.of(new MobEffectInstance(MobEffects.SPEED, 1800, 1), new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 200));
+			playerEffects = List.of(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 1800, 1), new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 200));
 		} else {
 			playerEffects = Ordering.natural().sortedCopy(MINECRAFT.player.getActiveEffects());
 		}

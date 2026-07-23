@@ -11,7 +11,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
 
-import java.net.URI;
 import java.util.List;
 
 import me.Azz_9.flex_hud.client.config.ConfigRegistry;
@@ -26,12 +25,12 @@ public class DurabilityPing extends AbstractModule {
 	private static final Component MODRINTH_COMPONENT = Component.literal("Modrinth")
 			.withStyle(style -> style
 					.withUnderlined(true)
-					.withClickEvent(new ClickEvent.OpenUrl(URI.create(MODRINTH_MOD_PAGE)))
+					.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, MODRINTH_MOD_PAGE))
 			);
 	private static final Component CURSEFORGE_COMPONENT = Component.literal("CurseForge")
 			.withStyle(style -> style
 					.withUnderlined(true)
-					.withClickEvent(new ClickEvent.OpenUrl(URI.create(CURSEFORGE_MOD_PAGE)))
+					.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, CURSEFORGE_MOD_PAGE))
 			);
 	private static final Component MESSAGE = Component.translatable(
 			"flex_hud.durability_ping.config_screen_message",
@@ -95,8 +94,8 @@ public class DurabilityPing extends AbstractModule {
 	}
 
 	private void handleClickEvent(Style style) {
-		if (style.getClickEvent() instanceof ClickEvent.OpenUrl(URI uri)) {
-			Util.getPlatform().openUri(uri);
+		if (style.getClickEvent() instanceof ClickEvent clickEvent && clickEvent.getAction() == ClickEvent.Action.OPEN_URL) {
+			Util.getPlatform().openUri(clickEvent.getValue());
 		}
 	}
 }

@@ -2,14 +2,13 @@ package me.Azz_9.flex_hud.client.modules.hud.vanilla;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
-import com.mojang.blaze3d.pipeline.BlendFunction;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.platform.DestFactor;
-import com.mojang.blaze3d.platform.SourceFactor;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexFormat;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 
@@ -22,11 +21,9 @@ import me.Azz_9.flex_hud.client.gui.components.config.entries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.gui.screens.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.modules.Modules;
-import me.Azz_9.flex_hud.mixin.RenderPipelinesAccessor;
 
 public class Crosshair extends AbstractModule {
 
-	private static RenderPipeline crosshairPipeline;
 	private static RenderType crosshairRenderType;
 
 	public int size = 15;
@@ -64,16 +61,15 @@ public class Crosshair extends AbstractModule {
 
 	@Override
 	public void init() {
-		crosshairPipeline = RenderPipelinesAccessor.invokeRegister(RenderPipeline.builder(RenderPipelinesAccessor.getGuiSnippet())
-				.withLocation("pipeline/crosshair_no_tex")
-				.withBlend(new BlendFunction(SourceFactor.ONE_MINUS_DST_COLOR, DestFactor.ONE_MINUS_SRC_COLOR, SourceFactor.ONE, DestFactor.ZERO))
-				.build()
-		);
 		crosshairRenderType = RenderType.create(
 				"flex_hud_crosshair",
+				DefaultVertexFormat.POSITION_COLOR,
+				VertexFormat.Mode.QUADS,
 				RenderType.SMALL_BUFFER_SIZE,
-				crosshairPipeline,
-				RenderType.CompositeState.builder().createCompositeState(false)
+				RenderType.CompositeState.builder()
+						.setShaderState(RenderStateShard.RENDERTYPE_GUI_SHADER)
+						.setTransparencyState(RenderStateShard.CROSSHAIR_TRANSPARENCY)
+						.createCompositeState(false)
 		);
 	}
 
@@ -83,7 +79,6 @@ public class Crosshair extends AbstractModule {
 	}
 
 	public void renderReplacement(GuiGraphics graphics) {
-
 		PoseStack matrices = graphics.pose();
 		matrices.pushPose();
 		matrices.translate(graphics.guiWidth() / 2.0f, graphics.guiHeight() / 2.0f, 0);
