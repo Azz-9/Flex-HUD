@@ -61,12 +61,6 @@ public interface IPlatformHelper {
 
 	@NotNull ResourceLocation getChatLocation();
 
-	@NotNull ResourceLocation getBossBarLocation();
-
-	@NotNull ResourceLocation getCrosshairLocation();
-
-	@NotNull ResourceLocation getScoreboardLocation();
-
 	@NotNull KeyMapping registerKeyMapping(@NotNull KeyMapping keyMapping);
 
 	ScreenRectangle scissorStackPeek(@NotNull GuiGraphics graphics);

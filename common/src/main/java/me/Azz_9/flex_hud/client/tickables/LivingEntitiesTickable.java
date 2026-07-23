@@ -134,7 +134,7 @@ public class LivingEntitiesTickable implements Tickable {
 	static ResourceLocation getMobHeadTexture(Mob mob) {
 		ResourceLocation id = null;
 		switch (mob) {
-			case EnderDragon enderDragonEntity ->
+			case EnderDragon ignored ->
 					id = ResourceLocation.fromNamespaceAndPath(MOD_ID, "hud/living_entities/minecraft/enderdragon/dragon");
 			case SnowGolem snowGolemEntity -> {
 				String path = "hud/living_entities/minecraft/snow_golem/snow_golem";
