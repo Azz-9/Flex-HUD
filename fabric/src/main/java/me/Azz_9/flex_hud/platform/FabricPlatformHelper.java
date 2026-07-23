@@ -85,21 +85,6 @@ public class FabricPlatformHelper implements IPlatformHelper {
 	}
 
 	@Override
-	public @NotNull Identifier getBossBarIdentifier() {
-		return VanillaHudElements.BOSS_BAR;
-	}
-
-	@Override
-	public @NotNull Identifier getCrosshairIdentifier() {
-		return VanillaHudElements.CROSSHAIR;
-	}
-
-	@Override
-	public @NotNull Identifier getScoreboardIdentifier() {
-		return VanillaHudElements.SCOREBOARD;
-	}
-
-	@Override
 	public @NotNull KeyMapping registerKeyMapping(@NotNull KeyMapping keyMapping) {
 		return KeyMappingHelper.registerKeyMapping(keyMapping);
 	}

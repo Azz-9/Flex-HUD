@@ -89,13 +89,6 @@ public class MovableWidget extends AbstractWidget.WithInactiveMessage implements
 		updateScaleHandle();
 	}
 
-	// i don't want to use the render method that already exists in ClickableWidget because it sets the value of hovered, and here, i'm setting this in the method mouseMove
-	public void draw(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
-		if (this.visible) {
-			this.extractWidgetRenderState(graphics, mouseX, mouseY, deltaTicks);
-		}
-	}
-
 	@Override
 	protected void extractWidgetRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
 		this.isHovered = (mouseX >= getX() && mouseY >= getY() && mouseX <= getRight() && mouseY <= getBottom()) || isScaleHandleHovered(mouseX, mouseY);
