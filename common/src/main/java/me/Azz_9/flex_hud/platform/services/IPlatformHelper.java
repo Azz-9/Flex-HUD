@@ -61,12 +61,6 @@ public interface IPlatformHelper {
 
 	@NotNull Identifier getChatIdentifier();
 
-	@NotNull Identifier getBossBarIdentifier();
-
-	@NotNull Identifier getCrosshairIdentifier();
-
-	@NotNull Identifier getScoreboardIdentifier();
-
 	@NotNull KeyMapping registerKeyMapping(@NotNull KeyMapping keyMapping);
 
 	ScreenRectangle scissorStackPeek(@NotNull GuiGraphics graphics);

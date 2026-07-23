@@ -87,21 +87,6 @@ public class NeoForgePlatformHelper implements IPlatformHelper {
 	}
 
 	@Override
-	public @NotNull Identifier getBossBarIdentifier() {
-		return VanillaGuiLayers.BOSS_OVERLAY;
-	}
-
-	@Override
-	public @NotNull Identifier getCrosshairIdentifier() {
-		return VanillaGuiLayers.CROSSHAIR;
-	}
-
-	@Override
-	public @NotNull Identifier getScoreboardIdentifier() {
-		return VanillaGuiLayers.SCOREBOARD_SIDEBAR;
-	}
-
-	@Override
 	public @NotNull KeyMapping registerKeyMapping(@NotNull KeyMapping keyMapping) {
 		eventBus.addListener((RegisterKeyMappingsEvent event) -> event.register(keyMapping));
 		return keyMapping;

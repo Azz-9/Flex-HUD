@@ -204,13 +204,4 @@ public class ConfigLoader {
 
 		return newRoot;
 	}
-
-	private static void saveConverted(JsonObject root) {
-		try (Writer writer = Files.newBufferedWriter(CONFIG_FILE.toPath())) {
-			GSON.toJson(root, writer);
-			FlexHudLogger.info("Migrated config successfully saved!");
-		} catch (Exception e) {
-			FlexHudLogger.error("Failed to save migrated config: {}", e.getMessage());
-		}
-	}
 }
