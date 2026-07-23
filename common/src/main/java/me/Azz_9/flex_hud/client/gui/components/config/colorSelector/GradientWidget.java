@@ -3,15 +3,16 @@ package me.Azz_9.flex_hud.client.gui.components.config.colorSelector;
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 import static me.Azz_9.flex_hud.Constants.MOD_ID;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
@@ -40,20 +41,20 @@ public class GradientWidget extends AbstractWidget {
 	protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		renderGradient(graphics);
 
-		Matrix3x2fStack matrices = graphics.pose();
-		matrices.pushMatrix();
-		matrices.translate((float) (cursorX + getX()), (float) (cursorY + getY()));
+		PoseStack matrices = graphics.pose();
+		matrices.pushPose();
+		matrices.translate((float) (cursorX + getX()), (float) (cursorY + getY()), 0);
 
 		// Draw the cursor
 		int cursorSize = 6;
 		graphics.blitSprite(
-				RenderPipelines.GUI_TEXTURED,
+				RenderType::guiTextured,
 				CURSOR,
 				-cursorSize / 2, -cursorSize / 2,
 				cursorSize, cursorSize
 		);
 
-		matrices.popMatrix();
+		matrices.popPose();
 	}
 
 	private void renderGradient(GuiGraphics graphics) {

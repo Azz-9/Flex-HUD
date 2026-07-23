@@ -2,6 +2,8 @@ package me.Azz_9.flex_hud.client.modules.hud.custom;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
@@ -11,7 +13,6 @@ import net.minecraft.network.chat.Component;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix3x2fStack;
 
 import me.Azz_9.flex_hud.CommonClass;
 import me.Azz_9.flex_hud.client.gui.components.config.entries.ColorButtonEntry;
@@ -54,16 +55,16 @@ public class DayCounter extends AbstractTextModule {
 
 		setWidth(text.getString());
 
-		Matrix3x2fStack matrices = graphics.pose();
-		matrices.pushMatrix();
-		matrices.translate(getRoundedX(), getRoundedY());
-		matrices.scale(getScale());
+		PoseStack matrices = graphics.pose();
+		matrices.pushPose();
+		matrices.translate(getRoundedX(), getRoundedY(), 0);
+		matrices.scale(getScale(), getScale(), 1);
 
 		drawBackground(graphics);
 
 		graphics.drawString(MINECRAFT.font, text, 0, 0, getColor(), this.shadow.getValue());
 
-		matrices.popMatrix();
+		matrices.popPose();
 	}
 
 	@Override

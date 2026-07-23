@@ -10,7 +10,7 @@ import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
@@ -143,7 +143,7 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 	@Override
 	protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		ResourceLocation texture = SPRITES.get(this.isActive(), this.isFocused());
-		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, texture, getX(), getY(), getWidth(), getHeight());
+		graphics.blitSprite(RenderType::guiTextured, texture, getX(), getY(), getWidth(), getHeight());
 
 		refreshOverlayLayout();
 		updateHover(mouseX, mouseY);

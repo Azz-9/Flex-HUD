@@ -2,6 +2,9 @@ package me.Azz_9.flex_hud.client.modules.hud.custom;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
+
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -11,7 +14,6 @@ import net.minecraft.util.ARGB;
 import net.minecraft.world.item.Items;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
 import me.Azz_9.flex_hud.CommonClass;
 import me.Azz_9.flex_hud.client.config.ConfigRegistry;
@@ -81,10 +83,10 @@ public class PitchDisplay extends AbstractTextModule {
 						: 0) + 34));
 
 
-		Matrix3x2fStack matrices = graphics.pose();
-		matrices.pushMatrix();
-		matrices.translate(getRoundedX(), getRoundedY());
-		matrices.scale(getScale());
+		PoseStack matrices = graphics.pose();
+		matrices.pushPose();
+		matrices.translate(getRoundedX(), getRoundedY(), 0);
+		matrices.scale(getScale(), getScale(), 1);
 
 		drawBackground(graphics);
 
@@ -92,21 +94,21 @@ public class PitchDisplay extends AbstractTextModule {
 
 		float hudX = 0;
 		if (showDegrees.getValue()) {
-			matrices.pushMatrix();
-			matrices.translate(hudX, (getHeight() - MINECRAFT.font.lineHeight) / 2.0f);
-			matrices.scale(degreesScale);
+			matrices.pushPose();
+			matrices.translate(hudX, (getHeight() - MINECRAFT.font.lineHeight) / 2.0f, 0);
+			matrices.scale(degreesScale, degreesScale, 1);
 			graphics.drawString(MINECRAFT.font, pitchStr, 0, 0, getColor(), shadow.getValue());
-			matrices.popMatrix();
+			matrices.popPose();
 
 			hudX += MINECRAFT.font.width(pitchStr) * degreesScale + 2;
 		}
 
 		if (this.showMarker.getValue()) {
-			matrices.pushMatrix();
-			matrices.translate(hudX, (getHeight() - MINECRAFT.font.lineHeight) / 2.0f);
-			matrices.scale(0.5f, 1.0f);
+			matrices.pushPose();
+			matrices.translate(hudX, (getHeight() - MINECRAFT.font.lineHeight) / 2.0f, 0);
+			matrices.scale(0.5f, 1.0f, 1);
 			graphics.drawString(MINECRAFT.font, markerText, 0, 0, getColor(), this.shadow.getValue());
-			matrices.popMatrix();
+			matrices.popPose();
 
 			hudX += MINECRAFT.font.width(markerText) / 2.0f + 5;
 		}
@@ -121,7 +123,7 @@ public class PitchDisplay extends AbstractTextModule {
 
 		graphics.disableScissor();
 
-		matrices.popMatrix();
+		matrices.popPose();
 	}
 
 	@Override
@@ -130,7 +132,7 @@ public class PitchDisplay extends AbstractTextModule {
 		return super.shouldNotRender() || player != null && displayWhenElytraIsEquipped.getValue() && !player.getInventory().getItem(38).is(Items.ELYTRA);
 	}
 
-	private void drawPitchPoint(GuiGraphics graphics, Matrix3x2fStack matrices, int angle, float pitch, float x) {
+	private void drawPitchPoint(GuiGraphics graphics, PoseStack matrices, int angle, float pitch, float x) {
 		String label = "|";
 		String angleStr = String.valueOf(angle);
 		angle = -angle;
@@ -146,22 +148,22 @@ public class PitchDisplay extends AbstractTextModule {
 			float pointWidth = MINECRAFT.font.width(label) * scaleFactor;
 			float angleHeight = MINECRAFT.font.lineHeight * angleScale;
 
-			matrices.pushMatrix();
-			matrices.translate(x + 14, positionY - angleHeight / 2.0f);
-			matrices.scale(angleScale, angleScale);
+			matrices.pushPose();
+			matrices.translate(x + 14, positionY - angleHeight / 2.0f, 0);
+			matrices.scale(angleScale, angleScale, 1);
 			graphics.drawString(MINECRAFT.font, angleStr, 0, 0, getColorWithFadeEffect(positionY), shadow.getValue());
-			matrices.popMatrix();
+			matrices.popPose();
 
-			matrices.pushMatrix();
-			matrices.translate(x + 9, positionY - pointWidth / 2.0f);
-			matrices.scale(scaleFactor, scaleFactor);
-			matrices.rotate((float) Math.toRadians(90));
+			matrices.pushPose();
+			matrices.translate(x + 9, positionY - pointWidth / 2.0f, 0);
+			matrices.scale(scaleFactor, scaleFactor, 1);
+			matrices.mulPose(Axis.ZP.rotationDegrees(90.0F));
 			graphics.drawString(MINECRAFT.font, label, 0, 0, getColorWithFadeEffect(positionY), shadow.getValue());
-			matrices.popMatrix();
+			matrices.popPose();
 		}
 	}
 
-	private void drawIntermediatePoint(GuiGraphics graphics, Matrix3x2fStack matrices, int angle, float pitch, float x) {
+	private void drawIntermediatePoint(GuiGraphics graphics, PoseStack matrices, int angle, float pitch, float x) {
 		String label = "|";
 		angle = -angle;
 
@@ -173,12 +175,12 @@ public class PitchDisplay extends AbstractTextModule {
 			float positionY = ((getHeight() / 2.0f) + (angleDifference * (getHeight() / 180.0f)));
 			float pointWidth = MINECRAFT.font.width(label) * scaleFactor;
 
-			matrices.pushMatrix();
-			matrices.translate(x + 5.6f, positionY - pointWidth / 2.0f);
-			matrices.scale(scaleFactor, scaleFactor);
-			matrices.rotate((float) Math.toRadians(90));
+			matrices.pushPose();
+			matrices.translate(x + 5.6f, positionY - pointWidth / 2.0f, 0);
+			matrices.scale(scaleFactor, scaleFactor, 1);
+			matrices.mulPose(Axis.ZP.rotationDegrees(90.0F));
 			graphics.drawString(MINECRAFT.font, label, 0, 0, getColorWithFadeEffect(positionY), shadow.getValue());
-			matrices.popMatrix();
+			matrices.popPose();
 		}
 	}
 

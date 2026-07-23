@@ -3,18 +3,19 @@ package me.Azz_9.flex_hud.client.modules.hud.custom;
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 import static me.Azz_9.flex_hud.Constants.MOD_ID;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix3x2fStack;
 
 import me.Azz_9.flex_hud.CommonClass;
 import me.Azz_9.flex_hud.client.gui.components.config.entries.ColorButtonEntry;
@@ -59,16 +60,16 @@ public class WeatherDisplay extends AbstractBackgroundModule {
 
 		if (MINECRAFT.level != null && MINECRAFT.level.dimensionType().hasSkyLight() && !MINECRAFT.level.dimensionType().hasCeiling() || CommonClass.isEditingLayout) {
 
-			Matrix3x2fStack matrices = graphics.pose();
-			matrices.pushMatrix();
-			matrices.translate(getRoundedX(), getRoundedY());
-			matrices.scale(getScale());
+			PoseStack matrices = graphics.pose();
+			matrices.pushPose();
+			matrices.translate(getRoundedX(), getRoundedY(), 0);
+			matrices.scale(getScale(), getScale(), 1);
 
 			drawBackground(graphics);
 
-			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, getWeatherSprite(), 0, 0, SPRITE_SIZE, SPRITE_SIZE);
+			graphics.blitSprite(RenderType::guiTextured, getWeatherSprite(), 0, 0, SPRITE_SIZE, SPRITE_SIZE);
 
-			matrices.popMatrix();
+			matrices.popPose();
 		}
 	}
 

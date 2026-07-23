@@ -4,8 +4,8 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
+import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.loader.api.FabricLoader;
@@ -71,10 +71,8 @@ public class FabricPlatformHelper implements IPlatformHelper {
 
 	@Override
 	public void registerHudElement(@NotNull ResourceLocation beforeThis, @NotNull ResourceLocation location, @NotNull BiConsumer<GuiGraphics, DeltaTracker> hudElement) {
-		HudElementRegistry.attachElementBefore(
-				beforeThis,
-				location,
-				hudElement::accept
+		HudLayerRegistrationCallback.EVENT.register(layers ->
+				layers.attachLayerBefore(beforeThis, location, hudElement::accept)
 		);
 	}
 
@@ -100,7 +98,7 @@ public class FabricPlatformHelper implements IPlatformHelper {
 
 	@Override
 	public @NotNull ResourceLocation getChatLocation() {
-		return VanillaHudElements.CHAT;
+		return IdentifiedLayer.CHAT;
 	}
 
 	@Override
@@ -110,6 +108,6 @@ public class FabricPlatformHelper implements IPlatformHelper {
 
 	@Override
 	public ScreenRectangle scissorStackPeek(@NotNull GuiGraphics graphics) {
-		return graphics.scissorStack.peek();
+		return graphics.scissorStack.stack.peekLast();
 	}
 }

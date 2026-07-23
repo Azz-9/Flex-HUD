@@ -3,6 +3,7 @@ package me.Azz_9.flex_hud.client.gui.components;
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -11,7 +12,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -124,14 +124,14 @@ public class MovableWidget extends AbstractWidget implements TrackableChange {
 			}
 			int valueY = handleY;
 
-			Matrix3x2fStack matrices = graphics.pose();
-			matrices.pushMatrix();
-			matrices.translate(valueX, valueY);
-			matrices.scale(0.75f, 0.75f);
+			PoseStack matrices = graphics.pose();
+			matrices.pushPose();
+			matrices.translate(valueX, valueY, 0);
+			matrices.scale(0.75f, 0.75f, 1);
 
 			graphics.drawString(MINECRAFT.font, text, 0, 0, Colors.WHITE, true);
 
-			matrices.popMatrix();
+			matrices.popPose();
 		}
 	}
 

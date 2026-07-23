@@ -93,6 +93,6 @@ public class NeoForgePlatformHelper implements IPlatformHelper {
 
 	@Override
 	public ScreenRectangle scissorStackPeek(@NotNull GuiGraphics graphics) {
-		return graphics.peekScissorStack();
+		return graphics.scissorStack.stack.peekLast();
 	}
 }

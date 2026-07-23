@@ -2,18 +2,19 @@ package me.Azz_9.flex_hud.client.modules.hud.custom;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,13 +75,13 @@ public class InventoryDisplay extends AbstractMovableModule {
 			}
 		}
 
-		Matrix3x2fStack matrices = graphics.pose();
-		matrices.pushMatrix();
-		matrices.translate(getRoundedX(), getRoundedY());
-		matrices.scale(getScale());
+		PoseStack matrices = graphics.pose();
+		matrices.pushPose();
+		matrices.translate(getRoundedX(), getRoundedY(), 0);
+		matrices.scale(getScale(), getScale(), 1);
 
 		if (!backgroundOpacity.getValue().equals(0)) {
-			graphics.blit(RenderPipelines.GUI_TEXTURED, AbstractContainerScreen.INVENTORY_LOCATION, 0, 0, 6, 82, 164, 56, 256, 256, ARGB.color(backgroundOpacity.getValue(), 0xffffff));
+			graphics.blit(RenderType::guiTextured, AbstractContainerScreen.INVENTORY_LOCATION, 0, 0, 6, 82, 164, 56, 256, 256, ARGB.color(backgroundOpacity.getValue(), 0xffffff));
 		}
 
 		if (MINECRAFT.level != null) {
@@ -102,7 +103,7 @@ public class InventoryDisplay extends AbstractMovableModule {
 			);
 		}
 
-		matrices.popMatrix();
+		matrices.popPose();
 	}
 
 	@Override

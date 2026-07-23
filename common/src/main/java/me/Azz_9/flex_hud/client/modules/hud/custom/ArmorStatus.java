@@ -2,6 +2,8 @@ package me.Azz_9.flex_hud.client.modules.hud.custom;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -13,7 +15,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
 import me.Azz_9.flex_hud.CommonClass;
 import me.Azz_9.flex_hud.client.Translatable;
@@ -222,16 +223,16 @@ public class ArmorStatus extends AbstractTextModule {
 
 		for (int i = 0; i < getDimensionHudList().size(); i++) {
 			DimensionHud dimensionHud = getDimensionHudList().get(i);
-			Matrix3x2fStack matrices = graphics.pose();
-			matrices.pushMatrix();
-			matrices.translate(dimensionHud.getRoundedX(), dimensionHud.getRoundedY());
-			matrices.scale(dimensionHud.getScale());
+			PoseStack matrices = graphics.pose();
+			matrices.pushPose();
+			matrices.translate(dimensionHud.getRoundedX(), dimensionHud.getRoundedY(), 0);
+			matrices.scale(dimensionHud.getScale(), dimensionHud.getScale(), 1);
 
 			drawBackground(i, graphics);
 
 			dimensionHud.render(graphics, deltaTracker);
 
-			matrices.popMatrix();
+			matrices.popPose();
 		}
 	}
 
@@ -438,18 +439,18 @@ public class ArmorStatus extends AbstractTextModule {
 			addPlaceholderLabel(dimensionHud, -1, width, height);
 		}
 
-		Matrix3x2fStack matrices = graphics.pose();
+		PoseStack matrices = graphics.pose();
 		for (int i = 0; i < getDimensionHudList().size(); i++) {
 			DimensionHud dimensionHud = getDimensionHudList().get(i);
-			matrices.pushMatrix();
-			matrices.translate(dimensionHud.getRoundedX(), dimensionHud.getRoundedY());
-			matrices.scale(dimensionHud.getScale());
+			matrices.pushPose();
+			matrices.translate(dimensionHud.getRoundedX(), dimensionHud.getRoundedY(), 0);
+			matrices.scale(dimensionHud.getScale(), dimensionHud.getScale(), 1);
 
 			drawBackground(i, graphics);
 
 			dimensionHud.render(graphics, deltaTracker);
 
-			matrices.popMatrix();
+			matrices.popPose();
 		}
 	}
 

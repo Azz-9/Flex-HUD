@@ -4,7 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.RenderType;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -145,7 +145,7 @@ public class ScrollableModulesList extends AbstractSmoothScrollableList<Scrollab
 					iconX = buttonX + (scrollableModulesList.buttonWidth - scrollableModulesList.iconWidthHeight) / 2;
 				}
 
-				graphics.blitSprite(RenderPipelines.GUI_TEXTURED, this.rowModules.get(i).icon, iconX, y,
+				graphics.blitSprite(RenderType::guiTextured, this.rowModules.get(i).icon, iconX, y,
 						scrollableModulesList.iconWidthHeight, scrollableModulesList.iconWidthHeight);
 				this.rowModules.get(i).setButtonX(buttonX);
 				this.rowModules.get(i).setButtonY(y + scrollableModulesList.iconWidthHeight + scrollableModulesList.padding / 2);

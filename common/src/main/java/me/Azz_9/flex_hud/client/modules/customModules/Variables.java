@@ -112,7 +112,7 @@ public class Variables {
 
 	private static void registerClientVariables() {
 		register("client.fps", MINECRAFT::getFps, TICK);
-		register("client.version", () -> SharedConstants.getCurrentVersion().id(), ON_JOIN_WORLD);
+		register("client.version", () -> SharedConstants.getCurrentVersion().getId(), ON_JOIN_WORLD);
 		register("client.render_distance", () -> MINECRAFT.options.renderDistance().get(), TICK);
 	}
 

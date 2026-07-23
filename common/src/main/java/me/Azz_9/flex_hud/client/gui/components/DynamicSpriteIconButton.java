@@ -3,7 +3,7 @@ package me.Azz_9.flex_hud.client.gui.components;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
@@ -31,7 +31,7 @@ public class DynamicSpriteIconButton extends Button {
 
 		int iconX = this.getX() + (this.width - spriteWidth) / 2;
 		int iconY = this.getY() + (this.height - spriteHeight) / 2;
-		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, iconX, iconY, spriteWidth, spriteHeight, alpha);
+		graphics.blitSprite(RenderType::guiTextured, sprite, iconX, iconY, spriteWidth, spriteHeight);
 	}
 
 	@Override

@@ -3,17 +3,20 @@ package me.Azz_9.flex_hud.client.gui.components;
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 import static me.Azz_9.flex_hud.Constants.MOD_ID;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
+
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
+import net.minecraft.util.Mth;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
 import me.Azz_9.flex_hud.client.gui.Colors;
 import me.Azz_9.flex_hud.utils.Ease;
@@ -42,7 +45,7 @@ public class HelpWidget extends AbstractWidget {
 
 	@Override
 	protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SPRITE, getX(), getY(), getWidth(), getHeight());
+		graphics.blitSprite(RenderType::guiTextured, SPRITE, getX(), getY(), getWidth(), getHeight());
 
 		if (displayHelp || isFadingOut) {
 
@@ -70,13 +73,13 @@ public class HelpWidget extends AbstractWidget {
 
 			popupY = getY() - POPUP_MARGIN_BOTTOM - popupHeight;
 
-			graphics.fill(popupX, popupY, popupX + POPUP_WIDTH, popupY + popupHeight, ARGB.color(easedProgress / 2, BACKGROUND_COLOR));
+			graphics.fill(popupX, popupY, popupX + POPUP_WIDTH, popupY + popupHeight, ARGB.color(Mth.floor(easedProgress / 2 * 255.0F), BACKGROUND_COLOR));
 
 			renderArrow(graphics, easedProgress);
 
 			int textY = popupY + POPUP_PADDING;
 			for (Component helpLine : helpLines) {
-				graphics.drawWordWrap(font, helpLine, popupX + POPUP_PADDING, textY, textWidth, ARGB.color(easedProgress, TEXT_COLOR), false);
+				graphics.drawWordWrap(font, helpLine, popupX + POPUP_PADDING, textY, textWidth, ARGB.color(Mth.floor(easedProgress * 255.0F), TEXT_COLOR), false);
 				textY += font.wordWrapHeight(helpLine, textWidth) + LINE_SPACING;
 			}
 		}
@@ -87,14 +90,14 @@ public class HelpWidget extends AbstractWidget {
 
 		graphics.enableScissor(getX(), getY() - POPUP_MARGIN_BOTTOM, getRight(), getY() - POPUP_MARGIN_BOTTOM + arrowSize);
 
-		Matrix3x2fStack matrices = graphics.pose();
-		matrices.pushMatrix();
-		matrices.translate((float) (getX() + getWidth() / 2.0), (float) (getY() - POPUP_MARGIN_BOTTOM - Math.sqrt(Math.pow(arrowSize, 2) * 2) / 2));
-		matrices.rotate((float) Math.toRadians(45));
+		PoseStack matrices = graphics.pose();
+		matrices.pushPose();
+		matrices.translate((float) (getX() + getWidth() / 2.0), (float) (getY() - POPUP_MARGIN_BOTTOM - Math.sqrt(Math.pow(arrowSize, 2) * 2) / 2), 0);
+		matrices.mulPose(Axis.ZP.rotationDegrees(45.0F));
 
-		graphics.fill(0, 0, arrowSize, arrowSize, ARGB.color(easedProgress / 2, BACKGROUND_COLOR));
+		graphics.fill(0, 0, arrowSize, arrowSize, ARGB.color(Mth.floor(easedProgress / 2 * 255.0F), BACKGROUND_COLOR));
 
-		matrices.popMatrix();
+		matrices.popPose();
 
 		graphics.disableScissor();
 	}

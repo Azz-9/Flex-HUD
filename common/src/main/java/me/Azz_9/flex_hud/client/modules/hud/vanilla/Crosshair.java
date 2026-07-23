@@ -6,12 +6,13 @@ import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.platform.DestFactor;
 import com.mojang.blaze3d.platform.SourceFactor;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.FlexHudRenderTypes;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
-
-import org.joml.Matrix3x2fStack;
 
 import me.Azz_9.flex_hud.client.config.ConfigRegistry;
 import me.Azz_9.flex_hud.client.config.option.ConfigBoolean;
@@ -27,6 +28,7 @@ import me.Azz_9.flex_hud.mixin.RenderPipelinesAccessor;
 public class Crosshair extends AbstractModule {
 
 	private static RenderPipeline crosshairPipeline;
+	private static RenderType crosshairRenderType;
 
 	public int size = 15;
 	public final ConfigFloat scale = new ConfigFloat(1.0f);
@@ -68,6 +70,7 @@ public class Crosshair extends AbstractModule {
 				.withBlend(new BlendFunction(SourceFactor.ONE_MINUS_DST_COLOR, DestFactor.ONE_MINUS_SRC_COLOR, SourceFactor.ONE, DestFactor.ZERO))
 				.build()
 		);
+		crosshairRenderType = FlexHudRenderTypes.create("flex_hud_crosshair", crosshairPipeline);
 	}
 
 	@Override
@@ -77,11 +80,11 @@ public class Crosshair extends AbstractModule {
 
 	public void renderReplacement(GuiGraphics graphics) {
 
-		Matrix3x2fStack matrices = graphics.pose();
-		matrices.pushMatrix();
-		matrices.translate(graphics.guiWidth() / 2.0f, graphics.guiHeight() / 2.0f);
-		matrices.scale(scale.getValue());
-		matrices.translate(-size / 2.0f, -size / 2.0f);
+		PoseStack matrices = graphics.pose();
+		matrices.pushPose();
+		matrices.translate(graphics.guiWidth() / 2.0f, graphics.guiHeight() / 2.0f, 0);
+		matrices.scale(scale.getValue(), scale.getValue(), 1);
+		matrices.translate(-size / 2.0f, -size / 2.0f, 0);
 
 		int[][] pixelValues = pixels.getValue();
 
@@ -97,12 +100,12 @@ public class Crosshair extends AbstractModule {
 				if (disableBlending.getValue()) {
 					graphics.fill(x, y, x + 1, y + 1, color);
 				} else {
-					graphics.fill(crosshairPipeline, x, y, x + 1, y + 1, color);
+					graphics.fill(crosshairRenderType, x, y, x + 1, y + 1, color);
 				}
 			}
 		}
 
-		matrices.popMatrix();
+		matrices.popPose();
 	}
 
 	public boolean shouldReplaceVanillaCrosshair() {

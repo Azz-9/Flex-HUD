@@ -22,7 +22,6 @@ import me.Azz_9.flex_hud.client.gui.screens.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.modules.Modules;
 import me.Azz_9.flex_hud.client.modules.hud.AbstractMovableModule;
 import me.Azz_9.flex_hud.mixin.BossHealthOverlayAccessor;
-import me.Azz_9.flex_hud.mixin.GuiAccessor;
 
 public class BossBar extends AbstractMovableModule {
 	private static final int BOSS_BAR_GAP = 10;
@@ -61,7 +60,7 @@ public class BossBar extends AbstractMovableModule {
 	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
 		// render is handled in BossHealthOverlayMixin
 		if (MINECRAFT.level == null) {
-			((GuiAccessor) MINECRAFT.gui).invokeRenderBossOverlay(graphics, deltaTracker);
+			MINECRAFT.gui.getBossOverlay().render(graphics);
 		}
 	}
 

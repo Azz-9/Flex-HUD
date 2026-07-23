@@ -4,6 +4,9 @@ import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 import static me.Azz_9.flex_hud.CommonClass.openOptionScreenKeyBind;
 import static me.Azz_9.flex_hud.Constants.MOD_ID;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -11,12 +14,11 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.SpriteIconButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -125,20 +127,20 @@ public class OptionsScreen extends AbstractBackNavigableScreen {
 		double y = height / 2.0 - iconHeight / 2.0 - 35;
 		y -= 16 * easedProgress; // go up smoothly
 
-		for (AbstractWidget widget : widgets) {
-			widget.setAlpha(easedProgress);
-		}
+		RenderSystem.setShaderColor(1, 1, 1, easedProgress);
 
 		super.render(graphics, mouseX, mouseY, delta);
 
-		Matrix3x2fStack matrices = graphics.pose();
-		matrices.pushMatrix();
-		matrices.translate((float) x, (float) y);
+		PoseStack matrices = graphics.pose();
+		matrices.pushPose();
+		matrices.translate((float) x, (float) y, 0);
 
 		// Draw the icon
-		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, LOGO_WITHOUT_BG, 0, 0, iconWidth, iconHeight, easedProgress);
+		graphics.blitSprite(RenderType::guiTextured, LOGO_WITHOUT_BG, 0, 0, iconWidth, iconHeight);
 
-		matrices.popMatrix();
+		matrices.popPose();
+
+		RenderSystem.setShaderColor(1, 1, 1, 1);
 
 		if (!Modules.getInstance().isEnabled.getValue()) {
 			graphics.drawCenteredString(
