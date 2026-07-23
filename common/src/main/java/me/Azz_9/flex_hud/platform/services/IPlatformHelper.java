@@ -3,7 +3,6 @@ package me.Azz_9.flex_hud.platform.services;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 
@@ -62,6 +61,4 @@ public interface IPlatformHelper {
 	@NotNull Identifier getChatIdentifier();
 
 	@NotNull KeyMapping registerKeyMapping(@NotNull KeyMapping keyMapping);
-
-	ScreenRectangle scissorStackPeek(@NotNull GuiGraphicsExtractor graphics);
 }
