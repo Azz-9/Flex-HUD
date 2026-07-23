@@ -33,7 +33,6 @@ import me.Azz_9.flex_hud.client.modules.customModules.modifiers.Modifier;
 import me.Azz_9.flex_hud.client.modules.customModules.modifiers.Modifiers;
 import me.Azz_9.flex_hud.client.modules.customModules.text.CustomCondition;
 import me.Azz_9.flex_hud.client.tickables.ChromaColorTickable;
-import me.Azz_9.flex_hud.platform.Services;
 import me.Azz_9.flex_hud.utils.DrawingUtils;
 
 public class ModuleContentField extends AbstractWidget implements TrackableChange {
@@ -281,7 +280,7 @@ public class ModuleContentField extends AbstractWidget implements TrackableChang
 			}
 		}
 
-		ScreenRectangle currentScissor = Services.PLATFORM.scissorStackPeek(graphics);
+		ScreenRectangle currentScissor = graphics.scissorStack.peek();
 		if (currentScissor != null) {
 			graphics.disableScissor();
 		}
