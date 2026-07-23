@@ -3,6 +3,8 @@ package me.Azz_9.flex_hud.client.modules.hud.custom;
 import static java.util.Map.entry;
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -13,7 +15,6 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biomes;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
 import java.util.Map;
 
@@ -83,17 +84,17 @@ public class BiomeDisplay extends AbstractTextModule {
 				BIOME_COLORS.getOrDefault(biomeKey, 0xffffffff) :
 				getColor());
 
-		Matrix3x2fStack matrices = graphics.pose();
-		matrices.pushMatrix();
-		matrices.translate(getRoundedX(), getRoundedY());
-		matrices.scale(getScale());
+		PoseStack matrices = graphics.pose();
+		matrices.pushPose();
+		matrices.translate(getRoundedX(), getRoundedY(), 0);
+		matrices.scale(getScale(), getScale(), 1);
 
 		drawBackground(graphics);
 
 		graphics.drawString(MINECRAFT.font, prefix, 0, 0, getColor(), shadow.getValue());
 		graphics.drawString(MINECRAFT.font, biomeName, prefixWidth, 0, biomeTextColor, shadow.getValue());
 
-		matrices.popMatrix();
+		matrices.popPose();
 	}
 
 	@Override

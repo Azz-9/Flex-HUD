@@ -11,9 +11,6 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(Gui.class)
 public interface GuiAccessor {
 
-	@Invoker("renderBossOverlay")
-	void invokeRenderBossOverlay(GuiGraphics graphics, DeltaTracker deltaTracker);
-
 	@Invoker("displayScoreboardSidebar")
 	void invokeDisplayScoreboardSidebar(GuiGraphics graphics, Objective objective);
 

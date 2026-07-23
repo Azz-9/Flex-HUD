@@ -32,14 +32,14 @@ public class RenderableItem extends Renderable {
 		graphics.renderItem(stack, x, y);
 
 		if (!stack.isEmpty()) {
-			graphics.pose().pushMatrix();
+			graphics.pose().pushPose();
 
 			if (drawItemBar) {
 				((GuiGraphicsAccessor) graphics).flex_hud$renderItemBar(stack, x, y);
 			}
 			((GuiGraphicsAccessor) graphics).flex_hud$renderItemCooldown(stack, x, y);
 
-			graphics.pose().popMatrix();
+			graphics.pose().popPose();
 		}
 	}
 }

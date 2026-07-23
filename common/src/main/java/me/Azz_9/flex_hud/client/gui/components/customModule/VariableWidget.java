@@ -14,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.Consumer;
 
 import me.Azz_9.flex_hud.client.modules.customModules.Variable;
-import me.Azz_9.flex_hud.mixin.GuiGraphicsAccessor;
 import me.Azz_9.flex_hud.platform.Services;
 import me.Azz_9.flex_hud.utils.DrawingUtils;
 
@@ -65,9 +64,10 @@ public class VariableWidget implements Renderable, LayoutElement {
 			ScreenRectangle rect = Services.PLATFORM.scissorStackPeek(graphics);
 			graphics.disableScissor();
 
-			((GuiGraphicsAccessor) graphics).setDeferredTooltip(
-					() -> renderDescription(graphics, mouseX, mouseY, deltaTicks)
-			);
+			graphics.pose().pushPose();
+			graphics.pose().translate(0.0F, 0.0F, 400.0F);
+			renderDescription(graphics, mouseX, mouseY, deltaTicks);
+			graphics.pose().popPose();
 
 			if (rect != null) {
 				graphics.enableScissor(rect.left(), rect.top(), rect.right(), rect.bottom());

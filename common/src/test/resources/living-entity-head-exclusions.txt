@@ -54,7 +54,6 @@ fish/tropical_b_pattern_3.png
 fish/tropical_b_pattern_4.png
 fish/tropical_b_pattern_5.png
 fish/tropical_b_pattern_6.png
-ghast/happy_ghast_ropes.png
 guardian_beam.png
 horse/horse_markings_blackdots.png
 horse/horse_markings_white.png

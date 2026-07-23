@@ -2,12 +2,14 @@ package me.Azz_9.flex_hud.client.modules.hud.custom;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.blockentity.AbstractSignRenderer;
 import net.minecraft.core.BlockPos;
@@ -28,7 +30,6 @@ import net.minecraft.world.phys.HitResult;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix3x2fStack;
 
 import me.Azz_9.flex_hud.CommonClass;
 import me.Azz_9.flex_hud.client.gui.Colors;
@@ -91,13 +92,13 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 		}
 		float offsetY = data.isHangingSign ? 14 * textureScale : 2 * textureScale;
 
-		Matrix3x2fStack matrices = graphics.pose();
-		matrices.pushMatrix();
-		matrices.translate(getRoundedX(), getRoundedY());
-		matrices.scale(getScale(), getScale());
+		PoseStack matrices = graphics.pose();
+		matrices.pushPose();
+		matrices.translate(getRoundedX(), getRoundedY(), 0);
+		matrices.scale(getScale(), getScale(), 1);
 
 		// only draw the side of the sign texture
-		graphics.blit(RenderPipelines.GUI_TEXTURED, data.texture, 0, 0,
+		graphics.blit(RenderType::guiTextured, data.texture, 0, 0,
 				offsetX, offsetY,
 				getWidth(), getHeight(),
 				textureWidth, textureHeight,
@@ -105,7 +106,7 @@ public class SignReader extends AbstractMovableModule implements TickableModule 
 
 		renderSignText(graphics, data);
 
-		matrices.popMatrix();
+		matrices.popPose();
 	}
 
 	private void renderSignText(@NotNull GuiGraphics graphics, @NotNull RenderData data) {

@@ -2,6 +2,8 @@ package me.Azz_9.flex_hud.client.modules.hud.custom;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -9,7 +11,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -161,10 +162,10 @@ public class Coordinates extends AbstractTextModule {
 			setHeight(MINECRAFT.font.lineHeight);
 		}
 
-		Matrix3x2fStack matrices = graphics.pose();
-		matrices.pushMatrix();
-		matrices.translate(getRoundedX(), getRoundedY());
-		matrices.scale(getScale());
+		PoseStack matrices = graphics.pose();
+		matrices.pushPose();
+		matrices.translate(getRoundedX(), getRoundedY(), 0);
+		matrices.scale(getScale(), getScale(), 1);
 
 		drawBackground(graphics);
 
@@ -172,7 +173,7 @@ public class Coordinates extends AbstractTextModule {
 			renderable.render(graphics, deltaTracker);
 		}
 
-		matrices.popMatrix();
+		matrices.popPose();
 	}
 
 	private String[] getDirection(LocalPlayer player) {

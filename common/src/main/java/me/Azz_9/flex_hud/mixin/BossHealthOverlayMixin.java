@@ -3,12 +3,12 @@ package me.Azz_9.flex_hud.mixin;
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.BossHealthOverlay;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 
-import org.joml.Matrix3x2fStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -40,16 +40,16 @@ public abstract class BossHealthOverlayMixin {
 			method = "render",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/GuiGraphics;nextStratum()V"
+					target = "Lnet/minecraft/util/profiling/Profiler;get()Lnet/minecraft/util/profiling/ProfilerFiller;"
 			)
 	)
 	private void beforeRender(GuiGraphics graphics, CallbackInfo ci) {
 		BossBar bossBar = Modules.getInstance().bossBar;
 		if (Modules.getInstance().isEnabled.getValue() && bossBar.enabled.getValue()) {
-			Matrix3x2fStack matrices = graphics.pose();
-			matrices.pushMatrix();
-			matrices.translate(bossBar.getRoundedX(), bossBar.getRoundedY());
-			matrices.scale(bossBar.getScale());
+			PoseStack matrices = graphics.pose();
+			matrices.pushPose();
+			matrices.translate(bossBar.getRoundedX(), bossBar.getRoundedY(), 0);
+			matrices.scale(bossBar.getScale(), bossBar.getScale(), 1);
 		}
 	}
 
@@ -74,7 +74,7 @@ public abstract class BossHealthOverlayMixin {
 	)
 	private void afterRender(GuiGraphics graphics, CallbackInfo ci) {
 		if (Modules.getInstance().isEnabled.getValue() && Modules.getInstance().bossBar.enabled.getValue()) {
-			graphics.pose().popMatrix();
+			graphics.pose().popPose();
 		}
 	}
 

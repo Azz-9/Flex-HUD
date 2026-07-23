@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.client.gui.components.config.buttons;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -7,7 +9,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
 import java.util.Arrays;
 import java.util.List;
@@ -53,9 +54,9 @@ public class CrosshairButtonWidget<T> extends AbstractWidget implements Trackabl
 		}
 		float startX = getRight() - getHeight() + 1 + (getHeight() - 2 - variable.getRowLength(0)) / 2.0f;
 		float startY = getY() + 1 + (getHeight() - 2 - variable.getLength()) / 2.0f;
-		Matrix3x2fStack matrices = graphics.pose();
-		matrices.pushMatrix();
-		matrices.translate(startX, startY);
+		PoseStack matrices = graphics.pose();
+		matrices.pushPose();
+		matrices.translate(startX, startY, 0);
 
 		for (int y = 0; y < variable.getLength(); y++) {
 			for (int x = 0; x < variable.getRowLength(y); x++) {
@@ -63,7 +64,7 @@ public class CrosshairButtonWidget<T> extends AbstractWidget implements Trackabl
 			}
 		}
 
-		matrices.popMatrix();
+		matrices.popPose();
 
 		if (!this.active) {
 			graphics.fill(getRight() - getHeight(), getY(), getRight(), getBottom(), 0xcf4e4e4e);

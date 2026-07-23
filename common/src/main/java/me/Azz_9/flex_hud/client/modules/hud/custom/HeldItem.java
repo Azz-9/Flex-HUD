@@ -2,6 +2,8 @@ package me.Azz_9.flex_hud.client.modules.hud.custom;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -12,7 +14,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
 import me.Azz_9.flex_hud.CommonClass;
 import me.Azz_9.flex_hud.client.config.ConfigRegistry;
@@ -101,10 +102,10 @@ public class HeldItem extends AbstractTextModule {
 			setHeight(16);
 		}
 
-		Matrix3x2fStack matrices = graphics.pose();
-		matrices.pushMatrix();
-		matrices.translate(getRoundedX(), getRoundedY());
-		matrices.scale(getScale());
+		PoseStack matrices = graphics.pose();
+		matrices.pushPose();
+		matrices.translate(getRoundedX(), getRoundedY(), 0);
+		matrices.scale(getScale(), getScale(), 1);
 
 		drawBackground(graphics);
 
@@ -121,7 +122,7 @@ public class HeldItem extends AbstractTextModule {
 			graphics.drawString(font, getName(), (getWidth() - font.width(getName())) / 2, 4, getColor(), this.shadow.getValue());
 		}
 
-		matrices.popMatrix();
+		matrices.popPose();
 	}
 
 	@Override

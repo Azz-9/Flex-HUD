@@ -8,12 +8,16 @@ import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.util.FormattedCharSequence;
 
 import java.net.URI;
+import java.util.List;
 
 import me.Azz_9.flex_hud.client.config.ConfigRegistry;
 import me.Azz_9.flex_hud.client.gui.screens.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.modules.AbstractModule;
+import me.Azz_9.flex_hud.mixin.FocusableTextWidgetAccessor;
 
 public class DurabilityPing extends AbstractModule {
 
@@ -61,15 +65,25 @@ public class DurabilityPing extends AbstractModule {
 						MESSAGE,
 						font,
 						false,
-						false,
-						FocusableTextWidget.DEFAULT_PADDING
-				)
-						.setCentered(true)
-						.configureStyleHandling(true, style -> {
-							if (style.getClickEvent() instanceof ClickEvent.OpenUrl(URI uri)) {
-								Util.getPlatform().openUri(uri);
-							}
-						});
+						FocusableTextWidgetAccessor.getDefaultPadding()
+				) {
+					@Override
+					public void onClick(double mouseX, double mouseY) {
+						int lineIndex = (int) (mouseY - getY()) / font.lineHeight;
+						List<FormattedCharSequence> lines = font.split(getMessage(), width);
+						if (lineIndex < 0 || lineIndex >= lines.size()) {
+							return;
+						}
+
+						FormattedCharSequence line = lines.get(lineIndex);
+						int lineX = getX() + (getWidth() - font.width(line)) / 2;
+						Style style = font.getSplitter().componentStyleAtWidth(line, (int) mouseX - lineX);
+						if (style != null) {
+							DurabilityPing.this.handleClickEvent(style);
+						}
+					}
+				};
+				text.setCentered(true);
 				text.setPosition(
 						(MINECRAFT.getWindow().getGuiScaledWidth() - text.getWidth()) / 2,
 						(MINECRAFT.getWindow().getGuiScaledHeight() - text.getHeight()) / 2
@@ -78,5 +92,11 @@ public class DurabilityPing extends AbstractModule {
 				addRenderableWidget(text);
 			}
 		};
+	}
+
+	private void handleClickEvent(Style style) {
+		if (style.getClickEvent() instanceof ClickEvent.OpenUrl(URI uri)) {
+			Util.getPlatform().openUri(uri);
+		}
 	}
 }

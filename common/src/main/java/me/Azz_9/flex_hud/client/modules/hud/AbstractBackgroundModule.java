@@ -2,6 +2,7 @@ package me.Azz_9.flex_hud.client.modules.hud;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.ARGB;
+import net.minecraft.util.Mth;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -39,12 +40,12 @@ public abstract class AbstractBackgroundModule extends AbstractMovableModule {
 			graphics.fill(
 					-BACKGROUND_PADDING, -BACKGROUND_PADDING,
 					width + BACKGROUND_PADDING, height + BACKGROUND_PADDING,
-					ARGB.multiply(getBackgroundColor(), ARGB.color(alphaMultiplier, Colors.WHITE))
+					ARGB.multiply(getBackgroundColor(), ARGB.color(Mth.floor(alphaMultiplier * 255.0F), Colors.WHITE))
 			);
 		}
 	}
 
 	protected int getBackgroundColor() {
-		return ARGB.color(BACKGROUND_ALPHA, backgroundColor.getValue());
+		return ARGB.color(Mth.floor(BACKGROUND_ALPHA * 255.0F), backgroundColor.getValue());
 	}
 }

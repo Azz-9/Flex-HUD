@@ -3,6 +3,8 @@ package me.Azz_9.flex_hud.client.modules.hud.custom;
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 import static me.Azz_9.flex_hud.utils.DrawingUtils.drawBorder;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.Font;
@@ -10,9 +12,9 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
+import net.minecraft.util.Mth;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -82,10 +84,10 @@ public class KeyStrokes extends AbstractTextModule {
 			return;
 		}
 
-		Matrix3x2fStack matrices = graphics.pose();
-		matrices.pushMatrix();
-		matrices.translate(getRoundedX(), getRoundedY());
-		matrices.scale(getScale());
+		PoseStack matrices = graphics.pose();
+		matrices.pushPose();
+		matrices.translate(getRoundedX(), getRoundedY(), 0);
+		matrices.scale(getScale(), getScale(), 1);
 
 		// forward key
 		Component forwardText = useArrow.getValue() ? Component.literal("▲") : MINECRAFT.options.keyUp.getTranslatedKeyMessage();
@@ -114,7 +116,7 @@ public class KeyStrokes extends AbstractTextModule {
 			renderMouseKey(graphics, (int) (keySize * 1.5 + gap * 2.5) + 1, (int) (keySize * 2.5) + gap * 4, (int) (keySize * 1.5) + gap / 2, keySize, MINECRAFT.options.keyUse, CpsUtils.getRightCps(), Component.literal("RMB"));
 		}
 
-		matrices.popMatrix();
+		matrices.popPose();
 	}
 
 	private float renderKey(GuiGraphics graphics, int x, int y, int keyWidth, int keyHeight, KeyMapping keyMapping) {
@@ -149,7 +151,7 @@ public class KeyStrokes extends AbstractTextModule {
 			graphics.fill(x, y, x + keyWidth, y + keyHeight, getBackgroundColor());
 		}
 		if (drawBackgroundPressed.getValue()) {
-			graphics.fill(x, y, x + keyWidth, y + keyHeight, ARGB.color(fadeFactor / 2, backgroundColorPressed.getValue()));
+			graphics.fill(x, y, x + keyWidth, y + keyHeight, ARGB.color(Mth.floor(fadeFactor / 2 * 255.0F), backgroundColorPressed.getValue()));
 		}
 
 		if (showBorder.getValue()) {
@@ -164,13 +166,13 @@ public class KeyStrokes extends AbstractTextModule {
 
 		Font font = MINECRAFT.font;
 
-		Matrix3x2fStack matrices = graphics.pose();
-		matrices.pushMatrix();
-		matrices.translate(x + (keyWidth - font.width(label)) / 2.0f, y + (keyHeight - font.lineHeight) / 2.0f);
+		PoseStack matrices = graphics.pose();
+		matrices.pushPose();
+		matrices.translate(x + (keyWidth - font.width(label)) / 2.0f, y + (keyHeight - font.lineHeight) / 2.0f, 0);
 
 		graphics.drawString(font, label, 0, 0, getColor(fadeFactor), shadow.getValue());
 
-		matrices.popMatrix();
+		matrices.popPose();
 	}
 
 	private void renderJumpKey(GuiGraphics graphics, int x, int y, int keyWidth, int keyHeight, KeyMapping keyMapping) {
@@ -194,19 +196,19 @@ public class KeyStrokes extends AbstractTextModule {
 		Font font = MINECRAFT.font;
 		int color = getColor(fadeFactor);
 
-		Matrix3x2fStack matrices = graphics.pose();
+		PoseStack matrices = graphics.pose();
 
-		matrices.pushMatrix();
-		matrices.translate(x + (keyWidth - font.width(label)) / 2.0f, y + keyHeight / 2.0f - font.lineHeight + 2);
+		matrices.pushPose();
+		matrices.translate(x + (keyWidth - font.width(label)) / 2.0f, y + keyHeight / 2.0f - font.lineHeight + 2, 0);
 		graphics.drawString(font, label, 0, 0, color, shadow.getValue());
-		matrices.popMatrix();
+		matrices.popPose();
 
 		Component cpsLabel = Component.literal(cps + " CPS");
-		matrices.pushMatrix();
-		matrices.translate(x + (keyWidth - font.width(cpsLabel) * 0.7f) / 2.0f, y + keyHeight / 2.0f + 3);
-		matrices.scale(0.7f);
+		matrices.pushPose();
+		matrices.translate(x + (keyWidth - font.width(cpsLabel) * 0.7f) / 2.0f, y + keyHeight / 2.0f + 3, 0);
+		matrices.scale(0.7f, 0.7f, 1);
 		graphics.drawString(font, cpsLabel, 0, 0, color, shadow.getValue());
-		matrices.popMatrix();
+		matrices.popPose();
 	}
 
 	private int getTextShadowColor(int baseColor) {

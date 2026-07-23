@@ -3,13 +3,13 @@ package me.Azz_9.flex_hud.utils;
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.ARGB;
-
-import org.joml.Matrix3x2fStack;
+import net.minecraft.util.Mth;
 
 import me.Azz_9.flex_hud.client.modules.Modules;
 import me.Azz_9.flex_hud.client.modules.hud.vanilla.Scoreboard;
@@ -44,13 +44,13 @@ public final class ScoreboardMixinHelper {
 		bottom.set(scoreboard.getHeight());
 		left.set(SCOREBOARD_PADDING);
 		right.set(scoreboard.getWidth());
-		backgroundColor.set(ARGB.color(0.3f, scoreboard.backgroundColor.getValue()));
-		headerBackgroundColor.set(ARGB.color(0.4f, scoreboard.backgroundColor.getValue()));
+		backgroundColor.set(ARGB.color(Mth.floor(0.3f * 255.0F), scoreboard.backgroundColor.getValue()));
+		headerBackgroundColor.set(ARGB.color(Mth.floor(0.4f * 255.0F), scoreboard.backgroundColor.getValue()));
 
-		Matrix3x2fStack matrices = graphics.pose();
-		matrices.pushMatrix();
-		matrices.translate(scoreboard.getRoundedX(), scoreboard.getRoundedY());
-		matrices.scale(scoreboard.getScale());
+		PoseStack matrices = graphics.pose();
+		matrices.pushPose();
+		matrices.translate(scoreboard.getRoundedX(), scoreboard.getRoundedY(), 0);
+		matrices.scale(scoreboard.getScale(), scoreboard.getScale(), 1);
 
 		return scoreboard.getHeight() - height;
 	}

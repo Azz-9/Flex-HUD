@@ -6,13 +6,12 @@ import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
 
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
@@ -24,8 +23,9 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
+
+import java.util.function.Function;
 
 import me.Azz_9.flex_hud.CommonClass;
 import me.Azz_9.flex_hud.client.modules.Modules;
@@ -61,16 +61,6 @@ public abstract class GuiMixin {
 		Variables.frame();
 	}
 
-	// always display xp bar when compass overrides the locator bar
-	@Inject(method = "willPrioritizeExperienceInfo", at = @At("RETURN"), cancellable = true)
-	private void willPrioritizeExperienceInfo(CallbackInfoReturnable<Boolean> cir) {
-		if (Modules.getInstance().isEnabled.getValue() &&
-				Modules.getInstance().compass.isEnabled() &&
-				Modules.getInstance().compass.overrideLocatorBar.getValue()) {
-			cir.setReturnValue(true);
-		}
-	}
-
 	// potion effect
 	@Inject(method = "renderEffects", at = @At("HEAD"), cancellable = true)
 	private void renderEffects(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
@@ -84,13 +74,13 @@ public abstract class GuiMixin {
 			method = "renderCrosshair",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIII)V",
+					target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Ljava/util/function/Function;Lnet/minecraft/resources/ResourceLocation;IIII)V",
 					ordinal = 0
 			)
 	)
 	private void replaceCrosshair(
 			GuiGraphics graphics,
-			RenderPipeline renderPipeline,
+			Function<ResourceLocation, RenderType> renderTypeGetter,
 			ResourceLocation location,
 			int x,
 			int y,
@@ -103,7 +93,7 @@ public abstract class GuiMixin {
 		if (crosshair.shouldReplaceVanillaCrosshair()) {
 			crosshair.renderReplacement(graphics);
 		} else {
-			original.call(graphics, renderPipeline, location, x, y, width, height);
+			original.call(graphics, renderTypeGetter, location, x, y, width, height);
 		}
 	}
 
@@ -111,12 +101,12 @@ public abstract class GuiMixin {
 			method = "renderCrosshair",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIII)V",
+					target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Ljava/util/function/Function;Lnet/minecraft/resources/ResourceLocation;IIII)V",
 					ordinal = 1
 			),
 			index = 0
 	)
-	private RenderPipeline modifyFullAttackIndicatorPipeline(RenderPipeline original) {
+	private Function<ResourceLocation, RenderType> modifyFullAttackIndicatorPipeline(Function<ResourceLocation, RenderType> original) {
 		return flex_hud$getAttackIndicatorPipeline(original);
 	}
 
@@ -124,12 +114,12 @@ public abstract class GuiMixin {
 			method = "renderCrosshair",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIII)V",
+					target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Ljava/util/function/Function;Lnet/minecraft/resources/ResourceLocation;IIII)V",
 					ordinal = 2
 			),
 			index = 0
 	)
-	private RenderPipeline modifyAttackIndicatorBackgroundPipeline(RenderPipeline original) {
+	private Function<ResourceLocation, RenderType> modifyAttackIndicatorBackgroundPipeline(Function<ResourceLocation, RenderType> original) {
 		return flex_hud$getAttackIndicatorPipeline(original);
 	}
 
@@ -137,19 +127,19 @@ public abstract class GuiMixin {
 			method = "renderCrosshair",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIIIIIII)V"
+					target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Ljava/util/function/Function;Lnet/minecraft/resources/ResourceLocation;IIIIIIII)V"
 			),
 			index = 0
 	)
-	private RenderPipeline modifyAttackIndicatorProgressPipeline(RenderPipeline original) {
+	private Function<ResourceLocation, RenderType> modifyAttackIndicatorProgressPipeline(Function<ResourceLocation, RenderType> original) {
 		return flex_hud$getAttackIndicatorPipeline(original);
 	}
 
 	@Unique
-	private static RenderPipeline flex_hud$getAttackIndicatorPipeline(RenderPipeline original) {
+	private static Function<ResourceLocation, RenderType> flex_hud$getAttackIndicatorPipeline(Function<ResourceLocation, RenderType> original) {
 		Crosshair crosshair = Modules.getInstance().crosshair;
 		if (crosshair.shouldReplaceVanillaCrosshair() && crosshair.disableBlending.getValue()) {
-			return RenderPipelines.GUI_TEXTURED;
+			return RenderType::guiTextured;
 		}
 
 		return original;
@@ -196,21 +186,21 @@ public abstract class GuiMixin {
 			method = "displayScoreboardSidebar",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIIZ)V"
+					target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIIZ)I"
 			)
 	)
-	private void textShadow(GuiGraphics instance, Font font, Component str, int x, int y, int color, boolean dropShadow, Operation<Void> original) {
+	private int textShadow(GuiGraphics instance, Font font, Component str, int x, int y, int color, boolean dropShadow, Operation<Integer> original) {
 		if (Modules.getInstance().isEnabled.getValue() && Modules.getInstance().scoreboard.enabled.getValue()) {
-			original.call(instance, font, str, x, y, color, Modules.getInstance().scoreboard.shadow.getValue());
+			return original.call(instance, font, str, x, y, color, Modules.getInstance().scoreboard.shadow.getValue());
 		} else {
-			original.call(instance, font, str, x, y, color, dropShadow);
+			return original.call(instance, font, str, x, y, color, dropShadow);
 		}
 	}
 
 	@Inject(method = "displayScoreboardSidebar", at = @At("RETURN"))
 	private void popMatrix(GuiGraphics graphics, Objective objective, CallbackInfo ci) {
 		if (Modules.getInstance().isEnabled.getValue() && Modules.getInstance().scoreboard.enabled.getValue()) {
-			graphics.pose().popMatrix();
+			graphics.pose().popPose();
 		}
 	}
 
@@ -220,7 +210,7 @@ public abstract class GuiMixin {
 			method = "renderTitle",
 			at = @At(
 					value = "INVOKE",
-					target = "Lorg/joml/Matrix3x2fStack;translate(FF)Lorg/joml/Matrix3x2f;",
+					target = "Lcom/mojang/blaze3d/vertex/PoseStack;translate(FFF)V",
 					ordinal = 0
 			)
 	)
@@ -235,7 +225,7 @@ public abstract class GuiMixin {
 			method = "renderTitle",
 			at = @At(
 					value = "INVOKE",
-					target = "Lorg/joml/Matrix3x2fStack;scale(FF)Lorg/joml/Matrix3x2f;",
+					target = "Lcom/mojang/blaze3d/vertex/PoseStack;scale(FFF)V",
 					ordinal = 0
 			)
 	)
@@ -259,7 +249,8 @@ public abstract class GuiMixin {
 
 		graphics.pose().translate(
 				titles.getRoundedX(0),
-				titles.getRoundedY(0)
+				titles.getRoundedY(0),
+				0
 		);
 
 		args.set(0, vanillaScaleX * titles.getScale(0));
@@ -270,11 +261,11 @@ public abstract class GuiMixin {
 			method = "renderTitle",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/GuiGraphics;drawStringWithBackdrop(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIII)V",
+					target = "Lnet/minecraft/client/gui/GuiGraphics;drawStringWithBackdrop(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIII)I",
 					ordinal = 0
 			)
 	)
-	private void modifyTitle(
+	private int modifyTitle(
 			GuiGraphics instance,
 			Font font,
 			Component str,
@@ -282,18 +273,19 @@ public abstract class GuiMixin {
 			int textY,
 			int textWidth,
 			int textColor,
-			Operation<Void> original,
+			Operation<Integer> original,
 			@Local(index = 5) int alpha
 	) {
 		Titles titles = Modules.getInstance().titles;
 		if (Modules.getInstance().isEnabled.getValue() && titles.enabled.getValue()) {
 			if (titles.showTitle.getValue()) {
 				titles.drawBackground(1, instance, textWidth, getFont().lineHeight, alpha / 255.0f);
-				instance.drawString(font, str, 0, 0, ARGB.color(alpha, titles.getColor()), titles.shadow.getValue());
+				return instance.drawString(font, str, 0, 0, ARGB.color(alpha, titles.getColor()), titles.shadow.getValue());
 			}
 		} else {
-			original.call(instance, font, str, textX, textY, textWidth, textColor);
+			return original.call(instance, font, str, textX, textY, textWidth, textColor);
 		}
+		return 0;
 	}
 
 	// subtitle
@@ -302,7 +294,7 @@ public abstract class GuiMixin {
 			method = "renderTitle",
 			at = @At(
 					value = "INVOKE",
-					target = "Lorg/joml/Matrix3x2fStack;scale(FF)Lorg/joml/Matrix3x2f;",
+					target = "Lcom/mojang/blaze3d/vertex/PoseStack;scale(FFF)V",
 					ordinal = 1
 			)
 	)
@@ -326,7 +318,8 @@ public abstract class GuiMixin {
 
 		graphics.pose().translate(
 				titles.getRoundedX(1),
-				titles.getRoundedY(1)
+				titles.getRoundedY(1),
+				0
 		);
 
 		args.set(0, vanillaScaleX * titles.getScale(1));
@@ -337,11 +330,11 @@ public abstract class GuiMixin {
 			method = "renderTitle",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/GuiGraphics;drawStringWithBackdrop(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIII)V",
+					target = "Lnet/minecraft/client/gui/GuiGraphics;drawStringWithBackdrop(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIII)I",
 					ordinal = 1
 			)
 	)
-	private void modifySubtitle(
+	private int modifySubtitle(
 			GuiGraphics instance,
 			Font font,
 			Component str,
@@ -349,18 +342,19 @@ public abstract class GuiMixin {
 			int textY,
 			int textWidth,
 			int textColor,
-			Operation<Void> original,
+			Operation<Integer> original,
 			@Local(index = 5) int alpha
 	) {
 		Titles titles = Modules.getInstance().titles;
 		if (Modules.getInstance().isEnabled.getValue() && titles.enabled.getValue()) {
 			if (titles.showSubtitle.getValue()) {
 				titles.drawBackground(1, instance, textWidth, getFont().lineHeight, alpha / 255.0f);
-				instance.drawString(font, str, 0, 0, ARGB.color(alpha, titles.getColor()), titles.shadow.getValue());
+				return instance.drawString(font, str, 0, 0, ARGB.color(alpha, titles.getColor()), titles.shadow.getValue());
 			}
 		} else {
-			original.call(instance, font, str, textX, textY, textWidth, textColor);
+			return original.call(instance, font, str, textX, textY, textWidth, textColor);
 		}
+		return 0;
 	}
 
 	// placeholder

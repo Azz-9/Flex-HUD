@@ -3,15 +3,16 @@ package me.Azz_9.flex_hud.client.modules.hud.custom;
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 import static me.Azz_9.flex_hud.Constants.MOD_ID;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
 import me.Azz_9.flex_hud.CommonClass;
 import me.Azz_9.flex_hud.client.config.ConfigRegistry;
@@ -90,19 +91,19 @@ public class ServerAddress extends AbstractTextModule {
 				setWidth(getWidth() + textX);
 			}
 
-			Matrix3x2fStack matrices = graphics.pose();
-			matrices.pushMatrix();
-			matrices.translate(getRoundedX(), getRoundedY());
-			matrices.scale(getScale());
+			PoseStack matrices = graphics.pose();
+			matrices.pushPose();
+			matrices.translate(getRoundedX(), getRoundedY(), 0);
+			matrices.scale(getScale(), getScale(), 1);
 
 			drawBackground(graphics);
 
 			if (icon != null) {
-				graphics.blit(RenderPipelines.GUI_TEXTURED, icon, 0, 0, 0, 0, faviconSize, faviconSize, faviconSize, faviconSize);
+				graphics.blit(RenderType::guiTextured, icon, 0, 0, 0, 0, faviconSize, faviconSize, faviconSize, faviconSize);
 			}
 			graphics.drawString(MINECRAFT.font, text, textX, textY, getColor(), this.shadow.getValue());
 
-			matrices.popMatrix();
+			matrices.popPose();
 		}
 	}
 

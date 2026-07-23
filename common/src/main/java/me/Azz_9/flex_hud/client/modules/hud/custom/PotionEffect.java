@@ -3,19 +3,18 @@ package me.Azz_9.flex_hud.client.modules.hud.custom;
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
 import com.google.common.collect.Ordering;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,7 +87,7 @@ public class PotionEffect extends AbstractTextModule {
 
 			String effectString = Component.translatable(effect.getDescriptionId()).getString() + " " + (effect.getAmplifier() + 1);
 			String durationString = effect.isInfiniteDuration() ? "∞" : getDurationString(effect.getDuration() / 20);
-			ResourceLocation icon = Gui.getMobEffectSprite(effect.getEffect());
+			TextureAtlasSprite icon = MINECRAFT.getMobEffectTextures().get(effect.getEffect());
 
 			textWidth = Math.max(
 					MINECRAFT.font.width(effectString),
@@ -164,10 +163,10 @@ public class PotionEffect extends AbstractTextModule {
 			MultiRenderable.alignCenter(renderables, getWidth() / 2);
 		}
 
-		Matrix3x2fStack matrices = graphics.pose();
-		matrices.pushMatrix();
-		matrices.translate(getRoundedX(), getRoundedY());
-		matrices.scale(getScale());
+		PoseStack matrices = graphics.pose();
+		matrices.pushPose();
+		matrices.translate(getRoundedX(), getRoundedY(), 0);
+		matrices.scale(getScale(), getScale(), 1);
 
 		drawBackground(graphics);
 
@@ -175,7 +174,7 @@ public class PotionEffect extends AbstractTextModule {
 			multiRenderable.render(graphics, deltaTracker);
 		}
 
-		matrices.popMatrix();
+		matrices.popPose();
 	}
 
 	private String getDurationString(int duration) {
