@@ -1,7 +1,6 @@
 package me.Azz_9.flex_hud.client.tickables;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
@@ -109,7 +108,7 @@ class LivingEntityHeadTexturesTest {
 			}
 		}
 
-		assertTrue(!textures.isEmpty(), "No Minecraft entity textures were discovered");
+		assertFalse(textures.isEmpty(), "No Minecraft entity textures were discovered");
 		return textures;
 	}
 
