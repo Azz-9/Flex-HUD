@@ -42,7 +42,7 @@ public abstract class NeoForgeGuiMixin {
 	}
 
 	@ModifyExpressionValue(
-			method = "lambda$displayScoreboardSidebar$17",
+			method = "lambda$displayScoreboardSidebar$15",
 			at = @At(
 					value = "INVOKE",
 					target = "Lnet/minecraft/world/scores/PlayerScoreEntry;formatValue(Lnet/minecraft/network/chat/numbers/NumberFormat;)Lnet/minecraft/network/chat/MutableComponent;"
@@ -53,7 +53,7 @@ public abstract class NeoForgeGuiMixin {
 	}
 
 	@ModifyExpressionValue(
-			method = "lambda$displayScoreboardSidebar$17",
+			method = "lambda$displayScoreboardSidebar$15",
 			at = @At(
 					value = "INVOKE",
 					target = "Lnet/minecraft/client/gui/Font;width(Lnet/minecraft/network/chat/FormattedText;)I"
