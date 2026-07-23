@@ -11,7 +11,6 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
@@ -87,10 +86,5 @@ public class FabricPlatformHelper implements IPlatformHelper {
 	@Override
 	public @NotNull KeyMapping registerKeyMapping(@NotNull KeyMapping keyMapping) {
 		return KeyBindingHelper.registerKeyBinding(keyMapping);
-	}
-
-	@Override
-	public ScreenRectangle scissorStackPeek(@NotNull GuiGraphics graphics) {
-		return graphics.scissorStack.peek();
 	}
 }
