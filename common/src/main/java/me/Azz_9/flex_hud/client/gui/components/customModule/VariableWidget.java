@@ -15,7 +15,6 @@ import java.util.function.Consumer;
 
 import me.Azz_9.flex_hud.client.modules.customModules.Variable;
 import me.Azz_9.flex_hud.mixin.GuiGraphicsAccessor;
-import me.Azz_9.flex_hud.platform.Services;
 import me.Azz_9.flex_hud.utils.DrawingUtils;
 
 public class VariableWidget implements Renderable, LayoutElement {
@@ -62,7 +61,7 @@ public class VariableWidget implements Renderable, LayoutElement {
 		}
 
 		if (hovered && System.currentTimeMillis() - startHoverTime > DESCRIPTION_DELAY) {
-			ScreenRectangle rect = Services.PLATFORM.scissorStackPeek(graphics);
+			ScreenRectangle rect = graphics.scissorStack.peek();
 			graphics.disableScissor();
 
 			((GuiGraphicsAccessor) graphics).setDeferredTooltip(
