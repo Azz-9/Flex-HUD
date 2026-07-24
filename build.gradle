@@ -136,7 +136,7 @@ publishMods {
 		webhookUrl = providers.gradleProperty(DISCORD_MOD_FLEX_HUD_PUBLISH_WEBHOOK)
 		username = mod_name
 
-		avatarUrl = "https://raw.githubusercontent.com/Azz-9/${rootProject.name}/26.2/common/src/main/resources/${mod_id}.png"
+		avatarUrl = "https://raw.githubusercontent.com/Azz-9/${rootProject.name}/HEAD/common/src/main/resources/${mod_id}.png"
 		content = changelog.map {
 			"""
 			## ${mod_name} ${simpleModVersion} is now available!
