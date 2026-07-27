@@ -1,10 +1,15 @@
 param(
     [string[]] $Branches = @(
-    "26.1",
-    "26.2"
+    "1.21.4-multiloader",
+    "1.21.5-multiloader",
+    "1.21.6-1.21.8-multiloader",
+    "1.21.9-1.21.10-multiloader",
+    "1.21.11-multiloader",
+    "26.1-multiloader",
+    "26.2-multiloader"
 ),
 
-    [string] $ReleaseBranch = "26.2",
+    [string] $ReleaseBranch = "26.2-multiloader",
 
     [switch] $DryRun
 )
