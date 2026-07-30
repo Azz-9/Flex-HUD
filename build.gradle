@@ -133,7 +133,7 @@ publishMods {
 	}
 
 	discord {
-		webhookUrl = providers.gradleProperty(DISCORD_MOD_FLEX_HUD_PUBLISH_WEBHOOK)
+		webhookUrl = providers.gradleProperty("DISCORD_MOD_FLEX_HUD_PUBLISH_WEBHOOK")
 		username = mod_name
 
 		avatarUrl = "https://raw.githubusercontent.com/Azz-9/${rootProject.name}/HEAD/common/src/main/resources/${mod_id}.png"
