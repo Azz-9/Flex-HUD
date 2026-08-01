@@ -42,7 +42,7 @@ public class Modules {
 	public Speedometer speedometer = new Speedometer(2, 70, START, START);
 	public Reach reach = new Reach(2, 120, START, START);
 	public Playtime playtime = new Playtime(2, 100, START, START);
-	//public ResourcePack resourcePack = new ResourcePack(0, 100, AbstractHudElement.AnchorPosition.END, AbstractHudElement.AnchorPosition.START);
+	public ResourcePack resourcePack = new ResourcePack(0, 100, END, START);
 	public PotionEffect potionEffect = new PotionEffect(0, 20, END, START);
 	public Crosshair crosshair = new Crosshair();
 	public BossBar bossBar = new BossBar(0, 35, CENTER, START);
@@ -107,6 +107,7 @@ public class Modules {
 				getInstance().speedometer,
 				getInstance().reach,
 				getInstance().playtime,
+				getInstance().resourcePack,
 				getInstance().potionEffect,
 				getInstance().weatherDisplay,
 				getInstance().keyStrokes,
