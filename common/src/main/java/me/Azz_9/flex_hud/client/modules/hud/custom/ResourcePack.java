@@ -1,35 +1,157 @@
 package me.Azz_9.flex_hud.client.modules.hud.custom;
 
+import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
+
+import com.google.common.hash.Hashing;
+import com.mojang.blaze3d.platform.NativeImage;
+
 import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.MultiLineTextWidget;
+import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.server.packs.resources.IoSupplier;
+import net.minecraft.util.ARGB;
+import net.minecraft.util.Util;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix3x2fStack;
 
+import java.io.InputStream;
+import java.util.List;
+
+import me.Azz_9.flex_hud.FlexHudLogger;
 import me.Azz_9.flex_hud.client.gui.components.config.entries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.gui.components.config.entries.CyclingButtonEntry;
 import me.Azz_9.flex_hud.client.gui.components.config.entries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.gui.screens.AbstractConfigurationScreen;
+import me.Azz_9.flex_hud.client.modules.TickableModule;
 import me.Azz_9.flex_hud.client.modules.hud.AbstractTextModule;
+import me.Azz_9.flex_hud.mixin.PackSelectionScreenAccessor;
 
-public class ResourcePack extends AbstractTextModule {
+public class ResourcePack extends AbstractTextModule implements TickableModule {
+
+	private @Nullable Pack lastSelectedPack = null;
+	private @Nullable String selectedPackId = null;
+	private @Nullable Identifier selectedPackIcon = null;
+	private @Nullable StringWidget selectedPackTitleWidget = null;
+	private @Nullable MultiLineTextWidget selectedPackDescriptionWidget = null;
+
+	private static final int ICON_SIZE = 32;
+	private static final int GAP = 2;
+	private static final int MAX_WIDTH = 160;
+	private static final int MAX_TEXT_WIDTH = MAX_WIDTH - ICON_SIZE - GAP * 2;
+	private static final int MAX_DESCRIPTION_ROWS = 2;
 
 	public ResourcePack(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super("ressource_pack", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.ressource_pack.config.enable");
+
+		setHeight(ICON_SIZE);
 	}
 
 	@Override
 	public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
-		if (shouldNotRender()) {
+		if (shouldNotRender() || lastSelectedPack == null) {
 			return;
 		}
+
+		Font font = MINECRAFT.font;
+		if (!lastSelectedPack.getId().equals(selectedPackId)) {
+			selectedPackId = lastSelectedPack.getId();
+			selectedPackIcon = loadPackIcon(lastSelectedPack);
+			selectedPackTitleWidget = new StringWidget(lastSelectedPack.getTitle(), font);
+			selectedPackTitleWidget.setPosition(ICON_SIZE + GAP, GAP);
+			selectedPackTitleWidget.setMaxWidth(MAX_TEXT_WIDTH);
+			selectedPackDescriptionWidget = new MultiLineTextWidget(ICON_SIZE + GAP, font.lineHeight + GAP * 2, lastSelectedPack.getDescription(), font);
+			selectedPackDescriptionWidget.setMaxWidth(MAX_TEXT_WIDTH);
+			selectedPackDescriptionWidget.setMaxRows(MAX_DESCRIPTION_ROWS);
+
+			setWidth(ICON_SIZE + GAP + Math.min(
+					Math.max(
+							selectedPackTitleWidget.getWidth(),
+							selectedPackDescriptionWidget.getWidth()
+					),
+					MAX_TEXT_WIDTH
+			));
+		}
+
+		Matrix3x2fStack matrices = graphics.pose();
+		matrices.pushMatrix();
+		matrices.translate(getRoundedX(), getRoundedY());
+		matrices.scale(getScale());
+
+		drawBackground(graphics);
+
+		if (selectedPackIcon != null) {
+			graphics.blit(
+					RenderPipelines.GUI_TEXTURED, selectedPackIcon,
+					0, 0, 0, 0,
+					ICON_SIZE, ICON_SIZE, ICON_SIZE, ICON_SIZE
+			);
+		}
+		if (selectedPackTitleWidget != null) {
+			MutableComponent component = selectedPackTitleWidget.getMessage().copy()
+					.withColor(getColor());
+			if (!shadow.getValue()) component.withoutShadow();
+			selectedPackTitleWidget.setMessage(component);
+
+			selectedPackTitleWidget.render(graphics, 0, 0, deltaTracker.getGameTimeDeltaTicks());
+		}
+		if (selectedPackDescriptionWidget != null) {
+			MutableComponent component = selectedPackDescriptionWidget.getMessage().copy()
+					.withColor(ARGB.setBrightness(getColor(), 0.8f));
+			if (!shadow.getValue()) component.withoutShadow();
+			selectedPackDescriptionWidget.setMessage(component);
+
+			selectedPackDescriptionWidget.render(graphics, 0, 0, deltaTracker.getGameTimeDeltaTicks());
+		}
+
+		matrices.popMatrix();
 	}
 
 	@Override
 	public Component getName() {
 		return Component.translatable("flex_hud.ressource_pack");
+	}
+
+	private Identifier loadPackIcon(Pack pack) {
+		try (PackResources packResources = pack.open()) {
+			IoSupplier<InputStream> resource = packResources.getRootResource("pack.png");
+			if (resource == null) {
+				return PackSelectionScreenAccessor.getDefaultIcon();
+			}
+
+			String id = pack.getId();
+			Identifier location = Identifier.withDefaultNamespace(
+					"pack/" + Util.sanitizeName(id, Identifier::validPathChar) + "/" + Hashing.sha1().hashUnencodedChars(id) + "/icon"
+			);
+
+			try (InputStream stream = resource.get()) {
+				NativeImage iconImage = NativeImage.read(stream);
+				MINECRAFT.getTextureManager().register(location, new DynamicTexture(location::toString, iconImage));
+				return location;
+			}
+		} catch (Exception e) {
+			FlexHudLogger.warn("Failed to load icon from pack {}", pack.getId(), e);
+			return PackSelectionScreenAccessor.getDefaultIcon();
+		}
+	}
+
+	@Override
+	public List<String> getKeywords() {
+		List<String> keywords = super.getKeywords();
+		keywords.add("texture pack");
+		return keywords;
 	}
 
 	@Override
@@ -97,5 +219,18 @@ public class ResourcePack extends AbstractTextModule {
 				);
 			}
 		};
+	}
+
+	@Override
+	public void tick() {
+		List<Pack> selectedPacks = MINECRAFT.getResourcePackRepository().getSelectedPacks()
+				.stream()
+				.filter(pack -> !pack.isRequired() || pack.getId().equals("vanilla"))
+				.toList();
+		if (selectedPacks.isEmpty()) {
+			lastSelectedPack = null;
+		} else {
+			lastSelectedPack = selectedPacks.getLast();
+		}
 	}
 }

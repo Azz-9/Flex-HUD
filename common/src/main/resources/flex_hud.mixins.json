@@ -21,6 +21,7 @@
 		"MinecraftMixin",
 		"MouseHandlerMixin",
 		"MultiPlayerGameModeMixin",
+		"PackSelectionScreenAccessor",
 		"RenderPipelinesAccessor"
 	],
 	"server": [],
