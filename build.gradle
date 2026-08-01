@@ -150,7 +150,7 @@ publishMods {
 		avatarUrl = "https://raw.githubusercontent.com/Azz-9/${rootProject.name}/HEAD/common/src/main/resources/${mod_id}.png"
 		content = changelog.map {
 			"""
-			## ${mod_name} ${simpleModVersion} is now available!
+			## ${mod_name} ${simpleModVersion} is now available! <@&1532483690192699563>
 
 			${it}
 			""".stripIndent()
