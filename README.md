@@ -37,12 +37,12 @@ in one place.
 - **Toggle Sprint/Sneak** – _display the current sprint/sneak mode directly on your HUD_
 - **Scoreboard** – _reposition the scoreboard, customize its background color, and optionally hide the score numbers_
 - **Inventory display** – _keep your full inventory visible on your HUD at all times_
+- **Titles** - _reposition, toggle and customize the appearance of the title and subtitle_
 
 ### Additional features (non-HUD):
 
 - **Weather Changer** – _set clear skies, rain, or thunderstorms_
 - **Time Changer** – _adjust the in-game time to your liking_
-- **Durability Ping** – _get alerted with a sound and/or on-screen message when an item’s durability reaches a set
   threshold_
 - **TNT Countdown** – _displays a timer for ignited TNT_
 
