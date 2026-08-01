@@ -20,7 +20,8 @@
 		"KeyMappingAccessor",
 		"MinecraftMixin",
 		"MouseHandlerMixin",
-		"MultiPlayerGameModeMixin"
+		"MultiPlayerGameModeMixin",
+		"RenderPipelinesAccessor"
 	],
 	"server": [],
 	"injectors": {
