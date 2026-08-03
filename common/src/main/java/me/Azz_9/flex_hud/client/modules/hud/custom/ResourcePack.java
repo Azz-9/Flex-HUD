@@ -5,6 +5,7 @@ import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 import com.google.common.hash.Hashing;
 import com.mojang.blaze3d.platform.NativeImage;
 
+import net.minecraft.Util;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -15,12 +16,11 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.util.ARGB;
-import net.minecraft.util.Util;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,7 +42,7 @@ public class ResourcePack extends AbstractTextModule implements TickableModule {
 
 	private @Nullable Pack lastSelectedPack = null;
 	private @Nullable String selectedPackId = null;
-	private @Nullable Identifier selectedPackIcon = null;
+	private @Nullable ResourceLocation selectedPackIcon = null;
 	private @Nullable StringWidget selectedPackTitleWidget = null;
 	private @Nullable MultiLineTextWidget selectedPackDescriptionWidget = null;
 
@@ -71,7 +71,8 @@ public class ResourcePack extends AbstractTextModule implements TickableModule {
 			selectedPackIcon = loadPackIcon(lastSelectedPack);
 			selectedPackTitleWidget = new StringWidget(lastSelectedPack.getTitle(), font);
 			selectedPackTitleWidget.setPosition(ICON_SIZE + GAP, GAP);
-			selectedPackTitleWidget.setMaxWidth(MAX_TEXT_WIDTH);
+			selectedPackTitleWidget.setWidth(MAX_TEXT_WIDTH);
+			selectedPackTitleWidget.alignLeft();
 			selectedPackDescriptionWidget = new MultiLineTextWidget(ICON_SIZE + GAP, font.lineHeight + GAP * 2, lastSelectedPack.getDescription(), font);
 			selectedPackDescriptionWidget.setMaxWidth(MAX_TEXT_WIDTH);
 			selectedPackDescriptionWidget.setMaxRows(MAX_DESCRIPTION_ROWS);
@@ -102,7 +103,7 @@ public class ResourcePack extends AbstractTextModule implements TickableModule {
 		if (selectedPackTitleWidget != null) {
 			MutableComponent component = selectedPackTitleWidget.getMessage().copy()
 					.withColor(getColor());
-			if (!shadow.getValue()) component.withoutShadow();
+			if (!shadow.getValue()) component.setStyle(component.getStyle().withShadowColor(0));
 			selectedPackTitleWidget.setMessage(component);
 
 			selectedPackTitleWidget.render(graphics, 0, 0, deltaTracker.getGameTimeDeltaTicks());
@@ -110,7 +111,7 @@ public class ResourcePack extends AbstractTextModule implements TickableModule {
 		if (selectedPackDescriptionWidget != null) {
 			MutableComponent component = selectedPackDescriptionWidget.getMessage().copy()
 					.withColor(ARGB.setBrightness(getColor(), 0.8f));
-			if (!shadow.getValue()) component.withoutShadow();
+			if (!shadow.getValue()) component.setStyle(component.getStyle().withShadowColor(0));
 			selectedPackDescriptionWidget.setMessage(component);
 
 			selectedPackDescriptionWidget.render(graphics, 0, 0, deltaTracker.getGameTimeDeltaTicks());
@@ -124,7 +125,7 @@ public class ResourcePack extends AbstractTextModule implements TickableModule {
 		return Component.translatable("flex_hud.ressource_pack");
 	}
 
-	private Identifier loadPackIcon(Pack pack) {
+	private ResourceLocation loadPackIcon(Pack pack) {
 		try (PackResources packResources = pack.open()) {
 			IoSupplier<InputStream> resource = packResources.getRootResource("pack.png");
 			if (resource == null) {
@@ -132,8 +133,8 @@ public class ResourcePack extends AbstractTextModule implements TickableModule {
 			}
 
 			String id = pack.getId();
-			Identifier location = Identifier.withDefaultNamespace(
-					"pack/" + Util.sanitizeName(id, Identifier::validPathChar) + "/" + Hashing.sha1().hashUnencodedChars(id) + "/icon"
+			ResourceLocation location = ResourceLocation.withDefaultNamespace(
+					"pack/" + Util.sanitizeName(id, ResourceLocation::validPathChar) + "/" + Hashing.sha1().hashUnencodedChars(id) + "/icon"
 			);
 
 			try (InputStream stream = resource.get()) {
