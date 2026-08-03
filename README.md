@@ -22,6 +22,7 @@ in one place.
 - **Speedometer** – _track your movement speed_
 - **Reach** – _display the hit distance to the mob at the moment you strike it_
 - **Playtime** – _count your total play session duration_
+- **Resource Pack** - _show the currently used resource pack_
 - **Potion Effect** – _list active potion effects with timers_
 - **Weather Display** – _show the current weather status_
 - **Key Strokes** – _visualize your key presses in real time with optional CPS display_
@@ -38,6 +39,7 @@ in one place.
 - **Scoreboard** – _reposition the scoreboard, customize its background color, and optionally hide the score numbers_
 - **Inventory display** – _keep your full inventory visible on your HUD at all times_
 - **Titles** - _reposition, toggle and customize the appearance of the title and subtitle_
+- **TPS** - _show an approximation of the server tps_
 
 ### Additional features (non-HUD):
 
