@@ -309,6 +309,9 @@
 	"flex_hud.titles.config.show_title": "Affiché le titre",
 	"flex_hud.titles.config.show_subtitle": "Affiché le sous-titre",
 
+	"flex_hud.tps": "TPS",
+	"flex_hud.tps.config.enable": "Afficher les TPS",
+
 	"flex_hud.coordinates.hud.direction.south": "Sud",
 	"flex_hud.coordinates.hud.direction.south_west": "Sud-Ouest",
 	"flex_hud.coordinates.hud.direction.west": "Ouest",
