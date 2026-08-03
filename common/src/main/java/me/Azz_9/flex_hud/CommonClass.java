@@ -36,6 +36,7 @@ import me.Azz_9.flex_hud.compat.waypointsCollectors.XaeroWaypointCollector;
 import me.Azz_9.flex_hud.platform.Services;
 import me.Azz_9.flex_hud.utils.FaviconUtils;
 import me.Azz_9.flex_hud.utils.PingUtils;
+import me.Azz_9.flex_hud.utils.TpsUtils;
 
 // This class is part of the common project meaning it is shared between all supported loaders. Code written here can only
 // import and access the vanilla codebase, libraries used by vanilla, and optionally third party libraries that provide
@@ -137,6 +138,7 @@ public class CommonClass {
 		Services.PLATFORM.registerDisconnectEvent(() -> {
 			PingUtils.stopPinging();
 			PingUtils.connection = null;
+			TpsUtils.reset();
 			waypointCollectors.forEach(Collector::onLeaveWorld);
 		});
 
