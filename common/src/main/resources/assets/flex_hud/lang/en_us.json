@@ -181,6 +181,7 @@
 	"flex_hud.ping": "Ping",
 	"flex_hud.ping.config.enable": "Show ping",
 	"flex_hud.ping.config.hide_when_offline": "Hide ping when offline",
+	"flex_hud.ping.config.dynamic_color": "Dynamic color",
 
 	"flex_hud.playtime": "Playtime",
 	"flex_hud.playtime.config.enable": "Show playtime",
@@ -223,8 +224,9 @@
 	"flex_hud.bossbar.config.enable": "Enable custom bossbar",
 	"flex_hud.bossbar.config.show_bossbar": "Show boss bar",
 
-	"flex_hud.ressource_pack": "Ressource pack",
-	"flex_hud.ressource_pack.config.enable": "Show ressource pack",
+	"flex_hud.resource_pack": "Resource pack",
+	"flex_hud.resource_pack.config.enable": "Show resource pack",
+	"flex_hud.resource_pack.config.show_description": "Show description",
 
 	"flex_hud.potion_effect": "Potion effect",
 	"flex_hud.potion_effect.config.enable": "Show potion effect",
@@ -311,6 +313,7 @@
 
 	"flex_hud.tps": "TPS",
 	"flex_hud.tps.config.enable": "Show TPS",
+	"flex_hud.tps.config.dynamic_color": "Dynamic color",
 
 	"flex_hud.coordinates.hud.direction.south": "South",
 	"flex_hud.coordinates.hud.direction.south_west": "South-West",
@@ -442,12 +445,16 @@
 	"flex_hud.custom_modules.variable.description.server.name": "Name of the server the player is connected to.",
 	"flex_hud.custom_modules.variable.name.server.ping": "Ping",
 	"flex_hud.custom_modules.variable.description.server.ping": "Current network latency to the server, in milliseconds.",
+	"flex_hud.custom_modules.variable.name.server.tps": "TPS",
+	"flex_hud.custom_modules.variable.description.server.tps": "The server's estimated ticks per second.",
 	"flex_hud.custom_modules.variable.name.client.fps": "FPS",
 	"flex_hud.custom_modules.variable.description.client.fps": "Number of frames rendered per second by the game client.",
 	"flex_hud.custom_modules.variable.name.client.version": "Version",
 	"flex_hud.custom_modules.variable.description.client.version": "Current version of Minecraft the client is running.",
 	"flex_hud.custom_modules.variable.name.client.render_distance": "Render distance",
 	"flex_hud.custom_modules.variable.description.client.render_distance": "Render distance currently set in the client settings, in chunks.",
+	"flex_hud.custom_modules.variable.name.client.resource_pack": "Resource pack",
+	"flex_hud.custom_modules.variable.description.client.resource_pack": "Currently active resource pack.",
 	"flex_hud.custom_modules.variable.name.cps.left": "Left CPS",
 	"flex_hud.custom_modules.variable.description.cps.left": "Number of left mouse button clicks per second.",
 	"flex_hud.custom_modules.variable.name.cps.right": "Right CPS",
