@@ -60,6 +60,7 @@ public class Modules {
 	public Scoreboard scoreboard = new Scoreboard(0, 0, END, CENTER);
 	public InventoryDisplay inventoryDisplay = new InventoryDisplay(0, -50, CENTER, END);
 	public Titles titles = new Titles(0, -22.5, CENTER, CENTER);
+	public Tps tps = new Tps(200, 12, START, START);
 	//others
 	public WeatherChanger weatherChanger = new WeatherChanger();
 	public TimeChanger timeChanger = new TimeChanger();
@@ -124,6 +125,7 @@ public class Modules {
 				getInstance().scoreboard,
 				getInstance().inventoryDisplay,
 				getInstance().titles,
+				getInstance().tps,
 				getInstance().weatherChanger,
 				getInstance().timeChanger,
 				getInstance().crosshair,
