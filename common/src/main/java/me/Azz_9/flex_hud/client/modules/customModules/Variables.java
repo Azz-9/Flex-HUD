@@ -7,6 +7,7 @@ import static me.Azz_9.flex_hud.client.modules.customModules.Variables.UpdateFre
 import net.minecraft.SharedConstants;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biomes;
@@ -25,6 +26,7 @@ import me.Azz_9.flex_hud.client.tickables.MemoryUsageTickable;
 import me.Azz_9.flex_hud.client.tickables.SpeedTickable;
 import me.Azz_9.flex_hud.utils.CpsUtils;
 import me.Azz_9.flex_hud.utils.PingUtils;
+import me.Azz_9.flex_hud.utils.TpsUtils;
 
 public class Variables {
 
@@ -108,12 +110,24 @@ public class Variables {
 		register("server.ip", SafeSupplier.create(() -> requireNonNull(MINECRAFT.getCurrentServer()).ip, "", "play.hypixel.net"), ON_JOIN_WORLD);
 		register("server.name", SafeSupplier.create(() -> requireNonNull(MINECRAFT.getCurrentServer()).name, "", "Hypixel"), ON_JOIN_WORLD);
 		register("server.ping", PingUtils::getPing, TICK);
+		register("server.tps", TpsUtils::getAverageTps, TICK);
 	}
 
 	private static void registerClientVariables() {
 		register("client.fps", MINECRAFT::getFps, TICK);
 		register("client.version", () -> SharedConstants.getCurrentVersion().getId(), ON_JOIN_WORLD);
 		register("client.render_distance", () -> MINECRAFT.options.renderDistance().get(), TICK);
+		register("client.resource_pack", () -> {
+			List<Pack> selectedPacks = MINECRAFT.getResourcePackRepository().getSelectedPacks()
+					.stream()
+					.filter(pack -> !pack.isRequired() || pack.getId().equals("vanilla"))
+					.toList();
+			if (selectedPacks.isEmpty()) {
+				return Component.translatable("resourcePack.vanilla.name").getString();
+			} else {
+				return selectedPacks.getLast().getTitle().getString();
+			}
+		}, TICK);
 	}
 
 	private static void registerCpsVariables() {

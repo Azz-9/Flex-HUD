@@ -12,6 +12,7 @@ public final class Colors {
 	public static final int GRAY = 0xFF4E4E4E;
 	public static final int DARK_GRAY = 0xFF333333;
 	public static final int RED = 0xFFFF5555;
+	public static final int GREEN = 0xFF55FF55;
 
 	private Colors() {
 	}
