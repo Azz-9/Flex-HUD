@@ -2,6 +2,7 @@ package me.Azz_9.flex_hud.mixin;
 
 import net.minecraft.Util;
 import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.network.protocol.game.ClientboundSetTimePacket;
 import net.minecraft.network.protocol.game.ClientboundStartConfigurationPacket;
 import net.minecraft.network.protocol.ping.ClientboundPongResponsePacket;
 
@@ -11,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import me.Azz_9.flex_hud.utils.PingUtils;
+import me.Azz_9.flex_hud.utils.TpsUtils;
 
 
 @Mixin(ClientPacketListener.class)
@@ -24,5 +26,16 @@ public abstract class ClientPacketListenerMixin {
 	private void onEnterReconfiguration(ClientboundStartConfigurationPacket packet, CallbackInfo ci) {
 		PingUtils.stopPinging();
 		PingUtils.connection = null;
+	}
+
+	@Inject(
+			method = "handleSetTime",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/network/protocol/game/ClientboundSetTimePacket;gameTime()J"
+			)
+	)
+	private void handleSetTime(ClientboundSetTimePacket packet, CallbackInfo ci) {
+		TpsUtils.onServerTick(packet.gameTime());
 	}
 }
