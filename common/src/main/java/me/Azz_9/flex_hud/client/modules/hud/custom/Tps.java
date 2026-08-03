@@ -6,13 +6,16 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.ARGB;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 
 import me.Azz_9.flex_hud.CommonClass;
 import me.Azz_9.flex_hud.client.config.ConfigRegistry;
+import me.Azz_9.flex_hud.client.config.option.ConfigBoolean;
 import me.Azz_9.flex_hud.client.config.option.ConfigInteger;
+import me.Azz_9.flex_hud.client.gui.Colors;
 import me.Azz_9.flex_hud.client.gui.components.config.entries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.gui.components.config.entries.CyclingButtonEntry;
 import me.Azz_9.flex_hud.client.gui.components.config.entries.IntFieldEntry;
@@ -24,12 +27,19 @@ import me.Azz_9.flex_hud.utils.TpsUtils;
 public class Tps extends AbstractTextModule {
 
 	public ConfigInteger digits = new ConfigInteger(1, "flex_hud.speedometer.config.number_of_digits", 0, 16);
+	public ConfigBoolean dynamicColor = new ConfigBoolean(true, "flex_hud.tps.config.dynamic_color");
 
 	public Tps(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super("tps", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.tps.config.enable");
 
 		ConfigRegistry.register(getID(), "digits", digits);
+		ConfigRegistry.register(getID(), "dynamicColor", dynamicColor);
+	}
+
+	@Override
+	public void init() {
+		setHeight(MINECRAFT.font.lineHeight);
 	}
 
 	@Override
@@ -38,13 +48,14 @@ public class Tps extends AbstractTextModule {
 			return;
 		}
 
-		String text;
+		double tps;
 		if (CommonClass.isEditingLayout) {
-			text = "20 TPS";
+			tps = 20;
 		} else {
-			String format = "%." + this.digits.getValue() + "f TPS";
-			text = String.format(format, TpsUtils.getAverageTps());
+			tps = TpsUtils.getAverageTps();
 		}
+		String format = "%." + this.digits.getValue() + "f TPS";
+		String text = String.format(format, tps);
 
 		setWidth(text);
 
@@ -55,9 +66,14 @@ public class Tps extends AbstractTextModule {
 
 		drawBackground(graphics);
 
-		graphics.drawString(MINECRAFT.font, text, 0, 0, getColor(), this.shadow.getValue());
+		int color = dynamicColor.getValue() ? getDynamicColor(tps) : getColor();
+		graphics.drawString(MINECRAFT.font, text, 0, 0, color, this.shadow.getValue());
 
 		matrices.popMatrix();
+	}
+
+	private int getDynamicColor(double tps) {
+		return ARGB.lerp((float) (tps / 20.0), Colors.RED, Colors.GREEN);
 	}
 
 	@Override
@@ -130,6 +146,11 @@ public class Tps extends AbstractTextModule {
 						new IntFieldEntry.Builder()
 								.setIntFieldWidth(20)
 								.setVariable(digits)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(dynamicColor)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);

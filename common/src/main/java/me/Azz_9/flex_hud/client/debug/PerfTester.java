@@ -3,7 +3,6 @@ package me.Azz_9.flex_hud.client.debug;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
@@ -11,6 +10,7 @@ import net.minecraft.util.Mth;
 import java.util.*;
 
 import me.Azz_9.flex_hud.FlexHudLogger;
+import me.Azz_9.flex_hud.client.gui.Colors;
 
 public class PerfTester {
 	private static final Map<String, List<Long>> frameTimes = new HashMap<>();
@@ -164,11 +164,7 @@ public class PerfTester {
 
 	private static int getColor(double average, double max) {
 		float alpha = (float) Mth.clamp(average / max, 0, 1);
-		return ARGB.lerp(
-				alpha,
-				ChatFormatting.GREEN.getColor() != null ? ChatFormatting.GREEN.getColor() : 0xff55ff55,
-				ChatFormatting.RED.getColor() != null ? ChatFormatting.RED.getColor() : 0xffff5555
-		);
+		return ARGB.lerp(alpha, Colors.GREEN, Colors.RED);
 	}
 
 	private record PerfResult(
