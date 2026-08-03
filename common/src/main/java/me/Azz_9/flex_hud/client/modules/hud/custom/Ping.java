@@ -6,6 +6,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.ARGB;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
@@ -13,6 +14,7 @@ import org.joml.Matrix3x2fStack;
 import me.Azz_9.flex_hud.CommonClass;
 import me.Azz_9.flex_hud.client.config.ConfigRegistry;
 import me.Azz_9.flex_hud.client.config.option.ConfigBoolean;
+import me.Azz_9.flex_hud.client.gui.Colors;
 import me.Azz_9.flex_hud.client.gui.components.config.entries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.gui.components.config.entries.CyclingButtonEntry;
 import me.Azz_9.flex_hud.client.gui.components.config.entries.ToggleButtonEntry;
@@ -22,12 +24,14 @@ import me.Azz_9.flex_hud.utils.PingUtils;
 
 public class Ping extends AbstractTextModule {
 	private final ConfigBoolean hideWhenOffline = new ConfigBoolean(true, "flex_hud.ping.config.hide_when_offline");
+	private final ConfigBoolean dynamicColor = new ConfigBoolean(true, "flex_hud.ping.config.dynamic_color");
 
 	public Ping(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super("ping", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
 		this.enabled.setConfigTextTranslationKey("flex_hud.ping.config.enable");
 
 		ConfigRegistry.register(getID(), "hideWhenOffline", hideWhenOffline);
+		ConfigRegistry.register(getID(), "dynamicColor", dynamicColor);
 	}
 
 	@Override
@@ -47,7 +51,7 @@ public class Ping extends AbstractTextModule {
 		}
 
 		String text = "";
-
+		int color = getColor();
 		if (CommonClass.isEditingLayout) {
 
 			text = "20 ms";
@@ -55,7 +59,11 @@ public class Ping extends AbstractTextModule {
 		} else {
 			if (MINECRAFT.getCurrentServer() != null) {
 
-				text = PingUtils.getPing() + " ms";
+				long ping = PingUtils.getPing();
+				text = ping + " ms";
+				if (dynamicColor.getValue()) {
+					color = ARGB.srgbLerp(ping / 1000.0f, Colors.GREEN, Colors.RED);
+				}
 
 			} else if (!this.hideWhenOffline.getValue()) {
 
@@ -75,7 +83,7 @@ public class Ping extends AbstractTextModule {
 
 			drawBackground(graphics);
 
-			graphics.drawString(MINECRAFT.font, text, 0, 0, getColor(), this.shadow.getValue());
+			graphics.drawString(MINECRAFT.font, text, 0, 0, color, this.shadow.getValue());
 
 			matrices.popMatrix();
 		}
@@ -155,6 +163,11 @@ public class Ping extends AbstractTextModule {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(hideWhenOffline)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(dynamicColor)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);

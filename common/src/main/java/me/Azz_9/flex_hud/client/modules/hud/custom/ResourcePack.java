@@ -30,6 +30,8 @@ import java.io.InputStream;
 import java.util.List;
 
 import me.Azz_9.flex_hud.FlexHudLogger;
+import me.Azz_9.flex_hud.client.config.ConfigRegistry;
+import me.Azz_9.flex_hud.client.config.option.ConfigBoolean;
 import me.Azz_9.flex_hud.client.gui.components.config.entries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.gui.components.config.entries.CyclingButtonEntry;
 import me.Azz_9.flex_hud.client.gui.components.config.entries.ToggleButtonEntry;
@@ -39,6 +41,8 @@ import me.Azz_9.flex_hud.client.modules.hud.AbstractTextModule;
 import me.Azz_9.flex_hud.mixin.PackSelectionScreenAccessor;
 
 public class ResourcePack extends AbstractTextModule implements TickableModule {
+
+	public ConfigBoolean showDescription = new ConfigBoolean(true, "flex_hud.resource_pack.config.show_description");
 
 	private @Nullable Pack lastSelectedPack = null;
 	private @Nullable String selectedPackId = null;
@@ -53,8 +57,12 @@ public class ResourcePack extends AbstractTextModule implements TickableModule {
 	private static final int MAX_DESCRIPTION_ROWS = 2;
 
 	public ResourcePack(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
-		super("ressource_pack", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
-		this.enabled.setConfigTextTranslationKey("flex_hud.ressource_pack.config.enable");
+		super("resource_pack", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
+		this.enabled.setConfigTextTranslationKey("flex_hud.resource_pack.config.enable");
+
+		ConfigRegistry.register(getID(), "showDescription", showDescription);
+
+		showDescription.setOnChange(this::updateTitleWidgetY);
 
 		setHeight(ICON_SIZE);
 	}
@@ -67,11 +75,16 @@ public class ResourcePack extends AbstractTextModule implements TickableModule {
 
 		Font font = MINECRAFT.font;
 		if (!lastSelectedPack.getId().equals(selectedPackId)) {
+			// id
 			selectedPackId = lastSelectedPack.getId();
+			// icon
 			selectedPackIcon = loadPackIcon(lastSelectedPack);
+			// title
 			selectedPackTitleWidget = new StringWidget(lastSelectedPack.getTitle(), font);
-			selectedPackTitleWidget.setPosition(ICON_SIZE + GAP, GAP);
+			selectedPackTitleWidget.setX(ICON_SIZE + GAP);
+			updateTitleWidgetY(showDescription.getValue());
 			selectedPackTitleWidget.setMaxWidth(MAX_TEXT_WIDTH);
+			// description
 			selectedPackDescriptionWidget = new MultiLineTextWidget(ICON_SIZE + GAP, font.lineHeight + GAP * 2, lastSelectedPack.getDescription(), font);
 			selectedPackDescriptionWidget.setMaxWidth(MAX_TEXT_WIDTH);
 			selectedPackDescriptionWidget.setMaxRows(MAX_DESCRIPTION_ROWS);
@@ -107,7 +120,7 @@ public class ResourcePack extends AbstractTextModule implements TickableModule {
 
 			selectedPackTitleWidget.render(graphics, 0, 0, deltaTracker.getGameTimeDeltaTicks());
 		}
-		if (selectedPackDescriptionWidget != null) {
+		if (showDescription.getValue() && selectedPackDescriptionWidget != null) {
 			MutableComponent component = selectedPackDescriptionWidget.getMessage().copy()
 					.withColor(ARGB.setBrightness(getColor(), 0.8f));
 			if (!shadow.getValue()) component.withoutShadow();
@@ -121,7 +134,7 @@ public class ResourcePack extends AbstractTextModule implements TickableModule {
 
 	@Override
 	public Component getName() {
-		return Component.translatable("flex_hud.ressource_pack");
+		return Component.translatable("flex_hud.resource_pack");
 	}
 
 	private Identifier loadPackIcon(Pack pack) {
@@ -144,6 +157,12 @@ public class ResourcePack extends AbstractTextModule implements TickableModule {
 		} catch (Exception e) {
 			FlexHudLogger.warn("Failed to load icon from pack {}", pack.getId(), e);
 			return PackSelectionScreenAccessor.getDefaultIcon();
+		}
+	}
+
+	private void updateTitleWidgetY(boolean showDescription) {
+		if (selectedPackTitleWidget != null) {
+			selectedPackTitleWidget.setY(showDescription ? GAP : (ICON_SIZE - MINECRAFT.font.lineHeight) / 2);
 		}
 	}
 
@@ -215,6 +234,11 @@ public class ResourcePack extends AbstractTextModule implements TickableModule {
 								.setVariable(anchorModeY)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.addObserver((getter) -> setAnchorModeY(anchorModeY.getValue()))
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(showDescription)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 			}
