@@ -1,6 +1,6 @@
 package me.Azz_9.flex_hud.mixin;
 
-import net.minecraft.world.level.Level;
+import net.minecraft.client.ClientClockManager;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -10,11 +10,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import me.Azz_9.flex_hud.client.modules.Modules;
 import me.Azz_9.flex_hud.client.modules.notHud.TimeChanger;
 
-@Mixin(Level.class)
-public abstract class LevelMixin {
+@Mixin(ClientClockManager.ClientClockInstance.class)
+public abstract class ClientClockManagerMixin {
 
-	@Inject(at = @At("RETURN"), method = "getOverworldClockTime", cancellable = true)
-	public void getOverworldClockTime(CallbackInfoReturnable<Long> cir) {
+	@Inject(method = "totalTicks", at = @At("RETURN"), cancellable = true)
+	private void getTotalTicks(CallbackInfoReturnable<Long> cir) {
 		if (Modules.getInstance().isEnabled.getValue() &&
 				Modules.getInstance().timeChanger.enabled.getValue()) {
 
