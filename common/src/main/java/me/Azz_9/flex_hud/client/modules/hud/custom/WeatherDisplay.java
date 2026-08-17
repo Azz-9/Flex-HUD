@@ -87,21 +87,21 @@ public class WeatherDisplay extends AbstractBackgroundModule {
 		}
 
 		int timeOfDay = (int) (MINECRAFT.level.getDayTime() % 24000L);
-		if (timeOfDay >= 12600 && timeOfDay <= 23400) {
-			if (MINECRAFT.level.isThundering()) {
-				return DAY_THUNDER;
-			} else if (MINECRAFT.level.isRaining()) {
-				return DAY_RAINY;
-			} else {
-				return DAY_CLEAR;
-			}
-		} else {
+		if (timeOfDay >= 12750 && timeOfDay <= 23250) {
 			if (MINECRAFT.level.isThundering()) {
 				return NIGHT_THUNDER;
 			} else if (MINECRAFT.level.isRaining()) {
 				return NIGHT_RAINY;
 			} else {
 				return NIGHT_CLEAR;
+			}
+		} else {
+			if (MINECRAFT.level.isThundering()) {
+				return DAY_THUNDER;
+			} else if (MINECRAFT.level.isRaining()) {
+				return DAY_RAINY;
+			} else {
+				return DAY_CLEAR;
 			}
 		}
 	}
