@@ -4,11 +4,11 @@
 	"package": "me.Azz_9.flex_hud.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
-		"LevelMixin"
 	],
 	"client": [
 		"BossHealthOverlayAccessor",
 		"BossHealthOverlayMixin",
+		"ClientLevelDataMixin",
 		"ClientLevelMixin",
 		"ClientPacketListenerMixin",
 		"FocusableTextWidgetAccessor",
