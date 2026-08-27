@@ -22,7 +22,7 @@ import me.Azz_9.flex_hud.client.gui.components.TrackableChange;
 import me.Azz_9.flex_hud.client.gui.components.config.DataGetter;
 import me.Azz_9.flex_hud.client.gui.components.config.Observer;
 import me.Azz_9.flex_hud.client.gui.components.config.ResetAware;
-import me.Azz_9.flex_hud.client.gui.components.config.colorSelector.ColorBindable;
+import me.Azz_9.flex_hud.client.gui.components.config.colorPicker.ColorBindable;
 import me.Azz_9.flex_hud.utils.DrawingUtils;
 import me.Azz_9.flex_hud.utils.Ease;
 

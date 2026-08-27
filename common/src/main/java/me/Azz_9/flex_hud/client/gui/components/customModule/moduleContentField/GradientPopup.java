@@ -10,8 +10,8 @@ import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
-import me.Azz_9.flex_hud.client.gui.components.config.colorSelector.ColorBindable;
-import me.Azz_9.flex_hud.client.gui.components.config.colorSelector.ColorSelector;
+import me.Azz_9.flex_hud.client.gui.components.config.colorPicker.ColorBindable;
+import me.Azz_9.flex_hud.client.gui.components.config.colorPicker.ColorPicker;
 import me.Azz_9.flex_hud.client.gui.components.customModule.ModuleContentEditorModel;
 
 final class GradientPopup {
@@ -21,7 +21,7 @@ final class GradientPopup {
 	private final int selectionStart;
 	private final int selectionEnd;
 	private final GradientColorBindable bindable;
-	private ColorSelector selector;
+	private ColorPicker selector;
 	private int startColor;
 	private int endColor;
 	private boolean editingStart = true;
@@ -38,7 +38,7 @@ final class GradientPopup {
 		this.startColor = startColor;
 		this.endColor = endColor;
 		this.bindable = new GradientColorBindable();
-		this.selector = new ColorSelector(bindable);
+		this.selector = new ColorPicker(bindable);
 		applyGradient();
 	}
 
@@ -132,7 +132,7 @@ final class GradientPopup {
 	}
 
 	private void rebuildSelector() {
-		this.selector = new ColorSelector(bindable);
+		this.selector = new ColorPicker(bindable);
 		selector.setPosition(bounds.x() + bounds.width() - ModuleContentField.POPUP_PADDING - selector.getWidth(), bounds.bottom() - ModuleContentField.POPUP_PADDING - selector.getHeight());
 	}
 
