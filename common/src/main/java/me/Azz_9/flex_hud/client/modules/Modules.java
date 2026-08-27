@@ -1,6 +1,9 @@
 package me.Azz_9.flex_hud.client.modules;
 
+import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 import static me.Azz_9.flex_hud.client.modules.hud.AbstractMovableModule.AnchorPosition.*;
+
+import net.minecraft.client.Camera;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -205,5 +208,17 @@ public class Modules {
 
 	public static List<CustomModule> getCustomModules() {
 		return getInstance().customModules;
+	}
+
+	public static void onTimeOrWeatherUpdate() {
+		if (MINECRAFT.level != null) {
+			MINECRAFT.level.environmentAttributes().invalidateTickCache();
+
+			Camera camera = MINECRAFT.gameRenderer.mainCamera();
+			// 2 ticks are needed to make the sun/moon move to the right place and
+			// the sky have the right color based on the weather for whatever reason
+			camera.attributeProbe().tick(MINECRAFT.level, camera.position());
+			camera.attributeProbe().tick(MINECRAFT.level, camera.position());
+		}
 	}
 }

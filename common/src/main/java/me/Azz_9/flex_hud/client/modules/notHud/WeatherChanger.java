@@ -10,6 +10,7 @@ import me.Azz_9.flex_hud.client.gui.components.config.entries.CyclingButtonEntry
 import me.Azz_9.flex_hud.client.gui.components.config.entries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.gui.screens.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.modules.AbstractModule;
+import me.Azz_9.flex_hud.client.modules.Modules;
 
 public class WeatherChanger extends AbstractModule {
 	public final ConfigEnum<Weather> selectedWeather = new ConfigEnum<>(Weather.class, Weather.CLEAR, "flex_hud.weather_changer.config.selected_weather");
@@ -39,6 +40,7 @@ public class WeatherChanger extends AbstractModule {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(enabled)
+								.addObserver(_ -> Modules.onTimeOrWeatherUpdate())
 								.build()
 				);
 				this.addAllEntries(
@@ -46,6 +48,7 @@ public class WeatherChanger extends AbstractModule {
 								.setCyclingButtonWidth(80)
 								.setVariable(selectedWeather)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver(_ -> Modules.onTimeOrWeatherUpdate())
 								.build()
 				);
 			}
