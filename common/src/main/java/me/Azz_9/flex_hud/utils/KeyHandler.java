@@ -5,7 +5,6 @@ import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 import com.mojang.blaze3d.platform.InputConstants;
 
 import me.Azz_9.flex_hud.client.modules.Modules;
-import me.Azz_9.flex_hud.mixin.KeyMappingAccessor;
 
 public class KeyHandler {
 	private static boolean isAttackKeyPressed = false;
@@ -19,8 +18,8 @@ public class KeyHandler {
 			return;
 		}
 
-		int keyAttackValue = ((KeyMappingAccessor) MINECRAFT.options.keyAttack).getBoundKey().getValue();
-		int keyUseValue = ((KeyMappingAccessor) MINECRAFT.options.keyUse).getBoundKey().getValue();
+		int keyAttackValue = MINECRAFT.options.keyAttack.key.getValue();
+		int keyUseValue = MINECRAFT.options.keyUse.key.getValue();
 
 		if (action == InputConstants.PRESS) {
 			if (!isAttackKeyPressed && button == keyAttackValue) {
