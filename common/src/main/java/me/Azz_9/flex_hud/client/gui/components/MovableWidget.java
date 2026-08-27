@@ -26,7 +26,6 @@ import me.Azz_9.flex_hud.client.gui.undoManager.ScaleAction;
 import me.Azz_9.flex_hud.client.modules.hud.AbstractMovableModule;
 import me.Azz_9.flex_hud.client.modules.hud.DimensionHud;
 import me.Azz_9.flex_hud.client.modules.hud.MovableModule;
-import me.Azz_9.flex_hud.mixin.GuiGraphicsAccessor;
 import me.Azz_9.flex_hud.utils.DrawingUtils;
 
 public class MovableWidget extends AbstractWidget implements TrackableChange {
@@ -92,7 +91,7 @@ public class MovableWidget extends AbstractWidget implements TrackableChange {
 	@Override
 	protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
 		this.isHovered = (mouseX >= getX() && mouseY >= getY() && mouseX <= getRight() && mouseY <= getBottom()) || isScaleHandleHovered(mouseX, mouseY);
-		if (((GuiGraphicsAccessor) graphics).getCursor() == CursorType.DEFAULT) {
+		if (graphics.pendingCursor == CursorType.DEFAULT) {
 			if (this.isScaleHandleHovered(mouseX, mouseY) || isDraggingScaleHandle) {
 				graphics.requestCursor(
 						switch (handlePosition) {

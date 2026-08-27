@@ -12,6 +12,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.packs.PackSelectionScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.network.chat.Component;
@@ -38,7 +39,6 @@ import me.Azz_9.flex_hud.client.gui.components.config.entries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.gui.screens.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.modules.TickableModule;
 import me.Azz_9.flex_hud.client.modules.hud.AbstractTextModule;
-import me.Azz_9.flex_hud.mixin.PackSelectionScreenAccessor;
 
 public class ResourcePack extends AbstractTextModule implements TickableModule {
 
@@ -141,7 +141,7 @@ public class ResourcePack extends AbstractTextModule implements TickableModule {
 		try (PackResources packResources = pack.open()) {
 			IoSupplier<InputStream> resource = packResources.getRootResource("pack.png");
 			if (resource == null) {
-				return PackSelectionScreenAccessor.getDefaultIcon();
+				return PackSelectionScreen.DEFAULT_ICON;
 			}
 
 			String id = pack.getId();
@@ -156,7 +156,7 @@ public class ResourcePack extends AbstractTextModule implements TickableModule {
 			}
 		} catch (Exception e) {
 			FlexHudLogger.warn("Failed to load icon from pack {}", pack.getId(), e);
-			return PackSelectionScreenAccessor.getDefaultIcon();
+			return PackSelectionScreen.DEFAULT_ICON;
 		}
 	}
 

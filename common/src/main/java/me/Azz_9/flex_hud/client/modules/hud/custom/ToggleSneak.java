@@ -20,7 +20,6 @@ import me.Azz_9.flex_hud.client.gui.components.config.entries.CyclingButtonEntry
 import me.Azz_9.flex_hud.client.gui.components.config.entries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.gui.screens.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.modules.hud.AbstractTextModule;
-import me.Azz_9.flex_hud.mixin.KeyMappingAccessor;
 
 public class ToggleSneak extends AbstractTextModule {
 
@@ -70,7 +69,7 @@ public class ToggleSneak extends AbstractTextModule {
 			boolean sneakToggled = MINECRAFT.options.toggleCrouch().get();
 
 			if (sneakToggled) {
-				if (InputConstants.isKeyDown(MINECRAFT.getWindow(), ((KeyMappingAccessor) MINECRAFT.options.keyShift).getBoundKey().getValue())) {
+				if (InputConstants.isKeyDown(MINECRAFT.getWindow(), MINECRAFT.options.keyShift.key.getValue())) {
 					statusMessage = "Sneaking (Held)";
 				} else if (sneakKeyPressed) {
 					statusMessage = "Sneaking (Toggled)";
