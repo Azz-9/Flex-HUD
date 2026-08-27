@@ -41,7 +41,6 @@ import me.Azz_9.flex_hud.client.gui.screens.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.modules.hud.AbstractTextModule;
 import me.Azz_9.flex_hud.client.tickables.LivingEntitiesTickable;
 import me.Azz_9.flex_hud.compat.CompatManager;
-import me.Azz_9.flex_hud.mixin.GameRendererAccessor;
 
 public class Compass extends AbstractTextModule {
 	private final ConfigBoolean showMarker = new ConfigBoolean(true, "flex_hud.compass.config.show_marker");
@@ -730,7 +729,7 @@ public class Compass extends AbstractTextModule {
 
 	private Vec3 projectPointToScreen(GameRenderer renderer, Vec3 sourcePos) {
 		Matrix4f matrix4f = renderer.getProjectionMatrix(
-				((GameRendererAccessor) renderer).invokeGetFov(
+				renderer.getFov(
 						renderer.getMainCamera(),
 						0.0F,
 						true

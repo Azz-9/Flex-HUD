@@ -16,7 +16,6 @@ import java.util.List;
 import me.Azz_9.flex_hud.client.config.ConfigRegistry;
 import me.Azz_9.flex_hud.client.gui.screens.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.modules.AbstractModule;
-import me.Azz_9.flex_hud.mixin.FocusableTextWidgetAccessor;
 
 public class DurabilityPing extends AbstractModule {
 
@@ -64,7 +63,7 @@ public class DurabilityPing extends AbstractModule {
 						MESSAGE,
 						font,
 						false,
-						FocusableTextWidgetAccessor.getDefaultPadding()
+						FocusableTextWidget.DEFAULT_PADDING
 				) {
 					@Override
 					public void onClick(double mouseX, double mouseY) {

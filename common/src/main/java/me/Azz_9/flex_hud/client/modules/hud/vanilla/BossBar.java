@@ -4,6 +4,7 @@ import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.BossHealthOverlay;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -21,7 +22,6 @@ import me.Azz_9.flex_hud.client.gui.components.config.entries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.gui.screens.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.modules.Modules;
 import me.Azz_9.flex_hud.client.modules.hud.AbstractMovableModule;
-import me.Azz_9.flex_hud.mixin.BossHealthOverlayAccessor;
 
 public class BossBar extends AbstractMovableModule {
 	private static final int BOSS_BAR_GAP = 10;
@@ -53,7 +53,7 @@ public class BossBar extends AbstractMovableModule {
 				false
 		);
 
-		setWidth(BossHealthOverlayAccessor.getBarWidth());
+		setWidth(BossHealthOverlay.BAR_WIDTH);
 		setHeight(BOSS_BAR_GAP + MINECRAFT.font.lineHeight);
 	}
 
