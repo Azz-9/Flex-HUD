@@ -8,7 +8,6 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import me.Azz_9.flex_hud.client.modules.hud.PlaceholderStacks;
-import me.Azz_9.flex_hud.mixin.GuiGraphicsExtractorAccessor;
 
 public class RenderableItem extends Renderable {
 	@NotNull
@@ -35,9 +34,9 @@ public class RenderableItem extends Renderable {
 			graphics.pose().pushMatrix();
 
 			if (drawItemBar) {
-				((GuiGraphicsExtractorAccessor) graphics).flex_hud$renderItemBar(stack, x, y);
+				graphics.itemBar(stack, x, y);
 			}
-			((GuiGraphicsExtractorAccessor) graphics).flex_hud$renderItemCooldown(stack, x, y);
+			graphics.itemCooldown(stack, x, y);
 
 			graphics.pose().popMatrix();
 		}

@@ -9,6 +9,7 @@ import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 
 import org.joml.Matrix3x2fStack;
@@ -22,7 +23,6 @@ import me.Azz_9.flex_hud.client.gui.components.config.entries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.gui.screens.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.modules.Modules;
-import me.Azz_9.flex_hud.mixin.RenderPipelinesAccessor;
 
 public class Crosshair extends AbstractModule {
 
@@ -63,7 +63,7 @@ public class Crosshair extends AbstractModule {
 
 	@Override
 	public void init() {
-		crosshairPipeline = RenderPipelinesAccessor.invokeRegister(RenderPipeline.builder(RenderPipelinesAccessor.getGuiSnippet())
+		crosshairPipeline = RenderPipelines.register(RenderPipeline.builder(RenderPipelines.GUI_SNIPPET)
 				.withLocation("pipeline/crosshair_no_tex")
 				.withColorTargetState(new ColorTargetState(new BlendFunction(BlendFactor.ONE_MINUS_DST_COLOR, BlendFactor.ONE_MINUS_SRC_COLOR, BlendFactor.ONE, BlendFactor.ZERO)))
 				.build()
