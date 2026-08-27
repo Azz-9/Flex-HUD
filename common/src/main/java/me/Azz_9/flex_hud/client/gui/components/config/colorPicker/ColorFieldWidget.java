@@ -1,4 +1,4 @@
-package me.Azz_9.flex_hud.client.gui.components.config.colorSelector;
+package me.Azz_9.flex_hud.client.gui.components.config.colorPicker;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -17,18 +17,18 @@ public class ColorFieldWidget extends CustomEditBox {
 	private static final int INVALID_TEXT_COLOR = Colors.RED;
 
 	@NotNull
-	private final ColorUpdatable colorSelector;
+	private final ColorUpdatable colorPicker;
 
-	ColorFieldWidget(Font font, int width, int height, @NotNull ColorUpdatable colorSelector) {
+	ColorFieldWidget(Font font, int width, int height, @NotNull ColorUpdatable colorPicker) {
 		super(font, 0, 0, width, height, Component.translatable("flex_hud.color_entry_widget"));
-		this.colorSelector = colorSelector;
+		this.colorPicker = colorPicker;
 
 		setValue("#FFFFFF");
 
 		this.setResponder(text -> {
 			if (text.matches(COLOR_REGEX)) {
 				setTextColor(VALID_TEXT_COLOR);
-				this.colorSelector.onUpdateColor(ColorSelector.ColorSelectorElement.COLOR_FIELD);
+				this.colorPicker.onUpdateColor(ColorPicker.ColorPickerElement.COLOR_FIELD);
 			} else {
 				setTextColor(INVALID_TEXT_COLOR);
 			}

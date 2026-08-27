@@ -1,4 +1,4 @@
-package me.Azz_9.flex_hud.client.gui.components.config.colorSelector;
+package me.Azz_9.flex_hud.client.gui.components.config.colorPicker;
 
 import static me.Azz_9.flex_hud.Constants.MOD_ID;
 
@@ -20,18 +20,18 @@ import me.Azz_9.flex_hud.client.gui.Cursors;
 
 public class HueWidget extends AbstractWidget.WithInactiveMessage {
 
-	private static final Identifier CURSOR = Identifier.fromNamespaceAndPath(MOD_ID, "widget/color_selector/hue_cursor");
+	private static final Identifier CURSOR = Identifier.fromNamespaceAndPath(MOD_ID, "widget/color_picker/hue_cursor");
 
 	private float selectedHue;
 	private double cursorY;
 
 	private boolean isDraggingCursor = false;
 
-	private final ColorUpdatable colorSelector;
+	private final ColorUpdatable colorPicker;
 
-	HueWidget(int width, int height, ColorUpdatable colorSelector) {
+	HueWidget(int width, int height, ColorUpdatable colorPicker) {
 		super(0, 0, width, height, Component.translatable("flex_hud.hue_bar"));
-		this.colorSelector = colorSelector;
+		this.colorPicker = colorPicker;
 	}
 
 	@Override
@@ -40,9 +40,16 @@ public class HueWidget extends AbstractWidget.WithInactiveMessage {
 			graphics.requestCursor(Cursors.POINTING_HAND);
 		}
 
-		drawHueBar(graphics);
-
 		Matrix3x2fStack matrices = graphics.pose();
+		graphics.guiRenderState.addGuiElement(
+				new ColorPickerHueRenderState(
+						matrices,
+						getX(), getY(),
+						getRight(), getBottom(),
+						graphics.scissorStack.peek()
+				)
+		);
+
 		matrices.pushMatrix();
 		matrices.translate((float) getX(), (float) (getY() + cursorY));
 
@@ -57,13 +64,6 @@ public class HueWidget extends AbstractWidget.WithInactiveMessage {
 		);
 
 		matrices.popMatrix();
-	}
-
-	private void drawHueBar(GuiGraphicsExtractor graphics) {
-		for (int i = 0; i < getHeight(); i++) {
-			int color = Color.HSBtoRGB(i / (float) getHeight(), 1.0f, 1.0f);
-			graphics.fill(getX(), getY() + i, getX() + getWidth(), getY() + i + 1, color);
-		}
 	}
 
 	@Override
@@ -104,7 +104,7 @@ public class HueWidget extends AbstractWidget.WithInactiveMessage {
 		cursorY = Math.clamp(mouseY, getY(), getBottom()) - getY();
 		updateHue(cursorY);
 
-		colorSelector.onUpdateColor(ColorSelector.ColorSelectorElement.HUE);
+		colorPicker.onUpdateColor(ColorPicker.ColorPickerElement.HUE);
 	}
 
 	private void updateHue(double cursorY) {

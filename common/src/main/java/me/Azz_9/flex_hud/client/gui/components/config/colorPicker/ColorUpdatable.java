@@ -1,4 +1,4 @@
-package me.Azz_9.flex_hud.client.gui.components.config.colorSelector;
+package me.Azz_9.flex_hud.client.gui.components.config.colorPicker;
 
 abstract class ColorUpdatable {
 
@@ -17,5 +17,5 @@ abstract class ColorUpdatable {
 		return ignoreUpdates;
 	}
 
-	abstract void onUpdateColor(ColorSelector.ColorSelectorElement element);
+	abstract void onUpdateColor(ColorPicker.ColorPickerElement element);
 }
