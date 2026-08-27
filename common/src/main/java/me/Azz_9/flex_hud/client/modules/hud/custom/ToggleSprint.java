@@ -20,7 +20,6 @@ import me.Azz_9.flex_hud.client.gui.components.config.entries.CyclingButtonEntry
 import me.Azz_9.flex_hud.client.gui.components.config.entries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.gui.screens.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.modules.hud.AbstractTextModule;
-import me.Azz_9.flex_hud.mixin.KeyMappingAccessor;
 
 public class ToggleSprint extends AbstractTextModule {
 
@@ -70,7 +69,7 @@ public class ToggleSprint extends AbstractTextModule {
 			boolean sprintToggled = MINECRAFT.options.toggleSprint().get();
 
 			if (sprintToggled) {
-				if (InputConstants.isKeyDown(MINECRAFT.getWindow().getWindow(), ((KeyMappingAccessor) MINECRAFT.options.keySprint).getBoundKey().getValue())) {
+				if (InputConstants.isKeyDown(MINECRAFT.getWindow().getWindow(), MINECRAFT.options.keySprint.key.getValue())) {
 					statusMessage = "Sprinting (Held)";
 				} else if (sprintKeyPressed) {
 					statusMessage = "Sprinting (Toggled)";

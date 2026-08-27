@@ -7,6 +7,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.contextualbar.LocatorBarRenderer;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -41,7 +42,6 @@ import me.Azz_9.flex_hud.client.gui.screens.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.modules.hud.AbstractTextModule;
 import me.Azz_9.flex_hud.client.tickables.LivingEntitiesTickable;
 import me.Azz_9.flex_hud.compat.CompatManager;
-import me.Azz_9.flex_hud.mixin.LocatorBarRendererAccessor;
 
 public class Compass extends AbstractTextModule {
 	private final ConfigBoolean showMarker = new ConfigBoolean(true, "flex_hud.compass.config.show_marker");
@@ -443,10 +443,10 @@ public class Compass extends AbstractTextModule {
 						ResourceLocation arrowIdentifier;
 						if (pitch == TrackedWaypoint.PitchDirection.DOWN) {
 							offset = 8;
-							arrowIdentifier = LocatorBarRendererAccessor.getArrowDownIdentifier();
+							arrowIdentifier = LocatorBarRenderer.LOCATOR_BAR_ARROW_DOWN;
 						} else {
 							offset = -4;
-							arrowIdentifier = LocatorBarRendererAccessor.getArrowUpIdentifier();
+							arrowIdentifier = LocatorBarRenderer.LOCATOR_BAR_ARROW_UP;
 						}
 
 						graphics.blitSprite(
@@ -508,10 +508,10 @@ public class Compass extends AbstractTextModule {
 
 					if (pitch == TrackedWaypoint.PitchDirection.DOWN) {
 						offset = 8;
-						arrowIdentifier = LocatorBarRendererAccessor.getArrowDownIdentifier();
+						arrowIdentifier = LocatorBarRenderer.LOCATOR_BAR_ARROW_DOWN;
 					} else {
 						offset = -4;
-						arrowIdentifier = LocatorBarRendererAccessor.getArrowUpIdentifier();
+						arrowIdentifier = LocatorBarRenderer.LOCATOR_BAR_ARROW_UP;
 					}
 
 					graphics.blitSprite(
