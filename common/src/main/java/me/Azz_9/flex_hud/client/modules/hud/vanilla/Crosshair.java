@@ -10,6 +10,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 
@@ -22,7 +23,6 @@ import me.Azz_9.flex_hud.client.gui.components.config.entries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.gui.screens.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.modules.AbstractModule;
 import me.Azz_9.flex_hud.client.modules.Modules;
-import me.Azz_9.flex_hud.mixin.RenderPipelinesAccessor;
 
 public class Crosshair extends AbstractModule {
 
@@ -64,7 +64,7 @@ public class Crosshair extends AbstractModule {
 
 	@Override
 	public void init() {
-		crosshairPipeline = RenderPipelinesAccessor.invokeRegister(RenderPipeline.builder(RenderPipelinesAccessor.getGuiSnippet())
+		crosshairPipeline = RenderPipelines.register(RenderPipeline.builder(RenderPipelines.GUI_SNIPPET)
 				.withLocation("pipeline/crosshair_no_tex")
 				.withBlend(new BlendFunction(SourceFactor.ONE_MINUS_DST_COLOR, DestFactor.ONE_MINUS_SRC_COLOR, SourceFactor.ONE, DestFactor.ZERO))
 				.build()
