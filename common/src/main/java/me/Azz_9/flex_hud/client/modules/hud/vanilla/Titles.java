@@ -19,7 +19,6 @@ import me.Azz_9.flex_hud.client.gui.components.config.entries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.gui.screens.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.modules.hud.AbstractTextModule;
 import me.Azz_9.flex_hud.client.modules.hud.DimensionHud;
-import me.Azz_9.flex_hud.mixin.GuiAccessor;
 
 public class Titles extends AbstractTextModule {
 
@@ -55,7 +54,7 @@ public class Titles extends AbstractTextModule {
 	public void render(GuiGraphicsExtractor graphics, DeltaTracker tickCounter) {
 		// render is handled in HudMixin
 		if (MINECRAFT.level == null) {
-			((GuiAccessor) MINECRAFT.gui).invokeExtractTitle(graphics, tickCounter);
+			MINECRAFT.gui.extractTitle(graphics, tickCounter);
 		}
 	}
 
