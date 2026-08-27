@@ -6,23 +6,16 @@
 	"mixins": [
 	],
 	"client": [
-		"BossHealthOverlayAccessor",
 		"BossHealthOverlayMixin",
 		"ClientClockManagerMixin",
 		"ClientLevelMixin",
 		"ClientPacketListenerMixin",
-		"GuiGraphicsExtractorAccessor",
-		"HudAccessor",
 		"HudMixin",
 		"KeyboardHandlerMixin",
-		"KeyMappingAccessor",
-		"LocatorBarAccessor",
 		"LocatorBarMixin",
 		"MinecraftMixin",
 		"MouseHandlerMixin",
-		"MultiPlayerGameModeMixin",
-		"PackSelectionScreenAccessor",
-		"RenderPipelinesAccessor"
+		"MultiPlayerGameModeMixin"
 	],
 	"server": [],
 	"injectors": {

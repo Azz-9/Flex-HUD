@@ -19,7 +19,6 @@ import me.Azz_9.flex_hud.client.gui.components.config.entries.CyclingButtonEntry
 import me.Azz_9.flex_hud.client.gui.components.config.entries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.gui.screens.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.modules.hud.AbstractMovableModule;
-import me.Azz_9.flex_hud.mixin.HudAccessor;
 
 public class Scoreboard extends AbstractMovableModule {
 
@@ -72,7 +71,7 @@ public class Scoreboard extends AbstractMovableModule {
 	public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 		// render is handled in HudMixin
 		if (MINECRAFT.level == null) {
-			((HudAccessor) MINECRAFT.gui.hud).invokeDisplayScoreboardSidebar(graphics, placeholderObjective);
+			MINECRAFT.gui.hud.displayScoreboardSidebar(graphics, placeholderObjective);
 		}
 	}
 
