@@ -1,4 +1,4 @@
-package me.Azz_9.flex_hud.client.gui.components.config.colorSelector;
+package me.Azz_9.flex_hud.client.gui.components.config.colorPicker;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
@@ -16,7 +16,7 @@ import java.util.List;
 
 import me.Azz_9.flex_hud.client.gui.Cursors;
 
-public class ColorSelector extends ColorUpdatable implements GuiEventListener, Renderable {
+public class ColorPicker extends ColorUpdatable implements GuiEventListener, Renderable {
 	private final @NotNull GradientWidget gradientWidget;
 	private final @NotNull HueWidget hueWidget;
 	private final @NotNull ColorFieldWidget colorFieldWidget;
@@ -32,7 +32,7 @@ public class ColorSelector extends ColorUpdatable implements GuiEventListener, R
 	private boolean isOpened;
 
 
-	public ColorSelector(int gradientWidth, int gradientHeight, int hueBarWidth, int hueBarHeight, int hexaFieldWidth, int hexaFieldHeight, @NotNull ColorBindable colorBindable) {
+	public ColorPicker(int gradientWidth, int gradientHeight, int hueBarWidth, int hueBarHeight, int hexaFieldWidth, int hexaFieldHeight, @NotNull ColorBindable colorBindable) {
 		this.colorBindable = colorBindable;
 
 		this.gradientWidget = new GradientWidget(gradientWidth, gradientHeight, this);
@@ -47,11 +47,11 @@ public class ColorSelector extends ColorUpdatable implements GuiEventListener, R
 		this.height = gradientHeight + GAP + hexaFieldHeight + OUTER_PADDING * 2;
 	}
 
-	public ColorSelector(int grandientSize, int hueBarWidth, int hueBarHeight, int hexaFieldWidth, int hexaFieldHeight, @NotNull ColorBindable colorBindable) {
+	public ColorPicker(int grandientSize, int hueBarWidth, int hueBarHeight, int hexaFieldWidth, int hexaFieldHeight, @NotNull ColorBindable colorBindable) {
 		this(grandientSize, grandientSize, hueBarWidth, hueBarHeight, hexaFieldWidth, hexaFieldHeight, colorBindable);
 	}
 
-	public ColorSelector(@NotNull ColorBindable colorBindable) {
+	public ColorPicker(@NotNull ColorBindable colorBindable) {
 		this(100, 16, 100, 100 + 16 + 3, 20, colorBindable);
 	}
 
@@ -145,7 +145,7 @@ public class ColorSelector extends ColorUpdatable implements GuiEventListener, R
 	}
 
 	@Override
-	void onUpdateColor(ColorSelectorElement element) {
+	void onUpdateColor(ColorPickerElement element) {
 		if (isIgnoringUpdates()) return;
 
 		runIgnoringUpdates(() -> {
@@ -218,7 +218,7 @@ public class ColorSelector extends ColorUpdatable implements GuiEventListener, R
 		return gradientWidget.isDraggingCursor() || hueWidget.isDraggingCursor();
 	}
 
-	enum ColorSelectorElement {
+	enum ColorPickerElement {
 		GRADIENT,
 		HUE,
 		COLOR_FIELD

@@ -1,4 +1,4 @@
-package me.Azz_9.flex_hud.client.gui.components.config.colorSelector;
+package me.Azz_9.flex_hud.client.gui.components.config.colorPicker;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 import static me.Azz_9.flex_hud.Constants.MOD_ID;
@@ -21,7 +21,9 @@ import me.Azz_9.flex_hud.client.gui.Cursors;
 
 public class GradientWidget extends AbstractWidget.WithInactiveMessage {
 
-	private static final Identifier CURSOR = Identifier.fromNamespaceAndPath(MOD_ID, "widget/color_selector/gradient_cursor");
+	private static final Identifier CURSOR = Identifier.fromNamespaceAndPath(MOD_ID, "widget/color_picker/gradient_cursor");
+
+	private static final int CURSOR_SIZE = 6;
 
 	private float selectedHue;
 	private int selectedColor;
@@ -30,13 +32,13 @@ public class GradientWidget extends AbstractWidget.WithInactiveMessage {
 
 	private boolean isDraggingCursor = false;
 
-	private final ColorUpdatable colorSelector;
+	private final ColorUpdatable colorPicker;
 
-	GradientWidget(int width, int height, ColorUpdatable colorSelector) {
+	GradientWidget(int width, int height, ColorUpdatable colorPicker) {
 		super(0, 0, width, height, Component.translatable("flex_hud.gradient_widget"));
 		selectedHue = 0;
 		selectedColor = 0;
-		this.colorSelector = colorSelector;
+		this.colorPicker = colorPicker;
 	}
 
 	@Override
@@ -45,32 +47,29 @@ public class GradientWidget extends AbstractWidget.WithInactiveMessage {
 			graphics.requestCursor(Cursors.CROSSHAIR);
 		}
 
-		renderGradient(graphics);
-
 		Matrix3x2fStack matrices = graphics.pose();
+		graphics.guiRenderState.submitGuiElement(
+				new ColorPickerGradientRenderState(
+						matrices,
+						getX(), getY(),
+						getRight(), getBottom(),
+						selectedHue / 360.0f,
+						graphics.scissorStack.peek()
+				)
+		);
+
 		matrices.pushMatrix();
 		matrices.translate((float) (cursorX + getX()), (float) (cursorY + getY()));
 
 		// Draw the cursor
-		int cursorSize = 6;
 		graphics.blitSprite(
 				RenderPipelines.GUI_TEXTURED,
 				CURSOR,
-				-cursorSize / 2, -cursorSize / 2,
-				cursorSize, cursorSize
+				-CURSOR_SIZE / 2, -CURSOR_SIZE / 2,
+				CURSOR_SIZE, CURSOR_SIZE
 		);
 
 		matrices.popMatrix();
-	}
-
-	private void renderGradient(GuiGraphics graphics) {
-		for (int x = 0; x < getWidth(); x++) {
-			float saturation = x / (float) getWidth();
-
-			int topColor = Color.HSBtoRGB(selectedHue / 360.0f, saturation, 1.0f);
-			int bottomColor = Color.HSBtoRGB(selectedHue / 360.0f, saturation, 0.0f);
-			graphics.fillGradient(getX() + x, getY(), getX() + x + 1, getBottom(), topColor, bottomColor);
-		}
 	}
 
 	@Override
@@ -114,7 +113,7 @@ public class GradientWidget extends AbstractWidget.WithInactiveMessage {
 		cursorY = Math.clamp(mouseY, getY(), getBottom()) - getY();
 		updateColor(cursorX, cursorY);
 
-		colorSelector.onUpdateColor(ColorSelector.ColorSelectorElement.GRADIENT);
+		colorPicker.onUpdateColor(ColorPicker.ColorPickerElement.GRADIENT);
 	}
 
 	private void updateColor(double cursorX, double cursorY) {
