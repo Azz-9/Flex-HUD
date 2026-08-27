@@ -14,6 +14,7 @@ import me.Azz_9.flex_hud.client.gui.components.config.entries.IntSliderEntry;
 import me.Azz_9.flex_hud.client.gui.components.config.entries.ToggleButtonEntry;
 import me.Azz_9.flex_hud.client.gui.screens.AbstractConfigurationScreen;
 import me.Azz_9.flex_hud.client.modules.AbstractModule;
+import me.Azz_9.flex_hud.client.modules.Modules;
 
 public class TimeChanger extends AbstractModule {
 	public final ConfigInteger selectedTime = new ConfigInteger(6000, "flex_hud.time_changer.config.selected_time", 0, 24000);
@@ -64,6 +65,7 @@ public class TimeChanger extends AbstractModule {
 						new ToggleButtonEntry.Builder()
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(enabled)
+								.addObserver(_ -> Modules.onTimeOrWeatherUpdate())
 								.build()
 				);
 				this.addAllEntries(
@@ -71,12 +73,14 @@ public class TimeChanger extends AbstractModule {
 								.setToggleButtonWidth(buttonWidth)
 								.setVariable(useRealTime)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
+								.addObserver(_ -> Modules.onTimeOrWeatherUpdate())
 								.build(),
 						new IntSliderEntry.Builder()
 								.setIntSliderWidth(80)
 								.setVariable(selectedTime)
 								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.setStep(1000)
+								.addObserver(_ -> Modules.onTimeOrWeatherUpdate())
 								.build()
 				);
 			}
