@@ -1,4 +1,4 @@
-package me.Azz_9.flex_hud.client.gui.components.config.colorSelector;
+package me.Azz_9.flex_hud.client.gui.components.config.colorPicker;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 import static me.Azz_9.flex_hud.Constants.MOD_ID;
@@ -17,25 +17,27 @@ import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
 
+import me.Azz_9.flex_hud.utils.DrawingUtils;
+
 public class HueWidget extends AbstractWidget {
 
-	private static final ResourceLocation CURSOR = ResourceLocation.fromNamespaceAndPath(MOD_ID, "widget/color_selector/hue_cursor");
+	private static final ResourceLocation CURSOR = ResourceLocation.fromNamespaceAndPath(MOD_ID, "widget/color_picker/hue_cursor");
 
 	private float selectedHue;
 	private double cursorY;
 
 	private boolean isDraggingCursor = false;
 
-	private final ColorUpdatable colorSelector;
+	private final ColorUpdatable colorPicker;
 
-	HueWidget(int width, int height, ColorUpdatable colorSelector) {
+	HueWidget(int width, int height, ColorUpdatable colorPicker) {
 		super(0, 0, width, height, Component.translatable("flex_hud.hue_bar"));
-		this.colorSelector = colorSelector;
+		this.colorPicker = colorPicker;
 	}
 
 	@Override
 	protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float deltaTicks) {
-		drawHueBar(graphics);
+		DrawingUtils.drawColorPickerHueBar(graphics, getX(), getY(), getWidth(), getHeight());
 
 		PoseStack matrices = graphics.pose();
 		matrices.pushPose();
@@ -52,13 +54,6 @@ public class HueWidget extends AbstractWidget {
 		);
 
 		matrices.popPose();
-	}
-
-	private void drawHueBar(GuiGraphics graphics) {
-		for (int i = 0; i < getHeight(); i++) {
-			int color = Color.HSBtoRGB(i / (float) getHeight(), 1.0f, 1.0f);
-			graphics.fill(getX(), getY() + i, getX() + getWidth(), getY() + i + 1, color);
-		}
 	}
 
 	@Override
@@ -101,7 +96,7 @@ public class HueWidget extends AbstractWidget {
 		cursorY = Math.clamp(mouseY, getY(), getBottom()) - getY();
 		updateHue(cursorY);
 
-		colorSelector.onUpdateColor(ColorSelector.ColorSelectorElement.HUE);
+		colorPicker.onUpdateColor(ColorPicker.ColorPickerElement.HUE);
 	}
 
 	private void updateHue(double cursorY) {

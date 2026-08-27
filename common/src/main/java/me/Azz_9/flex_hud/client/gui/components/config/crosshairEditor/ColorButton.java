@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import me.Azz_9.flex_hud.client.gui.Colors;
 import me.Azz_9.flex_hud.client.gui.components.config.DataGetter;
-import me.Azz_9.flex_hud.client.gui.components.config.colorSelector.ColorBindable;
+import me.Azz_9.flex_hud.client.gui.components.config.colorPicker.ColorBindable;
 import me.Azz_9.flex_hud.utils.DrawingUtils;
 
 public class ColorButton extends AbstractWidget implements ColorBindable, DataGetter<Integer> {

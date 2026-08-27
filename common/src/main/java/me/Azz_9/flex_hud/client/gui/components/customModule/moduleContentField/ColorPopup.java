@@ -7,15 +7,15 @@ import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
-import me.Azz_9.flex_hud.client.gui.components.config.colorSelector.ColorBindable;
-import me.Azz_9.flex_hud.client.gui.components.config.colorSelector.ColorSelector;
+import me.Azz_9.flex_hud.client.gui.components.config.colorPicker.ColorBindable;
+import me.Azz_9.flex_hud.client.gui.components.config.colorPicker.ColorPicker;
 import me.Azz_9.flex_hud.client.gui.components.customModule.ModuleContentEditorModel;
 
 final class ColorPopup {
 	private final ModuleContentField host;
 	private final int selectionStart;
 	private final int selectionEnd;
-	private final ColorSelector selector;
+	private final ColorPicker selector;
 	private Bounds bounds = new Bounds(0, 0, 0, 0);
 	private Bounds noneBounds = new Bounds(0, 0, 0, 0);
 	private Bounds chromaBounds = new Bounds(0, 0, 0, 0);
@@ -25,7 +25,7 @@ final class ColorPopup {
 		this.selectionStart = selectionStart;
 		this.selectionEnd = selectionEnd;
 		SelectionColorBindable bindable = new SelectionColorBindable(initialColor);
-		this.selector = new ColorSelector(bindable);
+		this.selector = new ColorPicker(bindable);
 	}
 
 	void layout(SelectionBounds selectionBounds) {

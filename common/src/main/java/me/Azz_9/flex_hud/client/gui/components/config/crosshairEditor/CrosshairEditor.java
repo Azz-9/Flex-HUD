@@ -19,7 +19,7 @@ import me.Azz_9.flex_hud.client.gui.Colors;
 import me.Azz_9.flex_hud.client.gui.components.HelpWidget;
 import me.Azz_9.flex_hud.client.gui.components.config.Popup;
 import me.Azz_9.flex_hud.client.gui.components.config.buttons.CrosshairButtonWidget;
-import me.Azz_9.flex_hud.client.gui.components.config.colorSelector.ColorSelector;
+import me.Azz_9.flex_hud.client.gui.components.config.colorPicker.ColorPicker;
 import me.Azz_9.flex_hud.client.gui.screens.AbstractPopupScreen;
 import me.Azz_9.flex_hud.client.gui.undoManager.TextureAction;
 import me.Azz_9.flex_hud.client.gui.undoManager.UndoManager;
@@ -44,7 +44,7 @@ public class CrosshairEditor extends AbstractWidget implements Popup {
 	private static final int COLOR_BUTTON_SIZE = 20;
 	private final StringWidget colorText;
 	private final ColorButton colorButton;
-	private ColorSelector colorSelector;
+	private ColorPicker colorPicker;
 	private boolean isDraggingCursor = false;
 
 	// clear button
@@ -107,11 +107,11 @@ public class CrosshairEditor extends AbstractWidget implements Popup {
 		this.colorButton = new ColorButton(
 				colorText.getRight() + 2, getY() + colorButtonBlockMargin,
 				COLOR_BUTTON_SIZE, COLOR_BUTTON_SIZE,
-				() -> colorSelector.setFocused(!colorSelector.isFocused())
+				() -> colorPicker.setFocused(!colorPicker.isFocused())
 		);
-		this.colorSelector = new ColorSelector(this.colorButton);
-		this.colorSelector.setPosition(colorButton.getX(), colorButton.getBottom());
-		this.colorSelector.setFocused(false);
+		this.colorPicker = new ColorPicker(this.colorButton);
+		this.colorPicker.setPosition(colorButton.getX(), colorButton.getBottom());
+		this.colorPicker.setFocused(false);
 
 		// clear button
 		clearButton = Button.builder(Component.translatable("flex_hud.crosshair_editor.clear"), ignored -> this.clearTexture())
@@ -120,7 +120,7 @@ public class CrosshairEditor extends AbstractWidget implements Popup {
 				.build();
 
 		// presets list
-		int listY = colorSelector.getBottom() + 10;
+		int listY = colorPicker.getBottom() + 10;
 		int listHeight = Math.max(PRESETS_LIST_MIN_HEIGHT, this.getBottom() - listY - PADDING);
 		crosshairPresetsList = new CrosshairPresetsList(
 				ASIDE_WIDTH - 6, listHeight,
@@ -163,8 +163,8 @@ public class CrosshairEditor extends AbstractWidget implements Popup {
 		graphics.drawString(MINECRAFT.font, Component.translatable("flex_hud.crosshair_editor.presets"), crosshairPresetsList.getX(), crosshairPresetsList.getY() - MINECRAFT.font.lineHeight - 2, Colors.WHITE);
 		crosshairPresetsList.render(graphics, mouseX, mouseY, deltaTicks);
 
-		if (colorSelector.isFocused()) {
-			colorSelector.render(graphics, mouseX, mouseY, deltaTicks);
+		if (colorPicker.isFocused()) {
+			colorPicker.render(graphics, mouseX, mouseY, deltaTicks);
 		}
 
 		done.render(graphics, mouseX, mouseY, deltaTicks);
@@ -212,7 +212,7 @@ public class CrosshairEditor extends AbstractWidget implements Popup {
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		helpWidget.handleOutsideClick(mouseX, mouseY);
-		if (colorSelector.isFocused() && colorSelector.mouseClicked(mouseX, mouseY, button)) {
+		if (colorPicker.isFocused() && colorPicker.mouseClicked(mouseX, mouseY, button)) {
 			isDraggingCursor = true;
 			return true;
 
@@ -226,7 +226,7 @@ public class CrosshairEditor extends AbstractWidget implements Popup {
 			if (clearButton.mouseClicked(mouseX, mouseY, button)
 					|| crosshairPresetsList.isMouseOver(mouseX, mouseY) && crosshairPresetsList.mouseClicked(mouseX, mouseY, button)
 					|| done.mouseClicked(mouseX, mouseY, button)) {
-				colorSelector.setFocused(false);
+				colorPicker.setFocused(false);
 				return true;
 			}
 
@@ -242,18 +242,18 @@ public class CrosshairEditor extends AbstractWidget implements Popup {
 						pixels[y][x].mouseClicked(mouseX, mouseY, button);
 						clicked = true;
 
-						colorSelector.setFocused(false);
+						colorPicker.setFocused(false);
 						return true;
 					}
 				}
 			}
 
-			colorSelector.setFocused(false);
+			colorPicker.setFocused(false);
 			return true;
 		}
 
-		if (colorSelector.isFocused()) {
-			colorSelector.setFocused(false);
+		if (colorPicker.isFocused()) {
+			colorPicker.setFocused(false);
 			return true;
 		}
 
@@ -276,7 +276,7 @@ public class CrosshairEditor extends AbstractWidget implements Popup {
 				}
 			}
 			return false;
-		} else if (colorSelector.isFocused() && colorSelector.mouseDragged(mouseX, mouseY, button, dragX, dragY)) {
+		} else if (colorPicker.isFocused() && colorPicker.mouseDragged(mouseX, mouseY, button, dragX, dragY)) {
 			return true;
 		} else return crosshairPresetsList.mouseDragged(mouseX, mouseY, button, dragX, dragY);
 	}
@@ -292,7 +292,7 @@ public class CrosshairEditor extends AbstractWidget implements Popup {
 				}
 			}
 			return true;
-		} else if (colorSelector.isFocused() && colorSelector.mouseReleased(mouseX, mouseY, button)) {
+		} else if (colorPicker.isFocused() && colorPicker.mouseReleased(mouseX, mouseY, button)) {
 			isDraggingCursor = false;
 			return true;
 		} else return crosshairPresetsList.mouseReleased(mouseX, mouseY, button);
@@ -309,12 +309,12 @@ public class CrosshairEditor extends AbstractWidget implements Popup {
 			return true;
 		}
 
-		return colorSelector.keyPressed(keyCode, scanCode, modifiers);
+		return colorPicker.keyPressed(keyCode, scanCode, modifiers);
 	}
 
 	@Override
 	public boolean charTyped(char codePoint, int modifiers) {
-		return colorSelector.charTyped(codePoint, modifiers);
+		return colorPicker.charTyped(codePoint, modifiers);
 	}
 
 	public void updateTexture(int[][] texture) {
@@ -345,7 +345,7 @@ public class CrosshairEditor extends AbstractWidget implements Popup {
 
 	@Override
 	public void onClose() {
-		colorSelector.setFocused(false);
+		colorPicker.setFocused(false);
 		setFocused(false);
 	}
 

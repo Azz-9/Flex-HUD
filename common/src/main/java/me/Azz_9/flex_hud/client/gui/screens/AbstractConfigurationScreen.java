@@ -11,12 +11,12 @@ import org.jetbrains.annotations.Nullable;
 
 import me.Azz_9.flex_hud.client.config.ConfigLoader;
 import me.Azz_9.flex_hud.client.gui.Colors;
-import me.Azz_9.flex_hud.client.gui.components.config.ColorSelectorGetter;
+import me.Azz_9.flex_hud.client.gui.components.config.ColorPickerGetter;
 import me.Azz_9.flex_hud.client.gui.components.config.ScrollableConfigList;
-import me.Azz_9.flex_hud.client.gui.components.config.colorSelector.ColorBindable;
-import me.Azz_9.flex_hud.client.gui.components.config.colorSelector.ColorSelector;
+import me.Azz_9.flex_hud.client.gui.components.config.colorPicker.ColorBindable;
+import me.Azz_9.flex_hud.client.gui.components.config.colorPicker.ColorPicker;
 
-public abstract class AbstractConfigurationScreen extends AbstractSavableScreen implements ColorSelectorGetter {
+public abstract class AbstractConfigurationScreen extends AbstractSavableScreen implements ColorPickerGetter {
 
 	protected int buttonWidth;
 	protected int buttonHeight;
@@ -25,7 +25,7 @@ public abstract class AbstractConfigurationScreen extends AbstractSavableScreen 
 	private ScrollableConfigList configList;
 
 	@Nullable
-	private ColorSelector colorSelector;
+	private ColorPicker colorPicker;
 
 	public AbstractConfigurationScreen(Component title, Screen parent, int buttonWidth, int buttonHeight) {
 		super(title, parent);
@@ -49,8 +49,8 @@ public abstract class AbstractConfigurationScreen extends AbstractSavableScreen 
 	}
 
 	@Override
-	public @Nullable ColorSelector getColorSelector() {
-		return colorSelector;
+	public @Nullable ColorPicker getColorPicker() {
+		return colorPicker;
 	}
 
 	public void setParentScrollAmount(double parentScrollAmount) {
@@ -85,12 +85,12 @@ public abstract class AbstractConfigurationScreen extends AbstractSavableScreen 
 		graphics.fill(this.width / 2 - font.width(title) / 2 - padding, 7 - padding, this.width / 2 + font.width(title) / 2 + padding, 7 + font.lineHeight, backgroundColor);
 		graphics.drawCenteredString(font, title, this.width / 2, 7, textColor);
 
-		if (colorSelector != null && colorSelector.isFocused()) {
-			colorSelector.updatePosition(configList.getY());
-			if (colorSelector.getY() >= configList.getY()) {
-				colorSelector.render(graphics, mouseX, mouseY, deltaTicks);
+		if (colorPicker != null && colorPicker.isFocused()) {
+			colorPicker.updatePosition(configList.getY());
+			if (colorPicker.getY() >= configList.getY()) {
+				colorPicker.render(graphics, mouseX, mouseY, deltaTicks);
 			} else {
-				colorSelector.setFocused(false);
+				colorPicker.setFocused(false);
 			}
 		}
 	}
@@ -104,12 +104,12 @@ public abstract class AbstractConfigurationScreen extends AbstractSavableScreen 
 
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		if (colorSelector != null && colorSelector.isFocused()) {
-			if (colorSelector.mouseClicked(mouseX, mouseY, button)) {
+		if (colorPicker != null && colorPicker.isFocused()) {
+			if (colorPicker.mouseClicked(mouseX, mouseY, button)) {
 				return true;
 			} else {
 				boolean res = super.mouseClicked(mouseX, mouseY, button);
-				closeColorSelector();
+				closeColorPicker();
 				return res;
 			}
 		}
@@ -118,8 +118,8 @@ public abstract class AbstractConfigurationScreen extends AbstractSavableScreen 
 
 	@Override
 	public boolean mouseReleased(double mouseX, double mouseY, int button) {
-		if (colorSelector != null && colorSelector.isFocused()) {
-			if (colorSelector.mouseReleased(mouseX, mouseY, button)) {
+		if (colorPicker != null && colorPicker.isFocused()) {
+			if (colorPicker.mouseReleased(mouseX, mouseY, button)) {
 				return true;
 			}
 		}
@@ -128,8 +128,8 @@ public abstract class AbstractConfigurationScreen extends AbstractSavableScreen 
 
 	@Override
 	public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-		if (colorSelector != null && colorSelector.isFocused() && colorSelector.isDraggingACursor()) {
-			if (colorSelector.mouseDragged(mouseX, mouseY, button, dragX, dragY)) {
+		if (colorPicker != null && colorPicker.isFocused() && colorPicker.isDraggingACursor()) {
+			if (colorPicker.mouseDragged(mouseX, mouseY, button, dragX, dragY)) {
 				return true;
 			}
 		}
@@ -138,8 +138,8 @@ public abstract class AbstractConfigurationScreen extends AbstractSavableScreen 
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (colorSelector != null && colorSelector.isFocused()) {
-			if (colorSelector.keyPressed(keyCode, scanCode, modifiers)) {
+		if (colorPicker != null && colorPicker.isFocused()) {
+			if (colorPicker.keyPressed(keyCode, scanCode, modifiers)) {
 				return true;
 			}
 		}
@@ -148,8 +148,8 @@ public abstract class AbstractConfigurationScreen extends AbstractSavableScreen 
 
 	@Override
 	public boolean charTyped(char codePoint, int modifiers) {
-		if (colorSelector != null && colorSelector.isFocused()) {
-			if (colorSelector.charTyped(codePoint, modifiers)) {
+		if (colorPicker != null && colorPicker.isFocused()) {
+			if (colorPicker.charTyped(codePoint, modifiers)) {
 				return true;
 			}
 		}
@@ -157,14 +157,14 @@ public abstract class AbstractConfigurationScreen extends AbstractSavableScreen 
 	}
 
 
-	public void openColorSelector(@NotNull ColorBindable colorBindable) {
-		this.colorSelector = new ColorSelector(colorBindable);
-		this.colorSelector.setFocused(true);
+	public void openColorPicker(@NotNull ColorBindable colorBindable) {
+		this.colorPicker = new ColorPicker(colorBindable);
+		this.colorPicker.setFocused(true);
 	}
 
-	public void closeColorSelector() {
-		if (this.colorSelector != null) {
-			this.colorSelector.setFocused(false);
+	public void closeColorPicker() {
+		if (this.colorPicker != null) {
+			this.colorPicker.setFocused(false);
 		}
 	}
 
