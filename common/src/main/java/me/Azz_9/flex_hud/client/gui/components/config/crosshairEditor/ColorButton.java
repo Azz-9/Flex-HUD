@@ -11,7 +11,7 @@ import org.jspecify.annotations.NonNull;
 import me.Azz_9.flex_hud.client.gui.Colors;
 import me.Azz_9.flex_hud.client.gui.Cursors;
 import me.Azz_9.flex_hud.client.gui.components.config.DataGetter;
-import me.Azz_9.flex_hud.client.gui.components.config.colorSelector.ColorBindable;
+import me.Azz_9.flex_hud.client.gui.components.config.colorPicker.ColorBindable;
 
 public class ColorButton extends AbstractWidget.WithInactiveMessage implements ColorBindable, DataGetter<Integer> {
 	private int color;
