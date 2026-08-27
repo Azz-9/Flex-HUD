@@ -1,0 +1,54 @@
+{
+	"vertex": "flex_hud:core/color_picker",
+	"fragment": "flex_hud:core/color_picker_gradient",
+	"samplers": [
+	],
+	"uniforms": [
+		{
+			"name": "ModelViewMat",
+			"type": "matrix4x4",
+			"count": 16,
+			"values": [
+				1.0,
+				0.0,
+				0.0,
+				0.0,
+				0.0,
+				1.0,
+				0.0,
+				0.0,
+				0.0,
+				0.0,
+				1.0,
+				0.0,
+				0.0,
+				0.0,
+				0.0,
+				1.0
+			]
+		},
+		{
+			"name": "ProjMat",
+			"type": "matrix4x4",
+			"count": 16,
+			"values": [
+				1.0,
+				0.0,
+				0.0,
+				0.0,
+				0.0,
+				1.0,
+				0.0,
+				0.0,
+				0.0,
+				0.0,
+				1.0,
+				0.0,
+				0.0,
+				0.0,
+				0.0,
+				1.0
+			]
+		}
+	]
+}

@@ -22,7 +22,7 @@ import me.Azz_9.flex_hud.client.gui.components.config.DataGetter;
 import me.Azz_9.flex_hud.client.gui.components.config.Observer;
 import me.Azz_9.flex_hud.client.gui.components.config.ScrollableConfigList;
 import me.Azz_9.flex_hud.client.gui.components.config.buttons.ConfigColorButtonWidget;
-import me.Azz_9.flex_hud.client.gui.components.config.colorSelector.ColorSelector;
+import me.Azz_9.flex_hud.client.gui.components.config.colorPicker.ColorPicker;
 import me.Azz_9.flex_hud.client.gui.screens.AbstractConfigurationScreen;
 
 public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
@@ -42,11 +42,11 @@ public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 				(btn) -> {
 					AbstractConfigurationScreen screen = (AbstractConfigurationScreen) MINECRAFT.screen;
 					if (screen != null) {
-						ColorSelector colorSelector = screen.getColorSelector();
-						if (colorSelector == null || !colorSelector.isFocused()) {
-							screen.openColorSelector(this.colorButtonWidget);
+						ColorPicker colorPicker = screen.getColorPicker();
+						if (colorPicker == null || !colorPicker.isFocused()) {
+							screen.openColorPicker(this.colorButtonWidget);
 						} else {
-							screen.closeColorSelector();
+							screen.closeColorPicker();
 						}
 					}
 				}, getTooltip);
@@ -100,7 +100,7 @@ public class ColorButtonEntry extends ScrollableConfigList.AbstractConfigEntry {
 		// fermer le color selector si le color button est désacitvé
 		AbstractConfigurationScreen screen = (AbstractConfigurationScreen) MINECRAFT.screen;
 		if (screen != null && shouldDisable) {
-			screen.closeColorSelector();
+			screen.closeColorPicker();
 		}
 	}
 
