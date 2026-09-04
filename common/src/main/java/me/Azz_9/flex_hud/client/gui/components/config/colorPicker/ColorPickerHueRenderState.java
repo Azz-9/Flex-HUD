@@ -26,7 +26,7 @@ public record ColorPickerHueRenderState(
 
 	public static final RenderPipeline COLOR_PICKER_HUE = RenderPipeline.builder(RenderPipelines.GUI_SNIPPET)
 			.withLocation(Identifier.fromNamespaceAndPath(MOD_ID, "color_picker_hue"))
-			.withVertexShader(Identifier.fromNamespaceAndPath(MOD_ID, "core/color_picker"))
+			.withVertexShader(Identifier.withDefaultNamespace("core/gui"))
 			.withFragmentShader(Identifier.fromNamespaceAndPath(MOD_ID, "core/color_picker_hue"))
 			.withCull(false)
 			.build();
