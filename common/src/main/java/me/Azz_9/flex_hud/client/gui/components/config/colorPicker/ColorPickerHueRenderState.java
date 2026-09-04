@@ -2,8 +2,8 @@ package me.Azz_9.flex_hud.client.gui.components.config.colorPicker;
 
 import static me.Azz_9.flex_hud.Constants.MOD_ID;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.TextureSetup;
@@ -26,7 +26,7 @@ public record ColorPickerHueRenderState(
 
 	public static final RenderPipeline COLOR_PICKER_HUE = RenderPipeline.builder(RenderPipelines.GUI_SNIPPET)
 			.withLocation(Identifier.fromNamespaceAndPath(MOD_ID, "color_picker_hue"))
-			.withVertexShader(Identifier.fromNamespaceAndPath(MOD_ID, "core/color_picker"))
+			.withVertexShader(Identifier.withDefaultNamespace("core/gui"))
 			.withFragmentShader(Identifier.fromNamespaceAndPath(MOD_ID, "core/color_picker_hue"))
 			.withCull(false)
 			.build();
