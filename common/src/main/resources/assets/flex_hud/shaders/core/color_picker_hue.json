@@ -1,5 +1,5 @@
 {
-	"vertex": "flex_hud:core/color_picker",
+	"vertex": "minecraft:core/gui",
 	"fragment": "flex_hud:core/color_picker_hue",
 	"samplers": [
 	],
