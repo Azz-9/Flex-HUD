@@ -28,7 +28,7 @@ public record ColorPickerGradientRenderState(
 
 	public static final RenderPipeline COLOR_PICKER_GRADIENT = RenderPipeline.builder(RenderPipelines.GUI_SNIPPET)
 			.withLocation(ResourceLocation.fromNamespaceAndPath(MOD_ID, "color_picker_gradient"))
-			.withVertexShader(ResourceLocation.fromNamespaceAndPath(MOD_ID, "core/color_picker"))
+			.withVertexShader(ResourceLocation.withDefaultNamespace("core/gui"))
 			.withFragmentShader(ResourceLocation.fromNamespaceAndPath(MOD_ID, "core/color_picker_gradient"))
 			.withCull(false)
 			.build();
