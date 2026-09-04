@@ -12,7 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 public class FlexHudShaders {
 
 	private static final RenderPipeline.Snippet COLOR_PICKER_SNIPPET = RenderPipeline.builder()
-			.withVertexShader(ResourceLocation.fromNamespaceAndPath(MOD_ID, "core/color_picker"))
+			.withVertexShader(ResourceLocation.withDefaultNamespace("core/gui"))
 			.withCull(false)
 			.withBlend(BlendFunction.TRANSLUCENT)
 			.withVertexFormat(
