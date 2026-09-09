@@ -3,8 +3,9 @@ plugins {
 	id 'net.fabricmc.fabric-loom-remap'
 }
 
-def includeModMenu = project.hasProperty("launch_with_modmenu") && project.launch_with_modmenu.toBoolean()
-def includeXaero = project.hasProperty("launch_with_xaero_minimap") && project.launch_with_xaero_minimap.toBoolean()
+final def includeModMenu = project.hasProperty("launch_with_modmenu") && project.launch_with_modmenu.toBoolean()
+final def includeXaero = project.hasProperty("launch_with_xaero_minimap") && project.launch_with_xaero_minimap.toBoolean()
+final def includeJade = project.hasProperty("launch_with_jade") && project.launch_with_jade.toBoolean()
 
 repositories {
 	mavenCentral()
@@ -37,6 +38,12 @@ dependencies {
 	}
 
 	modCompileOnly "info.journeymap:journeymap-api-fabric:${project.journeymap_api_version}"
+
+	if (includeJade) {
+		modImplementation "maven.modrinth:jade:${project.jade_version}+fabric"
+	} else {
+		modCompileOnly "maven.modrinth:jade:${project.jade_version}+fabric"
+	}
 }
 
 loom {
