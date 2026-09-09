@@ -1,6 +1,7 @@
 package me.Azz_9.flex_hud.client.modules.hud.vanilla;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
+import static me.Azz_9.flex_hud.Constants.MOD_ID;
 
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -24,7 +25,7 @@ import me.Azz_9.flex_hud.client.modules.Modules;
 import me.Azz_9.flex_hud.client.modules.hud.AbstractMovableModule;
 
 public class BossBar extends AbstractMovableModule {
-	private static final int BOSS_BAR_GAP = 10;
+	public static final int BOSS_BAR_GAP = 10;
 
 	public final @NotNull ConfigBoolean showBossBar = new ConfigBoolean(true, "flex_hud.bossbar.config.show_bossbar");
 
@@ -43,7 +44,7 @@ public class BossBar extends AbstractMovableModule {
 
 	public void init() {
 		placeholderEvent = new LerpingBossEvent(
-				UUID.nameUUIDFromBytes("flex_hud:bossbar_placeholder".getBytes(StandardCharsets.UTF_8)),
+				UUID.nameUUIDFromBytes((MOD_ID + ":bossbar_placeholder").getBytes(StandardCharsets.UTF_8)),
 				Modules.getInstance().bossBar.getName(),
 				1.0f,
 				BossEvent.BossBarColor.PURPLE,
