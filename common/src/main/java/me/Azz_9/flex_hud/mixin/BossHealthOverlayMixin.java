@@ -3,6 +3,7 @@ package me.Azz_9.flex_hud.mixin;
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.sugar.Local;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.BossHealthOverlay;
@@ -63,6 +64,11 @@ public abstract class BossHealthOverlayMixin {
 			return Modules.getInstance().bossBar.getWidth();
 		}
 		return screenWidth;
+	}
+
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;III)V"))
+	private void updateBossBarHeight(GuiGraphics graphics, CallbackInfo ci, @Local(type = int.class, ordinal = 1) int yOffset) {
+		Modules.getInstance().bossBar.setHeight(yOffset + BossBar.BOSS_BAR_GAP);
 	}
 
 	@Inject(
