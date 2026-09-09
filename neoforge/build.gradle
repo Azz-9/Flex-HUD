@@ -4,6 +4,7 @@ plugins {
 }
 
 final def includeXaero = project.hasProperty("launch_with_xaero_minimap") && project.launch_with_xaero_minimap.toBoolean()
+final def includeJade = project.hasProperty("launch_with_jade") && project.launch_with_jade.toBoolean()
 
 dependencies {
 	if (includeXaero) {
@@ -13,6 +14,12 @@ dependencies {
 	}
 
 	compileOnly "info.journeymap:journeymap-api-neoforge:${project.journeymap_api_version}"
+
+	if (includeJade) {
+		implementation "maven.modrinth:jade:${project.jade_version}+neoforge"
+	} else {
+		compileOnly "maven.modrinth:jade:${project.jade_version}+neoforge"
+	}
 }
 
 neoForge {
