@@ -23,6 +23,7 @@ accessible field net/minecraft/client/renderer/RenderStateShard NO_CULL Lnet/min
 accessible field net/minecraft/client/renderer/RenderStateShard COLOR_WRITE Lnet/minecraft/client/renderer/RenderStateShard$WriteMaskStateShard;
 
 accessible field net/minecraft/client/gui/components/BossHealthOverlay BAR_WIDTH I
+accessible field net/minecraft/client/gui/components/BossHealthOverlay events Ljava/util/Map;
 
 accessible field net/minecraft/client/gui/components/FocusableTextWidget DEFAULT_PADDING I
 
