@@ -12,6 +12,7 @@ accessible method net/minecraft/client/renderer/RenderPipelines register (Lcom/m
 accessible field net/minecraft/client/renderer/RenderPipelines GUI_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
 
 accessible field net/minecraft/client/gui/components/BossHealthOverlay BAR_WIDTH I
+accessible field net/minecraft/client/gui/components/BossHealthOverlay events Ljava/util/Map;
 
 accessible method net/minecraft/client/gui/Hud extractBossOverlay (Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V
 accessible method net/minecraft/client/gui/Hud displayScoreboardSidebar (Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/world/scores/Objective;)V

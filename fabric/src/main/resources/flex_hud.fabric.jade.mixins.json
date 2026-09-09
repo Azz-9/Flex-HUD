@@ -1,10 +1,11 @@
 {
 	"required": true,
 	"minVersion": "0.8",
-	"package": "me.Azz_9.flex_hud.mixin",
+	"package": "me.Azz_9.flex_hud.compat.jade.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"mixins": [],
 	"client": [
+		"BoxElementImplMixin"
 	],
 	"server": [],
 	"injectors": {
