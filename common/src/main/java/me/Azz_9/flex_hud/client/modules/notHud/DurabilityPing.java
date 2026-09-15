@@ -2,12 +2,13 @@ package me.Azz_9.flex_hud.client.modules.notHud;
 
 import static me.Azz_9.flex_hud.CommonClass.MINECRAFT;
 
+import com.mojang.blaze3d.Blaze3D;
+
 import net.minecraft.client.gui.components.FocusableTextWidget;
 import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Util;
 
 import java.net.URI;
 
@@ -64,7 +65,7 @@ public class DurabilityPing extends AbstractModule {
 						.setCentered(true);
 				text.setComponentClickHandler(style -> {
 					if (style.getClickEvent() instanceof ClickEvent.OpenUrl(URI uri)) {
-						Util.getPlatform().openUri(uri);
+						Blaze3D.openUri(uri);
 					}
 				});
 				text.setPosition(

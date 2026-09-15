@@ -6,11 +6,12 @@ plugins {
 final def includeXaero = project.hasProperty("launch_with_xaero_minimap") && project.launch_with_xaero_minimap.toBoolean()
 
 dependencies {
-	if (includeXaero) {
+	/*if (includeXaero) {
 		implementation "xaero.minimap:xaerominimap-neoforge-${project.xaero_minimap_version}"
 	} else {
 		compileOnly "xaero.minimap:xaerominimap-neoforge-${project.xaero_minimap_version}"
-	}
+	}*/
+	compileOnly "xaero.minimap:xaerominimap-neoforge-26.2:26.5.1"
 
 	compileOnly "info.journeymap:journeymap-api-neoforge:${project.journeymap_api_version}"
 }
