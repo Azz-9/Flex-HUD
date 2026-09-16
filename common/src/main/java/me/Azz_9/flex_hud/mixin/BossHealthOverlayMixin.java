@@ -29,6 +29,7 @@ public abstract class BossHealthOverlayMixin {
 	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
 	private void cancelRender(GuiGraphics graphics, CallbackInfo ci) {
 		BossBar bossBar = Modules.getInstance().bossBar;
+		bossBar.setHeight(0);
 		if (Modules.getInstance().isEnabled.getValue()
 				&& bossBar.enabled.getValue()
 				&& (!bossBar.showBossBar.getValue()
