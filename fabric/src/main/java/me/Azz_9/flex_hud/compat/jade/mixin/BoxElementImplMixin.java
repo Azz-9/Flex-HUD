@@ -34,8 +34,8 @@ public abstract class BoxElementImplMixin {
 		return new Rect2i(
 				bossBar.getRoundedX(),
 				bossBar.getRoundedY(),
-				bossBar.getWidth(),
-				bossBar.getHeight()
+				bossBar.getWidth() * bossBar.getScale(),
+				bossBar.getHeight() * bossBar.getScale()
 		);
 	}
 }
