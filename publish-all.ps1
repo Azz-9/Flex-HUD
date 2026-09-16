@@ -6,7 +6,8 @@ param(
     "1.21.9-1.21.10-multiloader",
     "1.21.11-multiloader",
     "26.1-multiloader",
-    "26.2-multiloader"
+    "26.2-multiloader",
+    "26.3"
 ),
 
     [string] $ReleaseBranch = "26.2-multiloader",
