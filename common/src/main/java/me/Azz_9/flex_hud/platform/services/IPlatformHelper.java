@@ -1,5 +1,8 @@
 package me.Azz_9.flex_hud.platform.services;
 
+import static me.Azz_9.flex_hud.Constants.FABRIC;
+import static me.Azz_9.flex_hud.Constants.NEOFORGE;
+
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphics;
@@ -19,6 +22,14 @@ public interface IPlatformHelper {
 	 * @return The name of the current platform.
 	 */
 	@NotNull String getPlatformName();
+
+	default boolean isFabric() {
+		return getPlatformName().equals(FABRIC);
+	}
+
+	default boolean isNeoForge() {
+		return getPlatformName().equals(NEOFORGE);
+	}
 
 	/**
 	 * Checks if a mod with the given id is loaded.
