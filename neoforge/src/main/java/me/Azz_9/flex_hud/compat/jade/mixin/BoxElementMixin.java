@@ -3,6 +3,7 @@ package me.Azz_9.flex_hud.compat.jade.mixin;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.util.Mth;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -12,7 +13,7 @@ import me.Azz_9.flex_hud.client.modules.hud.vanilla.BossBar;
 import snownee.jade.impl.ui.BoxElement;
 
 @Mixin(BoxElement.class)
-public abstract class BoxElementImplMixin {
+public abstract class BoxElementMixin {
 
 	@ModifyExpressionValue(
 			method = "updateExpectedRect",
@@ -34,8 +35,8 @@ public abstract class BoxElementImplMixin {
 		return new Rect2i(
 				bossBar.getRoundedX(),
 				bossBar.getRoundedY(),
-				bossBar.getWidth() * bossBar.getScale(),
-				bossBar.getHeight() * bossBar.getScale()
+				Mth.ceil(bossBar.getWidth() * bossBar.getScale()),
+				Mth.ceil(bossBar.getHeight() * bossBar.getScale())
 		);
 	}
 }
