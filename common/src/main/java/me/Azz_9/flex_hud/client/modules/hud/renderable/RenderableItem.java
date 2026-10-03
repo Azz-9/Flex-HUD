@@ -11,7 +11,7 @@ import me.Azz_9.flex_hud.client.modules.hud.PlaceholderStacks;
 
 public class RenderableItem extends Renderable {
 	@NotNull
-	private final net.minecraft.world.item.ItemStack stack;
+	private final ItemStack stack;
 	private final boolean drawItemBar;
 
 	public RenderableItem(int x, int y, int width, @NotNull ItemStack stack, boolean drawItemBar) {

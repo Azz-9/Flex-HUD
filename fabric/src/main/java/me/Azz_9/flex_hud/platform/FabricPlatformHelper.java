@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.platform;
 
+import static me.Azz_9.flex_hud.Constants.FABRIC;
+
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
@@ -26,7 +28,7 @@ public class FabricPlatformHelper implements IPlatformHelper {
 
 	@Override
 	public @NotNull String getPlatformName() {
-		return "Fabric";
+		return FABRIC;
 	}
 
 	@Override

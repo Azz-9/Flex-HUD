@@ -1,5 +1,7 @@
 package me.Azz_9.flex_hud.platform;
 
+import static me.Azz_9.flex_hud.Constants.NEOFORGE;
+
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -28,7 +30,7 @@ public class NeoForgePlatformHelper implements IPlatformHelper {
 
 	@Override
 	public @NotNull String getPlatformName() {
-		return "NeoForge";
+		return NEOFORGE;
 	}
 
 	@Override
