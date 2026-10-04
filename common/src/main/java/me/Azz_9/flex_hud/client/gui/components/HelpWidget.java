@@ -79,7 +79,7 @@ public class HelpWidget extends AbstractWidget {
 
 			int textY = popupY + POPUP_PADDING;
 			for (Component helpLine : helpLines) {
-				graphics.drawWordWrap(font, helpLine, popupX + POPUP_PADDING, textY, textWidth, ARGB.color(Mth.floor(easedProgress * 255.0F), TEXT_COLOR), false);
+				graphics.drawWordWrap(font, helpLine, popupX + POPUP_PADDING, textY, textWidth, ARGB.color(Mth.floor(Math.max(easedProgress * 255.0F, 4)), TEXT_COLOR), false);
 				textY += font.wordWrapHeight(helpLine, textWidth) + LINE_SPACING;
 			}
 		}

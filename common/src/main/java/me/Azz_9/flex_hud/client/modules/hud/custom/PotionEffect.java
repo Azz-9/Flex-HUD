@@ -204,7 +204,7 @@ public class PotionEffect extends AbstractTextModule {
 		float alpha01 = (float) (Math.sin(cycle * Math.PI * 2.0) * 0.5 + 0.5);
 
 		if (duration <= 100) {
-			return (int) (alpha01 * 255); // faster pulse
+			return (int) Math.max(alpha01 * 255, 4); // faster pulse
 		} else if (duration <= 200) {
 			return (int) ((alpha01 * 0.5f + 0.5f) * 255); // softer pulse
 		}
