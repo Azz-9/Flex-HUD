@@ -370,7 +370,7 @@ public class Compass extends AbstractTextModule {
 
 		int alpha = 0xff;
 		if (distanceFromCenter > getWidth() / 4.0) {
-			alpha = Math.max(0xff - (int) ((distanceFromCenter - getWidth() / 4.0) / (getWidth() / 4.0) * 0xff), 0);
+			alpha = Math.max(0xff - (int) ((distanceFromCenter - getWidth() / 4.0) / (getWidth() / 4.0) * 0xff), 4);
 		}
 
 		return alpha;
