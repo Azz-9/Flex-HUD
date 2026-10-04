@@ -1,6 +1,8 @@
 package me.Azz_9.flex_hud.compat.jade.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.util.Mth;
@@ -13,7 +15,7 @@ import me.Azz_9.flex_hud.client.modules.hud.vanilla.BossBar;
 import snownee.jade.impl.ui.BoxElementImpl;
 
 @Mixin(BoxElementImpl.class)
-public abstract class BoxElementMixin {
+public abstract class BoxElementImplMixin {
 
 	@ModifyExpressionValue(
 			method = "updateExpectedRect",
@@ -38,5 +40,21 @@ public abstract class BoxElementMixin {
 				Mth.ceil(bossBar.getWidth() * bossBar.getScale()),
 				Mth.ceil(bossBar.getHeight() * bossBar.getScale())
 		);
+	}
+
+	@WrapOperation(
+			method = "updateExpectedRect",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/client/renderer/Rect2i;getHeight()I",
+					ordinal = 3
+			)
+	)
+	private int fixPushDownY(Rect2i rect, Operation<Integer> original) {
+		Integer res = original.call(rect);
+		if (Modules.getInstance().isEnabled.getValue() && Modules.getInstance().bossBar.enabled.getValue()) {
+			res += rect.getY();
+		}
+		return res;
 	}
 }

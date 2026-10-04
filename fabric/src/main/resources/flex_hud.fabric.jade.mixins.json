@@ -8,7 +8,7 @@
 
 	"mixins": [],
 	"client": [
-		"BoxElementMixin"
+		"BoxElementImplMixin"
 	],
 	"server": [],
 	"injectors": {
