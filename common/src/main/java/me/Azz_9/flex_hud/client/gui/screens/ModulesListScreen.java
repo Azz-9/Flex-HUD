@@ -68,8 +68,8 @@ public class ModulesListScreen extends AbstractBackNavigableScreen {
 
 		// Initialisation du choix du nombre de colonnes
 		columnsButton = CycleButton.<Integer>builder(value -> Component.literal(value.toString()))
-				.withInitialValue(columns)
 				.withValues(IntStream.rangeClosed(1, MAX_COLUMNS).boxed().toList())
+				.withInitialValue(columns)
 				.create(Math.clamp(
 						this.width / 2 + 105 + (int) (this.width / 100.0F * 5),
 						this.width / 2 + 105,
