@@ -90,6 +90,8 @@ public class CommonClass {
 			}
 		});
 
+		Services.PLATFORM.registerClientStopEvent(PingUtils::shutdown);
+
 		// init variables when the languages are loaded
 		Services.PLATFORM.registerReloadListener(
 				Identifier.fromNamespaceAndPath(MOD_ID, "variables_init"),
