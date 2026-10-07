@@ -52,6 +52,11 @@ public class FabricPlatformHelper implements IPlatformHelper {
 	}
 
 	@Override
+	public void registerClientStopEvent(@NotNull Runnable runnable) {
+		ClientLifecycleEvents.CLIENT_STOPPING.register(client -> runnable.run());
+	}
+
+	@Override
 	public void registerEndClientTickEvent(@NotNull Runnable runnable) {
 		ClientTickEvents.END_CLIENT_TICK.register(client -> runnable.run());
 	}

@@ -22,7 +22,13 @@ public abstract class ClientPacketListenerMixin {
 		PingUtils.addPingValue(Util.getMillis() - packet.time());
 	}
 
-	@Inject(method = "handleConfigurationStart", at = @At("HEAD"))
+	@Inject(
+			method = "handleConfigurationStart",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/client/multiplayer/chat/ChatListener;flushQueue()V"
+			)
+	)
 	private void onEnterReconfiguration(ClientboundStartConfigurationPacket packet, CallbackInfo ci) {
 		PingUtils.stopPinging();
 		PingUtils.connection = null;
