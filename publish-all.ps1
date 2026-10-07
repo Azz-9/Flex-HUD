@@ -10,10 +10,15 @@ param(
     "26.3"
 ),
 
-    [string] $ReleaseBranch = "26.2-multiloader",
+    [string] $ReleaseBranch,
 
     [switch] $DryRun
 )
+
+if (-not $ReleaseBranch)
+{
+    $ReleaseBranch = $Branches[-1]
+}
 
 $ErrorActionPreference = "Stop"
 
