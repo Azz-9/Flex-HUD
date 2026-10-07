@@ -59,6 +59,8 @@ public interface IPlatformHelper {
 
 	void registerClientStartEvent(@NotNull Runnable runnable);
 
+	void registerClientStopEvent(@NotNull Runnable runnable);
+
 	void registerEndClientTickEvent(@NotNull Runnable runnable);
 
 	void registerJoinEvent(@NotNull Runnable runnable);
