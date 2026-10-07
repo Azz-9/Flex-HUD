@@ -15,6 +15,7 @@ import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.GameShuttingDownEvent;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -50,6 +51,11 @@ public class NeoForgePlatformHelper implements IPlatformHelper {
 	@Override
 	public void registerClientStartEvent(@NotNull Runnable runnable) {
 		eventBus.addListener((FMLClientSetupEvent event) -> runnable.run());
+	}
+
+	@Override
+	public void registerClientStopEvent(@NotNull Runnable runnable) {
+		NeoForge.EVENT_BUS.addListener((GameShuttingDownEvent event) -> runnable.run());
 	}
 
 	@Override
