@@ -16,9 +16,9 @@ dependencies {
 	compileOnly "info.journeymap:journeymap-api-neoforge:${project.journeymap_api_version}"
 
 	if (includeJade) {
-		implementation "maven.modrinth:jade:${project.jade_version}+neoforge"
+		implementation "maven.modrinth:jade:${project.jade_version_neoforge}+neoforge"
 	} else {
-		compileOnly "maven.modrinth:jade:${project.jade_version}+neoforge"
+		compileOnly "maven.modrinth:jade:${project.jade_version_neoforge}+neoforge"
 	}
 }
 
