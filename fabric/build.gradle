@@ -36,9 +36,9 @@ dependencies {
 	compileOnly "info.journeymap:journeymap-api-fabric:${project.journeymap_api_version}"
 
 	if (includeJade) {
-		implementation "maven.modrinth:jade:${project.jade_version}+fabric"
+		implementation "maven.modrinth:jade:${project.jade_version_fabric}+fabric"
 	} else {
-		compileOnly "maven.modrinth:jade:${project.jade_version}+fabric"
+		compileOnly "maven.modrinth:jade:${project.jade_version_fabric}+fabric"
 	}
 }
 
