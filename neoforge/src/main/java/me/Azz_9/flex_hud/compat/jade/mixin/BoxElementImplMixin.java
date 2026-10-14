@@ -47,7 +47,7 @@ public abstract class BoxElementImplMixin {
 			at = @At(
 					value = "INVOKE",
 					target = "Lnet/minecraft/client/renderer/Rect2i;getHeight()I",
-					ordinal = 3
+					ordinal = 1
 			)
 	)
 	private int fixPushDownY(Rect2i rect, Operation<Integer> original) {
