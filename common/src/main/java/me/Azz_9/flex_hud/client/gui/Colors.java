@@ -16,4 +16,12 @@ public final class Colors {
 
 	private Colors() {
 	}
+
+	public static int multiplyAlpha(int color, float alpha) {
+		if (color != 0 && alpha > 0.0F) {
+			return alpha >= 1.0F ? color : ARGB.color(ARGB.alphaFloat(color) * alpha, color);
+		} else {
+			return 0;
+		}
+	}
 }

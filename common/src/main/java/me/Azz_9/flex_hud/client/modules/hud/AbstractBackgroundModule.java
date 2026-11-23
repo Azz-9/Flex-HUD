@@ -39,7 +39,7 @@ public abstract class AbstractBackgroundModule extends AbstractMovableModule {
 			graphics.fill(
 					-BACKGROUND_PADDING, -BACKGROUND_PADDING,
 					width + BACKGROUND_PADDING, height + BACKGROUND_PADDING,
-					ARGB.multiply(getBackgroundColor(), ARGB.color(alphaMultiplier, Colors.WHITE))
+					Colors.multiplyAlpha(getBackgroundColor(), alphaMultiplier)
 			);
 		}
 	}
