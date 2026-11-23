@@ -40,6 +40,8 @@ dependencies {
 	} else {
 		compileOnly "maven.modrinth:jade:${project.jade_version_fabric}+fabric"
 	}
+
+	compileOnly("com.demonwav.mcdev:annotations:2.1.0")
 }
 
 loom {

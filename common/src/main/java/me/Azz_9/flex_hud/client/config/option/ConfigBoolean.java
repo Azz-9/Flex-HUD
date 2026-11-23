@@ -1,11 +1,12 @@
 package me.Azz_9.flex_hud.client.config.option;
 
+import com.demonwav.mcdev.annotations.Translatable;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 
 public class ConfigBoolean extends AbstractConfigObject<Boolean> {
 
-	public ConfigBoolean(Boolean defaultValue, String configTextTranslationKey) {
+	public ConfigBoolean(Boolean defaultValue, @Translatable String configTextTranslationKey) {
 		super(defaultValue, configTextTranslationKey);
 	}
 
