@@ -38,4 +38,12 @@ public class CpsUtils {
 		updateRightCPS();
 		return rightClickTimestamps.size();
 	}
+
+	public static long getLastLeftClickTime() {
+		return leftClickTimestamps.isEmpty() ? 0 : leftClickTimestamps.getLast();
+	}
+
+	public static long getLastRightClickTime() {
+		return rightClickTimestamps.isEmpty() ? 0 : rightClickTimestamps.getLast();
+	}
 }

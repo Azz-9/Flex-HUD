@@ -149,6 +149,7 @@
 	"flex_hud.cps.config.show_left_click": "Afficher les CPS du clic gauche",
 	"flex_hud.cps.config.show_right_click": "Afficher les CPS du clic droit",
 	"flex_hud.cps.config.show_suffix": "Afficher le suffixe",
+	"flex_hud.cps.config.hide_when_not_clicking": "Masquer quand on ne clique pas",
 
 	"flex_hud.day_counter": "Compte-jours",
 	"flex_hud.day_counter.config.enable": "Afficher le compte-jours",
@@ -202,6 +203,7 @@
 	"flex_hud.speedometer.config.ignore_y_speed": "Ignorer la vitesse verticale",
 	"flex_hud.speedometer.config.selected_unit": "Unité sélectionnée",
 	"flex_hud.speedometer.config.use_knot_when_in_boat": "Vitesse en nœuds en étant dans un bateau",
+	"flex_hud.speedometer.config.hide_when_not_moving": "Masquer quand on ne bouge pas",
 	"flex_hud.speedometer.config.tooltip.mps": "Mètres par seconde (m/s)",
 	"flex_hud.speedometer.config.tooltip.kph": "Kilomètres par heure (km/h)",
 	"flex_hud.speedometer.config.tooltip.mph": "Milles par heure (mi/h)",

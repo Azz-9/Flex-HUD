@@ -8,6 +8,7 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.vehicle.boat.Boat;
 
 import org.jetbrains.annotations.NotNull;
@@ -29,12 +30,20 @@ import me.Azz_9.flex_hud.client.modules.hud.AbstractTextModule;
 
 public class Speedometer extends AbstractTextModule implements TickableModule {
 
+	private static final long HIDE_DELAY_MS = 2000L;
+	private static final long FADE_OUT_DURATION_MS = 2000L;
+	private static final long FADE_IN_DURATION_MS = 100L;
+
 	public ConfigInteger digits = new ConfigInteger(1, "flex_hud.speedometer.config.number_of_digits", 0, 16);
 	public ConfigBoolean ignoreYSpeed = new ConfigBoolean(false, "flex_hud.speedometer.config.ignore_y_speed");
 	public ConfigEnum<SpeedometerUnits> units = new ConfigEnum<>(SpeedometerUnits.class, SpeedometerUnits.MPS, "flex_hud.speedometer.config.selected_unit");
 	public ConfigBoolean useKnotInBoat = new ConfigBoolean(false, "flex_hud.speedometer.config.use_knot_when_in_boat");
+	public ConfigBoolean hideWhenNotMoving = new ConfigBoolean(false, "flex_hud.speedometer.config.hide_when_not_moving");
 
 	private String formattedSpeed = "";
+	private float fadeAlpha = 1.0f;
+	private long lastMoveTime = 0;
+	private long fadeInStartTime = 0;
 
 	public Speedometer(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super("speedometer", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
@@ -44,6 +53,7 @@ public class Speedometer extends AbstractTextModule implements TickableModule {
 		ConfigRegistry.register(getID(), "units", units);
 		ConfigRegistry.register(getID(), "useKnotInBoat", useKnotInBoat);
 		ConfigRegistry.register(getID(), "ignoreYSpeed", ignoreYSpeed);
+		ConfigRegistry.register(getID(), "hideWhenNotMoving", hideWhenNotMoving);
 	}
 
 	@Override
@@ -64,14 +74,41 @@ public class Speedometer extends AbstractTextModule implements TickableModule {
 
 		setWidth(formattedSpeed);
 
+		if (hideWhenNotMoving.getValue()) {
+			long timeSinceLastMove = System.currentTimeMillis() - lastMoveTime;
+			boolean wasHidden = fadeAlpha <= 0.0f;
+			if (timeSinceLastMove <= HIDE_DELAY_MS) {
+				if (wasHidden) {
+					if (fadeInStartTime == 0) {
+						fadeInStartTime = System.currentTimeMillis();
+					}
+					fadeAlpha = Math.min(1.0f, (System.currentTimeMillis() - fadeInStartTime) / (float) FADE_IN_DURATION_MS);
+				} else {
+					fadeAlpha = Math.min(1.0f, (System.currentTimeMillis() - fadeInStartTime) / (float) FADE_IN_DURATION_MS);
+				}
+			} else {
+				float fadeProgress = (timeSinceLastMove - HIDE_DELAY_MS) / (float) FADE_OUT_DURATION_MS;
+				fadeAlpha = Math.max(0.0f, 1.0f - fadeProgress);
+				if (fadeAlpha <= 0.0f) {
+					fadeInStartTime = 0;
+				}
+			}
+
+			if (fadeAlpha <= 0.0f) {
+				return;
+			}
+		} else {
+			fadeAlpha = 1.0f;
+		}
+
 		Matrix3x2fStack matrices = graphics.pose();
 		matrices.pushMatrix();
 		matrices.translate(getRoundedX(), getRoundedY());
 		matrices.scale(getScale());
 
-		drawBackground(graphics);
+		drawBackground(0, graphics, getWidth(), getHeight(), fadeAlpha);
 
-		graphics.text(MINECRAFT.font, formattedSpeed, 0, 0, getColor(), this.shadow.getValue());
+		graphics.text(MINECRAFT.font, formattedSpeed, 0, 0, ARGB.multiplyAlpha(getColor(), fadeAlpha), this.shadow.getValue());
 
 		matrices.popMatrix();
 	}
@@ -174,6 +211,11 @@ public class Speedometer extends AbstractTextModule implements TickableModule {
 											default -> null;
 										}
 								)
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(hideWhenNotMoving)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 			}
@@ -190,6 +232,10 @@ public class Speedometer extends AbstractTextModule implements TickableModule {
 				speedBlocksPerTicks = player.getKnownSpeed().horizontalDistance();
 			} else {
 				speedBlocksPerTicks = player.getKnownSpeed().length();
+			}
+
+			if (speedBlocksPerTicks > 0) {
+				lastMoveTime = System.currentTimeMillis();
 			}
 		}
 
