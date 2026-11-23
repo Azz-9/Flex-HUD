@@ -1,5 +1,6 @@
 package me.Azz_9.flex_hud.client.config.option;
 
+import com.demonwav.mcdev.annotations.Translatable;
 import com.google.gson.JsonElement;
 
 import org.jetbrains.annotations.NotNull;
@@ -13,13 +14,13 @@ public abstract class AbstractConfigObject<T> {
 	private @Nullable String configTextTranslationKey;
 	private @Nullable Consumer<T> onChange = null;
 
-	public AbstractConfigObject(@NotNull final T defaultValue, @Nullable final String configTextTranslationKey) {
+	public AbstractConfigObject(final @NotNull T defaultValue, final @Nullable @Translatable String configTextTranslationKey) {
 		this.defaultValue = defaultValue;
 		this.configTextTranslationKey = configTextTranslationKey;
 		this.value = defaultValue;
 	}
 
-	public AbstractConfigObject(@NotNull final T defaultValue) {
+	public AbstractConfigObject(final @NotNull T defaultValue) {
 		this(defaultValue, null);
 	}
 
@@ -31,12 +32,12 @@ public abstract class AbstractConfigObject<T> {
 		return value;
 	}
 
-	public void setValue(@NotNull final T value) {
+	public void setValue(final @NotNull T value) {
 		if (onChange != null && !this.value.equals(value)) onChange.accept(value);
 		this.value = value;
 	}
 
-	public void setDefaultValue(@NotNull final T defaultValue) {
+	public void setDefaultValue(final @NotNull T defaultValue) {
 		this.defaultValue = defaultValue;
 	}
 
@@ -44,7 +45,7 @@ public abstract class AbstractConfigObject<T> {
 		return configTextTranslationKey;
 	}
 
-	public void setConfigTextTranslationKey(@Nullable String configTextTranslationKey) {
+	public void setConfigTextTranslationKey(final @Nullable @Translatable String configTextTranslationKey) {
 		this.configTextTranslationKey = configTextTranslationKey;
 	}
 
@@ -52,11 +53,11 @@ public abstract class AbstractConfigObject<T> {
 		setValue(defaultValue);
 	}
 
-	public void setOnChange(@Nullable Consumer<T> onChange) {
+	public void setOnChange(final @Nullable Consumer<T> onChange) {
 		this.onChange = onChange;
 	}
 
-	public void applyFromJsonElement(JsonElement element) {
+	public void applyFromJsonElement(final @Nullable JsonElement element) {
 		if (element == null || element.isJsonNull()) return;
 		setValue(parseValue(element));
 	}

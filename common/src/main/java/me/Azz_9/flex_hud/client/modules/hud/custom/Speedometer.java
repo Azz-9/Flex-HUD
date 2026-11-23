@@ -20,6 +20,7 @@ import me.Azz_9.flex_hud.client.config.ConfigRegistry;
 import me.Azz_9.flex_hud.client.config.option.ConfigBoolean;
 import me.Azz_9.flex_hud.client.config.option.ConfigEnum;
 import me.Azz_9.flex_hud.client.config.option.ConfigInteger;
+import me.Azz_9.flex_hud.client.gui.Colors;
 import me.Azz_9.flex_hud.client.gui.components.config.entries.ColorButtonEntry;
 import me.Azz_9.flex_hud.client.gui.components.config.entries.CyclingButtonEntry;
 import me.Azz_9.flex_hud.client.gui.components.config.entries.IntFieldEntry;
@@ -31,12 +32,20 @@ import me.Azz_9.flex_hud.client.tickables.SpeedTickable;
 
 public class Speedometer extends AbstractTextModule implements TickableModule {
 
+	private static final long HIDE_DELAY_MS = 2000L;
+	private static final long FADE_OUT_DURATION_MS = 2000L;
+	private static final long FADE_IN_DURATION_MS = 100L;
+
 	public ConfigInteger digits = new ConfigInteger(1, "flex_hud.speedometer.config.number_of_digits", 0, 16);
 	public ConfigBoolean ignoreYSpeed = new ConfigBoolean(false, "flex_hud.speedometer.config.ignore_y_speed");
 	public ConfigEnum<SpeedometerUnits> units = new ConfigEnum<>(SpeedometerUnits.class, SpeedometerUnits.MPS, "flex_hud.speedometer.config.selected_unit");
 	public ConfigBoolean useKnotInBoat = new ConfigBoolean(false, "flex_hud.speedometer.config.use_knot_when_in_boat");
+	public ConfigBoolean hideWhenNotMoving = new ConfigBoolean(false, "flex_hud.speedometer.config.hide_when_not_moving");
 
 	private String formattedSpeed = "";
+	private float fadeAlpha = 1.0f;
+	private long lastMoveTime = 0;
+	private long fadeInStartTime = 0;
 
 	public Speedometer(double defaultOffsetX, double defaultOffsetY, @NotNull AnchorPosition defaultAnchorX, @NotNull AnchorPosition defaultAnchorY) {
 		super("speedometer", defaultOffsetX, defaultOffsetY, defaultAnchorX, defaultAnchorY);
@@ -46,6 +55,7 @@ public class Speedometer extends AbstractTextModule implements TickableModule {
 		ConfigRegistry.register(getID(), "units", units);
 		ConfigRegistry.register(getID(), "useKnotInBoat", useKnotInBoat);
 		ConfigRegistry.register(getID(), "ignoreYSpeed", ignoreYSpeed);
+		ConfigRegistry.register(getID(), "hideWhenNotMoving", hideWhenNotMoving);
 	}
 
 	@Override
@@ -66,14 +76,41 @@ public class Speedometer extends AbstractTextModule implements TickableModule {
 
 		setWidth(formattedSpeed);
 
+		if (hideWhenNotMoving.getValue()) {
+			long timeSinceLastMove = System.currentTimeMillis() - lastMoveTime;
+			boolean wasHidden = fadeAlpha <= 0.0f;
+			if (timeSinceLastMove <= HIDE_DELAY_MS) {
+				if (wasHidden) {
+					if (fadeInStartTime == 0) {
+						fadeInStartTime = System.currentTimeMillis();
+					}
+					fadeAlpha = Math.min(1.0f, (System.currentTimeMillis() - fadeInStartTime) / (float) FADE_IN_DURATION_MS);
+				} else {
+					fadeAlpha = Math.min(1.0f, (System.currentTimeMillis() - fadeInStartTime) / (float) FADE_IN_DURATION_MS);
+				}
+			} else {
+				float fadeProgress = (timeSinceLastMove - HIDE_DELAY_MS) / (float) FADE_OUT_DURATION_MS;
+				fadeAlpha = Math.max(0.0f, 1.0f - fadeProgress);
+				if (fadeAlpha <= 0.0f) {
+					fadeInStartTime = 0;
+				}
+			}
+
+			if (fadeAlpha <= 0.0f) {
+				return;
+			}
+		} else {
+			fadeAlpha = 1.0f;
+		}
+
 		PoseStack matrices = graphics.pose();
 		matrices.pushPose();
 		matrices.translate(getRoundedX(), getRoundedY(), 0);
 		matrices.scale(getScale(), getScale(), 1);
 
-		drawBackground(graphics);
+		drawBackground(0, graphics, getWidth(), getHeight(), fadeAlpha);
 
-		graphics.drawString(MINECRAFT.font, formattedSpeed, 0, 0, getColor(), this.shadow.getValue());
+		graphics.drawString(MINECRAFT.font, formattedSpeed, 0, 0, Colors.multiplyAlpha(getColor(), fadeAlpha), this.shadow.getValue());
 
 		matrices.popPose();
 	}
@@ -176,6 +213,11 @@ public class Speedometer extends AbstractTextModule implements TickableModule {
 											default -> null;
 										}
 								)
+								.build(),
+						new ToggleButtonEntry.Builder()
+								.setToggleButtonWidth(buttonWidth)
+								.setVariable(hideWhenNotMoving)
+								.addDependency(this.getConfigList().getFirstEntry(), false)
 								.build()
 				);
 			}
@@ -192,6 +234,10 @@ public class Speedometer extends AbstractTextModule implements TickableModule {
 				speedBlocksPerTicks = SpeedTickable.getHorizontalSpeedMeterPerTicks();
 			} else {
 				speedBlocksPerTicks = SpeedTickable.getSpeedMeterPerTicks();
+			}
+
+			if (speedBlocksPerTicks > 0) {
+				lastMoveTime = System.currentTimeMillis();
 			}
 		}
 

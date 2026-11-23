@@ -1,6 +1,7 @@
 package me.Azz_9.flex_hud.client.gui;
 
 import net.minecraft.util.ARGB;
+import net.minecraft.util.Mth;
 
 public final class Colors {
 
@@ -96,5 +97,13 @@ public final class Colors {
 		}
 
 		return ARGB.color(alpha, red, green, blue);
+	}
+
+	public static int multiplyAlpha(int color, float alpha) {
+		if (color != 0 && alpha > 0.0F) {
+			return alpha >= 1.0F ? color : ARGB.color(Math.max(Mth.floor(ARGB.alphaFloat(color) * alpha * 255f), 4), color);
+		} else {
+			return 0;
+		}
 	}
 }
